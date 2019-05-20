@@ -6,6 +6,7 @@ class Application < ActiveRecord::Base
 
   has_many :demands
   has_many :budget_types
+  has_many :budgets
 
   validates :name, :presence => true , :uniqueness => { :scope => :organization_id, :case_sensitive => false }
 

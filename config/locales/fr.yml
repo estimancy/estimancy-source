@@ -1078,6 +1078,9 @@ fr:
   notice_module_project_successful_updated: "Module Project a été mis à jour avec succès"
   notice_module_project_successful_created: "Module Project a été créé avec succès"
   notice_attribute_module_successful_created: "L'attribut du module a été créé avec succès"
+  notice_budget_successful_updated: "Budget a été mis à jour avec succès"
+  notice_budget_successful_created: "Budget a été créé avec succès"
+
 
   #mail
   mail_salutation: "Bonjour %{value},"
@@ -2439,3 +2442,14 @@ fr:
   gap: "Ecart"
   Secteur de projets: "Secteur de projets"
   budget_type: "Type du budget"
+  budget: "Budgets"
+
+  start_date_budget: "Date de début"
+  end_date_budget: "Date de fin"
+  sum_budget: "Montant"
+
+  budget_type: "Type du budget"
+  color: "Couleur"
+  hide_module_results: "Cacher les résultats du module"
+  show_module_results: "Afficher les résultats du module"
+  label_results: "Résultats"

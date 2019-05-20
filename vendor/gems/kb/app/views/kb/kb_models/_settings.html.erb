@@ -1,11 +1,13 @@
+<%= render partial: 'projects/dashboard_project_title', locals: { module_project: current_module_project } %>
+
 <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
   <%= @kb_model %>
   <div class="edition-bloc-tools">
     <button class="btn btn-secondary">Calculer</button>
   </div>
 </div>
-
-<div class="card card-widget">
+<section class="estimation-modules-edition">
+  <div class="card card-widget">
   <div class="card-body">
     <div class="edition-bloc-title">
       Calcul des phases
@@ -19,49 +21,49 @@
 
             <div class="row">
               <div class="col">
-                <h5>
+                <p>
                   <strong>
                     <%= I18n.t(:project_number) %>
                     <span class="project_numbers">
-                <%= @kb_input.values.size %>
-              </span>
+                      <%= @kb_input.values.size %>
+                    </span>
                   </strong>
-                </h5>
+                </p>
               </div>
             </div>
 
             <% if @kb_model.date_min %>
               <div class="row-fluid">
-                <div class="span12">
-                  <h5>
+                <div class="col-12">
+                  <p>
                     <strong>
                       Date Min:
                       <span class="project_numbers">
                   <%= @kb_model.date_min.strftime("%d %b %Y") %>
                 </span>
                     </strong>
-                  </h5>
+                  </p>
                 </div>
               </div>
             <% end %>
 
             <% if @kb_model.date_max %>
               <div class="row-fluid">
-                <div class="span12">
-                  <h5>
+                <div class="col-12">
+                  <p>
                     <strong>
                       Date Max:
                       <span class="project_numbers">
                   <%= @kb_model.date_max.strftime("%d %b %Y") %>
                 </span>
                     </strong>
-                  </h5>
+                  </p>
                 </div>
               </div>
             <% end %>
 
             <div class="row-fluid">
-              <div class="span12">
+              <div class="col-12">
                 <% unless @kb_model.kb_datas.empty? %>
                   <p>
                     <% arr = ["a", "b", "c", "d"] %>
@@ -82,7 +84,7 @@
                       <%= select_tag "filters[#{key}]",
                                      options_for_select(@kb_model.kb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
                                                         selected: @filters.nil? ? convert_project_category(@project, filter) : @filters[key]),
-                                     class: "string required input-xlarge filters",
+                                     class: "string required form-control filters",
                                      prompt: I18n.t(:Indifferent),
                                      disabled: !@kb_model.enabled_input %>
 
@@ -92,15 +94,16 @@
                   </p>
                 <% end %>
 
-                <h5>
+                <p>
                   <strong>
                     <%= I18n.t(:equation) %>
                   </strong>
-                </h5>
+                </p>
+
                 <p>
-            <span id="formula">
-              <%= @kb_input.formula %>
-            </span>
+                  <span id="formula">
+                    <%= @kb_input.formula %>
+                  </span>
                 </p>
 
                 <% if @kb_model.three_points_estimation %>
@@ -112,11 +115,11 @@
 
                 <% array.each do |level| %>
 
-                  <h5>
+                  <p>
                     <strong>
                       <%= I18n.t(:size) %> (<%= level.humanize %>)
                     </strong>
-                  </h5>
+                  </p>
 
                   <%
                     module_project =  current_module_project
@@ -201,17 +204,17 @@
                   <% unless @kb_model.enabled_input %>
                     <%= hidden_field_tag "size", @size %>
                     <%= text_field_tag "", convert_with_precision(@size, user_number_precision, true),
-                                       class: "string required input-xlarge",
+                                       class: "string required form-control",
                                        disabled: true  %>
                   <% else %>
-                    <%= number_field_tag "size", @size, class: "string required input-xlarge", step: "any" %>
+                    <%= number_field_tag "size", @size, class: "string required form-control", step: "any" %>
                   <% end %>
 
-                  <h5>
+                  <p>
                     <strong>
                       Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)
                     </strong>
-                  </h5>
+                  </p>
                   <% effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
 
                   <% begin
@@ -230,42 +233,42 @@
                   %>
 
                   <% unless @kb_model.enabled_input %>
-              <span id="effort_label">
-                <%= hidden_field_tag "effort", @effort %>
-                <%= text_field_tag "", convert_with_precision(@effort, user_number_precision, true),
-                                   class: "string required input-xlarge effort",
-                                   disabled: true %>
-              </span>
+                    <span id="effort_label">
+                      <%= hidden_field_tag "effort", @effort %>
+                      <%= text_field_tag "", convert_with_precision(@effort, user_number_precision, true),
+                                         class: "string required form-control effort",
+                                         disabled: true %>
+                    </span>
                   <% else %>
                     <%= number_field_tag "effort",
                                          @effort.nil? ? '' : @effort,
-                                         class: "string required input-xlarge", step: "any" %>
+                                         class: "string required form-control", step: "any" %>
                   <% end %>
                 <% end %>
 
                 <hr>
 
                 <% if module_project.previous.size > 1 %>
-                  <h5>
+                  <p>
                     <strong>
                       Benchmark
                     </strong>
-                  </h5>
+                  </p>
 
                   <% if @previous_effort %>
-                    <h5>
+                    <p>
                       <strong>
                         Effort (<%= module_project.previous.last %>)
                       </strong>
-                    </h5>
+                    </p>
                     <%= (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2) %>  <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
                     <%= hidden_field_tag "previous_effort", @previous_effort %>
 
-                    <h5>
+                    <p>
                       <strong>
                         Ecart
                       </strong>
-                    </h5>
+                    </p>
                     <!-- # Affichage de l'écart en % -->
                     <%#= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%#= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
                     <% ecart_pe_attribute = module_project.pemodule.pe_attributes.where(alias: "percent").first %>
@@ -282,205 +285,108 @@
               </div>
             </div>
           </div>
-          <div class="span9">
+          <div class="col-9">
             <div id="scatter_chart" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
             <hr>
           </div>
         </div>
         <div class="row-fluid">
-          <div class="span12">
+          <div class="col-12">
             <% if can? :execute_estimation_plan, @project %>
               <button type="submit" class="btn btn-primary button_margin_right">
                 <%= I18n.t(:calculate_button) %>
               </button>
             <% end %>
-            <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn button_margin_right pull-left", :method => "post" %>
+            <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn btn-secondary button_margin_right pull-left", :method => "post" %>
           </div>
         </div>
       <% end %>
 
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+      <script src="https://code.highcharts.com/highcharts.js"></script>
+      <script src="https://code.highcharts.com/highcharts-more.js"></script>
+      <script src="https://code.highcharts.com/modules/exporting.js"></script>
+      <script src="https://code.highcharts.com/modules/export-data.js"></script>
       <script>
-          $(document).ready(function(){
-              $(function() {
-                  chart = $('#scatter_chart').highcharts({
-                      chart: {
-                          zoomType: 'xy'
-                      },
-                      title: {
-                          text: "<%= @kb_model.name %>"
-                      },
-                      xAxis: {
-                          title: {
-                              enabled: true,
-                              text: '<%= I18n.t(:size) %>',
-                          },
-                          min: 0
-                      },
-                      yAxis: {
-                          title: {
-                              //text: 'Effort (<%= @kb_model.effort_unit %>)'
-                              text: 'Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)'
-                          },
-                          min: 0
-                      },
-                      series: [{
-                          name: '<%= I18n.t("distribution_taille_effort") %>',
-                          marker: {
-                              radius: 3
-                          },
-                          type: 'scatter',
-                          color: 'rgba(223, 83, 83, 1)',
-                          tooltip: {
-                              pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %>'
-                          },
-                          data: <%= @kb_input.values %>
-                      },{
-                          name: '<%= I18n.t("regression_lineaire") %>',
-                          marker: {
-                              radius: 0
-                          },
-                          type: 'line',
-                          color: 'rgba(200, 200, 200, 1)',
-                          data: <%= @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort %>
-
-                      },{
-                          name: '<%= I18n.t("regression_lineaire_plus_80") %>',
-                          marker: {
-                              radius: 0
-                          },
-                          type: 'line',
-                          color: 'rgba(83, 223, 83, 1)',
-                          data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort %>
-                      },{
-                          name: '<%= I18n.t("regression_lineaire_moins_80") %>',
-                          marker: {
-                              radius: 0
-                          },
-                          type: 'line',
-                          color: 'rgba(83, 223, 255, 1)',
-                          data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
-                      },{
-                          name: 'Effort précédent',
-                          marker: {
-                              radius: 5
-                          },
-                          type: 'scatter',
-                          color: 'rgba(0, 0, 0, 1)',
-                          data: <%= [
-                      [
-                        @previous_effort.nil? ? 0 : @size,
-                        @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
-                      ]
-                    ] %>
-                      },{
-                          name: '<%= I18n.t("effort_retained") %>',
-                          marker: {
-                              radius: 5
-                          },
-                          type: 'scatter',
-                          color: 'rgba(0, 0, 0, 1)',
-                          data: <%= [[@size, @effort.to_f.round(2)]] %>
-                      }]
-                  });
-              });
-              /**
-               * Sand-Signika theme for Highcharts JS
-               * @author Torstein Honsi
-               */
-
-              Highcharts.createElement('link', {
-                  href: '//fonts.googleapis.com/css?family=Signika:400,700',
-                  rel: 'stylesheet',
-                  type: 'text/css'
-              }, null, document.getElementsByTagName('head')[0]);
-
-              // Add the background image to the container
-              Highcharts.wrap(Highcharts.Chart.prototype, 'getContainer', function (proceed) {
-                  proceed.call(this);
-                  this.container.style.background = 'url(http://www.highcharts.com/samples/graphics/sand.png)';
-              });
-
-              Highcharts.theme = {
-                  colors: ["#f45b5b", "#8085e9", "#8d4654", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee", "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
-                  chart: {
-                      backgroundColor: null
-                  },
+          chart = $('#scatter_chart').highcharts({
+              chart: {
+                  zoomType: 'xy'
+              },
+              title: {
+                  text: "<%= @kb_model.name %>"
+              },
+              xAxis: {
                   title: {
-                      style: {
-                          color: 'black',
-                          fontSize: '13px',
-                          fontWeight: 'bold'
-                      }
+                      enabled: true,
+                      text: '<%= I18n.t(:size) %>',
                   },
-                  subtitle: {
-                      style: {
-                          color: 'black'
-                      }
+                  min: 0
+              },
+              yAxis: {
+                  title: {
+                      //text: 'Effort (<%= @kb_model.effort_unit %>)'
+                      text: 'Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)'
                   },
+                  min: 0
+              },
+              series: [{
+                  name: '<%= I18n.t("distribution_taille_effort") %>',
+                  marker: {
+                      radius: 3
+                  },
+                  type: 'scatter',
+                  color: 'rgba(223, 83, 83, 1)',
                   tooltip: {
-                      borderWidth: 0
+                      pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %>'
                   },
-                  legend: {
-                      itemStyle: {
-                          fontWeight: 'bold',
-                          fontSize: '13px'
-                      }
+                  data: <%= @kb_input.values %>
+              },{
+                  name: '<%= I18n.t("regression_lineaire") %>',
+                  marker: {
+                      radius: 0
                   },
-                  xAxis: {
-                      labels: {
-                          style: {
-                              color: '#6e6e70'
-                          }
-                      }
-                  },
-                  yAxis: {
-                      labels: {
-                          style: {
-                              color: '#6e6e70'
-                          }
-                      }
-                  },
-                  plotOptions: {
-                      series: {
-                          shadow: true
-                      },
-                      candlestick: {
-                          lineColor: '#404048'
-                      },
-                      map: {
-                          shadow: false
-                      }
-                  },
+                  type: 'line',
+                  color: 'rgba(200, 200, 200, 1)',
+                  data: <%= @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort %>
 
-                  // Highstock specific
-                  navigator: {
-                      xAxis: {
-                          gridLineColor: '#D0D0D8'
-                      }
+              },{
+                  name: '<%= I18n.t("regression_lineaire_plus_80") %>',
+                  marker: {
+                      radius: 0
                   },
-                  rangeSelector: {
-                      buttonTheme: {
-                          fill: 'white',
-                          stroke: '#C0C0C8',
-                          'stroke-width': 1,
-                          states: {
-                              select: {
-                                  fill: '#D0D0D8'
-                              }
-                          }
-                      }
+                  type: 'line',
+                  color: 'rgba(83, 223, 83, 1)',
+                  data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort %>
+              },{
+                  name: '<%= I18n.t("regression_lineaire_moins_80") %>',
+                  marker: {
+                      radius: 0
                   },
-                  scrollbar: {
-                      trackBorderColor: '#C0C0C8'
+                  type: 'line',
+                  color: 'rgba(83, 223, 255, 1)',
+                  data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
+              },{
+                  name: 'Effort précédent',
+                  marker: {
+                      radius: 5
                   },
-
-                  // General
-                  background2: '#E0E0E8'
-
-              };
-
-              // Apply the theme
-              Highcharts.setOptions(Highcharts.theme);
+                  type: 'scatter',
+                  color: 'rgba(0, 0, 0, 1)',
+                  data: <%= [
+              [
+                @previous_effort.nil? ? 0 : @size,
+                @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
+              ]
+            ] %>
+              },{
+                  name: '<%= I18n.t("effort_retained") %>',
+                  marker: {
+                      radius: 5
+                  },
+                  type: 'scatter',
+                  color: 'rgba(0, 0, 0, 1)',
+                  data: <%= [[@size, @effort.to_f.round(2)]] %>
+              }]
           });
 
           $(document).ready(function () {
@@ -492,9 +398,9 @@
               });
           });
 
-
       </script>
 
     </div>
   </div>
 </div>
+</section>

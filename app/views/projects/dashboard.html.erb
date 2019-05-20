@@ -17,56 +17,46 @@
               </h2>
             </div>
             <div class="tools">
-              <% mp = @project.module_projects.where(pemodule_id: initialization_module.id).first %>
+              <% mp = @project.module_projects.where(pemodule_id: @initialization_module.id).first %>
               <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >add_box</i></a>
               <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
               <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >dashboard</i></a>
             </div>
           </div>
 
-        <br>
+          <br>
 
-        <% @label_widget_hash = {} %>
-        <% @kpi_widget_hash = {} %>
-        <% @data_widget_hash = {} %>
+        <% @widgets = {} %>
         <% @project_module_projects = @project.module_projects %>
 
-        <% @project_module_projects.each do |module_project| %>
+        <%# @project_module_projects.each do |module_project| %>
+          <% module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
           <% module_project_view = module_project.view %>
           <% unless module_project_view.nil? %>
             <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
             <% module_project_view_widgets.each do |view_widget| %>
               <% if view_widget.is_label_widget? %>
                 <% view_widget_data = get_label_widget_data(view_widget.id) %>
-                <% @label_widget_hash[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
+                <% @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
               <% elsif view_widget.is_kpi_widget? %>
                 <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
-                <% @kpi_widget_hash[view_widget.name] = [view_widget, view_widget_data] %>
+                <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
               <% else %>
                 <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                  <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
                   <% if view_widget.widget_type == "text" %>
-                    <% @data_widget_hash[view_widget.name] = [view_widget, view_widget_data] %>
+                    <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                    <% value_to_show = view_widget_data[:value_to_show] %>
+                    <% @widgets[view_widget.name] = [view_widget, value_to_show] %>
                   <% end %>
                 <% else %>
                   <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
-                  <% @data_widget_hash[view_widget.name] = [view_widget, view_widget_data] %>
+                  <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
                 <% end %>
               <% end %>
             <% end %>
           <% end %>
-        <% end %>
+        <%# end %>
 
-
-        <% @label_widget_hash.each do |k| %>
-          <div class="widget-group-label">
-            <span>
-              <%= @label_widget_hash[k] %>
-            </span>
-          </div>
-        <% end %>
-
-        <% @widgets = @kpi_widget_hash.merge(@data_widget_hash) %>
         <div class="widget-list-content">
           <div class="widget-group">
             <ul class="widget-group-list">

@@ -1,5 +1,18 @@
 jQuery(function() {
 
+    $('.input-small').css('text-align', 'right');
+
+    var wbs_numbers_precision = parseInt('<%= user_number_precision %>');
+    $('.input-small').each(function(){
+        //$(this).css('text-align', 'right');
+        //$(this).val(parseFloat($(this).val()).toFixed(<%#= user_number_precision %>));
+        var element_value = $(this).val();
+        if ((element_value != "") && (element_value != undefined)) {
+            var js_element_value = element_value.replace(new RegExp(","), ".");
+            $(this).val($.number(js_element_value, 2 , ',', ' '));
+        }
+    });
+
     $('#query-columns').closest('form').submit(function(){
         $('#selected_columns option').prop('selected', true);
 

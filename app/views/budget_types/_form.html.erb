@@ -1,16 +1,16 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:budget_type) %> </a></li>
-  </ul>
+<%= I18n.t(:budget_type) %>
 
-  <div id="tabs-1">
-    <%= simple_form_for([@organization, @application, @budget_type]) do |f| %>
+    <%= simple_form_for([@organization, @budget, @application, @budget_type]) do |f| %>
+
       <%= f.error_notification %>
 
-      <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xxlarge',
+                                                                    :autofocus => (controller.action_name == 'new') } %>
 
+
+      <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
       <%= hidden_field_tag :application_id, params[:application_id] %>
+      <%= hidden_field_tag :budget_id, params[:budget_id] %>
 
       <% @organization.estimation_statuses.each do |es| %>
         <div class="row-fluid">
@@ -28,6 +28,10 @@
         </div>
       <% end %>
 
+
+
+      <%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
+
       <div class="actions-tabs">
         <% if can? :manage, BudgetType %>
           <% if action_name.in?(%w(new create)) %>
@@ -41,5 +45,3 @@
         <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-area'), :class => 'btn' %>
       </div>
     <% end %>
-  </div>
-</div>

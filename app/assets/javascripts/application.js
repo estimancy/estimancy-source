@@ -13,4 +13,6 @@
 //= require jquery_ujs
 //= require select_list_move
 //= require projects.js
+//= require poppers
 //= require main
+//= require jquery-number

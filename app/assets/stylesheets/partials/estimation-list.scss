@@ -44,8 +44,7 @@
   .estimation-table {
     box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.15);
     position: relative;
-    // max-height: 660px;
-    // overflow: auto;
+    width: 100%;
 
     & > thead > tr > th {
       font-size: 14px;

@@ -1914,6 +1914,9 @@ fr1:
   ignored_application: "Application ignorée"
 
   please_wait: "Veuillez patienter..."
+  hide_module_results: "Cacher les résultats du module"
+  show_module_results: "Afficher les résultats du module"
+  label_results: "Résultats"
 
   raw_data_extract: "Extraction de données brutes"
 

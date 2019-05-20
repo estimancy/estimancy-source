@@ -7,7 +7,7 @@
       </a>
     </div>
     <ul class="nav flex-column">
-      <% module_projects.each_with_index do |pmod, index| %>
+      <% module_projects.sort_by { |i| i.display_order }.each do |pmod| %>
         <li class="nav-item">
           <a class="nav-link <%= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>"><span>
             <%= pmod.to_s.truncate(22) %>

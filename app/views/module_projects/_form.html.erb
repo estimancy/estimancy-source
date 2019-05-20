@@ -1,96 +1,67 @@
-<div class="tabs">
+<div class="row pb-5">
+  <div class="col-12">
+<!--    <div id="tab-1">-->
+      <%#= form_tag(module_projects_reassign_path) do |f| %>
 
-  <ul>
-    <li>
-      <a href="#mp">
-        Configuration de l'instance du module
-      </a>
-    </li>
+        <%#= hidden_field_tag 'organization_id', @organization.id %>
+        <%#= hidden_field_tag 'current_mp', @module_project.id %>
 
-    <% if current_user.super_admin == true %>
-      <li>
-        <a href="#tabs-change_module_project_instance">
-          <%= I18n.t(:change_module_project_instance) %>
-        </a>
-      </li>
+        <%# if @module_project.guw_model_id != nil %>
+<!--          <label>Guw Model</label>-->
+          <%#= select_tag "guw_model_id", options_for_select(@current_organization.guw_models.map{|i| [i.name, i.id]}, selected: @module_project.guw_model_id) %>
+        <%# elsif @module_project.ge_model_id != nil %>
+<!--          <label>Ge Model</label>-->
+          <%#= select_tag "ge_model_id", options_for_select(@current_organization.ge_models.map{|i| [i.name, i.id]}, selected: @module_project.ge_model_id) %>
+        <%# elsif @module_project.kb_model_id != nil %>
+<!--          <label>Kb Model</label>-->
+          <%#= select_tag "kb_model_id", options_for_select(@current_organization.kb_models.map{|i| [i.name, i.id]}, selected: @module_project.kb_model_id) %>
+        <%# elsif @module_project.wbs_activity_id != nil %>
+<!--          <label>WBS Activity</label>-->
+          <%#= select_tag "wbs_activity_id", options_for_select(@current_organization.wbs_activities.map{|i| [i.name, i.id]}, selected: @module_project.wbs_activity_id) %>
+        <%# elsif @module_project.operation_model_id != nil %>
+<!--          <label>Operation Model</label>-->
+          <%#= select_tag "operation_model_id", options_for_select(@current_organization.operation_models.map{|i| [i.name, i.id]}, selected: @module_project.operation_model_id) %>
+        <%# elsif @module_project.staffing_model_id != nil %>
+<!--          <label>Staffing Model</label>-->
+          <%#= select_tag "staffing_model_id", options_for_select(@current_organization.staffing_models.map{|i| [i.name, i.id]}, selected: @module_project.staffing_model_id) %>
+        <%# end %>
 
-      <!--<li>-->
-        <!--<a href="#tabs-view-widgets-parameters">-->
-          <%# I18n.t(:views_widgets_parameters) %>
-        <!--</a>-->
-      <!--</li>-->
-    <% end %>
-  </ul>
+        <%#= submit_tag I18n.t('save'), :class => 'btn ' %>
+        <%#= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
+      <%# end %>
+<!--    </div>-->
 
-  <% if current_user.super_admin == true %>
-    <div id="tabs-change_module_project_instance">
-      <div id="current_mp">
-        <%= form_tag(module_projects_reassign_path) do |f| %>
+    <div id="tab-2">
+      <%= form_tag(associate_module_projects_inputs_outputs_path) do |f| %>
 
-          <%= hidden_field_tag 'organization_id', @organization.id %>
-          <%= hidden_field_tag 'current_mp', @module_project.id %>
+        <label>Ordre d'affichage</label>
+        <%= text_field_tag "display_order", @module_project.display_order %>
 
-          <% if @module_project.guw_model_id != nil %>
-              <label>Guw Model</label>
-              <%= select_tag "guw_model_id", options_for_select(@current_organization.guw_models.map{|i| [i.name, i.id]}, selected: @module_project.guw_model_id) %>
-          <% elsif @module_project.ge_model_id != nil %>
-              <label>Ge Model</label>
-              <%= select_tag "ge_model_id", options_for_select(@current_organization.ge_models.map{|i| [i.name, i.id]}, selected: @module_project.ge_model_id) %>
-          <% elsif @module_project.kb_model_id != nil %>
-              <label>Kb Model</label>
-              <%= select_tag "kb_model_id", options_for_select(@current_organization.kb_models.map{|i| [i.name, i.id]}, selected: @module_project.kb_model_id) %>
-          <% elsif @module_project.wbs_activity_id != nil %>
-              <label>WBS Activity</label>
-              <%= select_tag "wbs_activity_id", options_for_select(@current_organization.wbs_activities.map{|i| [i.name, i.id]}, selected: @module_project.wbs_activity_id) %>
-          <% elsif @module_project.operation_model_id != nil %>
-              <label>Operation Model</label>
-              <%= select_tag "operation_model_id", options_for_select(@current_organization.operation_models.map{|i| [i.name, i.id]}, selected: @module_project.operation_model_id) %>
-          <% elsif @module_project.staffing_model_id != nil %>
-              <label>Staffing Model</label>
-              <%= select_tag "staffing_model_id", options_for_select(@current_organization.staffing_models.map{|i| [i.name, i.id]}, selected: @module_project.staffing_model_id) %>
-          <% end %>
+        <%= hidden_field_tag 'mp', @module_project.id %>
 
-          <%= submit_tag I18n.t('save'), :class => 'btn ' %>
-          <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
-        <% end %>
-      </div>
-    </div>
-
-    <!--<div id="tabs-view-widgets-parameters">-->
-      <%# render partial: "module_projects/views_and_widgets", object: @module_project %>
-    <!--</div>-->
-  <% end %>
-
-
-
-  <div id="mp">
-    <%= form_tag(associate_module_projects_inputs_outputs_path) do |f| %>
-
-      <%= hidden_field_tag 'mp', @module_project.id %>
-
-      <% effort_ids = [] %>
+        <% effort_ids = [] %>
         <% output_attribute_ids = [] %>
         <% module_project_attributes = @module_project.pemodule.pe_attributes %>
 
         <% case @module_project.pemodule.alias  %>
-        <% when "effort_breakdown" %>
-            <% effort_ids = module_project_attributes.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+      <% when "effort_breakdown" %>
+          <% effort_ids = module_project_attributes.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
         <% when "ge" %>
-            <% effort_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-            <% output_attribute_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+          <% effort_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
+          <% output_attribute_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
         <% when "staffing" %>
-            <% staffing_input_pe_attributes = module_project_attributes.includes(:attribute_modules).where(:attribute_modules => { in_out: ['input', 'output', 'both'] }).all %>
-            <% effort_ids = staffing_input_pe_attributes.map(&:id).flatten %>
+          <% staffing_input_pe_attributes = module_project_attributes.includes(:attribute_modules).where(:attribute_modules => { in_out: ['input', 'output', 'both'] }).all %>
+          <% effort_ids = staffing_input_pe_attributes.map(&:id).flatten %>
         <% when "kb" %>
-            <% effort_ids = module_project_attributes.where(alias: Kb::KbModel::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+          <% effort_ids = module_project_attributes.where(alias: Kb::KbModel::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% when "skb" %>
-            <% effort_ids = module_project_attributes.where(alias: Skb::SkbModel::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+          <% effort_ids = module_project_attributes.where(alias: Skb::SkbModel::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% when "expert_judgement" %>
-            <% effort_ids = module_project_attributes.where(alias: ExpertJudgement::Instance::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+          <% effort_ids = module_project_attributes.where(alias: ExpertJudgement::Instance::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% when "operation" %>
-            <% effort_ids = module_project_attributes.where(operation_model_id: @module_project.operation_model_id).map(&:id).flatten %>
+          <% effort_ids = module_project_attributes.where(operation_model_id: @module_project.operation_model_id).map(&:id).flatten %>
         <% else %>
-            <% effort_ids = module_project_attributes.where(alias: Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
+          <% effort_ids = module_project_attributes.where(alias: Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% end %>
 
         <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
@@ -101,53 +72,54 @@
            end
         %>
 
-      <h5><%= I18n.t(:associate_inputs_with_outputs, current_mp: @module_project) %> <br></h5>
-      <% guw_preceding_module_project = @module_project.preceding.select{ |i| i.pemodule.alias == "guw" }.last %>
-      <% guw_outputs_estimation_values = guw_preceding_module_project.nil? ? [] : guw_preceding_module_project.estimation_values.where(in_out: "output") %>
+        <h5><%= I18n.t(:associate_inputs_with_outputs, current_mp: @module_project) %> <br></h5>
+        <% guw_preceding_module_project = @module_project.preceding.select{ |i| i.pemodule.alias == "guw" }.last %>
+        <% guw_outputs_estimation_values = guw_preceding_module_project.nil? ? [] : guw_preceding_module_project.estimation_values.where(in_out: "output") %>
 
-      <% unless current_evs.all.empty? %>
-        <% current_evs.each do |cev| %>
+        <% unless current_evs.all.empty? %>
+          <% current_evs.each do |cev| %>
 
-          <% cev_attribute = cev.pe_attribute %>
-          <%# cev_attr_possible_module_projects = @module_project.possible_previous_mp_for_attribute(cev_attribute) %>
-          <% cev_attr_possible_module_projects = @module_project.preceding.reject { |i| i.pemodule.alias == "initialization" } %>
+            <% cev_attribute = cev.pe_attribute %>
+            <%# cev_attr_possible_module_projects = @module_project.possible_previous_mp_for_attribute(cev_attribute) %>
+            <% cev_attr_possible_module_projects = @module_project.preceding.reject { |i| i.pemodule.alias == "initialization" } %>
 
-          <% if cev_attr_possible_module_projects.nil? || cev_attr_possible_module_projects.empty? %>
-                <% cev_attr_possible_module_projects = guw_preceding_module_project.nil? ? [] : [guw_preceding_module_project] %>
-          <% end %>
+            <% if cev_attr_possible_module_projects.nil? || cev_attr_possible_module_projects.empty? %>
+              <% cev_attr_possible_module_projects = guw_preceding_module_project.nil? ? [] : [guw_preceding_module_project] %>
+            <% end %>
 
-          <% if !cev.associated_estimation_value.nil?
-               preceding_mp = ModuleProject.find(cev.associated_estimation_value.module_project_id)
-               preceding_outputs_estimation_values = preceding_mp.estimation_values.where(in_out: "output")
-             end
+            <% if !cev.associated_estimation_value.nil?
+                 preceding_mp = ModuleProject.find(cev.associated_estimation_value.module_project_id)
+                 preceding_outputs_estimation_values = preceding_mp.estimation_values.where(in_out: "output")
+               end
 
-             if preceding_outputs_estimation_values.nil?
-                preceding_outputs_estimation_values = [] #guw_outputs_estimation_values
-             end
-          %>
+               if preceding_outputs_estimation_values.nil?
+                 preceding_outputs_estimation_values = [] #guw_outputs_estimation_values
+               end
+            %>
 
-          <div class="row-fluid">
-            <div class="span2">
-              <p>
-                <%= "Modules" %> <br>
-                <% selected_module_project = cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil? %>
-                <%= select_tag "preceding_module_project[#{cev.id}]", options_for_select(cev_attr_possible_module_projects.map{|mp| [mp.to_s, mp.id]}, selected: (cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil?)), :include_blank => true %>
-              </p>
+            <div class="row-fluid">
+              <div class="span2">
+                <p>
+                  <%= "Modules" %> <br>
+                  <% selected_module_project = cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil? %>
+                  <%= select_tag "preceding_module_project[#{cev.id}]", options_for_select(cev_attr_possible_module_projects.map{|mp| [mp.to_s, mp.id]}, selected: (cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil?)), :include_blank => true %>
+                </p>
+              </div>
+
+              <div class="span2">
+                <p>
+                  <%= cev %><br>
+                  <%#= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id), :include_blank => true %>
+                  <%= select_tag "preceding[#{cev.id}]", options_for_select(preceding_outputs_estimation_values.map{|i| [i.pe_attribute.name, i.id] unless i.pe_attribute.nil? }, selected: cev.estimation_value_id), :include_blank => true %>
+                </p>
+              </div>
             </div>
 
-            <div class="span2">
-              <p>
-                <%= cev %><br>
-                <%#= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id), :include_blank => true %>
-                <%= select_tag "preceding[#{cev.id}]", options_for_select(preceding_outputs_estimation_values.map{|i| [i.pe_attribute.name, i.id] unless i.pe_attribute.nil? }, selected: cev.estimation_value_id), :include_blank => true %>
-              </p>
-            </div>
-          </div>
-
-          <script>
-            // Update the view_widget attribute according to the selected module
-            $('#<%= "preceding_module_project_#{cev.id}" %>').change(function() {
-                //if ($(this).val() !== "undefined"){
+            <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+            <script>
+                // Update the view_widget attribute according to the selected module
+                $('#<%= "preceding_module_project_#{cev.id}" %>').change(function() {
+                    //if ($(this).val() !== "undefined"){
                     return $.ajax({
                         url: "/update_associated_estimation_values_data",
                         method: "GET",
@@ -157,19 +129,18 @@
                             current_estimation_value_id: <%= cev.id %>
                         }
                     });
-                //}
-            });
-          </script>
+                    //}
+                });
+            </script>
 
+          <% end %>
+
+          <br>
+          <%= submit_tag I18n.t('save'), class: "btn btn-primary" %>
+          <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
         <% end %>
-
-        <br>
-        <%= submit_tag I18n.t('save'), class: "btn btn-primary" %>
-        <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
       <% end %>
-    <% end %>
-
+    </div>
   </div>
-
 </div>
 

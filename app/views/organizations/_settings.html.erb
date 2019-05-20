@@ -1,6 +1,7 @@
 <div class="tabs">
   <ul>
     <li><a href="#tabs-applications"><%= I18n.t(:applications) %></a></li>
+    <li><a href="#tabs-budgets"><%= I18n.t(:budget) %></a></li>
     <li><a href="#tabs-project-areas"><%= I18n.t(:project_areas) %></a></li>
     <li><a href="#tabs-acquisition-categories"><%= I18n.t(:acquisition_categories) %></a></li>
     <li><a href="#tabs-platform-categories"><%= I18n.t(:platform_categories) %></a></li>
@@ -85,8 +86,8 @@
             </td>
             <td class="center">
               <% if can? :manage, Application %>
-                <%= link_to '', edit_organization_application_path(@organization, app), :class => 'icon-pencil' %>
-                <%= link_to '', organization_application_path(@organization, app), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to 'Editer', edit_organization_application_path(@organization, app), :class => 'icon-pencil' %> |
+                <%= link_to 'Supprimer', organization_application_path(@organization, app), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -96,6 +97,46 @@
     <% else %>
       <div class="red_color"><%= I18n.t(:notice_cannot_view_applications) %></div>
     <% end %>
+  </div>
+
+  <div id="tabs-budgets">
+    <% if can? :manage, Application %>
+      <%= link_to I18n.t('create_button'), new_organization_budget_path(@organization), :class => 'btn' %>
+    <% end %>
+
+    <br>
+
+    <table id="table_list_2" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th><%= I18n.t('name') %></th>
+        <th><%= "Montant" %></th>
+        <th><%= "Date début" %></th>
+        <th><%= "Date fin" %></th>
+        <th class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+        <% @organization.budgets.each do |b| %>
+          <% sum = 0.0 %>
+          <tr>
+            <td class="center"><%= b.name %></td>
+              <% unless b.sum.nil? %>
+                <td class="center"><%= b.sum %><%= " €" %></td>
+              <% else %>
+                <td> </td>
+              <% end %>
+            <td class="center"><%= b.start_date %></td>
+            <td class="center"><%= b.end_date %></td>
+              <td class="center">
+              <%= link_to 'Editer', edit_organization_budget_path(@organization, b), :class => 'icon-pencil' %>
+              <%= link_to 'Supprimer', organization_budget_path(@organization, b), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
   </div>
 
   <div id="tabs-project-areas">
@@ -145,9 +186,9 @@
             <td><%= pa.name %></td>
             <td><%= pa.description %></td>
             <td class="center">
-              <%= link_to '', edit_organization_project_area_path(@organization, pa), :class => 'icon-pencil' %>
+              <%= link_to 'Editer', edit_organization_project_area_path(@organization, pa), :class => 'icon-pencil' %> |
               <% if can? :manage, ProjectArea %>
-                  <%= link_to '', organization_project_area_path(@organization, pa), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                  <%= link_to 'Supprimer', organization_project_area_path(@organization, pa), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -158,7 +199,6 @@
       <div class="red_color"><%= I18n.t(:notice_cannot_view_project_areas) %></div>
     <% end %>
   </div>
-
 
   <div id="tabs-project-categories">
     <% if can? :show_project_categories, ProjectCategory %>
@@ -207,9 +247,9 @@
             <td><%= i.name %></td>
             <td><%= i.description %></td>
             <td class="center">
-              <%= link_to '', edit_organization_project_category_path(@organization, i), :class => 'icon-pencil' %>
+              <%= link_to 'Editer', edit_organization_project_category_path(@organization, i), :class => 'icon-pencil' %> |
               <% if can? :manage, ProjectCategory %>
-                  <%= link_to '', organization_project_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                  <%= link_to 'Supprimer', organization_project_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -267,9 +307,9 @@
             <td><%= i.name %></td>
             <td><%= i.description %></td>
             <td class="center">
-              <%= link_to '', edit_organization_platform_category_path(@organization, i), :class => 'icon-pencil' %>
+              <%= link_to 'Editer', edit_organization_platform_category_path(@organization, i), :class => 'icon-pencil' %> |
               <% if can? :manage, PlatformCategory %>
-                  <%= link_to '', organization_platform_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                  <%= link_to 'Supprimer', organization_platform_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -326,9 +366,9 @@
             <td><%= i.name %></td>
             <td><%= i.description %></td>
             <td class="center">
-              <%= link_to '', edit_organization_acquisition_category_path(@organization, i), :class => 'icon-pencil' %>
+              <%= link_to 'Editer', edit_organization_acquisition_category_path(@organization, i), :class => 'icon-pencil' %>
               <% if can? :manage, AcquisitionCategory %>
-                  <%= link_to '',  organization_acquisition_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                  <%= link_to 'Supprimer',  organization_acquisition_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -360,9 +400,9 @@
               <td><%= field.name %></td>
               <td><%= field.coefficient %></td>
               <td class="center span3">
-                <%= link_to '', edit_organization_field_path(@organization, field), :class => 'icon-pencil' %>
+                <%= link_to 'Editer', edit_organization_field_path(@organization, field) %> |
                 <% if can? :manage, Field %>
-                    <%= link_to '', field, method: :delete, data: { confirm: 'Are you sure?' }, :class => 'icon-trash', :title => I18n.t('delete') %>
+                    <%= link_to 'Supprimer', field, method: :delete, data: { confirm: 'Are you sure?' }, :title => I18n.t('delete') %>
                 <% end %>
               </td>
             </tr>
@@ -465,9 +505,9 @@
               <tr>
                 <td><%= pr.name %></td>
                 <td class="center">
-                  <%= link_to '', edit_organization_provider_path(@organization, pr), :class => 'icon-pencil' %>
+                  <%= link_to 'Editer', edit_organization_provider_path(@organization, pr), :class => 'icon-pencil' %> |
                   <% if can? :manage, Provider %>
-                      <%= link_to '', organization_provider_path(@organization, pr), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                      <%= link_to 'Supprimer', organization_provider_path(@organization, pr), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
                   <% end %>
                 </td>
               </tr>

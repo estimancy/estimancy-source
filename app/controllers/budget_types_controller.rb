@@ -1,5 +1,14 @@
 class BudgetTypesController < ApplicationController
 
+  def index
+    @organization = Organization.find(params[:organization_id])
+    @application = Application.find(params[:application_id])
+    @budget = Budget.find(params[:budget_id])
+    @budget_types = BudgetType.where(organization_id: @organization.id,
+                                     application_id: @application.id,
+                                     budget_id: @budget.id).all
+  end
+
   def new
     authorize! :manage, BudgetType
 
@@ -8,15 +17,17 @@ class BudgetTypesController < ApplicationController
     @budget_type = BudgetType.new
     @organization = Organization.find(params[:organization_id])
     @application = Application.find(params[:application_id])
-
+    @budget = Budget.find(params[:budget_id])
   end
 
   def edit
     authorize! :show_budget_types, BudgetType
 
-    @budget_type = BudgetType.find(params[:id])
     @organization = Organization.find(params[:organization_id])
     @application = Application.find(params[:application_id])
+    @budget = Budget.find(params[:budget_id])
+
+    @budget_type = BudgetType.find(params[:id])
 
     set_page_title I18n.t(:budget_type)
     set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type"), I18n.t('budget_type') => ""
@@ -28,10 +39,13 @@ class BudgetTypesController < ApplicationController
     set_page_title I18n.t(:budget_type)
     set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type"), I18n.t('budget_type') => ""
 
-    @budget_type = BudgetType.new(params[:budget_type])
     @organization = Organization.find(params[:organization_id])
     @application = Application.find(params[:application_id])
+    @budget = Budget.find(params[:budget_id])
+
+    @budget_type = BudgetType.new(params[:budget_type])
     @budget_type.application_id = @application.id
+    @budget_type.budget_id = @budget.id
 
     if @budget_type.save
 

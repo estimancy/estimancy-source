@@ -61,16 +61,7 @@
 
 %>
 
-  <div style="flex: 1">
-    <h2>
-      <%= @project.to_s %>
-      <small style="color: <%= @project.status_background_color %>">
-        <b>
-          <%= @project.estimation_status.to_s %>
-        </b>
-      </small>
-    </h2>
-  </div>
+  <%= render partial: 'projects/dashboard_project_title', locals: { module_project: current_module_project } %>
 
   <%= simple_form_for @staffing_custom_data, url: staffing.save_data_path(custom_data: @staffing_custom_data.id), method: :post do |f| %>
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
@@ -102,16 +93,16 @@
               <div class="col-9 pl-6">
                 <div class="edition-bloc-slider">
                   <span class="edition-bloc-slider-value"></span>
-                  <div role="wrapper" class="gj-slider gj-slider-md">
-                    <input name='percents' id="percent" min="50" max="200" class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent %>">
-                  </div>
+                  <input name='percents' id="percent" class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent %>">
                   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
                   <script>
                       $(document).ready(function(){
                           $('.edition-bloc-slider-slider').slider({
                               slide: function (e, value) {
                                   $('.edition-bloc-slider-value').text(value);
-                              }
+                              },
+                              min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range %>,
+                              max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range %>
                           });
                       });
                   </script>
@@ -292,7 +283,7 @@
                 set_staffing_values({
                     min: "<%= @staffing_model.min_range %>",
                     max: "<%= @staffing_model.max_range %>",
-                    from: "<%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>",
+                    from: $('#percent').val(),
                     grid: true,
                     postfix: "%"
                 });
@@ -328,11 +319,11 @@
                 $(".new_duration").val(new_duration.toFixed(2));
 
                 x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
-                    x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
-                        x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
-                            x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
-                                y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
-                                    y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
+                x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
+                x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
+                x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
+                y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
+                y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
 
                 var new_staffing_trapeze = (2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;
 
@@ -371,7 +362,6 @@
     <% rescue Exception => e %>
       <%= e %>
     <% end %>
-
         <script>
             refresh_chart();
             function refresh_chart() {
@@ -444,9 +434,9 @@
 //          enabled: false
 //        }
 //      }]
-                });
-            }
-        </script>
+            });
+        }
+    </script>
   </section>
-  <% end %>
+<% end %>
 

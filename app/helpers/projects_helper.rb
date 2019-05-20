@@ -23,6 +23,23 @@
 module ProjectsHelper
   include ActionView::Helpers::NumberHelper
 
+  def color_bt(bts)
+    results = []
+    bts.each do |bt|
+      if bt == "Engagés"
+        results << "#AA3939"
+      elsif bt == "Engagés 1"
+        results << "#0D4656"
+      elsif bt == "Engagés 2"
+        results << "#253368"
+      elsif bt == "Engagés 3"
+        results << "#997629"
+      end
+    end
+    results
+  end
+
+
   # This helper method will display Estimation Result according the estimation purpose (PBS and/or Activities)
   def display_results
     res = String.new
@@ -213,7 +230,7 @@ module ProjectsHelper
   #Conversion en fonction de la précision en params uniquement #> 12.12300 (si precision = 5) ou 12.12 si (si precision = 2)
   def convert_with_precision(value, precision, delimiter = false)
     begin
-      v = number_with_precision(value, precision: precision.to_i, locale: :fr, delimiter: delimiter ? I18n.t('number.format.delimiter') : '')
+      v = number_with_precision(value, precision: precision.to_i, locale: :fr, delimiter: delimiter ? I18n.l('number.format.delimiter') : '')
     rescue
       begin
         v = "%.#{precision}f" % value

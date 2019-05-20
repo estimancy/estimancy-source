@@ -1874,4 +1874,7 @@ en-gb:
   ignored_application: "Ignored application"
 
   please_wait: "Veuillez patienter..."
+  hide_module_results: "Hide module results"
+  show_module_results: "Show module results"
+  label_results: "Results"
 

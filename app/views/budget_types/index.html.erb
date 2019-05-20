@@ -1,0 +1,38 @@
+<%= I18n.t(:budget_type) %>
+
+<div class="group_button">
+  <%= link_to I18n.t('create_button'), new_organization_budget_application_budget_type_path(@organization, @budget, @application), :class => 'btn btn-primary' %>
+</div>
+
+<table id="table_list_1" class="table">
+  <thead>
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:color) %></th>
+        <th  class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+  </thead>
+
+  <tbody>
+  <% @budget_types.each do |budget_type| %>
+      <tr>
+        <td><%= budget_type.name %></td>
+        <td><%= budget_type.color %></td>
+        <td class="center">
+          <%= link_to 'Supprimer', organization_budget_application_budget_type_path(@organization, @budget, @application, budget_type), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+          <%= link_to 'Editer', edit_organization_budget_application_budget_type_path(@organization, @budget, @application, budget_type), :class => 'icon-pencil', :title => I18n.t('edit') %>
+        </td>
+      </tr>
+  <% end %>
+  <%= render :partial => 'layouts/footer_table' %>
+  </tbody>
+</table>
+
+
+
+
+
+
+
+
+

@@ -1,14 +1,6 @@
 <section class="estimation-modules-edition ge-model-estimation">
-  <div style="flex: 1">
-    <h2>
-      HAHA - 1.0
-      <small style="color: #f89406">
-        <b>
-          <%= @project.estimation_status %>
-        </b>
-      </small>
-    </h2>
-  </div>
+
+  <%= render partial: 'projects/dashboard_project_title', locals: { module_project: current_module_project } %>
 
   <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
 
@@ -20,7 +12,8 @@
       </h4>
 
       <div class="effort-bloc">
-        <ul class="nav nav-pills tabs">
+        <!--<ul class="nav nav-pills tabs">-->
+        <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
           <% index = 0 %>
           <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
             <% factor_values_per_type.each do |type, factor_values| %>
@@ -39,7 +32,7 @@
                 <% else %>
                   <% index = index + 1 %>
                   <li class="nav-item">
-                    <a class="nav-link <%= (index == 1) ? 'active' : '' %>" href="#pills-<%= type.downcase.gsub(" ", "-") %>" id="pills-<%= type.downcase.gsub(" ", "-") %>-tab" role="tab"><%= type.downcase.gsub(" ", "-") %></a>
+                    <a class="nav-link <%= (index == 1) ? 'active' : '' %>" data-toggle="pill" href="#pills-<%= type.downcase.gsub(" ", "-") %>" id="pills-<%= type.downcase.gsub(" ", "-") %>-tab" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>"><%= type.downcase.gsub(" ", "-") %></a>
                   </li>
                 <% end %>
               <% end %>
@@ -65,7 +58,7 @@
                   <% end %>
                 <% else %>
                   <% index = index + 1 %>
-                  <div class="tab-pane fade show <%= (index == 1) ? 'active' : '' %>" id="pills-<%= type.downcase.gsub(" ", "-") %>" role="tabpanel" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab">
+                  <div class="tab-pane fade show <%= (index == 1) ? 'active' : '' %>" id="pills-<%= type.downcase.gsub(" ", "-") %>" role="tabpanel" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab">
                     <div class="card card-widget">
                       <div class="card-body">
                         <div class="effort-table">
@@ -77,7 +70,7 @@
                                 <% end %>
                               <% elsif values.length > 1 %>
                                 <% ge_factor = values[0].ge_factor %>
-                                <div class="col-2">
+                                <div class="col-4">
                                   <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
                                     <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank", title: ge_factor.long_name %>
                                   <% else %>
@@ -110,62 +103,106 @@
                                   <div class="edition-bloc-slider">
                                     <span class="edition-bloc-slider-value-<%= key %>"></span>
                                     <div role="wrapper" class="gj-slider gj-slider-md">
-                                      <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %>" value="" />
+                                      <% slide_current_value =  selected_value.nil? ? default_value : selected_value %>
+                                      <% slide_min_value =  ids_list.first %>
+                                      <% slide_max_value =  ids_list.last %>
+                                      <%#= hidden_field_tag("#{scale_prod}_factor[#{key}]", default_value) %>
+                                      <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %> factor-slider" value="" />
+
                                     </div>
                                     <script>
                                         $(document).ready(function(){
+                                            var data_ids = <%= raw ids_list.to_json.html_safe %> ;
+                                            var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
+                                            var value_from = parseInt(<%= selected_value %>);  //parseInt(<%#= ids_list.index(selected_value) %>);
+                                            var default_value = parseInt(<%= default_value %>);
+                                            var ids_length = data_ids["length"];
+                                            var slide_current_value = parseInt(<%= slide_current_value %>);
+                                            var min_value = parseInt(<%= slide_min_value %>);
+                                            var max_value = parseInt(<%= slide_max_value %>);
+
+                                            //console.log("slide_selected_value = "+ value_from);
+                                            //console.log("slide_default_value = "+ default_value);
+                                            //console.log("slide_current_value = "+ slide_current_value);
+
+                                            <!-- Get the default value if value_from is NaN -->
+                                            if(isNaN(value_from)){
+                                                value_from = default_value;
+                                            }
+
                                             $('.edition-bloc-slider-slider-<%= key %>').slider({
+                                                range: true,
+                                                min: min_value,
+                                                max: max_value,
+                                                values: data_ids,
+                                                value: slide_current_value,
+
                                                 slide: function (e, value) {
-                                                    $('.edition-bloc-slider-value-<%= key %>').text(value);
+                                                    $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[value]);
                                                 }
                                             });
+
+                                            $('#<%= "factor_#{key}" %>').on("change", function(data){
+                                                //When value change, need to calculate again the Person Month effort value
+                                                //console.log("Action: " + $('form#ge_form').attr('action'));
+                                                //console.log("Params: " + $('form#ge_form').serialize());
+
+                                                var valuesToSubmit = $('form#ge_form').serialize();
+                                                $.ajax({
+                                                    type: "POST",
+                                                    //url: $('form#ge_form').attr('action'), //given url of the form
+                                                    url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
+                                                    data: valuesToSubmit,
+                                                    dataType: "script",
+                                                    format: "js",
+                                                    cache: true
+                                                });
+                                                return false;
+                                            })
+
                                         });
                                     </script>
                                   </div>
 
                                   <hr>
                                 </div>
+
                                 <script type="text/javascript">
-
-                                    var data_ids = <%= raw ids_list.to_json.html_safe %> ;
-                                    var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
-                                    var value_from = parseInt(<%= ids_list.index(selected_value) %>);
-                                    var default_value = parseInt(<%= ids_list.index(default_value) %>);
-
-                                    <!-- Get the default value if value_from is NaN -->
-                                    if(isNaN(value_from)){
-                                        value_from = default_value;
-                                    }
-
-                                    $('#<%= "factor_#{key}" %>').ionRangeSlider({
-                                        values: data_ids, //Array of factor_values ids
-                                        from: value_from,
-                                        grid: true,
-                                        hide_min_max: true,
-                                        prettify: function (num) {
-                                            return data_text_hash[num];
-                                        },
-
-                                        //When value change, need to calculate again the Person Month effort value
-                                        onFinish: function (data) {
-                                            //console.log("Action: " + $('form#ge_form').attr('action'));
-                                            //console.log("Params: " + $('form#ge_form').serialize());
-
-                                            var valuesToSubmit = $('form#ge_form').serialize();
-                                            $.ajax({
-                                                type: "POST",
-                                                //url: $('form#ge_form').attr('action'), //given url of the form
-                                                url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
-                                                data: valuesToSubmit,
-                                                dataType: "script",
-                                                format: "js",
-                                                cache: true
-                                            });
-                                            return false;
-                                        }
-                                    });
-
+//                                    var data_ids = <%#= raw ids_list.to_json.html_safe %> ;
+//                                    var data_text_hash = <%#= raw js_factor_data.to_json.html_safe %>;
+//                                    var value_from = parseInt(<%#= ids_list.index(selected_value) %>);
+//                                    var default_value = parseInt(<%#= ids_list.index(default_value) %>);
+//                                    var ids_length = data_ids["length"];
+//
+//                                    $('#<%#= "factor_#{key}" %>').ionRangeSlider({
+//                                        values: data_ids, //Array of factor_values ids
+//                                        from: value_from,
+//                                        grid: true,
+//                                        hide_min_max: true,
+//                                        prettify: function (num) {
+//                                            return data_text_hash[num];
+//                                        },
+//
+//                                        //When value change, need to calculate again the Person Month effort value
+//                                        onFinish: function (data) {
+//                                            //console.log("Action: " + $('form#ge_form').attr('action'));
+//                                            //console.log("Params: " + $('form#ge_form').serialize());
+//
+//                                            var valuesToSubmit = $('form#ge_form').serialize();
+//                                            $.ajax({
+//                                                type: "POST",
+//                                                //url: $('form#ge_form').attr('action'), //given url of the form
+//                                                url: '<%#= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
+//                                                data: valuesToSubmit,
+//                                                dataType: "script",
+//                                                format: "js",
+//                                                cache: true
+//                                            });
+//                                            return false;
+//                                        }
+//                                    });
                                 </script>
+
                               <% end %>
                             <% end %>
                           </div>
@@ -183,7 +220,7 @@
 
     <br>
     <div class="row">
-      <div class="col">
+      <div class="col-6">
 
         <% ge_effort_size_translation = { "effort" => I18n.t(:ge_effort), "retained_size" => I18n.t(:ge_size) } %>
         <% ["ent1", "ent2", "ent3", "ent4"].each_with_index do |input, index|
@@ -327,25 +364,17 @@
         <% end %>
 
 
-        <table class="table estimation-table">
-          <tr>
-            <% if @ge_model.three_points_estimation == true %>
-              <th><%= I18n.t(:bottom)%></th>
-            <% end %>
-            <th><%= I18n.t(:probable)%></th>
-            <% if @ge_model.three_points_estimation == true %>
-              <th><%= I18n.t(:top)%></th>
-            <% end %>
-          </tr>
-
-          <tr>
+        <div class="table estimation-table">
+          <% ev_for_input_unit = current_inputs_evs.first %>
+          <div>
             <!--  TEST NOUVEAU PARAMS ENTREES  -->
             <% if current_module_project.ge_model.three_points_estimation? %>
-              <td>
-                <%= ge_effort_size_translation[ev.pe_attribute.alias] %>
-              </td>
-              <td>
+              <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
                 <div class="row">
+                  <div class="col">
+                    <b><%= I18n.t(:bottom)%> </b> <%= "(#{get_ge_model_value_unit(@ge_model, ev_for_input_unit)})" %>
+                  </div>
+
                   <% if current_inputs_evs.empty? %>
                     <%= "Le module ne contient aucun attribut" %>
                   <% else %>
@@ -360,20 +389,18 @@
                             <%= hidden_field_tag "retained_size_low[#{ev.id}]", entry_low_value %>
                             <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, class: "form-control" %>
                         <% end %>
-                        <%= get_ge_model_value_unit(@ge_model, ev) %>
                       </div>
                     <% end %>
                   <% end %>
                 </div>
-              </td>
             <% end %>
 
-            <td>
-              Inputs
-            </td>
 
-            <td>
-              <div class="row">
+            <div class="row">
+              <div class="col">
+                <b><%= I18n.t(:probable)%> </b> <%= "(#{get_ge_model_value_unit(@ge_model, ev_for_input_unit)})" %>
+              </div>
+
                 <% if current_inputs_evs.empty? %>
                   <%= "Le module ne contient aucun attribut" %>
                 <% else %>
@@ -382,25 +409,21 @@
                     <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
                       <div class="col">
                         <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                          <%= number_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", class: "form-control" %>
+                          <%= number_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any",  class: "form-control" %>
                         <% else %>
                           <%= hidden_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value %>
                           <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, class: "form-control" %>
                       <% end %>
-                        <%= get_ge_model_value_unit(@ge_model, ev) %>
                       </div>
                   <% end %>
                 <% end %>
-              </div>
-            </td>
+            </div>
 
             <% if current_module_project.ge_model.three_points_estimation? %>
-              <td>
-                Input
-              </td>
-
-              <td>
                 <div class="row">
+                  <div class="col">
+                    <b><%= I18n.t(:top)%> </b> <%= "(#{get_ge_model_value_unit(@ge_model, ev_for_input_unit)})" %>
+                  </div>
                   <% if current_inputs_evs.empty? %>
                       <%= "Le module ne contient aucun attribut" %>
                   <% else %>
@@ -415,17 +438,15 @@
                             <%= hidden_field_tag "retained_size_high[#{ev.id}]", entry_high_value %>
                             <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, class: "form-control" %>
                           <% end %>
-
-                          <%= get_ge_model_value_unit(@ge_model, ev) %>
                         </div>
                     <% end %>
                   <% end %>
                 </div>
-              </td>
             <% end %>
-          </tr>
-        </table>
+          </div>
+        </div>
       </div>
+
 
       <div class="col-6">
         <% attr = current_module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
@@ -450,27 +471,39 @@
           </b>
         </h4>
 
-        <table class="table estimation-table">
-          <tr>
-            <%# if @ge_model.three_points_estimation == true %>
-<!--              <th><%#= I18n.t(:bottom)%></th>-->
-            <%# end %>
-            <th><%= I18n.t(:probable)%></th>
-            <%# if @ge_model.three_points_estimation == true %>
-<!--              <th><%#= I18n.t(:top)%></th>-->
-            <%# end %>
-<!--            <th>-->
-              <%#= I18n.t(:ratio) %>
-<!--            </th>-->
-          </tr>
-
+        <div class="table estimation-table">
           <!--  NOUVEAU PARAMS SORTIE  -->
-          <tr>
-
-<!--            <td>-->
-              <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
+          <div>
+<!--            <td>--> <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
 <!--            </td>-->
+            <% ev_for_output_unit = current_outputs_evs.first %>
+            <% if @ge_model.three_points_estimation == true %>
+                <div class="row">
+                  <div class="col">
+                    <b><%= I18n.t(:bottom) %> </b> <%= "(#{get_ge_model_value_unit(@ge_model, ev_for_output_unit)})" %>
+                  </div>
+                  <% current_outputs_evs.each do |ev| %>
+                      <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
+                        <div class="col">
+                          <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
+
+                          <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
+                              <%= number_field_tag "effort_low[#{ev.id}]", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}", class: "form-control" %>
+                          <% else %>
+                              <%= hidden_field_tag "effort_low[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_low")[component_id]) %>
+                              <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "form-control", disabled: true %>
+                          <% end %>
+                        </div>
+
+                  <% end %>
+                </div>
+            <% end %>
+
+
               <div class="row">
+                <div class="col">
+                    <b><%= I18n.t(:probable)%> </b> <%= "(#{get_ge_model_value_unit(@ge_model, ev_for_output_unit)})" %>
+                </div>
                 <% current_outputs_evs.each do |ev| %>
                   <% unless ev.nil? %>
                     <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
@@ -479,23 +512,21 @@
                             <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil:  convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control" %>
                         <% else %>
                             <%= hidden_field_tag "effort_most_likely[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_most_likely")[component_id]) %>
-                            <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control", disabled: true %>
+                            <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control", disabled: true %>
                         <% end %>
-
-                        <%= get_ge_model_value_unit(@ge_model, ev) %>
                       </div>
                   <% end %>
                 <% end %>
               </div>
-            </td>
+
 
             <% if @ge_model.three_points_estimation == true %>
-<!--              <td>-->
                 <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
-<!--              </td>-->
-              <td>
-                <div class="row">
 
+                <div class="row">
+                  <div class="col">
+                    <b><%= I18n.t(:top)%> </b> <%= "(#{get_ge_model_value_unit(@ge_model, ev_for_output_unit)})" %>
+                  </div>
                   <% current_outputs_evs.each do |ev| %>
                     <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
 
@@ -504,29 +535,39 @@
                           <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control" %>
                         <% else %>
                           <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
-                          <%= number_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control", disabled: true %>
+                          <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control", disabled: true %>
                         <% end %>
-
-                        <%= get_ge_model_value_unit(@ge_model, ev) %>
                     </div>
                   <% end %>
                 </div>
-              </td>
-            <% end %>
 
-<!--            <td>-->
-              <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
-<!--            </td>-->
-            <td>
-              <div class="row">
-                <% current_outputs_evs.each do |ev| %>
-                  <div class="col">
+            <% end %>
+            <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6"></div>
+      <div class="col-6">
+        <div class="row">
+            <div class="col">
+              <h4>
+                <b>
+                  <%= I18n.t(:ratio)%>
+                </b>
+              </h4>
+            </div>
+
+            <% current_outputs_evs.each do |ev| %>
+              <div class="col" style="margin-top: 1.6em;">
                     <span id='<%="ratio_#{ev.id}"%>' style="margin-left: 10px;">
                       <% begin %>
                         <%# output = (ev.nil? ? 1 : convert_with_standard_unit_coefficient(ev, ev.send("string_data_most_likely")[component_id], @ge_model.output_effort_standard_unit_coefficient, user_number_precision)) %>
-                        <% output = (ev.nil? ? 1 : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision)) %>
+                          <% output = (ev.nil? ? 1 : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision)) %>
 
-                        <% if @ge_model.ge_model_instance_mode == "defects_calculation" %>
+                          <% if @ge_model.ge_model_instance_mode == "defects_calculation" %>
                             <% corresponding_input_ev = current_inputs_evs.includes(:pe_attribute).where(:pe_attributes => { alias: "ent1"}, in_out: "input").first
                                entry_value = corresponding_input_ev.send("string_data_most_likely")[component_id]
                             %>
@@ -538,19 +579,15 @@
                             %>
                         <% end %>
 
-                        <% input = ( (entry_value.nil? || entry_value ==0) ? 1 : convert_ge_model_value_with_precision(@ge_model, corresponding_input_ev, entry_value.to_f, user_number_precision)) %>
-
-                        <%# (output.to_f/input.to_f).round(user_number_precision) %>
+                          <% input = ( (entry_value.nil? || entry_value ==0) ? 1 : convert_ge_model_value_with_precision(@ge_model, corresponding_input_ev, entry_value.to_f, user_number_precision)) %>
+                          <%= (output.to_f/input.to_f).round(user_number_precision) %>
                       <% rescue %>
                           -
                       <% end %>
                     </span>
-                  </div>
-                <% end %>
               </div>
-            </td>
-          </tr>
-        </table>
+            <% end %>
+        </div>
       </div>
     </div>
 
