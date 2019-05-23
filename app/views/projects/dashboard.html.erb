@@ -1,3 +1,9 @@
+<!--Load the Google charts API  -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart']});
+</script>
+
 <div class="<%= (current_module_project.pemodule.alias == "initialization") ? 'col-10' : "#{current_module_project.show_results_view ? 'col-8' : 'col-10'}" %> pt-5 pr-0 d-flex flex-column" data-spy="scroll" data-target="#properties-sidebar" data-offset="0">
 
   <% if current_module_project.pemodule.alias != "initialization" %>
@@ -91,25 +97,28 @@
         </div>
       </div>
 
+
+      <!-- Les Vignettes de type Tableau -->
+      <% vw_table_types = ["effort_per_phases_profiles_table", "cost_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero",
+                           "table_effort_and_cost_per_phases_profiles", "table_effort_and_cost_per_phases_profiles_without_zero"] %>
+      <% project_table_view_widgets = @project.views_widgets.where(widget_type: vw_table_types) %>
+
       <div class="mb-5">
         <div class="effort-bloc">
-
           <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
-            <% @project.module_projects.each do |module_project| %>
-              <% module_project.views_widgets.each_with_index do |vw, index| %>
+              <% project_table_view_widgets.each_with_index do |vw, index| %>
                 <% unless vw.widget_type == "text" %>
                   <li class="nav-item">
-                    <a class="nav-link <%= (index == 0) ? 'active' : '' %>"  data-toggle="pill" id="pills-<%= vw.id %>-tab" href="#pills-<%= vw.id %>" role="tab" aria-selected="<%= (index == 0) ? 'true' : ' false' %>"><%= vw.name %></a>
+                    <a class="nav-link <%= (index == 0) ? 'show active' : '' %>"  data-toggle="pill" id="pills-<%= vw.id %>-tab" href="#pills-<%= vw.id %>" role="tab" aria-selected="<%= (index == 0) ? 'true' : ' false' %>"><%= vw.name %></a>
                   </li>
                 <% end %>
               <% end %>
-            <% end %>
           </ul>
 
           <div class="tab-content" id="pills-tabContent">
-            <% @project.module_projects.each do |module_project| %>
-              <% module_project.views_widgets.each_with_index do |vw, index| %>
-                <% unless vw.widget_type == "text" %>
+            <%# @project.module_projects.each do |module_project| %>
+              <% project_table_view_widgets.each_with_index do |vw, index| %>
+                <%# unless vw.widget_type == "text" %>
                   <div class="tab-pane fade <%= (index == 0) ? 'show active' : '' %>" id="pills-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-<%= vw.id %>-tab">
                     <div class="card card-widget">
                       <div class="card-body">
@@ -119,17 +128,168 @@
                           <a href="#" title="<%= I18n.t :delete %>"><i class="material-icons">delete</i></a>
                         </div>
                         <div class="effort-table">
-                          <%= get_view_widget_data(module_project.id, vw.id)[:value_to_show] %>
+                          <%= get_view_widget_data(vw.module_project_id, vw.id)[:value_to_show] %>
                         </div>
                       </div>
                     </div>
                   </div>
-                <% end %>
+                <%# end %>
               <% end %>
-            <% end %>
+            <%# end %>
           </div>
         </div>
       </div>
+
+
+
+      <!-- Les Vignettes graphiques -->
+      <% vw_graph_types = ["line_chart", "bar_chart", "area_chart", "pie_chart", "stacked_bar_chart", "timeline",
+                              "histogram_effort_per_phase", "histogram_cost_per_phase", "pie_chart_effort_per_phase",
+                              "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",
+                              "stacked_bar_chart_cost_per_phases_profiles", "stacked_grouped_bar_chart_effort_per_phases_profiles",
+                              "stacked_grouped_bar_chart_cost_per_phases_profiles"] %>
+      <% project_graph_view_widgets = @project.views_widgets.where(widget_type: vw_graph_types) %>
+
+        <div class="mb-5">
+          <div class="effort-bloc">
+
+            <ul class="nav nav-pills tabs" id="pills-graph-tab" role="tablist">
+              <% index = 0 %>
+              <% project_graph_view_widgets.each_with_index do |vw, index| %>
+                  <% index = index + 1 %>
+                  <li class="nav-item">
+                    <a class="nav-link <%= (index == 1) ? 'active' : '' %>"  data-toggle="pill" id="pills-graph-<%= vw.id %>-tab" href="#pills-graph-<%= vw.id %>" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>">
+                      <%= vw.name %>
+                    </a>
+                  </li>
+              <% end %>
+            </ul>
+
+            <div class="tab-content" id="pills-graph-tabContent">
+              <% index = 0 %>
+
+              <% project_graph_view_widgets.each_with_index do |vw, index| %>
+                  <% index = index + 1 %>
+
+                  <div class="tab-pane fade <%= (index == 1) ? 'show active' : '' %>" id="pills-graph-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-graph-<%= vw.id %>-tab">
+                    <div class="effort-chart-bloc card card-widget">
+                      <div class="card-body">
+                        <h3><%= vw.name %></h3>
+
+                        <div class="effort-bloc-tools d-flex justify-content-end mb-2">
+                          <a href="#" title="<%= I18n.t :get_app %>"><i class="material-icons">get_app</i></a>
+                          <a href="#" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
+                          <a href="#" title="<%= I18n.t :delete %>"><i class="material-icons">delete</i></a>
+                        </div>
+
+                        <div class="effort-chart mt-4 mb-4">
+                        <!--<div class="effort-table">-->
+                          <%= get_view_widget_data(vw.module_project.id, vw.id)[:value_to_show] %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+        <!-- Fin Les graphiques -->
+
+
+        <!-- Graph de test Usabilis -->
+        <!--<div class="mb-5">-->
+          <!--<div class="effort-chart-bloc card card-widget">-->
+            <!--<div class="card-body">-->
+              <!--<h3>Répartition effort par activités</h3>-->
+              <!--<div class="effort-chart mt-4 mb-4">-->
+                <!--<div class="effort-chart-canvas"><canvas id="pieCanvas" width="280" height="280"></canvas></div>-->
+                <!--<div class="effort-chart-legend" id="pieLegend"><div><span class="legend-color" style="background-color:#007DAB;">&nbsp;</span> Réalisation / Test Unitaires<span class="legend-percent">(41%)</span></div><div><span class="legend-color" style="background-color:#0099C9;">&nbsp;</span> Gestion de projet<span class="legend-percent">(22%)</span></div><div><span class="legend-color" style="background-color:#84CEE5;">&nbsp;</span> Intégration et Tests<span class="legend-percent">(20%)</span></div><div><span class="legend-color" style="background-color:#CFD8DC;">&nbsp;</span> Autre<span class="legend-percent">(17%)</span></div></div>-->
+              <!--</div>-->
+            <!--</div>-->
+          <!--</div>-->
+          <script>
+//              var myCanvas = document.getElementById("pieCanvas");
+//              var myLegend = document.getElementById("pieLegend");
+//              myCanvas.width = 280;
+//              myCanvas.height = 280;
+//
+//              var ctx = myCanvas.getContext("2d");
+//
+//              function drawPieSlice(ctx,centerX, centerY, radius, startAngle, endAngle, color ){
+//                  ctx.fillStyle = color;
+//                  ctx.beginPath();
+//                  ctx.moveTo(centerX,centerY);
+//                  ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+//                  ctx.closePath();
+//                  ctx.fill();
+//              }
+//
+//              // Pie chart
+//              var Piechart = function(options){
+//                  this.options = options;
+//                  this.canvas = options.canvas;
+//                  this.ctx = this.canvas.getContext("2d");
+//                  this.colors = options.colors;
+//
+//                  this.draw = function(){
+//                      var total_value = 0;
+//                      var color_index = 0;
+//                      for (var categ in this.options.data){
+//                          var val = this.options.data[categ];
+//                          total_value += val;
+//                      }
+//
+//                      var start_angle = 0;
+//                      for (categ in this.options.data){
+//                          var val = this.options.data[categ];
+//                          var slice_angle = 2 * Math.PI * val / total_value;
+//
+//                          drawPieSlice(
+//                                  this.ctx,
+//                                  this.canvas.width/2,
+//                                  this.canvas.height/2,
+//                                  Math.min(this.canvas.width/2,this.canvas.height/2),
+//                                  start_angle,
+//                                  start_angle+slice_angle,
+//                                  this.colors[color_index%this.colors.length]
+//                          );
+//
+//                          start_angle += slice_angle;
+//                          color_index++;
+//                      }
+//
+//                      if (this.options.legend){
+//                          color_index = 0;
+//                          var legendHTML = "";
+//                          for (categ in this.options.data){
+//                              var val = this.options.data[categ];
+//                              legendHTML += "<div><span class='legend-color' style='background-color:"+this.colors[color_index++]+";'>&nbsp;</span> "+categ+"<span class='legend-percent'>("+Math.round(100 * val / total_value)+"%)</span></div>";
+//                          }
+//                          this.options.legend.innerHTML = legendHTML;
+//                      }
+//                  };
+//              };
+//
+//              var myVinyls = {
+//                  "Réalisation / Test Unitaires": 41,
+//                  "Gestion de projet": 22,
+//                  "Intégration et Tests": 20,
+//                  "Autre": 17
+//              };
+//
+//              var myPiechart = new Piechart(
+//                      {
+//                          canvas:myCanvas,
+//                          data:myVinyls,
+//                          colors:["#007DAB","#0099C9", "#84CEE5","#CFD8DC"],
+//                          legend:myLegend
+//                      }
+//              );
+//              myPiechart.draw();
+          </script>
+        <!--</div>-->
+        <!-- Fin Graph de test Usabilis -->
+
     </div>
   <% end %>
 </div>
