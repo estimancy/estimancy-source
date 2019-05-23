@@ -46,9 +46,7 @@
           <% else %>
               <li> <b><%= I18n.t(:submit_requests) %> : </b>
                 <a href="url ou mailto:">
-                <%= link_to "#{@current_organization.support_contact}", target: :_blank do %>
-                  <%= "#{@current_organization.support_contact}" %>
-                <% end %>
+                <%= link_to "Forge Estimancy", "#{@current_organization.support_contact}", target: :_blank %>
                 </a> </li><br/>
           <% end %>
 
