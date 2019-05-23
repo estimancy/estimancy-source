@@ -304,6 +304,7 @@ en:
   services: "Services"
   wiki: "Wiki"
   about: "About"
+  contactsupport: "Support contact"
 
   #attributes
   name: "Name"
@@ -2164,3 +2165,4 @@ en:
 
   date_min: Date min
   date_max: Date max
+  submit_requests: "Submit your requests"

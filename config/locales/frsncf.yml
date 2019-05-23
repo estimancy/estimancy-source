@@ -290,6 +290,7 @@ frsncf:
   services: "Services"
   wiki: "Wiki"
   about: "A propos"
+  contactsupport: "Contact support"
 
   #attributes
   name: "Nom"
@@ -2139,4 +2140,5 @@ frsncf:
   please_wait: "Veuillez patienter..."
   val_max: "Valeur maximale"
   val_min: "Valeur minimal"
+  submit_requests: "Soumettre vos demandes"
 

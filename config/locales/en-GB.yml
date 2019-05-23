@@ -291,6 +291,7 @@ en-gb:
   services: "Services"
   wiki: "Wiki"
   about: "About"
+  contactsupport: "Support contact"
 
   #attributes
   name: "Name"
@@ -1739,4 +1740,5 @@ en-gb:
   ignored_application: "Ignored application"
 
   please_wait: "Veuillez patienter..."
+  submit_requests: "Submit your requests"
 

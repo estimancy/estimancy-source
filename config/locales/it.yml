@@ -254,6 +254,7 @@ it:
   help: " aiutare "
   services: "servizi"
   about: "circa"
+  contactsupport: "Contact support"
   #attributes
   name: "nome"
   category: "Categoria"
@@ -1635,3 +1636,4 @@ it:
   ignored_application: "Application ignorée"
 
   please_wait: "Veuillez patienter..."
+  submit_requests: "Soumettre vos demandes"

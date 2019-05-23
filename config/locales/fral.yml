@@ -290,6 +290,7 @@ fral:
   services: "Services"
   wiki: "Wiki"
   about: "A propos"
+  contactsupport: "Contact support"
 
   #attributes
   name: "Nom"
@@ -2096,3 +2097,4 @@ fral:
   ignored_application: "Application ignorée"
 
   please_wait: "Veuillez patienter..."
+  submit_requests: "Soumettre vos demandes"
