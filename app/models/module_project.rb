@@ -278,7 +278,7 @@ class ModuleProject < ActiveRecord::Base
     #create module_project ratio elements
     wbs_activity_ratio.wbs_activity_ratio_elements.each do |ratio_element|
       #mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
-      mp_ratio_elt = ModuleProjectRatioElement.where(
+      mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
                                                      pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
                                                      module_project_id: self.id,
                                                      wbs_activity_id: wbs_activity.id,
@@ -288,7 +288,7 @@ class ModuleProject < ActiveRecord::Base
 
 
       if mp_ratio_elt.nil?
-        mp_ratio_elt = ModuleProjectRatioElement.where(
+        mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
                                                        pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
                                                        module_project_id: self.id,
                                                        wbs_activity_ratio_id: wbs_activity_ratio.id,
@@ -322,7 +322,7 @@ class ModuleProject < ActiveRecord::Base
         end
       end
 
-      current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(
+      current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id,
                                                                                  pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
                                                                                  wbs_activity_ratio_id: wbs_activity_ratio.id)
       activity_elt = mp_ratio_elt.wbs_activity_element
@@ -346,8 +346,7 @@ class ModuleProject < ActiveRecord::Base
     # il faut supprimer les mp_ratio_elements dont les wsb_activity_element n'existent plus.
     wbs_activity_element_ids = wbs_activity_ratio.wbs_activity.wbs_activity_element_ids
 
-    #mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id)
-    mp_ratio_elements = self.module_project_ratio_elements.where(wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id)
+    mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id)
     ####end
 
     if sort_result
@@ -373,7 +372,7 @@ class ModuleProject < ActiveRecord::Base
       end
       # create the module_project_ratio_variable
       wbs_activity_ratio_variables.each do |ratio_variable|
-        ModuleProjectRatioVariable.create(
+        ModuleProjectRatioVariable.create(organization_id: organization.id,
                                           pbs_project_element_id: pbs_project_element.id,
                                           module_project_id: self.id,
                                           wbs_activity_id: wbs_activity.id,
