@@ -381,7 +381,6 @@ en-gb:
   action: "Action"
   menu_super_administrateur: "Menu Super Administrateur"
   import_export: "Import Export"
-  save_alt: "Save Alt"
 
   label_user_security_resume: "User securities resume"
   label_group_security_resume: "Group securities resume"

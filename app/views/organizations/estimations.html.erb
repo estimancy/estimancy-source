@@ -83,7 +83,11 @@
     <div class="estimation-list-filter">
       <span><%= @all_projects.count %> <%= I18n.t("elements") %></span>
       <span>
-        <a href="#"><%= I18n.t("display_archives") %></a>
+        <% if params[:archive] == "1" %>
+          <a href="<%= organization_estimations_path(@organization) %>">Display all</a>
+        <% else %>
+          <a href="<%= organization_estimations_path(@organization, archive: "1") %>"><%= I18n.t("display_archives") %></a>
+        <% end %>
       </span>
     </div>
     <div style="display: flex;">

@@ -246,6 +246,143 @@ fral:
   home: "Ma dernière estimation"
   all_projects: "Toutes les estimations"
   create_new_project: "Nouvelle estimation"
+
+  # Estimation dashboard
+  create_project: "Créer une estimation"
+  projects_list: "Liste des estimations"
+  quick_access: "Accès rapide"
+  to_the_latest_estimations_consulted: "aux dernières estimations consultées"
+  from_most_recent_to_least_recent: "Du plus récent au moins récent"
+  from_least_recent_to_most_recent: "Du moins récent au plus récent"
+  elements: "Eléments"
+  display_archives: "Afficher les archives"
+  export_to_pdf: "Exporter en PDF"
+  duplicate_estimation: "Dupliquer l'estimation"
+  create_new_version: "Créer une nouvelle version"
+
+  # edit estimation
+  demand_number: "Numéro de la demande"
+
+  # guw/_settings_new
+  add_a_group: "Ajouter un groupe"
+  rename: "Renommer"
+
+  # wbs_activities
+  show_hide_wbs_header: "Afficher l'entête wbs masqué"
+  show_only_ratio: "Afficher seulement ratio"
+  variable_percentage_relation_to_input: "Définition des variables et leur pourcentage par rapport à la valeur d'entrée"
+  ratios_wbs: "Tableau des ratios et formule de calcul de chaque phase de la WBS"
+  results_entering_the_module: "RÉSULTATS ENTRANT DANS LE MODULE"
+  from: "De"
+  after_calculation: "APRES CALCUL"
+  select_the_model_of_your_choix: "Sélectionnez le modèle de votre choix"
+  create_new_model: "Créer un nouveau modèle"
+  search_an_estimate_model: "RECHERCHER UN MODÈLE D'ESTIMATION"
+
+  # header
+  advanced_research: "RECHERCHE AVANCÉE"
+  estimation_name, version_number, author: "Nom de l'estimation, numéro de la version, auteur"
+  home_estimancy: "Accueil Estimancy"
+  model: "Modèle"
+  property: "Propriété"
+  demands: "Demandes"
+  values: "Valeurs"
+  return: "Retour"
+  to_the_list: "à la liste"
+  see_the_detail: "Voir le détail"
+
+  # demand
+  demand_type: "Type de la demande"
+  create_a_demand: "Créer une demande"
+  export_billing: "Exporter la facturation"
+  SLA_synthesis: "Synthèse SLA"
+
+  # all_organizations
+  welcome: "Bienvenue"
+  select_an_organization: "Sélectionner une organisation"
+  create_new_organization: "Créer une organisation"
+  user_account_settings: "Paramètre du compte utilisateur"
+
+  # user
+  user_list: Liste des utilisateurs
+
+  # organization/settings
+  entry_date: "Date d'entrée"
+  release_date: "Date de sortie"
+
+  # organization/setting_demands
+  severity: Sévérité
+  create_demand_status: "Créer un statut de demande"
+  number: "Numéro"
+  color: "Couleur"
+  create_demand_type: "Créer un type de demande"
+  cost_source: "Source de coût"
+  starting_status: "Statut de début"
+  create_a_livrable: "Créer un livrable"
+  states: "Statuts"
+  associated_service: "Service associé"
+  create_a_service: "Créer un service"
+  criticality: "Criticité"
+  new_demand_status: "Nouveau statut de demande"
+
+  # guw_models
+  new_generic_size_model: "Nouveau modèle de taille générique"
+  other_settings: "Autres réglages"
+  type_of_configuration: "Type de configuration"
+  allow_technologies: "Autoriser technologies"
+  enable_data_visualization: "Activer la visualisation des données"
+  display_default: "Affichage par défaut"
+  configuration_of_the_import_type: "Configuration du type d'importation"
+  enable_import: "Activer l'importation"
+  IA_server: "Serveur IA"
+  IA_optional: "Optionnel IA"
+  enable_import_via_excel: "Activer l'importation via Excel"
+  enable_import_via_jira: "Activer l'importation via JIRA"
+  enable_import_via_Redmine: "Activer l'importation via Redmine"
+  server_address: "Adresse du serveur"
+  old_configuration: "Ancienne configuration"
+  new_configuration: "Nouvelle configuration"
+  column: "Colonne"
+  criteria: "Critères"
+  coeff_complexity: "Complexité du coefficient"
+
+  # contact support
+  contactsupport: "Support du contact"
+  your_configuration: "Votre configuration"
+  environment: "Environment"
+  field: "Field"
+  browser: "Browser"
+  via: "Via"
+
+  # security audit utilities view
+  begin_date: "Date de début"
+  close_date: "Date de fin"
+  view_audit_history: "Voir l'historique d'audit"
+  delete_all_history: "Supprimer l'historique"
+
+  # maintenances
+  object: Objet
+
+  # organizations/form
+  select_size_module: "Sélectionner le module de taille"
+
+  # applications/form
+  budget_label: "Etiquette du budget"
+
+  # users/form
+  allow_quick_access: "Autoriser l'accès rapide"
+  allow_full_screen_dashboard: "Autoriser plein d'écran"
+
+  # icons
+  get_app: "Obtenir App"
+  add_box: "Ajouter Box"
+  text_fields: "Champs de texte"
+  dashboard: "Tableau de bord"
+  action: "Action"
+  menu_super_administrateur: "Menu Super Administrateur"
+  import_export: "Importer Exporter"
+  save_alt: "Sauvegarder Alt"
+
   label_user_security_resume: "Gestion des droits utilisateurs de l'estimation"
   label_group_security_resume: "Gestion des droits des groupes de l'estimation"
 
@@ -2096,6 +2233,122 @@ fral:
   ignored_application: "Application ignorée"
 
   please_wait: "Veuillez patienter..."
+
+  raw_data_extract: "Extraction de données brutes"
+
+  #organizations/report
+  filtered_excel_report: "Rapport Excel filtré"
+  detailed_excel_report: "Rapport Excel détaillé"
+  detailed_pdf_report: "Rapport PDF détaillé"
+  generate_filtered_excel_report: "Générer un rapport Excel filtré"
+  selected_quotation_export: "Seuls les devis sélectionnés seront exportés dans un fichier Excel récapitulatif."
+  counting_details: "Détails de dénombrements"
+  module_size_select: "Sélectionner le module de taille"
+  generate_excel_report_all_quotations: "Générer un rapport Excel de tous les devis"
+  Abaque_Wbs_quotation_export: "Tous les devis de type Abaque + WBS seront exportés dans un fichier Excel récapitulatif."
+  quotation_PDF_export: "Exporter tous les devis en PDF"
+  raw_data_range_dates: "Extraction des données brutes comprises dans une fourchette de dates:"
+
+
+  #organizations/edit
+  technical_informations: "Informations techniques"
+  printing_extraction: "Impression et extraction"
+
+  extracting_organizations_and_their_numbers_of_quotations: "Extraire les organisations et leur nombres de devis"
+
+  deselect_all_modules: "Désélectionner tous les modules"
+
+  calculation_phases: "Calcul des phases"
+
+  #organizations/estimations
+  pdf_save: "Enregistrer en PDF"
+
+  recalculate_all: "Tout recalculer"
+
+  budget_management: "Gestion des bugdets"
+
+  date_min: "Date min"
+  date_max: "Date max"
+
+  val_min: "Valeur min"
+  val_max: "Valeur max"
+
+
+  #demands
+  description: "Description"
+  attachment: "Fichier joint"
+  edit_demand: "Modification d'une demande"
+  create_demand: "Création d'une demande"
+  new_demand: "Création d'une demande"
+  demands_list: "Liste de demandes"
+
+  #paramétrage demandes
+  setting_estimations: "Paramétrage des estimations"
+  setting_demands: "Paramétrage des demandes"
+  extract_raw_data: "Extraction des données brutes"
+  edit_demand_statuses: "Paramétrage de la demande statut"
+  new_demand_statuses: "Création d'une demande statut"
+  create_demand_statuses: "Création d'une demande statut"
+  edit_demand_types: "Paramétrage de la demande type"
+  new_demand_types: "Création d'une demande type"
+  create_demand_types: "Création d'une demande type"
+  edit_livrable: "Paramétrage du livrable"
+  new_livrable: "Création d'un livrable"
+  create_livrable: "Création d'un livrable"
+  edit_service: "Paramétrage du service"
+  new_service: "Création d'un service"
+  create_service: "Création d'un service"
+
+
+  #_user_account.html.erb
+  setting_demands: "Paramétrage demandes"
+
+  # setting_demand
+  demands: "Demandes"
+  demands_types: "Demandes Types"
+  livrable: "Livrables"
+  demands_statuses: "Demandes Statuts"
+
+  service_id: "Services"
+
+  manage_demands_statuses_workflow: "Gestion de statuts de demande workflow"
+
+  text_explain_demand_status_workflow: "Texte explication statuts de demande workflow"
+
+  urgent_project: "Devis urgent"
+
+  component: "Composant"
+  cplx_coeff: "Coeff. de complexité"
+  complexity: "Complexité"
+  data_model: "Modèle de données"
+  data_model_display_error: "Une erreur est survenue lors de l'affichage du modèle de données"
+  close: "Fermer"
+  treatments_import: "Importer des traitements"
+  excel_file_import: "Importer un fichier Excel (xlsx uniquement)"
+  component_serv_creation: "Création d'un composant ou service"
+  data_import: "Importer les données"
+  requirements_import: "Importer les exigences"
+  import_type: "Type d'import"
+  source_type: "Type de de source"
+  request_list_links: "Liens de la liste des demandes"
+  component_type_identified_by_AI: "Types de composant à identifier par l'IA"
+  host_group: "Groupe d'accueil"
+
+  allow_export_pdf: "Autoriser l'export PDF"
+
+  forfait_mco: "Forfait MCO"
+
+  month_number: "Nombre du mois"
+
+
+  nb_selected_projects: "Nombre de projets sélectionnée"
+  average_rates: "Taux moyen"
+  revised: "révisé"
+  begin: "Début"
+  gap: "Ecart"
+  Secteur de projets: "Secteur de projets"
+  budget_type: "Type du budget"
+
   hide_module_results: "Cacher les résultats du module"
   show_module_results: "Afficher les résultats du module"
   label_results: "Résultats"
