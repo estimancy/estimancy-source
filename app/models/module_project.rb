@@ -427,6 +427,9 @@ class ModuleProject < ActiveRecord::Base
   # Get the Efforts Attributes (E1, E2, E3, E4) estimations values
   def get_wbs_efforts_attributes_estimation_values(wbs_activity_ratio_id, pbs_id, input_low, input_ml, input_high)
     wbs_activity_ratio = WbsActivityRatio.find(wbs_activity_ratio_id)
+    wbs_activity = wbs_activity_ratio.wbs_activity
+    organization = wbs_activity.organization
+
     wbs_effort_ids = PeAttribute.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
     current_inputs_evs = self.estimation_values.where(pe_attribute_id: wbs_effort_ids, in_out: "input")
 
@@ -443,7 +446,8 @@ class ModuleProject < ActiveRecord::Base
         if am.in_out == 'both'
           ['input', 'output'].each do |in_out|
             ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => in_out)
-                     .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                     .first_or_create(organization_id: organization.id,
+                                      :pe_attribute_id => am.pe_attribute.id,
                                          :module_project_id => self.id,
                                          :in_out => in_out,
                                          :is_mandatory => am.is_mandatory,
@@ -457,7 +461,8 @@ class ModuleProject < ActiveRecord::Base
           end
         else
           ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => am.in_out)
-                    .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                    .first_or_create(organization_id: organization.id,
+                                     :pe_attribute_id => am.pe_attribute.id,
                                      :module_project_id => self.id,
                                      :in_out => am.in_out,
                                      :is_mandatory => am.is_mandatory,
@@ -548,6 +553,7 @@ class ModuleProject < ActiveRecord::Base
   # Get Estimation_values or Create them if not exist
   def get_mp_inputs_outputs_estimation_values(input_attribute_ids, output_attribute_ids = [])
 
+    organization_id = self.organization_id
     current_inputs_evs = self.get_module_project_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")     #self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
     current_outputs_evs = self.get_module_project_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")  #self.estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
 
@@ -570,7 +576,8 @@ class ModuleProject < ActiveRecord::Base
           if am.in_out == 'both'
             ['input', 'output'].each do |in_out|
               ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute_id, :in_out => in_out)
-                       .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                       .first_or_create(organization_id: organization_id,
+                                        :pe_attribute_id => am.pe_attribute.id,
                                         :module_project_id => self.id,
                                         :in_out => in_out,
                                         :is_mandatory => am.is_mandatory,
@@ -584,7 +591,8 @@ class ModuleProject < ActiveRecord::Base
             end
           else
             ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute_id, :in_out => am.in_out)
-                     .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                     .first_or_create(organization_id: organization_id,
+                                      :pe_attribute_id => am.pe_attribute.id,
                                       :module_project_id => self.id,
                                       :in_out => am.in_out,
                                       :is_mandatory => am.is_mandatory,
@@ -606,7 +614,7 @@ class ModuleProject < ActiveRecord::Base
 
   # Get Estimation_values or Create them if not exist
   def get_mp_estimation_values
-
+    organization_id = self.organization_id
     input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
     current_inputs_evs = self.estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
 
@@ -618,7 +626,8 @@ class ModuleProject < ActiveRecord::Base
         if am.in_out == 'both'
           ['input', 'output'].each do |in_out|
             ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => in_out)
-                     .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                     .first_or_create(organization_id: organization_id,
+                                      :pe_attribute_id => am.pe_attribute.id,
                                       :module_project_id => self.id,
                                       :in_out => in_out,
                                       :is_mandatory => am.is_mandatory,
@@ -632,7 +641,8 @@ class ModuleProject < ActiveRecord::Base
           end
         else
           ev = EstimationValue.where(:module_project_id => self.id, :pe_attribute_id => am.pe_attribute.id, :in_out => am.in_out)
-                   .first_or_create(:pe_attribute_id => am.pe_attribute.id,
+                   .first_or_create(organization_id: organization_id,
+                                    :pe_attribute_id => am.pe_attribute.id,
                                     :module_project_id => self.id,
                                     :in_out => am.in_out,
                                     :is_mandatory => am.is_mandatory,

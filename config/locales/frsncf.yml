@@ -2141,4 +2141,5 @@ frsncf:
   val_max: "Valeur maximale"
   val_min: "Valeur minimal"
   submit_requests: "Soumettre vos demandes"
+  your_configuration: "Votre configuration"
 
