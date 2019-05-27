@@ -1,3 +1,50 @@
+.guw-list {
+  .tools {
+    display: block;
+    white-space: nowrap;
+    position: relative;
+
+    & > a, & > .dropdown {
+      display: inline-block
+    }
+
+    a, button {
+      -webkit-appearance: none;
+      background-color: transparent;
+      border: 0;
+      color: $grey-light;
+      outline: 0;
+      cursor: pointer;
+      padding: 0 0.2rem;
+
+      &:after {
+        content: none;
+      }
+    }
+  }
+
+  .dropdown-menu {
+
+    a {
+      font-size: 16px;
+      line-height: 20px;
+      letter-spacing: 0.02em;
+      color: $grey-extradark;
+      padding-right: 2rem;
+
+      &:hover {
+        background-color: #F9F9F9;
+      }
+
+      i {
+        vertical-align: middle;
+        color: $grey-light;
+        padding: 0.5rem 1rem
+      }
+    }
+  }
+}
+
 .estimation-list {
   font-family: "Roboto";
 

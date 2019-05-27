@@ -525,18 +525,17 @@
 </td>
 
 <%# if can? :execute_estimation_plan, @project %>
-<% if false %>
+<% if true %>
   <td class="estimation-table-overview-cell">
     <div class="tools">
       <div class="dropdown">
-        <a href="#!" class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          <i class="material-icons">more_vert</i>
-        </a>
-        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton">
+        <button class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="Action">
+          <i class="material-icons" style="z-index: 0">more_vert</i>
+        </button>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton" x-placement="top-end" style="position: absolute; transform: translate3d(-209px, -185px, 0px); top: 0px; left: 0px; will-change: transform;">
+          <a class="dropdown-item" href="<%= guw.guw_unit_of_work_duplicate_path(guow) %>"><i class="material-icons">file_copy</i><%= I18n.t(:label_duplicate_project) %></a>
           <div class="dropdown-divider"></div>
-          <%= link_to raw("<i class='material-icons'>clear_all</i"), "#!", onclick: "raz_line(#{guow.id})", title: "RAZ", class: "dropdown-item" %>
-          <%= link_to raw("<i class='material-icons'>file_copy</i"), guw.guw_unit_of_work_duplicate_path(guow), method: "post", title: I18n.t(:duplicate), remote: true, class: "dropdown-item" %>
-          <%= link_to raw("<i class='material-icons'>delete</i"), guw.guw_unit_of_work_path(guow), method: "delete", confirm: I18n.t('are_you_sure'), title: I18n.t(:delete), remote: true, class: "dropdown-item" %>
+          <a class="dropdown-item" href="<%= guw.guw_unit_of_work_path(guow) %>" method="DELETE"><i class="material-icons">delete</i><%= I18n.t(:delete) %></a>
         </div>
       </div>
     </div>
