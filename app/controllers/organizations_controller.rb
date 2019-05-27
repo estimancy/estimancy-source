@@ -3228,8 +3228,6 @@ class OrganizationsController < ApplicationController
     @attributes = PeAttribute.all
     @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
 
-    @ot = @organization.organization_technologies.first
-
     @users = @organization.users
     @fields = @organization.fields
 

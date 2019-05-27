@@ -1,123 +1,261 @@
+<section class="card card-content-bloc estimancy-form">
 
-  <a>
-    <%= I18n.t(:global_properties) %>
-  </a>
+<div class="mb-5">
+  <div class="effort-bloc">
+    <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link show active"  data-toggle="pill" id="pills-global_properties-tab" href="#pills-global_properties" role="tab" aria-selected="true"><%= I18n.t(:global_properties) %></a>
+      </li>
 
-  <a>
-    <%= I18n.t(:technical_informations) %>
-  </a>
+      <li class="nav-item">
+        <a class="nav-link"  data-toggle="pill" id="pills-technical_informations-tab" href="#pills-technical_informations" role="tab" aria-selected="false"><%= I18n.t(:technical_informations) %></a>
+      </li>
 
-  <a>
-    <%= I18n.t(:printing_extraction) %>
-  </a>
+      <li class="nav-item">
+        <a class="nav-link"  data-toggle="pill" id="pills-printing_extraction-tab" href="#pills-printing_extraction" role="tab" aria-selected="false"><%= I18n.t(:printing_extraction) %></a>
+      </li>
+    </ul>
 
-  <%= simple_form_for(@organization) do |f| %>
+    <%= simple_form_for(@organization) do |f| %>
 
-    <div id="accordion2" class="accordion">
-      <div class="accordion-group accordion-caret well-rounded">
-        <div class="accordion-heading">
-          <h5>
-            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseOne">
+        <div class="tab-content" id="pills-tabContent">
 
-              <i class="fa fa-caret-down"></i>
-              <b><%= I18n.t(:label_definition) %></b>
-            </a>
-          </h5>
-        </div>
-        <div id="collapseOne" class="accordion-body in collapse">
-          <div class="accordion-inner">
-            <%= f.error_notification %>
+          <!-- Global propreties -->
+          <div class="tab-pane fade show active" id="pills-global_properties" role="tabpanel" aria-labelledby="pills-global_properties-tab">
+            <div class="card-body">
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h1>
+                    <%= I18n.t(:label_definition) %>
+                  </h1>
+                </div>
+              </div>
 
-            <div class="row-fluid input-xxlarge">
-              <div class="span7"><%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %></div>
-              <div class="span5">
-                <label class="checkbox"></label>
-                <%= f.input :is_image_organization, as: :boolean, :label => I18n.t('is_image_organization'), disabled: !current_user.super_admin? %>
+              <%= f.error_notification %>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                        <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                      </div>
+                    </div>
+
+                    <div class="col-3">
+                      <%= f.input :is_image_organization, as: :boolean, label: false, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__input'} %>
+                      <label class="mdl-textfield__label" for="is_image_organization"><%= I18n.t(:is_image_organization) %></label>
+                    </div>
+
+                    <div class="col-3">
+                      <%= f.input :allow_demand, :label => false, as: :boolean, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__inputs'} %>
+                      <label class="mdl-textfield__label" for="allow_demand"><%= I18n.t(:demands_list) %></label>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :headband_title, label: false, :input_html => { :class => 'mdl-textfield__input' } %>
+                        <label class="mdl-textfield__label" for="headband_title"><%= I18n.t(:headband_title) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-12">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input' } %>
+                        <label class="mdl-textfield__label" for="need"><%= I18n.t(:description) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-12">
+                      <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
+                          <% if action_name == 'edit' %>
+                              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                          <% end %>
+                          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% end %>
+                      <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
+
+                    </div>
+                  </div>
+
+                </div>
               </div>
             </div>
-              <div>
-                <%= f.input :allow_demand, :label => I18n.t(:demands_list), as: :boolean, disabled: !current_user.super_admin? %>
-              </div>
 
-            <%= f.input :headband_title, :label => I18n.t('headband_title'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
-            <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+
 
           </div>
+
+          <!-- Informations techniques-->
+          <div class="tab-pane fade" id="pills-technical_informations" role="tabpanel" aria-labelledby="pills-technical_informations-tab">
+            <div class="card-body">
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h1>
+                    <%= I18n.t(:estimations_counter) %>
+                  </h1>
+                </div>
+              </div>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :automatic_quotation_number, :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+                        <label class="mdl-textfield__label" for="automatic_quotation_number"><%= I18n.t(:automatic_quotation_number) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :estimations_counter, :label => false, :input_html => {:class => 'mdl-textfield__input'}, readonly: !current_user.super_admin %>
+                        <label class="mdl-textfield__label" for="estimations_counter"><%= I18n.t(:estimations_counter) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-12">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :estimations_counter_history, :label => false, :input_html => {:class => 'mdl-textfield__input', :rows => 5}, readonly: !current_user.super_admin %>
+                        <label class="mdl-textfield__label" for="need"><%= I18n.t(:actions_history) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :number_hours_per_month, :label => false, :required => true, :input_html => {:class => 'mdl-textfield__input'} %>
+                        <label class="mdl-textfield__label" for="number_hours_per_month"><%= I18n.t(:number_hours_per_month) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :currency_id, :as => :select, collection: Currency.all.map{|i| ["#{i.name} (#{i.sign})", i.id]}, :label => false, :required => true, :input_html => {:class => 'mdl-textfield__input'} %>
+                        <label class="mdl-textfield__label" for="currency_id"><%= I18n.t(:currency) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :cost_per_hour, :label => false, :required => true, :input_html => {:class => 'mdl-textfield__input'} %>
+                        <label class="mdl-textfield__label" for="cost_per_hour"><%= I18n.t(:cost_per_hour) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="edition-bloc-left">
+                    <div class="edition-bloc-title">
+                      <h1>
+                        <%= I18n.t(:select_size_module) %>
+                      </h1>
+                    </div>
+                  </div>
+
+                  <div style="display: flex;">
+                    <table class="table table-list">
+                      <thead>
+                          <tr>
+                            <th><%= I18n.t(:threshold_min_value)%></th>
+                            <th><%= I18n.t(:threshold_max_value)%></th>
+                            <th><%= I18n.t(:convertion_coef_stand)%></th>
+                            <th><%= I18n.t(:effort_unit)%></th>
+                          </tr>
+                      </thead>
+
+                      <tbody>
+                          <tr>
+                            <td class="center"><%= text_field_tag "", 0, disabled: true %></td>
+                            <td class="center"><%= text_field_tag "organization[limit1]", @organization.limit1.nil? ? 100000 : @organization.limit1 %></td>
+                            <td class="center"><%= text_field_tag "organization[limit1_coef]", @organization.limit1_coef %></td>
+                            <td class="center"><%= text_field_tag "organization[limit1_unit]", @organization.limit1_unit %></td>
+                          </tr>
+
+                          <tr>
+                            <td class="center"><%= text_field_tag "", @organization.limit1.nil? ? 100000 : @organization.limit1, disabled: true %></td>
+                            <td class="center"><%= text_field_tag "organization[limit2]", @organization.limit2 %></td>
+                            <td class="center"><%= text_field_tag "organization[limit2_coef]", @organization.limit2_coef %></td>
+                            <td class="center"><%= text_field_tag "organization[limit2_unit]", @organization.limit2_unit %></td>
+                          </tr>
+                          <tr>
+                            <td class="center"><%= text_field_tag "", @organization.limit2.nil? ? 100000 : @organization.limit2, disabled: true %></td>
+                            <td class="center"><%= text_field_tag "organization[limit3]", @organization.limit3 %></td>
+                            <td class="center"><%= text_field_tag "organization[limit3_coef]", @organization.limit3_coef %></td>
+                            <td class="center"><%= text_field_tag "organization[limit3_unit]", @organization.limit3_unit %></td>
+                          </tr>
+                          <tr>
+                            <td class="center"><%= text_field_tag "", @organization.limit3.nil? ? 100000 : @organization.limit3, disabled: true %></td>
+                            <td class="center"><%= text_field_tag "organization[limit4]", @organization.limit4 %></td>
+                            <td class="center"><%= text_field_tag "organization[limit4_coef]", @organization.limit4_coef %></td>
+                            <td class="center"><%= text_field_tag "organization[limit4_unit]", @organization.limit4_unit %></td>
+                          </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-12">
+                      <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
+                          <% if action_name == 'edit' %>
+                              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                          <% end %>
+                          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% end %>
+                      <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
+
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+
+
+          </div>
+
+          <!-- Sélectionnez le module de taille -->
+          <div class="tab-pane fade" id="pills-printing_extraction" role="tabpanel" aria-labelledby="pills-printing_extraction-tab">
+            <div class="card-body">
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h1>
+                    <%= I18n.t(:printing_extraction) %>
+                  </h1>
+                </div>
+              </div>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  <div class="form-row">
+                    <div class="col-12">
+                      <%= link_to I18n.t('extracting_organizations_and_their_numbers_of_quotations'), '/projects_quantity', :class => 'btn btn-secondary' %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
+    <% end %>
 
-      <br>
-
-        <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
-          <% if action_name == 'edit' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <% end %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-        <% end %>
-        <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
-      </div>
-    </div>
-
-
-    <div class="accordion-group accordion-caret well-rounded">
-      <div id="collapseTwo" class="accordion-body in collapse">
-        <div class="accordion-inner">
-
-          <h5 class="blue">
-            <%= I18n.t('estimations_counter') %>
-          </h5>
-          <%= f.input :automatic_quotation_number, :label => I18n.t('automatic_quotation_number'), :input_html => {:class => 'input-xlarge'} %>
-          <%= f.input :estimations_counter, :label => I18n.t('estimations_counter'), :input_html => {:class => 'input-xlarge'}, readonly: !current_user.super_admin %>
-          <%= f.input :estimations_counter_history, :label => I18n.t('actions_history'), :input_html => {:class => 'input-xxlarge', :rows => 7}, readonly: !current_user.super_admin %>
-
-          <%= f.input :number_hours_per_month, :label => I18n.t('number_hours_per_month'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
-          <%= f.input :currency_id, :as => :select, collection: Currency.all.map{|i| ["#{i.name} (#{i.sign})", i.id]}, :label => I18n.t(:currency), :required => true %>
-          <%= f.input :cost_per_hour, :label => I18n.t('cost_per_hour'), :required => true, :input_html => {:class => 'input-xxlarge'} %>
-
-          <%# Sélectionnez le module de taille %>
-          <hr>
-            <%= I18n.t :select_size_module %>
-          <br>
-
-          <table class="table table-list">
-            <tr>
-              <th><%= I18n.t(:threshold_min_value)%></th>
-              <th><%= I18n.t(:threshold_max_value)%></th>
-              <th><%= I18n.t(:convertion_coef_stand)%></th>
-              <th><%= I18n.t(:effort_unit)%></th>
-            </tr>
-
-            <tr>
-              <td class="center"><%= text_field_tag "", 0, disabled: true %></td>
-              <td class="center"><%= text_field_tag "organization[limit1]", @organization.limit1.nil? ? 100000 : @organization.limit1 %></td>
-              <td class="center"><%= text_field_tag "organization[limit1_coef]", @organization.limit1_coef %></td>
-              <td class="center"><%= text_field_tag "organization[limit1_unit]", @organization.limit1_unit %></td>
-            </tr>
-
-            <tr>
-              <td class="center"><%= text_field_tag "", @organization.limit1.nil? ? 100000 : @organization.limit1, disabled: true %></td>
-              <td class="center"><%= text_field_tag "organization[limit2]", @organization.limit2 %></td>
-              <td class="center"><%= text_field_tag "organization[limit2_coef]", @organization.limit2_coef %></td>
-              <td class="center"><%= text_field_tag "organization[limit2_unit]", @organization.limit2_unit %></td>
-            </tr>
-            <tr>
-              <td class="center"><%= text_field_tag "", @organization.limit2.nil? ? 100000 : @organization.limit2, disabled: true %></td>
-              <td class="center"><%= text_field_tag "organization[limit3]", @organization.limit3 %></td>
-              <td class="center"><%= text_field_tag "organization[limit3_coef]", @organization.limit3_coef %></td>
-              <td class="center"><%= text_field_tag "organization[limit3_unit]", @organization.limit3_unit %></td>
-            </tr>
-            <tr>
-              <td class="center"><%= text_field_tag "", @organization.limit3.nil? ? 100000 : @organization.limit3, disabled: true %></td>
-              <td class="center"><%= text_field_tag "organization[limit4]", @organization.limit4 %></td>
-              <td class="center"><%= text_field_tag "organization[limit4_coef]", @organization.limit4_coef %></td>
-              <td class="center"><%= text_field_tag "organization[limit4_unit]", @organization.limit4_unit %></td>
-            </tr>
-          </table>Extraire les organizations et leur nombre de devis'
-        </div>
-      </div>
-    </div>
-
-    <%= link_to I18n.t('extracting_organizations_and_their_numbers_of_quotations'), '/projects_quantity', :class => 'btn btn-secondary' %>
-
-  <% end %>
-
+  </div>
 </div>
+</section>
