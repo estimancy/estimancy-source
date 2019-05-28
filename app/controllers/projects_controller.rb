@@ -3192,9 +3192,11 @@ public
 
 
   def sort
+
+    search
+
     @organization = @current_organization
-    # @projects = @organization.organization_estimations
-    @projects = @organization.projects.where(:is_model => [nil, false])
+    # @projects = @organization.projects.where(:is_model => [nil, false])
 
     k = params[:f]
     s = params[:s]
@@ -3262,117 +3264,34 @@ public
   end
 
   def search
-    @organization = @current_organization
+    @organization_projects = Project.where(organization_id: @current_organization.id, is_model: false)
 
-    @object_per_page = (current_user.object_per_page || 10)
-    @min = 0
-    @max = @object_per_page
-    @sort_column = (params[:sort_column].blank? ? session[:sort_column] : params[:sort_column])
-    @sort_order = (params[:sort_order].blank? ? session[:sort_order] : params[:sort_order])
-    @sort_action = (params[:sort_action].blank? ? session[:sort_action] : params[:sort_action])
-    @search_hash = {}
-    @search_string = ""
-    @search_column = ""
-    @search_value = ""
-
-    # filtre sur les versions
-    @filter_version = params[:filter_organization_projects_version]
-
-    params.delete("utf8")
-    params.delete("commit")
-    params.delete("action")
-    params.delete("controller")
-    params.delete("filter_organization_projects_version")
-    params.delete("sort_action")
-    params.delete("sort_column")
-    params.delete("sort_order")
-    params.delete("min")
-    params.delete("max")
-    params.delete_if { |k, v| v.nil? || v.blank? }
-
-    @search_hash = params
-    unless @search_hash.blank?
-      @search_hash.each do |k, v|
-        @search_string << "&search[#{k}]=#{v}"
-      end
-    end
-
-    session[:search_string] = @search_string
-    session[:search_hash] = @search_hash
-
-    # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
-    @projects = @organization.projects.where(:is_model => [nil, false]).order("start_date desc")
-
-    if @sort_action.to_s == "true" && @sort_column != "" && @sort_order != ""
-      #@projects = get_sorted_estimations(@organization.id, @projects, params[:sort_column], params[:sort_order])
-      @organization_estimations = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
-    else
-      @organization_estimations = get_multiple_search_results(@organization.id, @projects, @search_hash)
-    end
-
-    if @organization_estimations.nil? || @organization_estimations.blank?
-      @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
-    end
-
-    # filtre sur la version des estimations
-    if !@filter_version.to_s.in?(['4', ''])
-      @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
-    end
-
-    res = []
-    @organization_estimations.each do |p|
-      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
-        res << p
-      end
-    end
-
-    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
-
-    if @projects.length <= @object_per_page
-      @is_last_page = "true"
-    else
-      @is_last_page = "false"
-    end
-
-    session[:sort_column] = @sort_column
-    session[:sort_order] = @sort_order
-    session[:sort_action] = @sort_action
-    session[:is_last_page] = @is_last_page
-
-    session[:search_column] = @search_column
-    session[:search_value] = @search_value
-
-
-    build_footer
-  end
-
-  def advanced_search
-    @projects_search_results = []
+    @projects = []
 
     user_ids = User.where("first_name LIKE '%#{params[:advanced_search]}%' OR last_name liKE '%#{params[:advanced_search]}%'").map(&:id)
-    @projects_search_results << Project.where(organization_id: @current_organization.id, creator_id: user_ids, is_model: false).all
+    @projects << @organization_projects.where(creator_id: user_ids).all
 
     app_ids = Application.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
-    @projects_search_results << Project.where(organization_id: @current_organization.id, application_id: app_ids, is_model: false).all
+    @projects << @organization_projects.where(application_id: app_ids).all
 
     acq_ids = AcquisitionCategory.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
-    @projects_search_results << Project.where(organization_id: @current_organization.id, acquisition_category_id: acq_ids, is_model: false).all
+    @projects << @organization_projects.where(acquisition_category_id: acq_ids).all
 
     stt_ids = EstimationStatus.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
-    @projects_search_results << Project.where(organization_id: @current_organization.id, estimation_status_id: stt_ids , is_model: false).all
+    @projects << @organization_projects.where(estimation_status_id: stt_ids).all
 
-    @projects_search_results << Project.where(organization_id: @current_organization.id, title: params[:advanced_search] , is_model: false).all
+    @projects << @organization_projects.where("title LIKE '%#{params[:advanced_search]}%'").all
+    @projects << @organization_projects.where("version_number LIKE '%#{params[:advanced_search]}%'").all
+    @projects << @organization_projects.where("description LIKE '%#{params[:advanced_search]}%'").all
 
-    @projects_search_results << Project.where(organization_id: @current_organization.id, version_number: params[:advanced_search] , is_model: false).all
+    @projects = @projects.flatten
 
-    @projects_search_results << Project.where(organization_id: @current_organization.id, description: params[:advanced_search], is_model: false).all
-
-    @projects_search_results = @projects_search_results.flatten
+    @projects = Project.where(id: @projects.map(&:id))
 
     @fields_coefficients = {}
     @pfs = {}
     fields = @current_organization.fields
-    ProjectField.where(project_id: @projects_search_results.map(&:id).uniq).each do |pf|
+    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
         if pf.field_id.in?(fields.map(&:id))
           if pf.project && pf.views_widget
@@ -3395,6 +3314,95 @@ public
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
     end
+  end
+
+  # def search
+  #   @organization = @current_organization
+  #
+  #   @object_per_page = (current_user.object_per_page || 10)
+  #   @min = 0
+  #   @max = @object_per_page
+  #   @sort_column = (params[:sort_column].blank? ? session[:sort_column] : params[:sort_column])
+  #   @sort_order = (params[:sort_order].blank? ? session[:sort_order] : params[:sort_order])
+  #   @sort_action = (params[:sort_action].blank? ? session[:sort_action] : params[:sort_action])
+  #   @search_hash = {}
+  #   @search_string = ""
+  #   @search_column = ""
+  #   @search_value = ""
+  #
+  #   # filtre sur les versions
+  #   @filter_version = params[:filter_organization_projects_version]
+  #
+  #   params.delete("utf8")
+  #   params.delete("commit")
+  #   params.delete("action")
+  #   params.delete("controller")
+  #   params.delete("filter_organization_projects_version")
+  #   params.delete("sort_action")
+  #   params.delete("sort_column")
+  #   params.delete("sort_order")
+  #   params.delete("min")
+  #   params.delete("max")
+  #   params.delete_if { |k, v| v.nil? || v.blank? }
+  #
+  #   @search_hash = params
+  #   unless @search_hash.blank?
+  #     @search_hash.each do |k, v|
+  #       @search_string << "&search[#{k}]=#{v}"
+  #     end
+  #   end
+  #
+  #   session[:search_string] = @search_string
+  #   session[:search_hash] = @search_hash
+  #
+  #   # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
+  #   @projects = @organization.projects.where(:is_model => [nil, false]).order("start_date desc")
+  #
+  #   if @sort_action.to_s == "true" && @sort_column != "" && @sort_order != ""
+  #     #@projects = get_sorted_estimations(@organization.id, @projects, params[:sort_column], params[:sort_order])
+  #     @organization_estimations = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
+  #   else
+  #     @organization_estimations = get_multiple_search_results(@organization.id, @projects, @search_hash)
+  #   end
+  #
+  #   if @organization_estimations.nil? || @organization_estimations.blank?
+  #     @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
+  #   end
+  #
+  #   # filtre sur la version des estimations
+  #   if !@filter_version.to_s.in?(['4', ''])
+  #     @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
+  #   end
+  #
+  #   res = []
+  #   @organization_estimations.each do |p|
+  #     if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+  #       res << p
+  #     end
+  #   end
+  #
+  #   @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+  #
+  #   if @projects.length <= @object_per_page
+  #     @is_last_page = "true"
+  #   else
+  #     @is_last_page = "false"
+  #   end
+  #
+  #   session[:sort_column] = @sort_column
+  #   session[:sort_order] = @sort_order
+  #   session[:sort_action] = @sort_action
+  #   session[:is_last_page] = @is_last_page
+  #
+  #   session[:search_column] = @search_column
+  #   session[:search_value] = @search_value
+  #
+  #
+  #   build_footer
+  # end
+
+  def advanced_search
+    search
   end
 
   private def check_for_projects(start_number, desired_size, organization_estimations)

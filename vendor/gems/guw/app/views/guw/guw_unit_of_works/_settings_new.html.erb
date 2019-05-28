@@ -114,84 +114,86 @@
           <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link"><%= I18n.t :rename %></a>
         </div>
         <div class="edition-bloc-content pb-4">
-          <table class="table requirements-table estimation-table group_<%= uowg.id %>" id="guw">
-            <tr>
-              <th></th>
-              <th>#</th>
-              <th><%= I18n.t :name %></th>
-              <th><%= I18n.t(:component) %></th>
+          <div class="guw-list">
+            <table class="table requirements-table estimation-table group_<%= uowg.id %>" id="guw">
+              <tr>
+                <th></th>
+                <th>#</th>
+                <th><%= I18n.t :name %></th>
+                <th><%= I18n.t(:component) %></th>
 
-              <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
-                <% unless i[1].blank? %>
-                  <% if @hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
-                    <% guw_coefficient = @hash_guw_coefficients[i[0]] %>
-                    <% unless guw_coefficient.nil? %>
-                      <th style="width: 11%;">
-                        <%= i[0] %>
-                      </th>
-                    <% end %>
-                  <% elsif i[0] == "Coefficient" %>
-                    <% unless @deported_guw_model_guw_coefficients.map(&:id).empty? %>
-                      <th>
-                        <%= i[0] %>
-                      </th>
-                    <% end %>
-                  <% elsif i[0] == "Critères" %>
-                    <% if @guw_types.map{ |i| i.allow_criteria }.flatten.include?(true) %>
-                      <th>
-                        <%= I18n.t :criteria %>
-                      </th>
-                    <% end %>
-                  <% elsif i[0] == "Coeff. de Complexité" %>
-                    <% if i[1].blank? %>
+                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                  <% unless i[1].blank? %>
+                    <% if @hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
+                      <% guw_coefficient = @hash_guw_coefficients[i[0]] %>
+                      <% unless guw_coefficient.nil? %>
+                        <th style="width: 11%;">
+                          <%= i[0] %>
+                        </th>
+                      <% end %>
+                    <% elsif i[0] == "Coefficient" %>
+                      <% unless @deported_guw_model_guw_coefficients.map(&:id).empty? %>
+                        <th>
+                          <%= i[0] %>
+                        </th>
+                      <% end %>
+                    <% elsif i[0] == "Critères" %>
+                      <% if @guw_types.map{ |i| i.allow_criteria }.flatten.include?(true) %>
+                        <th>
+                          <%= I18n.t :criteria %>
+                        </th>
+                      <% end %>
+                    <% elsif i[0] == "Coeff. de Complexité" %>
+                      <% if i[1].blank? %>
+                      <% else %>
+                        <th>
+                          <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                            <%= I18n.t(:cplx_coeff) %>
+                          <% else %>
+                            <%= I18n.t(:complexity) %>
+                          <% end %>
+                        </th>
+                      <% end %>
                     <% else %>
-                      <th>
-                        <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                          <%= I18n.t(:cplx_coeff) %>
-                        <% else %>
-                          <%= I18n.t(:complexity) %>
-                        <% end %>
+                      <th style="width: 12%;">
+                        <%= i[0] %>
                       </th>
                     <% end %>
-                  <% else %>
-                    <th style="width: 12%;">
-                      <%= i[0] %>
-                    </th>
                   <% end %>
+                <% end %>
+
+                <%# if can? :execute_estimation_plan, @project %>
+                <% if false %>
+                  <th class=""><%= I18n.t :actions %></th>
+                <% end %>
+              </tr>
+
+              <% @hash_guw_complexities = {} %>
+              <% Guw::GuwComplexity.all.each do |guw_complexity| %>
+                <% @hash_guw_complexities[guw_complexity.guw_type_id] = guw_complexity %>
+              <% end %>
+
+              <% @hash_guw_model_guw_complexities = Hash.new {|h,k| h[k] = [] } %>
+              <% @guw_model.guw_types.each do |guw_type| %>
+                <% guw_complexity = @hash_guw_complexities[guw_type.id] %>
+                <% unless guw_complexity.nil? %>
+                  <% @hash_guw_model_guw_complexities[guw_complexity.guw_type_id] << guw_complexity %>
                 <% end %>
               <% end %>
 
-              <%# if can? :execute_estimation_plan, @project %>
-              <% if false %>
-                <th class=""><%= I18n.t :actions %></th>
+              <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
+                <% @guw_type = guow.guw_type %>
+                <% unless @guw_type.nil? %>
+                  <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
+                <% end %>
+
+                <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
+                  <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
+                </tr>
+
               <% end %>
-            </tr>
-
-            <% @hash_guw_complexities = {} %>
-            <% Guw::GuwComplexity.all.each do |guw_complexity| %>
-              <% @hash_guw_complexities[guw_complexity.guw_type_id] = guw_complexity %>
-            <% end %>
-
-            <% @hash_guw_model_guw_complexities = Hash.new {|h,k| h[k] = [] } %>
-            <% @guw_model.guw_types.each do |guw_type| %>
-              <% guw_complexity = @hash_guw_complexities[guw_type.id] %>
-              <% unless guw_complexity.nil? %>
-                <% @hash_guw_model_guw_complexities[guw_complexity.guw_type_id] << guw_complexity %>
-              <% end %>
-            <% end %>
-
-            <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
-              <% @guw_type = guow.guw_type %>
-              <% unless @guw_type.nil? %>
-                <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
-              <% end %>
-
-              <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
-                <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
-              </tr>
-
-            <% end %>
-          </table>
+            </table>
+          </div>
 
           <div class="float-right">
             <% if can? :execute_estimation_plan, @project %>

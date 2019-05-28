@@ -1,302 +1,356 @@
-<h1>Reports</h1>
+<div class="row">
+    <div class="col-10">
+      <div id="extract-data" class="edition-page-group py-4"><span><%= I18n.t('filtered_excel_report') %></span></div>
+      <section class="card card-content-bloc">
+        <div class="card-body">
 
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-report"><%= I18n.t(:filtered_excel_report)%></a></li>
-    <li><a href="#tabs-report-all"><%= I18n.t(:detailed_excel_report)%></a></li>
-    <li><a href="#tabs-pdf-all"><%= I18n.t(:detailed_pdf_report)%></a></li>
-    <li><a href="#extract-data"><%= I18n.t(:raw_data_extract)%></a></li>
-    <li><a href="#tabs-budget-report"><%= "Budget Report" %></a></li>
-    <li><a href="#tabs-budget-report-excel"><%= "Budget Report Excel" %></a></li>
-  </ul>
+          <h4>
+            <%= I18n.t(:detailed_excel_report) %>
+          </h4>
 
-
-  <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-    <p>
-      <%= I18n.t(:raw_data_range_dates) %>
-    </p>
-
-    <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
-      <div class="row-fluid">
-        <div class="span12">
-          <%= label_tag 'Date min' %>
-          <%= text_field_tag 'date_min' %>
-        </div>
-      </div>
-
-      <br>
-
-      <div class="row-fluid">
-        <div class="span12">
-          <%= label_tag 'Date max' %>
-          <%= text_field_tag 'date_max' %>
-        </div>
-      </div>
-
-      <br>
-
-      <div class="row-fluid">
-        <div class="span12">
-          <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary btn-estimancy" %>
-        </div>
-      </div>
-    <% end %>
-
-  </div>
-
-  <div id="tabs-budget-report-excel" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-    <%= form_tag generate_report_excel_path, method: "post" do %>
-
-      <%= hidden_field_tag "organization_id", params[:organization_id] %>
-
-      <div class="span3">
-        <%= label_tag "Budgets" %>
-        <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent) %>
-      </div>
-
-      <div class="span3">
-        <%= label_tag "Applications" %>
-        <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent) %>
-      </div>
-
-      <div class="container-fluid">
-        <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
-      </div>
-
-    <% end %>
-  </div>
-
-  <div id="tabs-budget-report" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-    <%= form_tag "generate_budget_report", method: "post" do %>
-
-      <%= hidden_field_tag "organization_id", params[:organization_id] %>
-
-      <div class="span3">
-        <%= label_tag "Budgets" %>
-        <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent) %>
-      </div>
-
-      <div class="span3">
-        <%= label_tag "Applications" %>
-        <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent) %>
-      </div>
-
-      <div class="container-fluid">
-        <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
-      </div>
-
-    <% end %>
-
-    <br/>
-
-    <div class="row">
-
-      <% bt_colors = Hash.new %>
-
-      <% unless params[:budget_id].nil? || params[:application_id].nil? %>
-
-        <% data = Budget::fetch_project_field_data(@organization, @budget, @application) %>
-
-        <% BudgetTypeStatus.where(application_id: @application.id,
-                                  organization_id: @organization.id).all.each do |bts| %>
-          <% unless bts.budget_type.nil? %>
-            <% bt_colors[bts.budget_type.name] = bts.budget_type.color %>
-          <% end %>
-        <% end %>
-
-        <%= data %>
-
-        <div class="span4">
-          <%= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
-        </div>
-      <% end %>
-    </div>
-
-  </div>
-
-
-  <div id="tabs-report-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-   <%= form_tag "generate_report_excel_detail", method: "post" do %>
-      <h4><%= I18n.t(:generate_excel_report_all_quotations) %></h4>
-      <p>
-        <%= I18n.t(:Abaque_Wbs_quotation_export) %>
-      </p>
-      <br>
-      <%= hidden_field_tag "organization_id", params[:organization_id] %>
-      <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
-    <% end %>
-  </div>
-
-  <div id="tabs-report" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-
-    <h4><%= I18n.t(:generate_filtered_excel_report) %></h4>
-    <p>
-      <%= I18n.t(:selected_quotation_export) %>
-    </p>
-
-      <%= form_tag "generate_report_excel_estimations", method: "post" do %>
-
-      <%= hidden_field_tag "organization_id", params[:organization_id] %>
-
-      <div class="row-fluid">
-        <div class="span3 well well-rounded">
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:label_project_name) %>
-              <%= text_field_tag "title", "" %>
-            </div>
-          </div>
-          <br>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:Product_Name) %>
-              <%# text_field_tag "application", "" %>
-              <%= select_tag "report[application_id]", options_for_select(@organization.applications.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
-            </div>
-          </div>
-          <br>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:Start_date_organizations) %>
-              <%= text_field_tag "report_date[start_date]", "", class: 'date-picker' %>
-            </div>
-          </div>
-          <br>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:end_date_organizations) %>
-              <%= text_field_tag "report_date[end_date]", "", class: 'date-picker' %>
-            </div>
-          </div>
-        </div>
-        <div class="span3 well well-rounded">
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:Platform_Categorie_organization) %>
-              <%= select_tag "report[platform_category_id]", options_for_select(@organization.platform_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
-            </div>
-          </div>
-          <br>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:Project_Category) %>
-              <%= select_tag "report[project_category_id]", options_for_select(@organization.project_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
-            </div>
-          </div>
-          <br>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:Category_acquistion) %>
-              <%= select_tag "report[acquisition_category_id]", options_for_select(@organization.acquisition_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
-            </div>
-          </div>
-          <br>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:project_area) %>
-              <%= select_tag "report[project_area_id]", options_for_select(@organization.project_areas.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
-            </div>
-          </div>
-          <br>
-          <div class="row-fluid">
-            <div class="span12">
-              Estimation Status
-              <%= select_tag "report[estimation_status_id]", options_for_select(@organization.estimation_statuses.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
-            </div>
-          </div>
-        </div>
-
-        <div class="span4 well well-rounded">
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:counting_details) %>
-              <%= check_box_tag "detail", "checked", true %>
-            </div>
-          </div>
-
-          <br>
-
-          <div class="row-fluid">
-            <div class="span12">
-              <%= label_tag I18n.t(:module_size_select) %>
-              <%= select_tag "guw_model_id", options_for_select(@organization.guw_models.map{|i| [i.name, i.id]} ) %>
-            </div>
-          </div>
-          <br>
-        </div>
-      </div>
-
-      <br>
-      <div class="row-fluid">
-        <div class="span12">
-          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
-        </div>
-      </div>
-    <% end %>
-  </div>
-
-  <div id="tabs-pdf-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-    <h4>
-      <%= I18n.t(:quotation_PDF_export) %>
-    </h4>
-
-    <div class="row-fluid">
-      <div class="span12">
-        <% @projects = @organization.projects %>
-        <%= form_tag multiple_export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form', target: "_blank" do %>
-          <div class="modal-body" style="height: inherit;">
-
-            <p>
-              <label>
-                <b> <%= I18n.t :business_need %></b>
-              </label>
-              <%= select_tag "business_need", options_for_select(@projects.map(&:business_need).uniq.compact) %>
-            </p>
-
-            <p>
-              <label>
-                <b><%= I18n.t :request_number %></b>
-              </label>
-              <%= select_tag "request_number", options_for_select(@projects.map(&:request_number).uniq.compact) %>
-            </p>
-
-            </p>
-            <label>
-              <b><%= I18n.t :title %></b>
-            </label>
-            <%= text_field_tag :title %>
-            </p>
-
+          <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
             <div class="row-fluid">
-              <div class="span12">
-                <label>
-                <b><%= I18n.t :date_min %></b>
-                </label>
-                <%= text_field_tag :date_min, '', class: 'date-picker' %>
+              <div class="col-12">
+                <%= label_tag 'Date min' %>
+                <%= text_field_tag 'date_min' %>
               </div>
             </div>
 
             <br>
 
             <div class="row-fluid">
-              <div class="span12">
-                <label>
-                <b><%= I18n.t :date_max %></b>
-                </label>
-                <%= text_field_tag :date_max, '', class: 'date-picker' %>
+              <div class="col-12">
+                <%= label_tag 'Date max' %>
+                <%= text_field_tag 'date_max' %>
               </div>
             </div>
 
+            <br>
+
+            <div class="row-fluid">
+              <div class="col-12">
+                <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary btn-estimancy" %>
+              </div>
+            </div>
+          <% end %>
+
+        </div>
+      </section>
+
+      <div id="tabs-budget-report-excel" class="edition-page-group py-4"><span><%= I18n.t('detailed_excel_report') %></span></div>
+      <section class="card card-content-bloc">
+        <div class="card-body">
+
+          <h4>
+            <%= I18n.t(:detailed_excel_report) %>
+          </h4>
+
+          <%= form_tag generate_report_excel_path, method: "post" do %>
+
+            <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+            <div class="span3">
+              <%= label_tag "Budgets" %>
+              <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
+            </div>
+
+            <div class="span3">
+              <%= label_tag "Applications" %>
+              <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
+            </div>
+
+            <div class="container-fluid">
+              <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+            </div>
+          <% end %>
+
+        </div>
+      </section>
+
+      <div id="tabs-budget-report" class="edition-page-group py-4"><span><%= I18n.t('detailed_pdf_report') %></span></div>
+      <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+        <section class="card card-content-bloc">
+          <div class="card-body">
+
+            <h4>
+              <%= I18n.t(:detailed_excel_report) %>
+            </h4>
+
+            <%= form_tag "generate_budget_report", method: "post" do %>
+
+              <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+              <div class="span3">
+                <%= label_tag "Budgets" %>
+                <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
+              </div>
+
+              <div class="span3">
+                <%= label_tag "Applications" %>
+                <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
+              </div>
+
+              <div class="container-fluid">
+                <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+              </div>
+
+            <% end %>
+
+            <br/>
+
+            <div class="row">
+
+              <% bt_colors = Hash.new %>
+
+              <% unless params[:budget_id].nil? || params[:application_id].nil? %>
+
+                <% data = Budget::fetch_project_field_data(@organization, @budget, @application) %>
+
+                <% BudgetTypeStatus.where(application_id: @application.id,
+                                          organization_id: @organization.id).all.each do |bts| %>
+                  <% unless bts.budget_type.nil? %>
+                    <% bt_colors[bts.budget_type.name] = bts.budget_type.color %>
+                  <% end %>
+                <% end %>
+
+                <%= data %>
+
+                <div class="span4">
+                  <%= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
+                </div>
+              <% end %>
+            </div>
           </div>
+        </section>
 
-          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
+      </div>
 
-        <% end %>
+      <div id="tabs-report-all" class="edition-page-group py-4"><span><%= I18n.t('raw_data_extract') %></span></div>
+      <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+        <section class="card card-content-bloc">
+          <div class="card-body">
+
+            <h4>
+              <%= I18n.t(:raw_data_extract) %>
+            </h4>
+
+            <%= form_tag "generate_report_excel_detail", method: "post" do %>
+              <h4><%= I18n.t(:generate_excel_report_all_quotations) %></h4>
+              <p>
+                <%= I18n.t(:Abaque_Wbs_quotation_export) %>
+              </p>
+              <br>
+              <%= hidden_field_tag "organization_id", params[:organization_id] %>
+              <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
+            <% end %>
+          </div>
+        </section>
+      </div>
+
+      <div id="tabs-report" class="edition-page-group py-4"><span>Budget Report</span></div>
+      <section class="card card-content-bloc">
+        <div class="card-body">
+
+          <h4><%= I18n.t(:generate_filtered_excel_report) %></h4>
+          <p>
+            <%= I18n.t(:selected_quotation_export) %>
+          </p>
+
+            <%= form_tag "generate_report_excel_estimations", method: "post" do %>
+
+            <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+            <div class="row-fluid">
+              <div class="span3 well well-rounded">
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:label_project_name) %>
+                    <%= text_field_tag "title", "", class: "form-control" %>
+                  </div>
+                </div>
+                <br>
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:Product_Name) %>
+                    <%# text_field_tag "application", "" %>
+                    <%= select_tag "report[application_id]", options_for_select(@organization.applications.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+                  </div>
+                </div>
+                <br>
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:Start_date_organizations) %>
+                    <%= text_field_tag "report_date[start_date]", "", class: 'date-picker form-control' %>
+                  </div>
+                </div>
+                <br>
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:end_date_organizations) %>
+                    <%= text_field_tag "report_date[end_date]", "", class: 'date-picker form-control' %>
+                  </div>
+                </div>
+              </div>
+              <div class="span3 well well-rounded">
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:Platform_Categorie_organization) %>
+                    <%= select_tag "report[platform_category_id]", options_for_select(@organization.platform_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+                  </div>
+                </div>
+                <br>
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:Project_Category) %>
+                    <%= select_tag "report[project_category_id]", options_for_select(@organization.project_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+                  </div>
+                </div>
+                <br>
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:Category_acquistion) %>
+                    <%= select_tag "report[acquisition_category_id]", options_for_select(@organization.acquisition_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+                  </div>
+                </div>
+                <br>
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:project_area) %>
+                    <%= select_tag "report[project_area_id]", options_for_select(@organization.project_areas.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+                  </div>
+                </div>
+                <br>
+                <div class="row-fluid">
+                  <div class="col-12">
+                    Estimation Status
+                    <%= select_tag "report[estimation_status_id]", options_for_select(@organization.estimation_statuses.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="span4 well well-rounded">
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:counting_details) %>
+                    <%= check_box_tag "detail", "checked", true %>
+                  </div>
+                </div>
+
+                <br>
+
+                <div class="row-fluid">
+                  <div class="col-12">
+                    <%= label_tag I18n.t(:module_size_select) %>
+                    <%= select_tag "guw_model_id", options_for_select(@organization.guw_models.map{|i| [i.name, i.id]}), class: "form-control" %>
+                  </div>
+                </div>
+                <br>
+              </div>
+            </div>
+
+            <br>
+            <div class="row-fluid">
+              <div class="col-12">
+                <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </section>
+
+      <div id="tabs-pdf-all" class="edition-page-group py-4"><span>Budget Report Excel</span></div>
+      <section class="card card-content-bloc">
+        <div class="card-body">
+      <h4>
+        <%= I18n.t(:quotation_PDF_export) %>
+      </h4>
+
+      <div class="row-fluid">
+        <div class="col-12">
+          <% @projects = @organization.projects %>
+          <%= form_tag multiple_export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form', target: "_blank" do %>
+            <div class="modal-body" style="height: inherit;">
+
+              <p>
+                <label>
+                  <b> <%= I18n.t :business_need %></b>
+                </label>
+                <%= select_tag "business_need", options_for_select(@projects.map(&:business_need).uniq.compact), class: "form-control" %>
+              </p>
+
+              <p>
+                <label>
+                  <b><%= I18n.t :request_number %></b>
+                </label>
+                <%= select_tag "request_number", options_for_select(@projects.map(&:request_number).uniq.compact), class: "form-control" %>
+              </p>
+
+              </p>
+              <label>
+                <b><%= I18n.t :title %></b>
+              </label>
+              <%= text_field_tag :title, '', class: "form-control" %>
+              </p>
+
+              <div class="row-fluid">
+                <div class="col-12">
+                  <label>
+                  <b><%= I18n.t :date_min %></b>
+                  </label>
+                  <%= text_field_tag :date_min, '', class: 'date-picker form-control' %>
+                </div>
+              </div>
+
+              <br>
+
+              <div class="row-fluid">
+                <div class="col-12">
+                  <label>
+                  <b><%= I18n.t :date_max %></b>
+                  </label>
+                  <%= text_field_tag :date_max, '', class: 'date-picker form-control' %>
+                </div>
+              </div>
+
+            </div>
+
+            <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
+
+          <% end %>
+        </div>
       </div>
     </div>
-  </div>
+  </section>
+    </div>
 
+  <div class="col-2">
+    <div id="edition-sidebar">
+      <h4 class="mb-0">Navigation</h4>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-report"><span><%= I18n.t("filtered_excel_report") %></span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-report-all"><span><%= I18n.t("detailed_excel_report") %></span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-pdf-all"><span><%= I18n.t("detailed_pdf_report") %></span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#extract-data"><span><%= I18n.t("raw_data_extract") %></span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-budget-report"><span>Budget Report</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-budget-report-excel"><span>Budget Report Excel</span></a>
+        </li>
+      </ul>
+    </div>
+  </div>
 </div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
 <script>
   $(document).ready(function () {
@@ -307,4 +361,17 @@
       todayBtn: true
     });
   });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $(document).on('scroll', function(){
+            if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+                $("#edition-sidebar").css({position: "fixed", top: -5});
+            }
+            if ($(document).scrollTop() < 200){
+                $("#edition-sidebar").css({position: "static", top: 0});
+            }
+        });
+    });
 </script>
