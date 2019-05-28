@@ -3,21 +3,15 @@
     <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, is_model: true), :class => 'btn btn-primary' %>
   </div>
 <% end %>
+<hr>
 
 <table id="table_list_10" class="table table-list">
   <thead>
     <tr>
       <th class="text_left"><%= I18n.t(:label_model_name) %></th>
       <th class="center">Vers.</th>
-      <th class="center">Description</th>
       <th class="center"><%= I18n.t(:created_at) %></th>
-      <th style="width: 50px" class="filter-select"><%= I18n.t(:state) %></th>
-      <th><%= I18n.t(:project_area)%></th>
-      <th><%= I18n.t(:category)%></th>
-      <th><%= I18n.t(:label_platform)%></th>
-      <th><%= I18n.t(:label_acquisition)%></th>
-      <th class="text_left"><%= I18n.t(:provider) %></th>
-      <th class="action"><%= I18n.t(:actions) %></th>
+      <th class="center"><%= I18n.t(:actions) %></th>
     </tr>
   </thead>
 
@@ -42,35 +36,22 @@
               <% end %>
             </td>
             <td class="center"><%= project.version_number %></td>
-            <td class="text_field_text_overflow"><%= ActionView::Base.full_sanitizer.sanitize(project.description).to_s.html_safe %></td>
             <td class="center"><%= I18n.l(project.created_at) %></td>
-            <td><span class="badge" style="background-color: <%= project.status_background_color %>"><%= project.status_name %></span></td>
-            <td class="text_field_text_overflow"><%= project.project_area %></td>
-            <td class="text_field_text_overflow"><%= project.project_category %></td>
-            <td class="text_field_text_overflow"><%= project.platform_category %></td>
-            <td class="text_field_text_overflow"><%= project.acquisition_category %></td>
-            <td class="text_field_text_overflow"><%= project.provider %></td>
             <td style="min-width:130px;">
 
               <% if can? :manage_estimation_models, Project %>
-                <%= link_to('',
+                <%= link_to('Dupliquer',
                             main_app.duplicate_path(project, organization_id: @organization, action_name: 'duplication_model'),
-                            :class => 'icon-copy pull-left',
                             :title => I18n.t('button_duplicate_project'),
                             :method => "POST") %>
               <% end %>
 
-              <% if can? :create_project_from_template, Project %>
-                <%= link_to('', change_new_estimation_data_path(template_id: project.id, organization_id: project.organization_id, action_name: "create_project_from_template"), :class => 'icon-repeat pull-left', :title => I18n.t('button_duplicate_model'), remote: true) %>
-              <% end %>
-
               <% if can_show_estimation?(project) %>
-                <%= link_to('', {:controller => 'projects', :action => 'find_use_estimation_model', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'icon icon-map-marker pull-left', :id => 'find_use_estimation_model', :title => I18n.t('button_find_use')) %>
-                <%= link_to('', edit_project_path(project, is_model: true, :anchor => 'tabs-1'), :class => 'icon-pencil pull-left', :title => I18n.t('edit')) %>
+                <%= link_to('| Editer', edit_project_path(project, is_model: true, :anchor => 'tabs-1'), :title => I18n.t('edit')) %>
               <% end %>
 
               <% if can? :manage_estimation_models, Project %>
-                <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
+                <%= link_to('| Supprimer', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
               <% end %>
             </td>
           </tr>

@@ -3,36 +3,37 @@
 
 <% if can? :manage, OrganizationProfile %>
   <div class="group_button">
-      <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn' %>
-      <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :class => 'btn'%>
-      <a href="#ImportProjectProfile" role="button" class="btn" title="Import project areas from excel" data-toggle="modal">
+      <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn btn-primary' %>
+      <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :class => 'btn btn-primary' %>
+      <a href="#ImportProjectProfile" role="button" class="btn btn-primary" title="Import project areas from excel" data-toggle="modal">
       <%= I18n.t(:import) %>
     </a>
   </div>
+  <hr>
 
-    <div id="ImportProjectProfile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-       <%= form_tag organization_import_project_profile_path(@organization), :multipart => true, :class => 'simple_form' do %>
-          <div class="modal-header modal-drag">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
-          </div>
-          <div class="modal-body">
-            <%= file_field_tag :file %>
-          </div>
-          <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-          </div>
-          <div class="loading span11 hide">
-            <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-          </div>
-      <%end%>
-    </div>
+  <div id="ImportProjectProfile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <%= form_tag organization_import_project_profile_path(@organization), :multipart => true, :class => 'simple_form' do %>
+      <div class="modal-header modal-drag">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+        <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+      </div>
+      <div class="modal-body">
+        <%= file_field_tag :file %>
+      </div>
+      <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+        <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+      </div>
+      <div class="loading span11 hide">
+        <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+      </div>
+    <% end %>
+  </div>
 
 <%end%>
 
 
-<table id="table_list_30" class="table tablesorterPager table-striped table-bordered table-condensed">
+<table id="table_list_30" class="table table-list">
   <thead>
   <tr>
     <th><%= I18n.t(:name) %></th>
