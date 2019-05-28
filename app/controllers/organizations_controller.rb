@@ -3234,6 +3234,10 @@ class OrganizationsController < ApplicationController
     @organization_profiles = @organization.organization_profiles
 
     @work_element_types = @organization.work_element_types
+
+    # get organization estimations per year
+    #@projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort_by{|created_at, _extras| created_at }
+    @projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] }
   end
 
   def refresh_value_elements

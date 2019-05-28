@@ -1,16 +1,65 @@
-<table class="table table-bordered">
-  <tr>
-    <th>ORGANISATIONS</th>
-    <th>NOMBRE DE DEVIS</th>
-  </tr>
+<!--<table class="table table-bordered">-->
+  <!--<tr>-->
+    <!--<th>ORGANISATIONS</th>-->
+    <!--<th>NOMBRE DE DEVIS / ANNEE</th>-->
+  <!--</tr>-->
 
-  <% @organizations.each do |organization| %>
-    <tr>
-      <td> <%= organization %></td>
-      <td> <%= organization.projects.size %></td>
-    </tr>
-  <% end %>
+  <!--<%# @organizations.each do |organization| %>-->
+    <!--<tr>-->
+      <!--<td> <%#= organization %></td>-->
+      <!--<td> <%#= organization.projects.size %></td>-->
+    <!--</tr>-->
+  <!--<%# end %>-->
+<!--</table>-->
 
-</table>
+<div class="row" style="margin-top: 30px;">
+  <div class="col-4"> ORGANISATIONS </div>
+  <div class="col"> NOMBRE DE DEVIS / ANNEE</div>
+  <span style="float: right; margin-left: auto; margin-right: 20px;">
+    <%= link_to 'PDF', "/projects_quantity.pdf", :class => 'btn btn-primary pull-right' %>
+  </span>
+</div>
 
-<%= link_to 'PDF', "/projects_quantity.pdf", :class => 'btn btn-primary pull-right' %>
+<div class="card card-widget card-indicator card-indicator-with-module">
+  <div class="card-body">
+    <!--<div class="mb-5">-->
+      <% @organizations.each do |organization| %>
+          <% projects_per_year = organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] } %>
+          <div class="widgets-list">
+
+            <div class="widget-list-content">
+              <div class="row" style="width: -webkit-fill-available;">
+                <div class="col-3">
+                    <h4><%= organization %></h4>
+                </div>
+                <div class="col">
+                  <div class="widget-group">
+                    <ul class="widget-group-list" style="height: 100px; display: flex; flex-direction: column; flex-wrap: wrap;">
+                      <% projects_per_year.each do |year, array| %>
+                          <% value = array.size %>
+                          <% unless value.is_a?(Hash) %>
+                              <li>
+                                <div class="card card-widget card-indicator card-indicator-with-module">
+                                  <div class="card-body">
+                                    <div class="card-indicator-type"></div>
+                                    <div class="card-indicator-text"><%= year %> </div>
+                                    <!--<div class="<%#= (value.to_s.size >= 15) ? 'card-indicator-label' : 'card-indicator-quantity' %>">-->
+                                    <div class="card-indicator-quantity">
+                                      <span><%= value.nil? ? '-' : value %></span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </li>
+                          <% end %>
+                      <% end %>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+      <% end %>
+    <!--</div>-->
+  </div>
+</div>
+

@@ -1877,4 +1877,5 @@ en-gb:
   hide_module_results: "Hide module results"
   show_module_results: "Show module results"
   label_results: "Results"
+  nb_estimations: "Number of estimates"
 

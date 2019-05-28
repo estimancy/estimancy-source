@@ -225,9 +225,6 @@
                 </div>
               </div>
             </div>
-
-
-
           </div>
 
           <!-- Sélectionnez le module de taille -->
@@ -243,9 +240,79 @@
 
               <div class="edition-bloc-content">
                 <div class="edition-bloc-form">
+
                   <div class="form-row">
-                    <div class="col-12">
-                      <%= link_to I18n.t('extracting_organizations_and_their_numbers_of_quotations'), '/projects_quantity', :class => 'btn btn-secondary' %>
+                    <div class="col-6">
+                        <div class="card card-widget card-indicator card-indicator-with-module">
+                            <div class="card-body">
+                                <div class="mb-5">
+                                    <div class="widgets-list">
+                                        <%= image_tag "temps_realisation_devis_SLA.png", style: 'height:auto; width:100%;' %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6">
+                        <div class="card card-widget card-indicator card-indicator-with-module">
+                            <div class="card-body">
+                                <div class="mb-5">
+                                    <div class="widgets-list">
+                                        <%= image_tag "nb_PF_livre.png", style: 'height:auto; width:100%;' %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+
+                  <br>
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="card card-widget card-indicator card-indicator-with-module">
+                        <div class="card-body">
+                            Budget global
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-6">
+                      <div class="card card-widget card-indicator card-indicator-with-module">
+                        <div class="card-body">
+                          <span style="margin-bottom: 10px;"><%= I18n.t(:nb_estimations) %></span>
+
+                          <div class="widgets-list">
+                              <div class="widget-list-content">
+                                <div class="widget-group">
+                                  <ul class="widget-group-list" style="height: 100px; display: flex; flex-direction: column; flex-wrap: wrap;">
+                                    <% @projects_per_year.each do |year, array| %>
+                                        <% value = array.size %>
+                                        <% unless value.is_a?(Hash) %>
+                                            <li>
+                                              <div class="card card-widget card-indicator card-indicator-with-module">
+                                                <div class="card-body">
+                                                  <div class="card-indicator-type"></div>
+                                                  <div class="card-indicator-text"><%= year %> </div>
+                                                  <!--<div class="<%#= (value.to_s.size >= 15) ? 'card-indicator-label' : 'card-indicator-quantity' %>">-->
+                                                  <div class="card-indicator-quantity">
+                                                    <span><%= value.nil? ? '-' : value %></span>
+                                                  </div>
+                                                </div>
+                                              </div>
+                                            </li>
+                                        <% end %>
+                                    <% end %>
+                                  </ul>
+                                </div>
+                              </div>
+                          </div>
+                        </div>
+
+                        <span style="float: right; margin-left: auto">
+                          <%= link_to "DETAILS", '/projects_quantity', :class => 'btn btn-secondary' %>
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>

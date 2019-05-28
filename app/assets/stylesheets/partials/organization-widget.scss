@@ -65,4 +65,8 @@
       //margin-top: 20px;
     }
   }
+
+  .ul_by_column {
+    height: 100px;  display: flex;  flex-direction: column;  flex-wrap: wrap;
+  }
 }
