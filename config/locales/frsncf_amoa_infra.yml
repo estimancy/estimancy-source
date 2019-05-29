@@ -2367,3 +2367,4 @@ frsncf_amoa_infra:
   show_module_results: "Afficher les résultats du module"
   label_results: "Résultats"
   nb_estimations: "Nombre de devis"
+  number_estimates_per_year: "Nombre de devis / année"

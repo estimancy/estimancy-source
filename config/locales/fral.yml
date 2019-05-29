@@ -2353,3 +2353,4 @@ fral:
   show_module_results: "Afficher les résultats du module"
   label_results: "Résultats"
   nb_estimations: "Nombre d'estimations"
+  number_estimates_per_year: "Nombre d'estimations / année"

@@ -13,8 +13,12 @@
 <!--</table>-->
 
 <div class="row" style="margin-top: 30px;">
-  <div class="col-4"> ORGANISATIONS </div>
-  <div class="col"> NOMBRE DE DEVIS / ANNEE</div>
+  <div class="col-4">
+    <%= I18n.t(:organization).to_s.upcase %>
+  </div>
+  <div class="col">
+    <%= I18n.t(:number_estimates_per_year).to_s.upcase %>
+  </div>
   <span style="float: right; margin-left: auto; margin-right: 20px;">
     <%= link_to 'PDF', "/projects_quantity.pdf", :class => 'btn btn-primary pull-right' %>
   </span>
@@ -23,8 +27,18 @@
 <div class="card card-widget card-indicator card-indicator-with-module">
   <div class="card-body">
     <!--<div class="mb-5">-->
-      <% @organizations.each do |organization| %>
-          <% projects_per_year = organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] } %>
+      <% @current_user.organizations.each do |organization| %>
+          <% projects_per_years = organization.projects.group_by{ |t| t.created_at.year }#.sort {|k, v| k[1] <=> v[1] }  %>
+         <% projects_per_year = Hash.new %>
+          <% years_range = 2017..DateTime.now.year  %>
+          <% years_range.step(1) do |year|
+              if projects_per_years.has_key?(year)
+                   projects_per_year[year] = projects_per_years[year]
+               else
+                   projects_per_year[year] = []
+              end
+          end %>
+
           <div class="widgets-list">
 
             <div class="widget-list-content">
