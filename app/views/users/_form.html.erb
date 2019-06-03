@@ -134,7 +134,10 @@
                     <% if can? :manage, User %>
                       <td colspan="2"><%= f.input :auth_type, :label => I18n.t('auth_type'), :as => :select, :collection => AuthMethod.all, :include_blank => false %></td>
                     <% else %>
-                      <td colspan="2"><%= f.input :auth_type, :label => I18n.t('auth_type'), :as => :select, :collection => AuthMethod.all, :disabled => true, :include_blank => false %></td>
+                      <td colspan="2">
+                        <%= f.input :auth_type, :label => I18n.t('auth_type'), :as => :select, :collection => AuthMethod.all, :disabled => true, :include_blank => false %>
+                        <%= f.hidden_field :auth_type %>
+                      </td>
                     <% end %>
                   </tr>
 
