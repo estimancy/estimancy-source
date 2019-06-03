@@ -2,6 +2,7 @@
   <ul>
     <li><a href="#tabs-applications"><%= I18n.t(:applications) %></a></li>
     <li><a href="#tabs-budgets"><%= I18n.t(:budget) %></a></li>
+    <li><a href="#tabs-budget-types"><%= I18n.t(:budget_type) %></a></li>
     <li><a href="#tabs-project-areas"><%= I18n.t(:project_areas) %></a></li>
     <li><a href="#tabs-acquisition-categories"><%= I18n.t(:acquisition_categories) %></a></li>
     <li><a href="#tabs-platform-categories"><%= I18n.t(:platform_categories) %></a></li>
@@ -11,6 +12,7 @@
     <li><a href="#tabs-profile"><%= I18n.t(:profiles) %></a></li>
     <li><a href="#tabs-fields"><%= I18n.t(:fields) %></a></li>
     <li><a href="#tabs-estimation-models"><%= I18n.t(:estimation_models) %></a></li>
+
     <% if current_user.super_admin == true %>
         <li><a href="#tabs-views"><%= I18n.t(:views) %></a></li>
     <% end %>
@@ -138,6 +140,37 @@
       </tbody>
     </table>
   </div>
+
+  <div id="tabs-budget-types">
+    <div class="group_button">
+      <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn' %>
+    </div>
+
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:color) %></th>
+        <th  class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% BudgetType.all.each do |budget_type| %>
+        <tr>
+          <td><%= budget_type.name %></td>
+          <td><%= budget_type.color %></td>
+          <td class="center">
+            <%= link_to '', edit_organization_budget_type_path(@organization, budget_type), :class => 'icon-pencil', :title => I18n.t('edit') %>
+            <%= link_to '', organization_budget_type_path(@organization, budget_type), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+          </td>
+        </tr>
+      <% end %>
+      <%= render :partial => 'layouts/footer_table' %>
+      </tbody>
+    </table>
+  </div>
+
 
   <div id="tabs-project-areas">
     <% if can? :show_project_areas, ProjectArea %>
@@ -457,6 +490,8 @@
       <div class="red_color"><%= I18n.t(:notice_cannot_view_selected_columns_list) %></div>
     <% end %>
   </div>
+
+
 
   <!-- Fournisseurs -->
   <div id="tabs-providers">

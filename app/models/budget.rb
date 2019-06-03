@@ -3,6 +3,8 @@ class Budget < ActiveRecord::Base
 
   belongs_to :organization
   has_many :budget_types, dependent: :destroy
+  has_many :application_budgets, dependent: :destroy
+  has_many :applications, through: :application_budgets
 
   def self.fetch_project_field_data(organization, budget, application)
     bt_hash = Hash.new {|h,k| h[k] = [] }

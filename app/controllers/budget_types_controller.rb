@@ -16,16 +16,12 @@ class BudgetTypesController < ApplicationController
     set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type"), I18n.t('budget_type') => ""
     @budget_type = BudgetType.new
     @organization = Organization.find(params[:organization_id])
-    @application = Application.find(params[:application_id])
-    @budget = Budget.find(params[:budget_id])
   end
 
   def edit
     authorize! :show_budget_types, BudgetType
 
     @organization = Organization.find(params[:organization_id])
-    @application = Application.find(params[:application_id])
-    @budget = Budget.find(params[:budget_id])
 
     @budget_type = BudgetType.find(params[:id])
 
@@ -40,20 +36,20 @@ class BudgetTypesController < ApplicationController
     set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type"), I18n.t('budget_type') => ""
 
     @organization = Organization.find(params[:organization_id])
-    @application = Application.find(params[:application_id])
-    @budget = Budget.find(params[:budget_id])
 
     @budget_type = BudgetType.new(params[:budget_type])
-    @budget_type.application_id = @application.id
-    @budget_type.budget_id = @budget.id
 
     if @budget_type.save
-
+      #params[:estimation_statuses].each do |k, v|
+        #BudgetTypeStatus.where(organization_id: @organization.id,
+                               #budget_type_id: @budget_type.id,
+                               #estimation_status_id: k,
+                               #application_id: @application.id).first_or_create
       params[:estimation_statuses].each do |k, v|
         BudgetTypeStatus.where(organization_id: @organization.id,
                                budget_type_id: @budget_type.id,
                                estimation_status_id: k,
-                               application_id: @application.id).first_or_create
+                               ).first_or_create
       end
 
       flash[:notice] = I18n.t (:notice_budget_type_successful_created)
@@ -96,6 +92,8 @@ class BudgetTypesController < ApplicationController
     @budget_type.destroy
 
     flash[:notice] = I18n.t (:notice_budget_type_successful_deleted)
-    redirect_to organization_setting_path(organization_id, :anchor => 'tabs-budget-type')
+    #redirect_to organization_setting_path(organization_id, :anchor => 'tabs-budget-type')
+    #redirect_to edit_organization_budget_path(@organization, @budget)
+    redirect_to :back
   end
 end

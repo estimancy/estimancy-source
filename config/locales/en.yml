@@ -2260,3 +2260,6 @@ en:
 
   budget_type: "Budget type"
   color: "Color"
+
+  add_budget_type: "Add"
+  select_buget_type: "Select a budget type"

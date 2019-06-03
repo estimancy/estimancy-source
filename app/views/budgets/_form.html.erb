@@ -36,11 +36,11 @@
                       input_html: { selected: I18n.t(:Indifferent),:class => 'input-large' } %>
         </div>
 
-
-
       <br/>
 
       </div>
+      <br/><br/>
+
 
       <script>
           $(document).ready(function () {
@@ -58,22 +58,90 @@
         <% sum += app.forfait_mco.to_f %>
       <% end %>
       <% if controller.action_name == "edit" %>
-        <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
-          <tr>
-            <th>Applications</th>
-          </tr>
+        <div class="row">
+          <div class="span4">
+            <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
+              <tr>
+                <th>Applications</th>
+                <th>Montant</th>
+              </tr>
+              <% @organization.applications.each do |app| %>
+                <% app_budget = ApplicationBudget.where(budget_id: @budget.id,application_id: app.id).first %>
+                <tr>
+                  <td>
+                    <span style="margin-right: 10px;">
+                      <% if app_budget %>
+                        <%= check_box_tag("budget_app_check[]", app.id, (@budget.applications.map(&:id).include?(app.id) && app_budget.is_used) ) %>
+                      <% else %>
+                        <%= check_box_tag("budget_app_check[]", app.id, false ) %>
+                      <% end %>
+                    </span>
+                    <%= app.name %>
+                  </td>
+                  <td>
+                    <%= text_field_tag "budget_app_montant[#{app.id}]", (app_budget.nil? ? nil : app_budget.montant)  %>
+                  </td>
+                </tr>
+              <% end %>
+            </table>
+          </div>
+          <div class="span1"></div>
 
-          <% @organization.applications.each do |app| %>
-            <tr>
-              <td>
-                <%= link_to app, organization_budget_application_budget_types_path(@organization, @budget, app) %>
-              </td>
-              <td>
-                <%= app.budget_types.map(&:name).join(', ') %>
-              </td>
-            </tr>
-          <% end %>
-        </table>
+          <div class="span4">
+            <div>
+              <%= label_tag I18n.t :budget_type %>
+              <%= select_tag :budget_budget_type_id, options_for_select(BudgetType.all.map{|i| [i.name, i.id]},
+                                                                  selected: params[:budget_id]),
+                                                                  prompt: I18n.t(:select_buget_type) %>
+
+                <%= hidden_field_tag "selected_budget_type_id" %>
+
+                <script>
+                    $("#budget_budget_type_id").change(function(){
+                        $("#selected_budget_type_id").val($(this).val());
+                    });
+                </script>
+
+
+                <%#= link_to I18n.t('add_budget_type'), organization_budget_add_budget_type_path(@organization, @budget,
+                          bbt_id: params[:selected_budget_type_id]),
+                          :class => 'btn btn-primary' %>
+
+                <%= submit_tag I18n.t('add_budget_type'), name: "add_budget_type", :class => 'btn btn-primary' %>
+
+            </div>
+
+            <br/>
+
+            <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
+
+                <tr>
+                  <th><%= I18n.t :budget_type %></th>
+                  <th>Action</th>
+                </tr>
+
+                <% BudgetBudgetType.where(:organization_id => @organization.id,
+                                           :budget_id => @budget.id).each do |bbt| %>
+                <% unless bbt.nil? %>
+                    <tr>
+                      <td>
+                        <%= bbt.budget_type %>
+                      </td>
+                      <td class="center">
+                        <%= link_to "", organization_budget_destroy_budget_budget_type_path(@organization, @budget, bbt_id: bbt.id),
+                                      method: :delete,
+                                      data: { confirm: I18n.t(:are_you_sure) },
+                                      class: "icon-trash" %>
+                      </td>
+                    </tr>
+                  <% end %>
+                <% end %>
+            </table>
+
+          </div>
+
+        </div>
+
         <%= hidden_field_tag :application_id, params[:application_id] %>
         <br/>
       <% end %>
@@ -81,16 +149,18 @@
       <div class="actions-tabs">
         <% if can? :manage, BudgetType %>
           <% if action_name.in?(%w(new create)) %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('save_and_create'), name: "update", :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('save'), name: "update", :class => 'btn btn-primary' %>
           <% elsif action_name == 'edit' || action_name=='update' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('save'), name: "update", :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), name: "update", :class => 'btn btn-primary' %>
           <% end %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-area'), :class => 'btn' %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budgets'), :class => 'btn' %>
       </div>
     <% end %>
+
+
+
   </div>
 </div>
-

@@ -65,13 +65,46 @@ class BudgetsController < ApplicationController
   def update
     @organization = Organization.find(params[:organization_id])
     @budget = Budget.find(params[:id])
-    #@application = Application.find(params[:application_id])
 
-    if @budget.update_attributes(params[:budget])
-      flash[:notice] = I18n.t (:notice_budget_successful_updated)
-      redirect_to organization_setting_path(@organization, :anchor => 'tabs-budgets')
+    if params[:add_budget_type].present?
+      selected_budget_type_id = params[:selected_budget_type_id]
+      unless selected_budget_type_id.nil? || selected_budget_type_id.empty?
+        add_budget_type(@organization.id, @budget.id, selected_budget_type_id)
+      end
+
     else
-      render action: 'edit'
+      if @budget.update_attributes(params[:budget])
+        app_montants = params[:budget_app_montant]
+        selected_apps = params[:budget_app_check]
+
+        unless app_montants.empty?
+          app_montants.each do |app_id, montant|
+              app_budget = ApplicationBudget.where(organization_id: @organization.id,
+                                       application_id: app_id,
+                                       budget_id: @budget.id).first_or_create
+              app_budget.montant = montant.empty? ? nil : montant.to_f
+
+              if app_id.in?(selected_apps)
+                app_budget.is_used = true
+              end
+              app_budget.save
+          end
+        end
+
+        budget_type = params[:budget_budget_type_id]
+        unless budget_type.nil?
+          budget_budget_type = BudgetBudgetType.where(organization_id: @organization.id,
+                                 budget_id: @budget.id,
+                                 budget_type_id: budget_type).first_or_create
+          budget_budget_type.save
+        end
+
+        flash[:notice] = I18n.t (:notice_budget_successful_updated)
+        #redirect_to organization_setting_path(@organization, :anchor => 'tabs-budgets')
+        redirect_to edit_organization_budget_path(@organization, @budget)
+      else
+        render action: 'edit'
+      end
     end
   end
 
@@ -84,6 +117,43 @@ class BudgetsController < ApplicationController
 
     flash[:notice] = I18n.t (:notice_budget_successful_deleted)
     redirect_to organization_setting_path(organization_id, :anchor => 'tabs-budgets')
+  end
+
+  def destroy_budget_budget_type
+    @organization = Organization.find(params[:organization_id])
+    @budget = Budget.find(params[:budget_id])
+    BudgetBudgetType.find(params[:bbt_id]).delete
+
+    redirect_to edit_organization_budget_path(@organization, @budget)
+  end
+
+  def add_budget_type(organization_id, budget_id, budget_type_id)
+    @organization = Organization.find(organization_id)
+    @budget = Budget.find(budget_id)
+
+    unless budget_type_id.nil?
+      @budget_type = BudgetType.where(id: budget_type_id).first
+
+      bbt = BudgetBudgetType.where(organization_id: organization_id,
+                                   budget_id: budget_id,
+                                   budget_type_id: budget_type_id).first_or_create
+      if bbt
+        @budget.applications.each do |application|
+          @budget_type.budget_type_statuses.each do |budget_type_status|
+
+            ApplicationBudgetType.where(organization_id: organization.id,
+                                 budget_id: @budget.id,
+                                 application_id: application.id,
+                                 budget_type_id: budget_type_status.budget_type_id,
+                                 estimation_status_id: budget_type_status.estimation_status_id
+                               ).first_or_create
+          end
+        end
+      end
+
+    end
+
+    redirect_to edit_organization_budget_path(@organization, @budget)
   end
 
   def generate_budget_report
