@@ -24,9 +24,9 @@
         <tr>
           <td><%= uowg.name %></td>
           <td class="center">
-            <%= link_to '', guw.edit_guw_model_guw_unit_of_work_group_path(params[:guw_model_id], uowg), class: "fa fa-pencil" %>
+            <%= link_to 'Editer |', guw.edit_guw_model_guw_unit_of_work_group_path(params[:guw_model_id], uowg), class: "fa fa-pencil" %>
             <% if can? :execute_estimation_plan, @project %>
-                <%= link_to '', uowg, method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
+                <%= link_to 'Supprimer', uowg, method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
             <% end %>
           </td>
         </tr>
