@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190604123508) do
+ActiveRecord::Schema.define(version: 20190604144626) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -2473,6 +2473,7 @@ ActiveRecord::Schema.define(version: 20190604123508) do
     t.integer  "min_value",                    limit: 4
     t.integer  "max_value",                    limit: 4
     t.string   "validation_text",              limit: 255
+    t.integer  "estimation_status_id",         limit: 4
   end
 
   add_index "views_widgets", ["module_project_id", "pe_attribute_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree

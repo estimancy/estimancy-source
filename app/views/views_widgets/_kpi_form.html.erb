@@ -10,6 +10,7 @@
   <%= f.input :name %>
   <%= f.input :show_name, label: I18n.t(:show_name) %>
   <%= f.input :position, label: I18n.t(:display_order), class: "form-control" %>
+  <%= f.input :estimation_status_id, as: :select, label: "Allowed Statuses", collection: @current_organization.estimation_statuses %>
 
   <table>
     <% ["A", "B", "C", "D", "E"].each do |letter| %>
