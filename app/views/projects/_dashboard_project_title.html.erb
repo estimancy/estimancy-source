@@ -4,7 +4,7 @@
       <%= @project.to_s %>
       <small style="color: <%= @project.status_background_color %>">
         <b>
-          <%= @project.estimation_status.to_s %>
+          <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
         </b>
       </small>
     </h2>
