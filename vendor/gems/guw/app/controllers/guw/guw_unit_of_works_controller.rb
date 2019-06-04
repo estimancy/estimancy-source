@@ -1515,29 +1515,34 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           end
 
-          if params["ajusted_size"].present?
-            if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
-              tmp_hash_res["#{guw_output.id}"] = tmp
-              tmp_hash_ares["#{guw_output.id}"] = tmp
-            else
-              if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+          if guw_output.name == "Effort AI (m.d)"
+            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * 1.15
+            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * 1.15
+          else
+            if params["ajusted_size"].present?
+              if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
                 tmp_hash_res["#{guw_output.id}"] = tmp
                 tmp_hash_ares["#{guw_output.id}"] = tmp
               else
-
-                if tmp == 0
-                  tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
-                else
+                if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
                   tmp_hash_res["#{guw_output.id}"] = tmp
+                  tmp_hash_ares["#{guw_output.id}"] = tmp
+                else
+
+                  if tmp == 0
+                    tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+                  else
+                    tmp_hash_res["#{guw_output.id}"] = tmp
+                  end
+
+                  tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+
                 end
-
-                tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
-
               end
+            else
+              tmp_hash_res["#{guw_output.id}"] = tmp
+              tmp_hash_ares["#{guw_output.id}"] = tmp
             end
-          else
-            tmp_hash_res["#{guw_output.id}"] = tmp
-            tmp_hash_ares["#{guw_output.id}"] = tmp
           end
 
           guw_unit_of_work.size = tmp_hash_res
