@@ -4239,18 +4239,14 @@ public
                                        project_id: @project.id,
                                        transition_date: Time.now)
 
-      # if @project.estimation_status.name == "To Check"
-        Thread.new do
-          ActiveRecord::Base.connection_pool.with_connection do
-            es = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
-            p "TATA"
-            sleep(30)
-            p "TOTO"
-            @project.estimation_status_id = es.id
-            @project.save
-          end
+      Thread.new do
+        ActiveRecord::Base.connection_pool.with_connection do
+          es = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
+          sleep(30)
+          @project.estimation_status_id = es.id
+          @project.save
         end
-      # end
+      end
 
       flash[:notice] = I18n.t(:notice_comment_status_successfully_updated)
     else
