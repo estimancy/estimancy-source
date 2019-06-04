@@ -3,9 +3,9 @@
     <%= link_to @guw_model, guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
   </strong>
   <% if can? :manage_modules_instances, ModuleProject %>
-    <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), :class => 'btn btn-mini pull-right button_margin_right'%>
+    <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), :class => 'btn btn-primary' %>
   <% end %>
-  <%= link_to "Afficher sous forme d'onglet", guw.guw_model_path(@guw_model), class: "btn btn-mini pull-right button_margin_right" %>
+  <%= link_to "Display with tabs", guw.guw_model_path(@guw_model), class: "btn btn-secondary" %>
 </h4>
 
 <div class="row-fluid">
@@ -26,8 +26,8 @@
             <%= guw_type.guw_complexities.map(&:name).join(", ") %>
           </td>
           <td class="center">
-            <%= link_to "", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "fa fa-edit" %>
-            <%= link_to "", guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "fa fa-trash" %>
+            <%= link_to "Editer |", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "fa fa-edit" %>
+            <%= link_to "Supprimer", guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "fa fa-trash" %>
           </td>
         </tr>
       <% end %>
