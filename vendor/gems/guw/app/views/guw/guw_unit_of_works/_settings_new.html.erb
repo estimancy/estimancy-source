@@ -157,6 +157,10 @@
                     <% elsif @hash_guw_coefficients[i[0]].class == Guw::GuwOutput %>
                       <% guw_output = @hash_guw_coefficients[i[0]] %>
                       <% unless guw_output.estimation_status_id.nil? %>
+                        <% if guw_output.estimation_status_id == @project.estimation_status_id %>
+                          <%= i[0] %>
+                        <% end %>
+                      <% else %>
                         <%= i[0] %>
                       <% end %>
                     <% else %>
