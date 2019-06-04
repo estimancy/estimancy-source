@@ -351,6 +351,7 @@ Projestimate::Application.routes.draw do
   post "audit_integrity_common_data" => 'organizations#audit_integrity_common_data'
   get "audit_integrity_common_data_params" => 'organizations#audit_integrity_common_data_params', as: :audit_integrity_common_data_params
   get "update_organizations_for_audit_common_data" => 'organizations#update_organizations_for_audit_common_data', as: :update_organizations_for_audit_common_data
+  get 'show_original_image' => 'organizations#show_original_image', as: 'show_original_image'
 
   resources :subcontractors
 

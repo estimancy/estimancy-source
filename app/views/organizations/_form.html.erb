@@ -247,7 +247,9 @@
                             <div class="card-body">
                                 <div class="mb-5">
                                     <div class="widgets-list">
-                                        <%= image_tag "temps_realisation_devis_SLA.png", style: 'height:auto; width:100%;' %>
+                                      <%= link_to show_original_image_path(image_name: "temps_realisation_devis_SLA_en.png"), class: :popup_link, remote: true do %>
+                                          <%= image_tag "temps_realisation_devis_SLA_en.png", id: "temps_realisation_devis_SLA", alt: "Quote creation duration", style: 'height:20em; width:100%;' %>
+                                      <% end %>
                                     </div>
                                 </div>
                             </div>
@@ -259,7 +261,9 @@
                             <div class="card-body">
                                 <div class="mb-5">
                                     <div class="widgets-list">
-                                        <%= image_tag "nb_PF_livre.png", style: 'height:auto; width:100%;' %>
+                                      <%= link_to show_original_image_path(image_name: "nb_PF_livre_en.png"), class: :popup_link, remote: true do %>
+                                        <%= image_tag "nb_PF_livre_en.png", id: "nb_PF_livre", alt: "No. of PFs delivered in 2019", style: 'height:20em; width:100%;' %>
+                                      <% end %>
                                     </div>
                                 </div>
                             </div>
