@@ -535,7 +535,7 @@
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton" x-placement="top-end" style="position: absolute; transform: translate3d(-209px, -185px, 0px); top: 0px; left: 0px; will-change: transform;">
           <a class="dropdown-item" href="<%= guw.guw_unit_of_work_duplicate_path(guow) %>"><i class="material-icons">file_copy</i><%= I18n.t(:label_duplicate_project) %></a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="<%= guw.guw_unit_of_work_path(guow) %>" method="DELETE"><i class="material-icons">delete</i><%= I18n.t(:delete) %></a>
+          <%= link_to raw("<i class='material-icons'>delete</i>") + I18n.t(:delete), guw.guw_unit_of_work_path(guow), method: :delete, remote: true %>
         </div>
       </div>
     </div>

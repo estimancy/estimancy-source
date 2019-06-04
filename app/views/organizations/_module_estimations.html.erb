@@ -31,11 +31,10 @@
               <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
             </td>
             <td class="align-center">
-              <%= link_to '', guw.edit_guw_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
+              <%= link_to 'Editer |', guw.edit_guw_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
               <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to '', guw.guw_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
-                <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'guw_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                <%= link_to '', guw.guw_model_path(i, organization_id: @organization.id), method: "DELETE", confirm: I18n.t(:are_you_sure), :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                <%= link_to 'Dupliquer |', guw.guw_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
+                <%= link_to 'Supprimer', guw.guw_model_path(i, organization_id: @organization.id), method: "DELETE", confirm: I18n.t(:are_you_sure), :class => 'fa fa-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>

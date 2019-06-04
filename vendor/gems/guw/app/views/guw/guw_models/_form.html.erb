@@ -251,7 +251,7 @@ $(document).ready(function() {
               <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
               <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
             <% end %>
-            <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
+            <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn btn-secondary" %>
           </div>
         <% end %>
       </div>
@@ -259,15 +259,15 @@ $(document).ready(function() {
       <% unless @guw_model.new_record? %>
         <div class="span3">
           <% if @guw_model.config_type == "new" %>
-            <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
+            <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary pull-right button_margin_right' %>
           <% else %>
-            <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn pull-right button_margin_right' %>
+            <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary pull-right button_margin_right' %>
           <% end %>
 
           <% if @guw_model.default_display == "tab" %>
-            <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn pull-right button_margin_right' %>
+            <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary pull-right button_margin_right' %>
           <% else %>
-            <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn pull-right button_margin_right' %>
+            <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary pull-right button_margin_right' %>
           <% end %>
         </div>
       <% else %>
@@ -311,9 +311,9 @@ $(document).ready(function() {
             <td><%= guw_attribute.name %></td>
             <td><%= guw_attribute.description %></td>
             <td class="center">
-              <%= link_to '', guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute), class: "fa fa-pencil" %>
+              <%= link_to 'Editer', guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute), class: "fa fa-pencil" %>
               <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to '', guw_attribute, method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
+                <%= link_to 'Supprimer', guw_attribute, method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
               <% end %>
             </td>
           </tr>
@@ -324,7 +324,7 @@ $(document).ready(function() {
         <% if can? :manage_modules_instances, ModuleProject %>
           <%= link_to I18n.t(:create_button), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
         <% end %>
-        <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
+        <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn btn-secondary" %>
       </div>
     </div>
 
@@ -360,9 +360,9 @@ $(document).ready(function() {
                   <td class="align-center"><%= guw_output.standard_coefficient %></td>
                   <td class="align-center"><%= guw_output.display_order %></td>
                   <td class="center">
-                    <%= link_to '', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
+                    <%= link_to 'Editer', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
                     <% if can? :manage_modules_instances, ModuleProject %>
-                      <%= link_to '', guw.guw_model_guw_output_path(@guw_model, guw_output), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
+                      <%= link_to 'Supprimer', guw.guw_model_guw_output_path(@guw_model, guw_output), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
                     <% end %>
                   </td>
                 </tr>
@@ -377,7 +377,7 @@ $(document).ready(function() {
       <% if can? :manage_modules_instances, ModuleProject %>
         <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_output_path(@guw_model), class: "btn btn-primary" %>
       <% end %>
-      <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn" %>
+      <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn btn-secondary" %>
     </div>
 
     <div id="tabs-coefficients">
@@ -389,9 +389,9 @@ $(document).ready(function() {
             </b>
 
             <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", confirm: I18n.t(:are_you_sure) %>
+              <%= link_to "Supprimer", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", confirm: I18n.t(:are_you_sure) %>
             <% end %>
-            <%= link_to "", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
+            <%= link_to "Editer", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
 
             <table class="table table-bordered">
               <tr>
@@ -454,10 +454,10 @@ $(document).ready(function() {
       <% end %>
 
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to "Nouveau coefficient", guw.new_guw_model_guw_coefficient_path(@guw_model), class: "btn" %>
+        <%= link_to "Nouveau coefficient", guw.new_guw_model_guw_coefficient_path(@guw_model), class: "btn btn-primary" %>
       <% end %>
 
-      <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn" %>
+      <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn btn-secondary" %>
     </div>
   <% end %>
 </div>

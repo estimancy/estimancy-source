@@ -52,7 +52,7 @@
 
         <div id="tabs-<%= guw_type.name.gsub(/[^0-9A-Za-z]/, '') %>">
 
-          <%= link_to "#{I18n.t(:edit)}", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "btn" %>
+          <%= link_to "#{I18n.t(:edit)}", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "btn btn-primary" %>
           <%= simple_format(guw_type.description) %>
 
           <h4>
@@ -64,7 +64,7 @@
           <div class="group_button">
             <% if can? :manage_modules_instances, ModuleProject %>
               <%#= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn" %>
-              <%= link_to I18n.t(:create_button), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn" %>
+              <%= link_to I18n.t(:create_button), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
             <% end %>
           </div>
 
@@ -272,7 +272,7 @@
             <h5><%= I18n.t :label_complexity_attributes %> <%= guw_type %> </h5>
             <% if can? :manage_modules_instances, ModuleProject %>
               <div class="group_button">
-                <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type), class: "btn" %>
+                <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
               </div>
             <% end %>
 
@@ -351,7 +351,7 @@
                 <% if can? :manage_modules_instances, ModuleProject %>
                   <%= submit_tag I18n.t(:save), class: "btn btn-primary" %>
                 <% end %>
-                <%= link_to I18n.t(:back), main_app.edit_organization_path(@guw_model.organization), :class => 'btn' %>
+                <%= link_to I18n.t(:back), main_app.edit_organization_path(@guw_model.organization), :class => 'btn btn-secondary' %>
               <% end %>
 
               <br>
