@@ -401,8 +401,9 @@ class ApplicationController < ActionController::Base
         return session[:module_project_id].nil? ? default_current_module_project : ModuleProject.find(session[:module_project_id])
       else
         begin
-          pemodule = Pemodule.find_by_alias('initialization')
-          return ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
+          # pemodule = Pemodule.find_by_alias('initialization')
+          # return ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
+          return @project.module_projects.first
         rescue
           return @project.module_projects.first
         end
