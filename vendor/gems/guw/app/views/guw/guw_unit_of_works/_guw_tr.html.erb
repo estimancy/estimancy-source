@@ -413,7 +413,7 @@
       <% end %>
 
     <% elsif @guw_output.class == Guw::GuwOutput %>
-      <% unless @guw_output.nil? || @guw_type.nil? %>
+      <% unless @guw_output.nil? || @guw_type.nil? || !@guw_output.estimation_status_id.nil? %>
 
         <% begin %>
           <% got = @hash_guw_output_types["#{@guw_type.id}_#{@guw_output.id}"] %>
@@ -426,13 +426,13 @@
         <% unless got.nil? %>
           <td class="guw-cell-ajustment">
             <% if got.display_type == "display" %>
-                              <span class="ajusted_size_<%= guow.id %>">
-                                <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
-                                                     step: 0.001,
-                                                     readonly: true,
-                                                     class: "guw-#{guow.id} guw_number_field_tag retained form-control",
-                                                     style: "text-align: right; " %>
-                              </span>
+              <span class="ajusted_size_<%= guow.id %>">
+                <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
+                                     step: 0.001,
+                                     readonly: true,
+                                     class: "guw-#{guow.id} guw_number_field_tag retained form-control",
+                                     style: "text-align: right; " %>
+              </span>
             <% elsif got.display_type == "modif" %>
 
               <%
