@@ -154,6 +154,11 @@
                           <% end %>
                         </th>
                       <% end %>
+                    <% elsif @hash_guw_coefficients[i[0]].class == Guw::GuwOutput %>
+                      <% guw_output = @hash_guw_coefficients[i[0]] %>
+                      <% unless guw_output.estimation_status_id.nil? %>
+                        <%= i[0] %>
+                      <% end %>
                     <% else %>
                       <th style="width: 12%;">
                         <%= i[0] %>
