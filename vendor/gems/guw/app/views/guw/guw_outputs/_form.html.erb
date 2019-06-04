@@ -23,7 +23,7 @@
         <%= f.input :color_priority %>
         <%= f.input :standard_coefficient, label: "Coefficient Standard de Conversion (Effort uniquement)" %>
         <%= f.input :display_order, label: "Ordre de calcul" %>
-        <%= f.input :estimation_status_id, collection: @organization.estimation_statuses %>
+        <%= f.input :estimation_status_id, as: :select, label: "Visible uniquement sur le statut", collection: @current_organization.estimation_statuses %>
 
       </div>
 
@@ -31,7 +31,7 @@
         <% if can? :manage_modules_instances, ModuleProject %>
           <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
         <% end %>
-        <%= link_to I18n.t(:back), :back, class: "btn btn-primary" %>
+        <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
       </div>
     <% end %>
   </div>
