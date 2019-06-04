@@ -45,7 +45,7 @@
                 <% view_widget_data = get_label_widget_data(view_widget.id) %>
                 <% @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
               <% elsif view_widget.is_kpi_widget? %>
-                <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
+                <% view_widget_data = get_kpi_value(view_widget) %>
                 <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
               <% else %>
                 <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
