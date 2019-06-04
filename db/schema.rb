@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190513091229) do
+ActiveRecord::Schema.define(version: 20190604123508) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1005,6 +1005,7 @@ ActiveRecord::Schema.define(version: 20190513091229) do
     t.integer  "display_order",            limit: 4
     t.string   "color_code",               limit: 255
     t.integer  "color_priority",           limit: 4
+    t.integer  "estimation_status_id",     limit: 4
   end
 
   add_index "guw_guw_outputs", ["guw_model_id", "name"], name: "guw_model_guw_outputs", using: :btree

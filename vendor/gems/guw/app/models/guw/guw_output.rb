@@ -7,7 +7,7 @@ module Guw
 
     attr_accessible :name, :output_type, :guw_model_id,
                     :allow_intermediate_value, :allow_subtotal, :standard_coefficient,
-                    :unit, :display_order, :color_code, :color_priority
+                    :unit, :display_order, :color_code, :color_priority, :estimation_status_id
 
     amoeba do
       enable
