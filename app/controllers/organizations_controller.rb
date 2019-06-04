@@ -3799,6 +3799,11 @@ class OrganizationsController < ApplicationController
     end
   end
 
+
+  def show_original_image
+    @image_name = params[:image_name]
+  end
+
   private
   def check_if_organization_is_image(organization)
     if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)

@@ -1,0 +1,17 @@
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");
+
+$(".modal-header h3").css({ width: 'auto', height: 'auto', 'border-bottom': 'none' });
+
+
+$(".modal-body-inner").html('<%= image_tag "#{@image_name}", id: "#{@image_name}", alt: "Quote creation duration" %>');
+$(".modal-content").css({ width: 'fit-content', height: 'auto' });
+
+$("#myModalLabel").html('<%= %>');
+
+$("#edit_component").modal({
+    keyboard: false,
+    backdrop: "static"
+});
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");
