@@ -28,7 +28,7 @@
         <td><%= wbs_activity_ratio_element.wbs_activity_element.is_root? ? "-" : wbs_activity_ratio_element.wbs_activity_element.phase_short_name %></td>
 
         <td style="padding-left:<%=gap+(wbs_activity_ratio_element.wbs_activity_element.depth*2)%>em">
-          <%= link_to wbs_activity_ratio_element.wbs_activity_element.name, edit_wbs_activity_element_path(wbs_activity_ratio_element, :activity_id => wbs_activity_ratio_element.wbs_activity_id) %>
+          <%= link_to wbs_activity_ratio_element.wbs_activity_element.name, edit_wbs_activity_element_path(wbs_activity_ratio_element.wbs_activity_element, :activity_id => wbs_activity_ratio_element.wbs_activity_element.wbs_activity_id) %>
         </td>
         <td><%= wbs_activity_ratio_element.wbs_activity_element.description %></td>
 
