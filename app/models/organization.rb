@@ -44,7 +44,6 @@ class Organization < ActiveRecord::Base
   has_many :attribute_organizations, :dependent => :delete_all
   has_many :pe_attributes, :source => :pe_attribute, :through => :attribute_organizations
 
-  has_many :organization_technologies, :dependent => :destroy
   has_many :projects, :dependent => :destroy
   has_many :module_projects, through: :projects
 

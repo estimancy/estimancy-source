@@ -1,383 +1,289 @@
-<%= simple_form_for @user do |f| %>
+<section class="card card-content-bloc estimancy-form">
 
-  <%= hidden_field_tag :current_tab, '', :class => 'current_tab' %>
+  <div class="mb-5">
+    <div class="effort-bloc">
+      <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link show active"  data-toggle="pill" id="tab" href="#tabs-1" role="tab" aria-selected="true">
+            <%= t(:global) %>
+          </a>
+        </li>
 
-  <%= f.error_notification %>
-  <div class="tabs">
-      <ul>
-        <li><a href="#tabs-1"><%= t(:global) %></a></li>
-        <li><a href="#tabs-5"><%= I18n.t(:settings) %></a></li>
-        <% if params[:organization_id].present? %>
-          <li><a href="#tabs-groups"><%= I18n.t(:groups) %></a></li>
-        <% end %>
-        <% if current_user.super_admin == true and !params[:organization_id].present? %>
-          <li><a href="#tabs-organizations"><%= I18n.t(:organizations) %></a></li>
-        <% end %>
+        <li class="nav-item">
+          <a class="nav-link"  data-toggle="pill" id="tab" href="#tabs-5" role="tab" aria-selected="false">
+            <%= I18n.t(:settings) %>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"  data-toggle="pill" id="tab" href="#tabs-groups" role="tab" aria-selected="false">
+            <%= I18n.t(:groups) %>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link"  data-toggle="pill" id="tab" href="#tabs-organizations" role="tab" aria-selected="false">
+            <%= I18n.t(:organizations) %>
+          </a>
+        </li>
       </ul>
 
-      <div id="tabs-1">
-        <div id="accordion1" class="accordion">
-          <div class="accordion-group accordion-caret well-rounded">
-            <div class="accordion-heading">
-              <h5>
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-                  <i class="fa fa-careappt-down"></i>
-                  <b><%= I18n.t 'identity' %></b>
-                </a>
-              </h5>
-            </div>
-            <div id="collapseOne" class="accordion-body in collapse">
-              <div class="accordion-inner">
+      <%= simple_form_for @user do |f| %>
 
-                <%= hidden_field_tag 'organization_id', params[:organization_id] %>
+        <div class="tab-content" id="pills-tabContent">
 
-                <table>
-                  <tr>
-                    <td><%= f.input :first_name, :label => I18n.t('first_name'), :input_html => {:autofocus => (controller.action_name == 'new'), :class => 'input-large'} %></td>
-                    <td><%= f.input :last_name, :label => I18n.t('last_name'), :input_html => {:class => 'input-xlarge'} %>   </td>
-                  </tr>
-                  <tr>
-                    <td><%= f.input :initials, :label => I18n.t('initials'), :input_html => {:class => 'input-small'} %></td>
-                    <td>
-                      <% if can? :manage, User %>
-                       <%= f.input :login_name, :label => I18n.t('login_name') %>
-                      <% else %>
-                        <%= f.input :login_name, :label => I18n.t('login_name'), :disabled => true %>
-                      <% end %>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td colspan="2">
-                      <%= f.input :email, :label => I18n.t('email'), :input_html => {:class => 'input-xxlarge'} %>
-                    </td>
-                  </tr>
-
-                  <tr>
-                    <td colspan="2">
-                      <%= f.input :description, :input_html => {:class => 'input-xxlarge', rows: "5"} %>
-                    </td>
-                  </tr>
-
-                  <% if current_user.super_admin? %>
-                    <tr>
-                      <td colspan="2">
-                        <!-- Avant Modifcations -->
-                        <%#= f.input :subscription_end_date,
-                                    :as => :string,
-                                    :label => I18n.t(:subscription_end_date),
-                                    :input_html => { :class => 'date-picker',
-                                                     :value => @user.subscription_end_date.nil? ? I18n.l(Time.parse((Time.now + 1.year).strftime("%d/%m/%Y"))) : I18n.l(@user.subscription_end_date.to_date) } %>
-
-                        <!-- Modifcations suivantes -->
-                        <%= f.input :subscription_end_date,
-                                    :as => :string,
-                                    :label => I18n.t(:subscription_end_date),
-                                    :input_html => { :class => 'date-picker',
-                                                     :value => @user.subscription_end_date.nil? ? I18n.l((Time.now + 1.year).to_date) : I18n.l(@user.subscription_end_date.to_date) } %>
-
-                      </td>
-                    </tr>
-                  <% end %>
-
-                  <% user_local =  set_user_language
-                     if !user_local.in?("en")
-                       user_local = "fr"
-                     end
-
-                  %>
-                  <script type="text/javascript">
-                    $(document).ready(function () {
-                      $(".date-picker").datepicker({
-                        language: '<%= user_local %>',
-                        autoclose: true,
-                        todayHighlight: true,
-                        todayBtn: true
-                      });
-                    });
-                  </script>
-
-                  <% if current_user.super_admin? %>
-                    <tr>
-                      <td colspan="2"><%= f.input :super_admin, :label => I18n.t(:is_super_admin), hint: I18n.t(:text_help_super_admin), :input_html => {:class => 'input-xxlarge'} %></td>
-                    </tr>
-                  <% end %>
-                  <tr>
-                    <td colspand="2">
-                      <%= f.input :quick_access, :label => I18n.t(:allow_quick_access), :input_html => {:class => 'input-xxlarge'}  %>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspand="2">
-                      <%= f.input :allow_full_screen_dashboard, :label => I18n.t(:allow_full_screen_dashboard), :input_html => {:class => 'input-xxlarge'}  %>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td colspan="2">
-                      <% if @user.locked_at.nil? %>
-                        <%= I18n.t(:unlocked) %>
-                      <% else %>
-                        <%= "#{I18n.t(:locked_at)} #{@user.locked_at}" %>
-                      <% end %>
-                    </td>
-                  </tr>
-                </table>
+          <div class="tab-pane fade show active" id="pills-global_properties" role="tabpanel" aria-labelledby="pills-global_properties-tab">
+            <div class="card-body">
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h1>
+                    <%= I18n.t(:label_definition) %>
+                  </h1>
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
 
-        <div id="accordion2" class="accordion">
-          <div class="accordion-group accordion-caret well-rounded">
-            <div class="accordion-heading">
-              <h5>
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                  <i class="fa fa-caret-down"></i>
-                  <b><%= I18n.t(:authentication) %></b>
-                </a>
-              </h5>
-            </div>
-            <div id="collapseTwo" class="accordion-body in collapse">
-              <div class="accordion-inner">
-                <table>
+              <%= hidden_field_tag :current_tab, '', :class => 'current_tab' %>
+              <%= f.error_notification %>
 
-                  <tr>
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  <div class="form-row">
+
+                    <h5>
+                      <%= I18n.t 'identity' %>
+                    </h5>
+                    <%= hidden_field_tag 'organization_id', params[:organization_id] %>
+
+                    <%= f.input :first_name, :label => I18n.t('first_name'), :input_html => {:autofocus => (controller.action_name == 'new'), :class => 'input-large'} %></td>
+                    <%= f.input :last_name, :label => I18n.t('last_name'), :input_html => {:class => 'input-xlarge'} %>
+
+                    <%= f.input :initials, :label => I18n.t('initials'), :input_html => {:class => 'input-small'} %>
+
                     <% if can? :manage, User %>
-                      <td colspan="2"><%= f.input :auth_type, :label => I18n.t('auth_type'), :as => :select, :collection => AuthMethod.all, :include_blank => false %></td>
+                     <%= f.input :login_name, :label => I18n.t('login_name') %>
                     <% else %>
-                      <td colspan="2"><%= f.input :auth_type, :label => I18n.t('auth_type'), :as => :select, :collection => AuthMethod.all, :disabled => true, :include_blank => false %></td>
+                      <%= f.input :login_name, :label => I18n.t('login_name'), :disabled => true %>
                     <% end %>
-                  </tr>
 
-                  <% if @user.new_record? %>
-                    <tr class="password_row">
-                      <td><%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('password'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge' }, :required => false %></td>
-                      <td><%= f.input :password_confirmation, :as => :password, :label => I18n.t('password_confirmation'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge' } %></td>
-                    </tr>
-                  <% else %>
-                    <tr><td><%= f.input :current_password, :label => I18n.t(:current_password), required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'input-xlarge' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td></tr>
-                    <tr class="password_row">
-                      <td><%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('new_password'), :input_html => {:value => (@user_password if @user_password), :class => 'input-xlarge' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td>
-                      <td><%= f.input :password_confirmation, :as => :password, :label => I18n.t('confirm_new_password'), :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'input-xlarge' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %></td>
-                    </tr>
-                  <% end %>
+                    <%= f.input :email, :label => I18n.t('email'), :input_html => {:class => 'input-xxlarge'} %>
 
-                </table>
+                    <%= f.input :description, :input_html => {:class => 'input-xxlarge', rows: "5"} %>
+
+
+                    <% if current_user.super_admin? %>
+                          <!-- Modifcations suivantes -->
+                          <%= f.input :subscription_end_date,
+                                      :as => :string,
+                                      :label => I18n.t(:subscription_end_date),
+                                      :input_html => { :class => 'date-picker',
+                                                       :value => @user.subscription_end_date.nil? ? I18n.l((Time.now + 1.year).to_date) : I18n.l(@user.subscription_end_date.to_date) } %>
+
+                    <% end %>
+
+                    <% user_local =  set_user_language
+                       if !user_local.in?("en")
+                         user_local = "fr"
+                       end %>
+
+                    <script type="text/javascript">
+                      $(document).ready(function () {
+                        $(".date-picker").datepicker({
+                          language: '<%= user_local %>',
+                          autoclose: true,
+                          todayHighlight: true,
+                          todayBtn: true
+                        });
+                      });
+                    </script>
+
+                    <% if current_user.super_admin? %>
+                      <%= f.input :super_admin, :label => I18n.t(:is_super_admin), hint: I18n.t(:text_help_super_admin), :input_html => {:class => 'input-xxlarge'} %></td>
+                    <% end %>
+
+                    <%= f.input :quick_access, :label => I18n.t(:allow_quick_access), :input_html => {:class => 'input-xxlarge'}  %>
+
+                    <%= f.input :allow_full_screen_dashboard, :label => I18n.t(:allow_full_screen_dashboard), :input_html => {:class => 'input-xxlarge'}  %>
+
+                    <% if @user.locked_at.nil? %>
+                      <%= I18n.t(:unlocked) %>
+                    <% else %>
+                      <%= "#{I18n.t(:locked_at)} #{@user.locked_at}" %>
+                    <% end %>
+
+                    <% if can? :manage, User %>
+                      <%= f.input :auth_type, :label => I18n.t('auth_type'), :as => :select, :collection => AuthMethod.all, :include_blank => false %>
+                    <% else %>
+                      <%= f.input :auth_type, :label => I18n.t('auth_type'), :as => :select, :collection => AuthMethod.all, :disabled => true, :include_blank => false %>
+                    <% end %>
+
+                    <% if @user.new_record? %>
+                      <%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('password'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge' }, :required => false %>
+                      <%= f.input :password_confirmation, :as => :password, :label => I18n.t('password_confirmation'), :input_html => {:value => (@generated_password if @generated_password), :class => 'input-xlarge' } %>
+                    <% else %>
+                      <%= f.input :current_password, :label => I18n.t(:current_password), required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'input-xlarge' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                      <%= f.input :password, :as => :password, :autocomplete => "off", :label => I18n.t('new_password'), :input_html => {:value => (@user_password if @user_password), :class => 'input-xlarge' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                      <%= f.input :password_confirmation, :as => :password, :label => I18n.t('confirm_new_password'), :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'input-xlarge' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                    <% end %>
+                  </div>
+
+                  <div class="form-row">
+                    <%= f.input :created_at, :label => I18n.t('created_at') do %>
+                      <%= f.text_field :created_at, :value => (I18n.l(@user.created_at) unless @user.created_at.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
+                    <% end %>
+
+                    <%= f.input :updated_at, :label => I18n.t('updated_at') do %>
+                      <%= f.text_field :updated_at, :value => (I18n.l(@user.updated_at) unless @user.updated_at.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
+                    <% end %>
+
+                    <%= I18n.t('subscription_end_date') %>
+                    <%= text_field_tag "user_subs_end_date", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date.to_date), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
+
+                    <%= f.input :last_login, :label => I18n.t('last_login') do %>
+                      <%= f.text_field :last_login, :value => (I18n.l(@user.last_login) unless @user.last_login.nil?), :disabled => true %>
+                    <% end %>
+
+
+                    <%= f.input :language_id, :label => I18n.t('label_language'), :as => :select, :collection => Language.where('locale != ?', 'de').all.map { |i| [i.name, i.id] }.sort, include_blank: '(auto)', :selected => @user.language_id %>
+                    <%= f.input :time_zone, :label => I18n.t('time_zone'), :input_html => {:class => 'input-xlarge'}, :as => :select, :collection => ActiveSupport::TimeZone.all.map { |i| [i.to_s, i.name] }, :include_blank => false, :selected => @user.time_zone || 'Paris' %>
+                    <%= f.input :number_precision, :label => I18n.t(:number_precision), :input_html => {:class => 'input-large'} %>
+                    <%= f.input :object_per_page, :label => I18n.t('object_per_page'), :input_html => {:class => 'input-small'}, :as => :select, :collection => [5, 10, 25, 50, 100], :include_blank => true, :selected => @user.object_per_page %>
+                  </div>
+
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div id="accordion3" class="accordion">
-          <div class="accordion-group accordion-caret well-rounded">
-            <div class="accordion-heading">
-              <h5>
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseThree">
-                  <i class="fa fa-caret-down"></i>
-                  <b><%= I18n.t(:informations) %></b>
-                </a>
-              </h5>
-            </div>
-            <div id="collapseThree" class="accordion-body collapse in">
-              <div class="accordion-inner">
-                <table>
-                  <tr>
-                    <td>
-                      <%= f.input :created_at, :label => I18n.t('created_at') do %>
-                        <%= f.text_field :created_at, :value => (I18n.l(@user.created_at) unless @user.created_at.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
-                      <% end %>
-                    </td>
 
-                    <td>
-                      <%= f.input :updated_at, :label => I18n.t('updated_at') do %>
-                        <%= f.text_field :updated_at, :value => (I18n.l(@user.updated_at) unless @user.updated_at.nil?), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
-                      <% end %>
-                    </td>
-
-                    <td>
-                      <%#= f.input :subscription_end_date, :label => I18n.t('subscription_end_date') do %>
-                          <%#= f.text_field :subscription_end_date, :value => (@user.subscription_end_date.nil? ? "-" : I18n.l(@user.subscription_end_date)), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
-                      <%# end %>
-                      <label style="margin-top: -13px; margin-left: 0px;"><%= I18n.t('subscription_end_date') %></label>
-                      <%= text_field_tag "user_subs_end_date", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date.to_date), :disabled => true, :input_html => {:class => 'input-xxlarge'} %>
-                    </td>
-
-                  </tr>
-                  <tr>
-                    <td>
-                      <%= f.input :last_login, :label => I18n.t('last_login') do %>
-                        <%= f.text_field :last_login, :value => (I18n.l(@user.last_login) unless @user.last_login.nil?), :disabled => true %>
-                      <% end %>
-                    </td>
-                  </tr>
-
-                </table>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="actions-tabs">
-          <% if (can? :manage, User) || current_user == @user %>
-            <% if action_name.in?(%w(new create)) %>
-              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
-            <% end %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-            <%= submit_tag I18n.t('apply'), name: 'tabs-1', :class => 'btn btn-primary btn-estimancy' %>
-          <% end %>
-          <% if @organization.nil? %>
-            <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
-          <% else %>
-            <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
-          <% end %>
-        </div>
-      </div>
-
-      <div id="tabs-5">
-        <table>
-          <tr>
-            <td><%= f.input :language_id, :label => I18n.t('label_language'), :as => :select, :collection => Language.where('locale != ?', 'de').all.map { |i| [i.name, i.id] }.sort, include_blank: '(auto)', :selected => @user.language_id %></td>
-            <td><%= f.input :time_zone, :label => I18n.t('time_zone'), :input_html => {:class => 'input-xlarge'}, :as => :select, :collection => ActiveSupport::TimeZone.all.map { |i| [i.to_s, i.name] }, :include_blank => false, :selected => @user.time_zone || 'Paris' %></td>
-          </tr>
-          <tr>
-            <td><%= f.input :number_precision, :label => I18n.t(:number_precision), :input_html => {:class => 'input-large'} %></td>
-            <td><%= f.input :object_per_page, :label => I18n.t('object_per_page'), :input_html => {:class => 'input-small'}, :as => :select, :collection => [5, 10, 25, 50, 100], :include_blank => true, :selected => @user.object_per_page %></td>
-          </tr>
-          <!--
-          <p><%= I18n.t(:assistance) %></p>
-          <p><%= I18n.t(:notifications) %></p>
-          <p><%= I18n.t(:display_format) %></p>
-          <p><%= I18n.t(:decimal) %></p>
-          <p><%= I18n.t(:thousands) %></p>
-          <p><%= I18n.t(:first_day) %></p>
-          <p><%= I18n.t(:first_week) %></p>
-          <p><%= I18n.t(:export_preferences) %></p>
-          -->
-        </table>
-
-        <div class="actions-tabs">
-          <% if (can? :manage, User) || current_user == @user %>
-            <% if action_name.in?(%w(new create)) %>
-              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
-            <% end %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-            <%= submit_tag I18n.t('apply'), name: 'tabs-5', :class => 'btn btn-primary btn-estimancy' %>
-          <% end %>
-          <% if @organization.nil? %>
-            <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
-          <% else %>
-            <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
-          <% end %>
-        </div>
-      </div>
-
-      <% if params[:organization_id].present? %>
-        <div id="tabs-groups">
-          <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th><%= I18n.t(:name) %></th>
-                <th><%= I18n.t(:description) %></th>
-                <th><%= I18n.t(:selected) %></th>
-                <th><%= I18n.t(:actions) %></th>
-              </tr>
-            </thead>
-
-            <tbody>
-
-            <% @organization.groups.each do |group| %>
-              <tr>
-                <td><%= group.name %></td>
-                <td><%= group.description %></td>
-                <% if @user.new_record? %>
-                    <% gu = nil %>
-                <% else %>
-                    <% gu = GroupsUsers.where(group_id: group.id, user_id: @user.id).first %>
-                <% end %>
-
-                <td class="center">
-
-                  <% if can?(:manage, User) && can?(:manage, Group) &&
-                          ( group.is_protected_group != true ||
-                          ( group.is_protected_group == true && (@current_user.super_admin || @current_user.groups.include?(group)) )) %>
-
-                    <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil? %>
-
-                  <% else %>
-                    <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil?, :style => 'visibility: hidden' %>
-                    <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true, :style => 'margin-left: -15px;' %>
-                  <% end %>
-                </td>
-
-                <td class="center">
-                  <% if can?(:manage, User) && can?(:manage, Group) %>
-                    <%= link_to '', edit_group_path(group, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
-                    <%= link_to '', group, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-                  <% end %>
-                </td>
-                </td>
-              </tr>
-            <% end %>
-            <%= render :partial => 'layouts/footer_table' %>
-            </tbody>
-          </table>
-
-          <div class="actions-tabs">
-            <% if can?(:manage, User) && can?(:manage, Group) %>
-              <% if action_name.in?(%w(new create)) %>
-                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
-              <% end %>
-              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-              <%= submit_tag I18n.t('apply'), name: 'tabs-groups', :class => 'btn btn-primary btn-estimancy' %>
-            <% end %>
-            <% if @organization.nil? %>
-              <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
-            <% else %>
-              <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
-            <% end %>
-          </div>
-        </div>
-      <% end %>
-
-      <% if current_user.super_admin == true and !params[:organization_id].present? %>
-        <div id="tabs-organizations">
-          <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-            <thead>
-              <tr>
-                <th><%= I18n.t(:name) %></th>
-                <th><%= I18n.t(:selected) %></th>
-              </tr>
-            </thead>
-
-            <tbody>
-              <% Organization.all.each do |organization| %>
-                <tr>
-                  <td><%= organization.name %></td>
-                  <% go = OrganizationsUsers.where(organization_id: organization.id, user_id: @user.id).first %>
-                  <td class="center">
-                    <%= check_box_tag "organizations[#{organization.id}]", "accepted", !go.nil? %>
-                  </td>
-                </tr>
-              <% end %>
-              <%= render :partial => 'layouts/footer_table' %>
-            </tbody>
-          </table>
-
-          <div class="actions-tabs">
             <% if (can? :manage, User) || current_user == @user %>
               <% if action_name.in?(%w(new create)) %>
                 <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
               <% end %>
               <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-              <%= submit_tag I18n.t('apply'), name: 'tabs-organizations', :class => 'btn btn-primary btn-estimancy' %>
+              <%= submit_tag I18n.t('apply'), name: 'tabs-5', :class => 'btn btn-primary btn-estimancy' %>
             <% end %>
             <% if @organization.nil? %>
               <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
             <% else %>
               <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
             <% end %>
-          </div>
-        </div>
-      <% end %>
+
+
+
+            <div class="tab-pane fade show active" id="pills-global_properties" role="tabpanel" aria-labelledby="pills-global_properties-tab">
+              <div class="card-body">
+
+                <% if params[:organization_id].present? %>
+                  <div id="tabs-groups">
+                    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+                      <thead>
+                        <tr>
+                          <th><%= I18n.t(:name) %></th>
+                          <th><%= I18n.t(:description) %></th>
+                          <th><%= I18n.t(:selected) %></th>
+                          <th><%= I18n.t(:actions) %></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <% @organization.groups.each do |group| %>
+                          <tr>
+                            <td><%= group.name %></td>
+                            <td><%= group.description %></td>
+                            <% if @user.new_record? %>
+                                <% gu = nil %>
+                            <% else %>
+                                <% gu = GroupsUsers.where(group_id: group.id, user_id: @user.id).first %>
+                            <% end %>
+
+                            <td class="center">
+
+                              <% if can?(:manage, User) && can?(:manage, Group) &&
+                                      ( group.is_protected_group != true ||
+                                      ( group.is_protected_group == true && (@current_user.super_admin || @current_user.groups.include?(group)) )) %>
+
+                                <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil? %>
+
+                              <% else %>
+                                <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil?, :style => 'visibility: hidden' %>
+                                <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true, :style => 'margin-left: -15px;' %>
+                              <% end %>
+                            </td>
+
+                            <td class="center">
+                              <% if can?(:manage, User) && can?(:manage, Group) %>
+                                <%= link_to '', edit_group_path(group, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                                <%= link_to '', group, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                              <% end %>
+                            </td>
+                            </td>
+                          </tr>
+                        <% end %>
+                        <%= render :partial => 'layouts/footer_table' %>
+                        </tbody>
+                      </table>
+
+                    <div class="actions-tabs">
+                      <% if can?(:manage, User) && can?(:manage, Group) %>
+                        <% if action_name.in?(%w(new create)) %>
+                          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
+                        <% end %>
+                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+                        <%= submit_tag I18n.t('apply'), name: 'tabs-groups', :class => 'btn btn-primary btn-estimancy' %>
+                      <% end %>
+                      <% if @organization.nil? %>
+                        <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
+                      <% else %>
+                        <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+
+                <% if current_user.super_admin == true and !params[:organization_id].present? %>
+                  <div id="tabs-organizations">
+                    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+                      <thead>
+                        <tr>
+                          <th><%= I18n.t(:name) %></th>
+                          <th><%= I18n.t(:selected) %></th>
+                        </tr>
+                      </thead>
+
+                      <tbody>
+                        <% Organization.all.each do |organization| %>
+                          <tr>
+                            <td><%= organization.name %></td>
+                            <% go = OrganizationsUsers.where(organization_id: organization.id, user_id: @user.id).first %>
+                            <td class="center">
+                              <%= check_box_tag "organizations[#{organization.id}]", "accepted", !go.nil? %>
+                            </td>
+                          </tr>
+                        <% end %>
+                        <%= render :partial => 'layouts/footer_table' %>
+                      </tbody>
+                    </table>
+
+                    <div class="actions-tabs">
+                      <% if (can? :manage, User) || current_user == @user %>
+                        <% if action_name.in?(%w(new create)) %>
+                          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
+                        <% end %>
+                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+                        <%= submit_tag I18n.t('apply'), name: 'tabs-organizations', :class => 'btn btn-primary btn-estimancy' %>
+                      <% end %>
+                      <% if @organization.nil? %>
+                        <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
+                      <% else %>
+                        <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              </div>
+          <% end %>
+      </div>
+      </div>
+      </div>
     </div>
-  <% end %>
+  </div>
+</section>
