@@ -476,6 +476,7 @@ en:
   empty: "None"
   are_you_sure: "Are you sure?"
   back: "Back"
+  alaliste: ""
   restore_title: "Restore changes"
   validate_title: "Validates changes"
   previous: "< Previous"

@@ -461,6 +461,7 @@ frsncf:
   empty: "Aucun"
   are_you_sure: "Etes-vous sûr ?"
   back: "Retour"
+  alaliste: "à la liste"
   restore_title: "Restaurer les changements"
   validate_title: "Valider les changements"
   previous: "< Précédent "

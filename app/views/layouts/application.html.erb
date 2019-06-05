@@ -231,7 +231,7 @@
 
         <div class="page-header page-edition-header">
           <div class="container text-center">
-            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i>Retour <br> à la liste</a>
+            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t(:back) %><br> <%=I18n.t(:alaliste) %></a>
             <ul class="progressbar">
               <li class="<%= controller.action_name == "edit" ? "complete" : "" %>"><%= I18n.t :global_properties %><div class="losange"></div></li>
               <li class="">Modules<div class="losange"></div></li>
