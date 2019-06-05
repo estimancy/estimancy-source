@@ -259,15 +259,15 @@ $(document).ready(function() {
       <% unless @guw_model.new_record? %>
         <div class="span3">
           <% if @guw_model.config_type == "new" %>
-            <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary pull-right button_margin_right' %>
+            <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary float-right' %>
           <% else %>
-            <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary pull-right button_margin_right' %>
+            <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary float-right' %>
           <% end %>
 
           <% if @guw_model.default_display == "tab" %>
-            <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary pull-right button_margin_right' %>
+            <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary float-right' %>
           <% else %>
-            <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary pull-right button_margin_right' %>
+            <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary float-right' %>
           <% end %>
         </div>
       <% else %>
@@ -436,9 +436,9 @@ $(document).ready(function() {
                     <%= guw_coefficient_element.display_order %>
                   </td>
                   <td class="align-center">
-                    <%= link_to "", guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), class: "fa fa-pencil" %>
+                    <%= link_to "Editer", guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), class: "fa fa-pencil" %>
                     <% if can? :manage_modules_instances, ModuleProject %>
-                      <%= link_to "", guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), method: :delete, class: "fa fa-trash" %>
+                      <%= link_to "Supprimer", guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), method: :delete, class: "fa fa-trash" %>
                     <% end %>
                   </td>
                 </tr>
