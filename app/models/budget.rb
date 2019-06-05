@@ -50,4 +50,5 @@ class Budget < ActiveRecord::Base
     end
     bt_sum
   end
+
 end

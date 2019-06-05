@@ -134,10 +134,10 @@ class BudgetsController < ApplicationController
     unless budget_type_id.nil?
       @budget_type = BudgetType.where(id: budget_type_id).first
 
-      bbt = BudgetBudgetType.where(organization_id: organization_id,
+      @budget_budget_type = BudgetBudgetType.where(organization_id: organization_id,
                                    budget_id: budget_id,
                                    budget_type_id: budget_type_id).first_or_create
-      if bbt
+      if @budget_budget_type
         @budget.applications.each do |application|
           @budget_type.budget_type_statuses.each do |budget_type_status|
 

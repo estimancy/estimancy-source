@@ -138,13 +138,30 @@
                 <% end %>
             </table>
 
+            <div class="row">
+              <% if @budget_budget_type %>
+                <% @budget.applications.each do |application| %>
+                  <% data = Budget::fetch_project_field_data(@organization, @budget, application) %>
+                  <% BudgetTypeStatus.where(application_id: application.id,
+                                            organization_id: @organization.id).all.each do |bts| %>
+                    <% unless bts.budget_type.nil? %>
+                      <% bt_colors[bts.budget_type.name] = bts.budget_type.color %>
+                    <% end %>
+                  <% end %>
+                  <%= data %>
+                  <div class="span4">
+                    <%= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
+                  </div>
+                <% end %>
+              <% end %>
+             </div>
           </div>
-
-        </div>
 
         <%= hidden_field_tag :application_id, params[:application_id] %>
         <br/>
       <% end %>
+
+      </div>
 
       <div class="actions-tabs">
         <% if can? :manage, BudgetType %>
@@ -159,8 +176,5 @@
         <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budgets'), :class => 'btn' %>
       </div>
     <% end %>
-
-
-
   </div>
 </div>
