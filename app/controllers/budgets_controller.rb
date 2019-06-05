@@ -92,12 +92,10 @@ class BudgetsController < ApplicationController
         end
 
         budget_type = params[:budget_budget_type_id]
-        unless budget_type.nil?
-          budget_budget_type = BudgetBudgetType.where(organization_id: @organization.id,
-                                 budget_id: @budget.id,
-                                 budget_type_id: budget_type).first_or_create
-          budget_budget_type.save
-        end
+        # unless budget_type.nil?
+        #   budget_budget_type = BudgetBudgetType.where(organization_id: @organization.id, budget_id: @budget.id, budget_type_id: budget_type).first_or_create
+        #   budget_budget_type.save
+        # end
 
         flash[:notice] = I18n.t (:notice_budget_successful_updated)
         #redirect_to organization_setting_path(@organization, :anchor => 'tabs-budgets')
@@ -141,12 +139,11 @@ class BudgetsController < ApplicationController
         @budget.applications.each do |application|
           @budget_type.budget_type_statuses.each do |budget_type_status|
 
-            ApplicationBudgetType.where(organization_id: organization.id,
-                                 budget_id: @budget.id,
-                                 application_id: application.id,
-                                 budget_type_id: budget_type_status.budget_type_id,
-                                 estimation_status_id: budget_type_status.estimation_status_id
-                               ).first_or_create
+            ApplicationBudget.where(organization_id: @organization.id,
+                                    budget_id: @budget.id,
+                                    application_id: application.id,
+                                    budget_type_id: budget_type_status.budget_type_id,
+                                    estimation_status_id: budget_type_status.estimation_status_id).first_or_create
           end
         end
       end

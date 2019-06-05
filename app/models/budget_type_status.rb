@@ -3,5 +3,10 @@ class BudgetTypeStatus < ActiveRecord::Base
 
   belongs_to :budget_type
   belongs_to :estimation_status
+
+  def to_s
+    self.estimation_status.name
+  end
+
 end
 

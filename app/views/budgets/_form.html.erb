@@ -66,7 +66,7 @@
                 <th>Montant</th>
               </tr>
               <% @organization.applications.each do |app| %>
-                <% app_budget = ApplicationBudget.where(budget_id: @budget.id,application_id: app.id).first %>
+                <% app_budget = ApplicationBudget.where(budget_id: @budget.id, application_id: app.id).first %>
                 <tr>
                   <td>
                     <span style="margin-right: 10px;">

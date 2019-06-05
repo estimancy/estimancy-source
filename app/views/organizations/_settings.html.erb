@@ -150,6 +150,7 @@
       <thead>
       <tr>
         <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:state) %></th>
         <th><%= I18n.t(:color) %></th>
         <th  class="action"><%= I18n.t(:actions) %></th>
       </tr>
@@ -159,6 +160,7 @@
       <% BudgetType.all.each do |budget_type| %>
         <tr>
           <td><%= budget_type.name %></td>
+          <td><%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %></td>
           <td><%= budget_type.color %></td>
           <td class="center">
             <%= link_to '', edit_organization_budget_type_path(@organization, budget_type), :class => 'icon-pencil', :title => I18n.t('edit') %>
