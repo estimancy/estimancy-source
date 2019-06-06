@@ -2368,3 +2368,5 @@ frsncf_amoa_infra:
   label_results: "Résultats"
   nb_estimations: "Nombre de devis"
   number_estimates_per_year: "Nombre de devis / année"
+  please_wait: "Veuillez patienter..."
+  amount: "Montant"

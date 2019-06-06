@@ -2404,3 +2404,5 @@ fr_bnp:
   label_results: "Résultats"
   nb_estimations: "Nombre d'estimations"
   number_estimates_per_year: "Nombre d'estimations / année"
+  please_wait: "Veuillez patienter..."
+  amount: "Montant"

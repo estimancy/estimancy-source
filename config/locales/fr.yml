@@ -2458,3 +2458,7 @@ fr:
   number_estimates_per_year: "Nombre d'estimations / année"
 
 
+
+  add_budget_type: "Ajouter"
+  select_buget_type: "Sélectionner un budget type"
+  amount: "Montant"

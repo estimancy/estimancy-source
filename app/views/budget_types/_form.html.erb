@@ -1,6 +1,11 @@
-<%= I18n.t(:budget_type) %>
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:budget_type) %> </a></li>
+  </ul>
 
-    <%= simple_form_for([@organization, @budget, @application, @budget_type]) do |f| %>
+  <div id="tabs-1">
+    <%#= simple_form_for([@organization, @budget, @application, @budget_type]) do |f| %>
+    <%= simple_form_for([@organization, @budget_type]) do |f| %>
 
       <%= f.error_notification %>
 
@@ -9,17 +14,14 @@
 
 
       <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
-      <%= hidden_field_tag :application_id, params[:application_id] %>
-      <%= hidden_field_tag :budget_id, params[:budget_id] %>
+      <%#= hidden_field_tag :application_id, params[:application_id] %>
+      <%#= hidden_field_tag :budget_id, params[:budget_id] %>
 
       <% @organization.estimation_statuses.each do |es| %>
         <div class="row-fluid">
           <div class="pull-left">
-            <% bts = BudgetTypeStatus.where(organization_id: @organization.id,
-                                            budget_type_id: @budget_type.id,
-                                            application_id: @application.id ,
-                                            estimation_status_id: es.id).first %>
-
+            <%# bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, application_id: @application.id, estimation_status_id: es.id).first %>
+            <% bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, estimation_status_id: es.id).first %>
             <%= check_box_tag "estimation_statuses[#{es.id}]", nil, (bts.nil? ? false : true)  %>
           </div>
           <div class="pull-left">
@@ -28,7 +30,7 @@
         </div>
       <% end %>
 
-
+      <br/>
 
       <%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
 
@@ -45,3 +47,5 @@
         <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-area'), :class => 'btn' %>
       </div>
     <% end %>
+  </div>
+</div>

@@ -2404,3 +2404,7 @@ en:
   label_results: "Results"
   nb_estimations: "Number of estimates"
   number_estimates_per_year: "Number of estimates / year"
+
+  add_budget_type: "Add"
+  select_buget_type: "Select a budget type"
+  amount: "Amount"
