@@ -4,9 +4,7 @@ class BudgetTypesController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @application = Application.find(params[:application_id])
     @budget = Budget.find(params[:budget_id])
-    @budget_types = BudgetType.where(organization_id: @organization.id,
-                                     application_id: @application.id,
-                                     budget_id: @budget.id).all
+    @budget_types = BudgetType.where(organization_id: @organization.id, application_id: @application.id).all
   end
 
   def new
@@ -40,16 +38,8 @@ class BudgetTypesController < ApplicationController
     @budget_type = BudgetType.new(params[:budget_type])
 
     if @budget_type.save
-      #params[:estimation_statuses].each do |k, v|
-        #BudgetTypeStatus.where(organization_id: @organization.id,
-                               #budget_type_id: @budget_type.id,
-                               #estimation_status_id: k,
-                               #application_id: @application.id).first_or_create
       params[:estimation_statuses].each do |k, v|
-        BudgetTypeStatus.where(organization_id: @organization.id,
-                               budget_type_id: @budget_type.id,
-                               estimation_status_id: k,
-                               ).first_or_create
+        BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, estimation_status_id: k).first_or_create
       end
 
       flash[:notice] = I18n.t (:notice_budget_type_successful_created)

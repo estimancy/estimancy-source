@@ -2110,3 +2110,4 @@ frsncf_amoa_infra:
   ignored_application: "Application ignorée"
 
   please_wait: "Veuillez patienter..."
+  amount: "Montant"

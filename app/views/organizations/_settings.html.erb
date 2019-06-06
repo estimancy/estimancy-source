@@ -157,7 +157,7 @@
       </thead>
 
       <tbody>
-      <% BudgetType.all.each do |budget_type| %>
+      <% @organization.budget_types.each do |budget_type| %>
         <tr>
           <td><%= budget_type.name %></td>
           <td><%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %></td>

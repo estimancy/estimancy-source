@@ -38,6 +38,57 @@ class BudgetsController < ApplicationController
     @budget = Budget.find(params[:id])
     @organization = Organization.find(params[:organization_id])
 
+
+    # Get budget graph (for selected budget)
+    @data = []
+    bt_colors = Hash.new
+    header = ["Applications"]
+    budget_budget_types = @budget.budget_types #@organization.budget_types
+    budget_budget_types.each do |bt|
+      header << bt.name
+    end
+    header << { role: 'annotation' }
+    @data << header
+
+    budget_used_applications = @budget.application_budgets.where(is_used: true).map(&:application)
+    budget_used_applications.each do |application|
+      application_values = ["#{application.name}"]
+      data = Budget::fetch_project_field_data(@organization, @budget, application)
+
+      budget_budget_types.each do |budget_type|
+        application_values << data["#{budget_type.name}"].to_f
+      end
+      application_values << 0
+
+      @data << application_values
+    end
+
+
+    # @organization.budgets.each do |budget|
+    #   budget_values = ["#{budget.name}"]
+    #   organization_budget_types.each do |budget_type|
+    #
+    #     budget_budget_type = BudgetBudgetType.where(organization_id: @organization.id, budget_id: budget.id, budget_type_id: budget_type.id).first
+    #
+    #     if budget_budget_type
+    #       budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
+    #       budget_used_applications.each do |application|
+    #         data = Budget::fetch_project_field_data(@organization, budget, application)
+    #         @data << data
+    #         BudgetTypeStatus.where(application_id: application.id, organization_id: @organization.id).all.each do |bts|
+    #           unless bts.budget_type.nil?
+    #             bt_colors[bts.budget_type.name] = bts.budget_type.color
+    #           end
+    #         end
+    #       end
+    #     else
+    #       budget_values << nil
+    #     end
+    #
+    #   end
+    # end
+
+    puts @data
     set_page_title I18n.t(:budget)
     set_breadcrumbs I18n.t(:budget) => organization_setting_path(@current_organization, anchor: "tabs-budgets"), I18n.t('budget') => ""
 
@@ -79,9 +130,7 @@ class BudgetsController < ApplicationController
 
         unless app_montants.empty?
           app_montants.each do |app_id, montant|
-              app_budget = ApplicationBudget.where(organization_id: @organization.id,
-                                       application_id: app_id,
-                                       budget_id: @budget.id).first_or_create
+              app_budget = ApplicationBudget.where(organization_id: @organization.id, application_id: app_id, budget_id: @budget.id).first_or_create
               app_budget.montant = montant.empty? ? nil : montant.to_f
 
               if app_id.in?(selected_apps)
@@ -132,22 +181,20 @@ class BudgetsController < ApplicationController
     unless budget_type_id.nil?
       @budget_type = BudgetType.where(id: budget_type_id).first
 
-      @budget_budget_type = BudgetBudgetType.where(organization_id: organization_id,
-                                   budget_id: budget_id,
-                                   budget_type_id: budget_type_id).first_or_create
+      @budget_budget_type = BudgetBudgetType.where(organization_id: organization_id, budget_id: budget_id, budget_type_id: budget_type_id).first_or_create
       if @budget_budget_type
-        @budget.applications.each do |application|
+        #@budget.used_applications.each do |application|
+        @budget.application_budgets.where(is_used: true).map(&:application).each do |application|
           @budget_type.budget_type_statuses.each do |budget_type_status|
 
-            ApplicationBudget.where(organization_id: @organization.id,
-                                    budget_id: @budget.id,
-                                    application_id: application.id,
-                                    budget_type_id: budget_type_status.budget_type_id,
-                                    estimation_status_id: budget_type_status.estimation_status_id).first_or_create
+            ApplicationBudgetType.where(organization_id: @organization.id,
+                                        budget_id: @budget.id,
+                                        application_id: application.id,
+                                        budget_type_id: @budget_type.id,
+                                        estimation_status_id: budget_type_status.estimation_status_id).first_or_create
           end
         end
       end
-
     end
 
     redirect_to edit_organization_budget_path(@organization, @budget)

@@ -1,3 +1,9 @@
+<!--Load the Google charts API  -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart']});
+</script>
+
 <div class="tabs">
   <ul>
     <li><a href="#tabs-1"><%= I18n.t(:budget) %> </a></li>
@@ -13,34 +19,18 @@
         <div class="span4"><%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %></div>
         <div class="span2"><%= f.input :sum, :label => I18n.t('sum_budget'), :input_html => {:class => 'input-large', :autofocus => (controller.action_name == 'new')} %></div>
         <div class="span2">
-          <%= f.input :start_date,
-                      :as => :string,
-                      :label => I18n.t(:start_date_budget),
-                      :input_html => { :class => 'date-picker',
-                                       :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
+          <%= f.input :start_date, :as => :string, :label => I18n.t(:start_date_budget), :input_html => { :class => 'date-picker', :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
         </div>
         <div class="span2">
-          <%= f.input :end_date,
-                      :as => :string,
-                      :label => I18n.t(:end_date_budget),
-                      :input_html => { :class => 'date-picker',
-                                       :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
+          <%= f.input :end_date, :as => :string, :label => I18n.t(:end_date_budget), :input_html => { :class => 'date-picker', :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
         </div>
 
         <div class="span2">
-          <%= f.input :field_id,
-                      as: :select,
-                      collection: @organization.fields.map{|i| [i.name, i.id]},
-                      label: 'Champs personnalisé',
-                      selected: @budget.field_id,
-                      input_html: { selected: I18n.t(:Indifferent),:class => 'input-large' } %>
+          <%= f.input :field_id, as: :select, collection: @organization.fields.map{|i| [i.name, i.id]}, label: 'Champs personnalisé', selected: @budget.field_id, input_html: { selected: I18n.t(:Indifferent), :class => 'input-large' } %>
         </div>
-
-      <br/>
-
+        <br/>
       </div>
       <br/><br/>
-
 
       <script>
           $(document).ready(function () {
@@ -62,8 +52,8 @@
           <div class="span4">
             <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
               <tr>
-                <th>Applications</th>
-                <th>Montant</th>
+                <th><%= I18n.t(:applications) %></th>
+                <th><%= I18n.t(:amount) %></th>
               </tr>
               <% @organization.applications.each do |app| %>
                 <% app_budget = ApplicationBudget.where(budget_id: @budget.id, application_id: app.id).first %>
@@ -90,11 +80,8 @@
           <div class="span4">
             <div>
               <%= label_tag I18n.t :budget_type %>
-              <%= select_tag :budget_budget_type_id, options_for_select(BudgetType.all.map{|i| [i.name, i.id]},
-                                                                  selected: params[:budget_id]),
-                                                                  prompt: I18n.t(:select_buget_type) %>
-
-                <%= hidden_field_tag "selected_budget_type_id" %>
+              <%= select_tag :budget_budget_type_id, options_for_select(@organization.budget_types.all.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_buget_type) %>
+              <%= hidden_field_tag "selected_budget_type_id" %>
 
                 <script>
                     $("#budget_budget_type_id").change(function(){
@@ -102,66 +89,44 @@
                     });
                 </script>
 
-
-                <%#= link_to I18n.t('add_budget_type'), organization_budget_add_budget_type_path(@organization, @budget,
-                          bbt_id: params[:selected_budget_type_id]),
-                          :class => 'btn btn-primary' %>
-
+                <%#= link_to I18n.t('add_budget_type'), organization_budget_add_budget_type_path(@organization, @budget, bbt_id: params[:selected_budget_type_id]), :class => 'btn btn-primary' %>
                 <%= submit_tag I18n.t('add_budget_type'), name: "add_budget_type", :class => 'btn btn-primary' %>
-
             </div>
-
             <br/>
 
             <table class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
-
                 <tr>
                   <th><%= I18n.t :budget_type %></th>
                   <th>Action</th>
                 </tr>
 
-                <% BudgetBudgetType.where(:organization_id => @organization.id,
-                                           :budget_id => @budget.id).each do |bbt| %>
-                <% unless bbt.nil? %>
-                    <tr>
-                      <td>
-                        <%= bbt.budget_type %>
-                      </td>
-                      <td class="center">
-                        <%= link_to "", organization_budget_destroy_budget_budget_type_path(@organization, @budget, bbt_id: bbt.id),
-                                      method: :delete,
-                                      data: { confirm: I18n.t(:are_you_sure) },
-                                      class: "icon-trash" %>
-                      </td>
-                    </tr>
+                <% BudgetBudgetType.where(:organization_id => @organization.id, :budget_id => @budget.id).each do |bbt| %>
+                    <% unless bbt.nil? %>
+                        <tr>
+                          <td>
+                            <%= bbt.budget_type %>
+                          </td>
+                          <td class="center">
+                            <%= link_to "", organization_budget_destroy_budget_budget_type_path(@organization, @budget, bbt_id: bbt.id), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "icon-trash" %>
+                          </td>
+                        </tr>
                   <% end %>
                 <% end %>
             </table>
 
+
             <div class="row">
-              <% if @budget_budget_type %>
-                <% @budget.applications.each do |application| %>
-                  <% data = Budget::fetch_project_field_data(@organization, @budget, application) %>
-                  <% BudgetTypeStatus.where(application_id: application.id,
-                                            organization_id: @organization.id).all.each do |bts| %>
-                    <% unless bts.budget_type.nil? %>
-                      <% bt_colors[bts.budget_type.name] = bts.budget_type.color %>
-                    <% end %>
-                  <% end %>
-                  <%= data %>
-                  <div class="span4">
-                    <%= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
-                  </div>
-                <% end %>
-              <% end %>
+              <div class="span4">
+                <%#= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
+                <%= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data, budget_name: @budget.name } %>
+              </div>
              </div>
           </div>
 
-        <%= hidden_field_tag :application_id, params[:application_id] %>
+          <%= hidden_field_tag :application_id, params[:application_id] %>
         <br/>
       <% end %>
-
-      </div>
+        </div>
 
       <div class="actions-tabs">
         <% if can? :manage, BudgetType %>

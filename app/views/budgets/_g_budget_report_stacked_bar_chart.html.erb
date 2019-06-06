@@ -5,11 +5,9 @@
     function drawStackedBarChart() {
 
         var r_data = <%= data.to_json.html_safe %>;
-        //fin test
 
         var data1 = google.visualization.arrayToDataTable([
-            ['Genre', 'Fantasy & Sci Fi', 'Romance', 'Mystery/Crime', 'General',
-                'Western', 'Literature', { role: 'annotation' } ],
+            ['Genre', 'Fantasy & Sci Fi', 'Romance', 'Mystery/Crime', 'General', 'Western', 'Literature', { role: 'annotation' } ],
             ['2010', 10, 24, 20, 32, 18, 5, ''],
             ['2020', 16, 22, 23, 30, 16, 9, ''],
             ['2030', 28, 19, 29, 30, 12, 13, '']
@@ -21,14 +19,14 @@
         var options = {
             //width: 600,
             //height: 400,
-            title: '<%= chart_title %>',
-            subtitle: '<%= widget_name %>',
+            title: '<%= "" %>',
+            subtitle: '<%= "" %>',
             legend: { position: 'top', maxLines: 3 },
             hAxis: {
-                title: 'Phases',
+                title: 'Applications',
             },
             vAxis: {
-                title: '<%= chart_vAxis_title %>'
+                title: '<%= "Budget #{budget_name} (k€)" %>'
             },
 
             colors: chart_colors,
@@ -38,11 +36,11 @@
 
         var view = new google.visualization.DataView(data);
 
-        var chart = new google.visualization.ColumnChart(document.getElementById('<%= "stacked_bar_chart_div_#{widget_id}" %>'));
+        var chart = new google.visualization.ColumnChart(document.getElementById('<%= "stacked_bar_chart_div_budget" %>'));
         chart.draw(view, options);
 
     }
 </script>
 
 <!--<div id='<%#= "stacked_bar_chart_div_#{widget_id}" %>' style="width: 900px; height: 300px;"></div>-->
-<div id='<%= "stacked_bar_chart_div_#{widget_id}" %>' style="min-width: 600px; min-height: 400px; max-width: 100%; max-height: 100%;"></
+<div id='<%= "stacked_bar_chart_div_budget" %>' style="min-width: 600px; min-height: 400px; max-width: 100%; max-height: 100%;"></div>

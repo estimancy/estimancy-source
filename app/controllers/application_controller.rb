@@ -818,5 +818,4 @@ class ApplicationController < ActionController::Base
     filtered_projects
   end
 
-
 end

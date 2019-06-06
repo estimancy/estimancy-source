@@ -2278,3 +2278,4 @@ frsncf:
   Abaque_Wbs_quotation_export: "Tous les devis de type Abaque + WBS seront exportés dans un fichier Excel récapitulatif."
   quotation_PDF_export: "Exporter tous les devis en PDF"
   raw_data_range_dates: "Extraction des données brutes comprises dans une fourchette de dates:"
+  amount: "Montant"
