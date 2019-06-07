@@ -181,7 +181,7 @@
                   <div class="col">
                     <div class="span4">
                       <%#= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
-                      <%= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data, budget_name: @budget.name } %>
+                      <%= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data, budget_name: @budget.name, hAxis_title: "Applications", vAxis_title: "" } %>
                       <%= hidden_field_tag :application_id, params[:application_id] %>
                     </div>
                   </div>

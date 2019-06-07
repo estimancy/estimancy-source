@@ -14,19 +14,14 @@
     <%= form_tag organization_get_budget_details_path(@organization), method: "post", remote: true do %>
 
         <%= hidden_field_tag "organization_id", @organization.id %>
-
         <div class="row">
-          <%= label_tag "Budgets" %>
           <div class="col">
+            <%= label_tag "Budgets" %>
             <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_budget), class: "form-control" %>
           </div>
           <div class="col">
             <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
           </div>
-        </div>
-
-        <div class="container-fluid">
-
         </div>
     <% end %>
 
