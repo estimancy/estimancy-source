@@ -2040,4 +2040,5 @@ fr1:
   select_buget_type: "Sélectionner un type de budget"
   budget_details_per_application: "Détails du budget par application"
   select_budget: "Sélectionner un budget"
+  edit_budget_type: "Editer le type de budget"
 

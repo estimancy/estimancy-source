@@ -125,6 +125,8 @@ class BudgetsController < ApplicationController
         add_budget_type(@organization.id, @budget.id, selected_budget_type_id)
       end
 
+      #flash[:notice] = I18n.t (:notice_budget_successful_updated)
+      redirect_to edit_organization_budget_path(@organization, @budget)
     else
       # on met à jour les informations du tBudget
       if @budget.update_attributes(params[:budget])

@@ -1,51 +1,61 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:budget_type) %> </a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+
+  <%= I18n.t(:budget_type) %>
 
   <div id="tabs-1">
     <%#= simple_form_for([@organization, @budget, @application, @budget_type]) do |f| %>
     <%= simple_form_for([@organization, @budget_type]) do |f| %>
+        <div class="card-body">
+          <%= f.error_notification %>
 
-      <%= f.error_notification %>
-
-      <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xxlarge',
-                                                                    :autofocus => (controller.action_name == 'new') } %>
-
-
-      <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
-      <%#= hidden_field_tag :application_id, params[:application_id] %>
-      <%#= hidden_field_tag :budget_id, params[:budget_id] %>
-
-      <% @organization.estimation_statuses.each do |es| %>
-        <div class="row-fluid">
-          <div class="pull-left">
-            <%# bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, application_id: @application.id, estimation_status_id: es.id).first %>
-            <% bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, estimation_status_id: es.id).first %>
-            <%= check_box_tag "estimation_statuses[#{es.id}]", nil, (bts.nil? ? false : true)  %>
+          <div class="edition-bloc-left">
+            <div class="edition-bloc-title">
+              <h1>
+                <% if controller.action_name == "new" %>
+                    <%= I18n.t :budget_type  %>
+                <% else %>
+                    <%= I18n.t :edit_budget_type  %>
+                <% end %>
+              </h1>
+            </div>
           </div>
-          <div class="pull-left">
-            <%= es.name %>
+
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+              <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
+              <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+
+              <% @organization.estimation_statuses.each do |es| %>
+                <div class="row-fluid">
+                  <div class="pull-left">
+                    <%# bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, application_id: @application.id, estimation_status_id: es.id).first %>
+                    <% bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, estimation_status_id: es.id).first %>
+                    <%= check_box_tag "estimation_statuses[#{es.id}]", nil, (bts.nil? ? false : true)  %>
+                  </div>
+                  <div class="pull-left">
+                    <%= es.name %>
+                  </div>
+                </div>
+              <% end %>
+              <br/>
+
+              <%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
+
+              <div class="actions-tabs">
+                <% if can? :manage, BudgetType %>
+                  <% if action_name.in?(%w(new create)) %>
+                    <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <% elsif action_name == 'edit' || action_name=='update' %>
+                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                  <% end %>
+                <% end %>
+                <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-area'), :class => 'btn' %>
+              </div>
+            </div>
           </div>
         </div>
-      <% end %>
-
-      <br/>
-
-      <%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
-
-      <div class="actions-tabs">
-        <% if can? :manage, BudgetType %>
-          <% if action_name.in?(%w(new create)) %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <% elsif action_name == 'edit' || action_name=='update' %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-          <% end %>
-        <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-area'), :class => 'btn' %>
-      </div>
     <% end %>
   </div>
-</div>
+</section>

@@ -1888,5 +1888,6 @@ en-gb:
   select_buget_type: "Select a budget type"
   budget_details_per_application: "Budget details per application"
   select_budget: "Select budget"
+  edit_budget_type: "Edit budget type"
 
 
