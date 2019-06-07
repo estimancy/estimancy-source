@@ -2280,6 +2280,8 @@ frsncf_amoa_infra:
   recalculate_all: "Tout recalculer"
 
   budget_management: "Gestion des bugdets"
+  budget_type_management: "Gestion des types de bugdet"
+  budget_types: "Types de budget"
 
   date_min: "Date min"
   date_max: "Date max"
@@ -2312,7 +2314,6 @@ frsncf_amoa_infra:
   edit_service: "Paramétrage du service"
   new_service: "Création d'un service"
   create_service: "Création d'un service"
-
 
   #_user_account.html.erb
   setting_demands: "Paramétrage demandes"
@@ -2354,7 +2355,6 @@ frsncf_amoa_infra:
 
   month_number: "Nombre du mois"
 
-
   nb_selected_projects: "Nombre de projets sélectionnée"
   average_rates: "Taux moyen"
   revised: "révisé"
@@ -2368,3 +2368,10 @@ frsncf_amoa_infra:
   label_results: "Résultats"
   nb_estimations: "Nombre de devis"
   number_estimates_per_year: "Nombre de devis / année"
+  please_wait: "Veuillez patienter..."
+  amount: "Montant"
+  edit_budget: "Editer le budget"
+  add_budget_types: "Ajouter des types de budget"
+  select_buget_type: "Sélectionner un type de budget"
+  budget_details_per_application: "Détails du budget par application"
+  select_budget: "Sélectionner un budget"

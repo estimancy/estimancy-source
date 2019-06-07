@@ -2361,6 +2361,8 @@ fr:
   recalculate_all: "Tout recalculer"
 
   budget_management: "Gestion des bugdets"
+  budget_type_management: "Gestion des types de bugdet"
+  budget_types: "Types de budget"
 
   date_min: "Date min"
   date_max: "Date max"
@@ -2457,4 +2459,10 @@ fr:
   nb_estimations: "Nombre d'estimations"
   number_estimates_per_year: "Nombre d'estimations / année"
 
-
+  add_budget_type: "Ajouter"
+  select_buget_type: "Sélectionner un type de budget"
+  amount: "Montant"
+  edit_budget: "Editer le budget"
+  add_budget_types: "Ajouter des types de budget"
+  budget_details_per_application: "Détails du budget par application"
+  select_budget: "Sélectionner un budget"

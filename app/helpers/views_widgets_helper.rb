@@ -1116,7 +1116,6 @@ module ViewsWidgetsHelper
                                                         wbs_activity_elements: wbs_activity_elements
                                            })
               end
-
             end
 
           else

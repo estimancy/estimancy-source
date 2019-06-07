@@ -3238,7 +3238,113 @@ class OrganizationsController < ApplicationController
     # get organization estimations per year
     #@projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort_by{|created_at, _extras| created_at }
     @projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] }
+
+
+    # Budget global
+    @data_for_global_budget = []
+    budget_header = ["Budgets"]
+    organization_budget_types = @organization.budget_types
+    organization_budget_types.each do |bt|
+      budget_header << bt.name
+    end
+    budget_header << { role: 'annotation' }
+    @data_for_global_budget << budget_header
+
+    @organization.budgets.each do |budget|
+      budget_values = ["#{budget.name}"]
+      budget_sum = 0.0
+
+      budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
+
+      budget_used_applications.each do |application|
+
+        application_values = []
+        data = Budget::fetch_project_field_data(@organization, budget, application)
+        organization_budget_types.each do |budget_type|
+          application_values << data["#{budget_type.name}"].to_f
+        end
+
+        budget_sum = application_values.sum
+        budget_values << budget_sum
+      end
+
+      budget_values << 0
+
+      @data_for_global_budget << budget_values
+    end
+
   end
+
+  def budget_details
+    @organization = Organization.find(params[:organization_id])
+
+    # @organization.budgets.each do |budget|
+    #   budget_values = ["#{budget.name}"]
+    #   budget_values_per_bt = { }
+    #
+    #   organization_budget_types.each do |budget_type|
+    #     budget_values_per_bt["#{budget_type.name}"] = 0
+    #
+    #     budget_budget_type = BudgetBudgetType.where(organization_id: @organization.id, budget_id: budget.id, budget_type_id: budget_type.id).first
+    #
+    #     if budget_budget_type
+    #       budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
+    #
+    #       budget_used_applications.each do |application|
+    #         data = Budget::fetch_project_field_data(@organization, budget, application)
+    #         @data << data
+    #         BudgetTypeStatus.where(application_id: application.id, organization_id: @organization.id).all.each do |bts|
+    #           unless bts.budget_type.nil?
+    #             bt_colors[bts.budget_type.name] = bts.budget_type.color
+    #           end
+    #         end
+    #       end
+    #     else
+    #       budget_values << 0
+    #     end
+    #   end
+    # end
+    # Fin Budget global
+  end
+
+
+  # Get budget par Application graph (for selected budget)
+  def get_budget_details
+    @organization = Organization.find(params[:organization_id])
+    @data = []
+    bt_colors = Hash.new
+    header = ["Applications"]
+    @budget_name = ""
+
+    unless params[:budget_id].blank?
+      budget = Budget.find(params[:budget_id])
+      if budget
+        @budget_name = budget.name
+
+        budget_budget_types = budget.budget_types
+        budget_budget_types.each do |bt|
+          header << bt.name
+        end
+        header << { role: 'annotation' }
+        @data << header
+
+        budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
+        budget_used_applications.each do |application|
+          application_values = ["#{application.name}"]
+          data = Budget::fetch_project_field_data(@organization, budget, application)
+
+          budget_budget_types.each do |budget_type|
+            application_values << data["#{budget_type.name}"].to_f
+          end
+          application_values << 0
+
+          @data << application_values
+        end
+      end
+    end
+
+  end
+
 
   def refresh_value_elements
     @technologies = OrganizationTechnology.all

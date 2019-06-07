@@ -2303,8 +2303,9 @@ en:
   pdf_save: "Save as PDF"
 
   recalculate_all: "Recalculate all"
-
   budget_management: "Budget management"
+  budget_type_management: "Budget types management"
+  budget_types: "Budget types"
 
   date_min: "Date min"
   date_max: "Date max"
@@ -2384,7 +2385,6 @@ en:
   begin: "Start"
   gap: "gap"
 
-
   min_value_message: "La valeur minmale doit être inférieure à la valeur maximale."
   val_min: "Minimal value"
   val_max: "Maximal value"
@@ -2404,3 +2404,11 @@ en:
   label_results: "Results"
   nb_estimations: "Number of estimates"
   number_estimates_per_year: "Number of estimates / year"
+
+  add_budget_type: "Add"
+  select_buget_type: "Select a budget type"
+  amount: "Amount"
+  edit_budget: "Edit the budget"
+  add_budget_types: "Add budget types"
+  budget_details_per_application: "Budget details per application"
+  select_budget: "Select budget"

@@ -368,6 +368,9 @@ frsncf:
 
   # applications/form
   budget_label: "Etiquette du budget"
+  budget_management: "Gestion des bugdets"
+  budget_type_management: "Gestion des types de bugdet"
+  budget_types: "Types de budget"
 
   # users/form
   allow_quick_access: "Autoriser l'accès rapide"
@@ -2403,3 +2406,24 @@ frsncf:
   label_results: "Résultats"
   nb_estimations: "Nombre de devis"
   number_estimates_per_year: "Nombre de devis / année"
+  add_budget_type: "Ajouter"
+  select_buget_type: "Sélectionner un type de budget"
+
+  #organizations/report
+  filtered_excel_report: "Rapport Excel filtré"
+  detailed_excel_report: "Rapport Excel détaillé"
+  detailed_pdf_report: "Rapport PDF détaillé"
+  raw_data_extract: "Extraction de données brutes"
+  generate_filtered_excel_report: "Générer un rapport Excel filtré"
+  selected_quotation_export: "Seuls les devis sélectionnés seront exportés dans un fichier Excel récapitulatif."
+  counting_details: "Détails de dénombrements"
+  module_size_select: "Sélectionner le module de taille"
+  generate_excel_report_all_quotations: "Générer un rapport Excel de tous les devis"
+  Abaque_Wbs_quotation_export: "Tous les devis de type Abaque + WBS seront exportés dans un fichier Excel récapitulatif."
+  quotation_PDF_export: "Exporter tous les devis en PDF"
+  raw_data_range_dates: "Extraction des données brutes comprises dans une fourchette de dates:"
+  amount: "Montant"
+  edit_budget: "Editer le budget"
+  add_budget_types: "Ajouter des types de budget"
+  budget_details_per_application: "Détails du budget par application"
+  select_budget: "Sélectionner un budget"

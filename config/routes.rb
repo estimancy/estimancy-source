@@ -277,6 +277,8 @@ Projestimate::Application.routes.draw do
     resources :budgets
 
     resources :budgets do
+      delete 'destroy_budget_budget_type' => 'budgets#destroy_budget_budget_type', :as => 'destroy_budget_budget_type'
+      get 'add_budget_type' => 'budgets#add_budget_type', :as => 'add_budget_type'
       resources :applications do
         resources :budget_types
       end
@@ -295,6 +297,7 @@ Projestimate::Application.routes.draw do
     resources :organization_profiles
     resources :views
     resources :providers
+    resources :budget_types
 
     get "authorization" => 'organizations#authorization'
     get "setting" => 'organizations#setting'
@@ -330,6 +333,9 @@ Projestimate::Application.routes.draw do
     post "import_acquisition_categories" => 'organizations#import_acquisition_categories'
     post "import_providers" => 'organizations#import_providers'
     get "polyval_export" => 'organizations#polyval_export'
+
+    get "budget_details" => 'organizations#budget_details'
+    post "get_budget_details" => 'organizations#get_budget_details'
   end
 
   get "export_permissions" => 'permissions#export_permissions'
@@ -481,8 +487,5 @@ Projestimate::Application.routes.draw do
   get 'users/:id/confirm_user' => 'users#confirm_user', :as => 'confirm_user'
 
   get 'advanced_search' => 'projects#advanced_search', :as => 'advanced_search'
-
-
-
 end
 
