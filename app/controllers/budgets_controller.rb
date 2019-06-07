@@ -131,20 +131,17 @@ class BudgetsController < ApplicationController
         app_montants = params[:budget_app_montant]
         selected_apps = params[:budget_app_check]
 
-        old_budget_application_ids = @budget.application_budgets.where(is_used: true).map(&:application).map(&:id)
-        new_budget_application_ids = selected_apps
         ApplicationBudget.where(organization_id: @organization.id, budget_id: @budget.id).where.not(application_id: selected_apps).update_all(is_used: false)
         ApplicationBudgetType.where(organization_id: @organization.id, budget_id: @budget.id).where.not(application_id: selected_apps).delete_all
 
         unless app_montants.empty?
           app_montants.each do |app_id, montant|
-              app_budget = ApplicationBudget.where(organization_id: @organization.id, application_id: app_id, budget_id: @budget.id).first_or_create
-              app_budget.montant = montant.empty? ? nil : montant.to_f
-
-              if app_id.in?(selected_apps)
-                app_budget.is_used = true
-              end
-              app_budget.save
+            app_budget = ApplicationBudget.where(organization_id: @organization.id, application_id: app_id, budget_id: @budget.id).first_or_create
+            app_budget.montant = montant.empty? ? nil : montant.to_f
+            if app_id.in?(selected_apps)
+              app_budget.is_used = true
+            end
+            app_budget.save
           end
         end
 
