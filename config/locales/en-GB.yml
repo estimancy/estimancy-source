@@ -1880,4 +1880,13 @@ en-gb:
   nb_estimations: "Number of estimates"
   number_estimates_per_year: "Number of estimates / year"
   amount: "Amount"
+  budget_management: "Budget management"
+  budget_type_management: "Budget types management"
+  budget_types: "Budget types"
+  edit_budget: "Edit the budget"
+  add_budget_types: "Add budget types"
+  select_buget_type: "Select a budget type"
+  budget_details_per_application: "Budget details per application"
+  select_budget: "Select budget"
+
 

@@ -334,7 +334,8 @@ Projestimate::Application.routes.draw do
     post "import_providers" => 'organizations#import_providers'
     get "polyval_export" => 'organizations#polyval_export'
 
-
+    get "budget_details" => 'organizations#budget_details'
+    post "get_budget_details" => 'organizations#get_budget_details'
   end
 
   get "export_permissions" => 'permissions#export_permissions'

@@ -122,41 +122,40 @@
       </table>
     </div>
 
-    <div id="tabs-project-areas" class="edition-page-group py-4"><span><%= I18n.t('project_areas') %></span></div>
-  <div id="tabs-budget-types">
-    <div class="group_button">
-      <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn' %>
+    <div id="tabs-budget-types" class="edition-page-group"><span><%= I18n.t('budget_type_management') %></span></div>
+    <div>
+      <div class="group_button">
+        <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn' %>
+      </div>
+
+      <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+        <thead>
+        <tr>
+          <th><%= I18n.t(:name) %></th>
+          <th><%= I18n.t(:state) %></th>
+          <th><%= I18n.t(:color) %></th>
+          <th  class="action"><%= I18n.t(:actions) %></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        <% @organization.budget_types.each do |budget_type| %>
+            <tr>
+              <td><%= budget_type.name %></td>
+              <td><%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %></td>
+              <td><%= budget_type.color %></td>
+              <td class="center">
+                <%= link_to '', edit_organization_budget_type_path(@organization, budget_type), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                <%= link_to '', organization_budget_type_path(@organization, budget_type), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+              </td>
+            </tr>
+        <% end %>
+        <%= render :partial => 'layouts/footer_table' %>
+        </tbody>
+      </table>
     </div>
 
-    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-      <thead>
-      <tr>
-        <th><%= I18n.t(:name) %></th>
-        <th><%= I18n.t(:state) %></th>
-        <th><%= I18n.t(:color) %></th>
-        <th  class="action"><%= I18n.t(:actions) %></th>
-      </tr>
-      </thead>
-
-      <tbody>
-      <% @organization.budget_types.each do |budget_type| %>
-        <tr>
-          <td><%= budget_type.name %></td>
-          <td><%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %></td>
-          <td><%= budget_type.color %></td>
-          <td class="center">
-            <%= link_to '', edit_organization_budget_type_path(@organization, budget_type), :class => 'icon-pencil', :title => I18n.t('edit') %>
-            <%= link_to '', organization_budget_type_path(@organization, budget_type), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-          </td>
-        </tr>
-      <% end %>
-      <%= render :partial => 'layouts/footer_table' %>
-      </tbody>
-    </table>
-  </div>
-
-
-  <div id="tabs-project-areas">
+    <div id="tabs-project-areas" class="edition-page-group py-4"><span><%= I18n.t('project_areas') %></span></div>
     <% if can? :show_project_areas, ProjectArea %>
 
       <% if can? :manage, ProjectArea %>
@@ -542,6 +541,9 @@
         </li>
         <li class="nav-item">
           <a class="nav-link group" href="#tabs-budgets"><span><%= I18n.t("budget") %></span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-budget-types"><span><%= I18n.t("budget_types") %></span></a>
         </li>
         <li class="nav-item">
           <a class="nav-link group" href="#tabs-project-areas"><span><%= I18n.t("project_areas") %></span></a>
