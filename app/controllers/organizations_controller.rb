@@ -2085,11 +2085,11 @@ class OrganizationsController < ApplicationController
     # projects = @organization.projects.where(:is_model => [nil, false], :estimation_status_id => statuts)
 
     organization_projects = @organization.projects.where(:is_model => [nil, false])
-    if params[:archive_only] == "1"
-      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abadonnée"]).map(&:id)
+    if params[:archive_only].present?
+      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
       @all_projects = organization_projects.where(estimation_status_id: esids)
     else
-      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abadonnée"]).map(&:id)
+      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
       @all_projects = organization_projects.where.not(estimation_status_id: esids)
     end
 
