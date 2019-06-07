@@ -3,6 +3,7 @@ class BudgetType < ActiveRecord::Base
 
   belongs_to :estimation_status
   has_many :budget_type_statuses, :dependent=> :destroy
+  has_many :application_budget_types, :dependent=> :destroy
 
   def to_s
     self.nil? ? '' : self.name
