@@ -120,13 +120,13 @@ class BudgetsController < ApplicationController
 
     if params[:add_budget_type].present?
       # Il s'agit du bouton d'ajout de type de budget
-      selected_budget_type_id = params[:selected_budget_type_id]
+      selected_budget_type_id = params[:budget_budget_type_id]
       unless selected_budget_type_id.nil? || selected_budget_type_id.empty?
         add_budget_type(@organization.id, @budget.id, selected_budget_type_id)
+      else
+        #flash[:notice] = I18n.t (:notice_budget_successful_updated)
+        redirect_to edit_organization_budget_path(@organization, @budget)
       end
-
-      #flash[:notice] = I18n.t (:notice_budget_successful_updated)
-      redirect_to edit_organization_budget_path(@organization, @budget)
     else
       # on met à jour les informations du tBudget
       if @budget.update_attributes(params[:budget])

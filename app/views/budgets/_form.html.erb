@@ -93,7 +93,7 @@
                   <%#= label_tag I18n.t :budget_type %>
                   <div class="col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <%= select_tag :budget_budget_type_id, options_for_select(@organization.budget_types.all.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_buget_type) %>
+                        <%= select_tag :budget_budget_type_id, options_for_select(@organization.budget_types.where.not(id: @budget.budget_type_ids).all.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_buget_type) %>
                         <%= hidden_field_tag "selected_budget_type_id" %>
                     </div>
                   </div>
