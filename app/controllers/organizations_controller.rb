@@ -3268,7 +3268,7 @@ class OrganizationsController < ApplicationController
         budget_values << budget_sum
       end
 
-      budget_values << 0
+      budget_values << ''
 
       @data_for_global_budget << budget_values
     end
@@ -3336,7 +3336,7 @@ class OrganizationsController < ApplicationController
           budget_budget_types.each do |budget_type|
             application_values << data["#{budget_type.name}"].to_f
           end
-          application_values << 0
+          application_values << ''
 
           @data << application_values
         end
