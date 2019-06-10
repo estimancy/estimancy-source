@@ -194,7 +194,7 @@ $(document).ready(function() {
             <% @guw_model_orders = @initial_guw_model_orders.delete_if { |k, v| v.blank? } %>
             <% @guw_model_orders = @guw_model_orders.sort_by{ |k,v| v.to_f }.to_h %>
 
-            <% all_coeff_and_outputs = (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["#{I18n.t :criteria}", "#{I18n.t :coeff_complexity}", "Coefficient"]).flatten %>
+            <% all_coeff_and_outputs = (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["#{I18n.t :criteria}", "#{I18n.t :cplx_coeff}", "#{I18n.t(:coefficient)}"]).flatten %>
             <% all_coeff_and_outputs.each do |key|
                unless @guw_model_orders.key?("#{key}")
                  @guw_model_orders["#{key}"] = nil
@@ -202,7 +202,6 @@ $(document).ready(function() {
              end
             %>
 
-            <%# (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["Critères", "Coeff. de Complexité", "Coefficient"]).flatten.each do |item| %>
             <% @guw_model_orders.each do |item, value| %>
               <tr>
                 <% begin %>
@@ -211,7 +210,7 @@ $(document).ready(function() {
                     <%= text_field_tag "items[#{item}]", value, class: "order_size" %>
                   </td>
 
-                  <% if item == "Coefficient" || item == "#{I18n.t :coeff_complexity}"  || item == "#{I18n.t :criteria}" %>
+                  <% if item == "#{I18n.t :coefficient}" || item == "#{I18n.t :coeff_complexity}"  || item == "#{I18n.t :criteria}" %>
                     <td class="orders_padding">
                       <b>
                         <%= item %>
@@ -229,7 +228,7 @@ $(document).ready(function() {
                     <%= text_field_tag "items[#{item}]", YAML::load(@guw_model_orders.value)[item], class: "order_size" %>
                   </td>
 
-                  <% if item == "Coefficient" || item == "#{I18n.t :coeff_complexity}"  || item == "#{I18n.t :criteria}" %>
+                  <% if item == "#{I18n.t :coefficient}" || item == "#{I18n.t :coeff_complexity}"  || item == "#{I18n.t :criteria}" %>
                     <td class="orders_padding">
                       <b>
                         <%= item %>
