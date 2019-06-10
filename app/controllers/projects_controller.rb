@@ -139,7 +139,7 @@ class ProjectsController < ApplicationController
 
         field = Field.where(name: "Localisation").first
         unless field.nil?
-          pf = mpre_project.project_fields.where(field_id: field.id).first
+          pf = project.project_fields.where(field_id: field.id).first
           value = pf.nil? ? pf.value : nil
           worksheet_cf.add_cell(i, 6, value)
         end
@@ -321,7 +321,7 @@ class ProjectsController < ApplicationController
 
       field = Field.where(name: "Localisation").first
       unless field.nil?
-        pf = mpre_project.project_fields.where(field_id: field.id).first
+        pf = project.project_fields.where(field_id: field.id).first
         value = pf.nil? ? pf.value : nil
         worksheet_synt.add_cell(i, 6, value)
       end
