@@ -259,7 +259,7 @@ en:
 
   # Estimation dashboard
   create_project: "Create an estimate"
-  projects_list: "Estimations list"
+  projects_list: "Estimates list"
   quick_access: "Quick access"
   to_the_latest_estimations_consulted : "to the latest estimations consulted"
   from_most_recent_to_least_recent: "From most recent to least recent"
@@ -267,7 +267,7 @@ en:
   elements: "Elements"
   display_archives: "Display archives"
   export_to_pdf: "Export to PDF"
-  duplicate_estimation: "Duplicate estimation"
+  duplicate_estimation: "Duplicate"
   create_new_version: "Create new version"
 
   # edit estimation
@@ -711,15 +711,15 @@ en:
 
   #projects
   edit_project: "Edit project \"%{value}\""
-  new_project: "New estimation"
-  new_project_from: "New estimation from template"
+  new_project: "New estimate"
+  new_project_from: "New estimate from template"
   wbs_product: "PBS-Projects"
   wbs_activity: "WBS-Activity"
   activity: "Activity"
   available_wbs_activity: "Available WBS-Activities from the library, with their associated ratio tables\n(Selected ratio table will be used as default ratio table)"
   button_add: "Add"
   label_wbs_activity_ratio: "Ratio table"
-  estimation_plan: "Estimation plan"
+  estimation_plan: "Estimate plan"
   button_estimation_plan: "Edit estimation plan"
   securities: "Securities"
   calendar: "Calendar"
@@ -736,7 +736,7 @@ en:
   warning_need_check_box_confirmation: "You need to confirm project deletion with check-box"
   label_project_is_model: "Is an estimation template"
   is_model: "Template"
-  estimate: "Estimations"
+  estimate: "Estimate"
 
   #Record_statuses
   edit_record_status: "Edit the \"%{value}\" record status"
@@ -2114,8 +2114,8 @@ en:
 
   is_optional: "Is optional"
 
-  confirm_deletion: "Confirm estimation deletion"
-  initialize_calculation: "Initialize the calculation"
+  confirm_deletion: "Confirm estimate deletion"
+  initialize_calculation: "Initialize"
   comments: "Comments"
   new_status: "New status in new version"
   skb_modules: "Size Knowledges Database"
@@ -2186,7 +2186,7 @@ en:
   new_input_attribute: "New input attribute"
   profiles_list: "List of profiles"
 
-  liste_des_estimations: "Estimations list"
+  liste_des_estimations: "Estimate list"
   copy_in_progress: "Copy in progress..."
   is_new_status: "Is the default status of new estimation version "
   warning_intermediate_project_version_cannot_be_deleted: "Cannot delete an intermediate version."
@@ -2229,7 +2229,7 @@ en:
   use_automatic_quotation_number: "Use automatic estimation name for estimations created from this model"
   show_tjm: "Show ADR"
   only_numeric: "Only numeric values ​​are allowed"
-  current_estimation_does_not_exists: "There is no current estimation"
+  current_estimation_does_not_exists: "There is no current estimate"
   security_audit_management: "Security audit management"
   security_audit_utilities: "Security audit utilities"
   common_data_integrity: "Common data integrity"
@@ -2268,7 +2268,7 @@ en:
   change_after: "after changing status"
   is_protected_group: "Is a protected group ?"
   is_ignored: "Ignore the application"
-  estimation_status: "Estimation status"
+  estimation_status: "Status"
   ignored_application: "Ignored application"
 
   please_wait: "Please wait..."
