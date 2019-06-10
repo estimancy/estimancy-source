@@ -603,26 +603,26 @@
                   <%= hidden_field_tag "guw_model_id", @guw_model.id %>
 
                   <label><%= I18n.t(:import_type) %></label>
-                  <%= select_tag "import_type", options_for_select(["Ajouter", "Remplacer"]), class: "form-control" %>
+                  <%= select_tag "import_type", options_for_select([I18n.t(:button_add), I18n.t(:replace)]), class: "form-control" %>
 
                   <label><%= I18n.t(:source_type) %></label>
 
                   <% if @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-                    <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Sélectionner un type de source", class: "form-control" %>
+                    <%= select_tag "from", options_for_select(["Excel", "Jira", "Redmine"]), prompt: "Source", class: "form-control" %>
                   <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-                    <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                    <%= select_tag "from", options_for_select(["Excel", "Jira"]), prompt: "Source", class: "form-control" %>
                   <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-                    <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                    <%= select_tag "from", options_for_select(["Excel", "Redmine"]), prompt: "Source", class: "form-control" %>
                   <% elsif @guw_model.allow_excel == true && @guw_model.allow_jira == false && @guw_model.allow_redmine == false %>
-                    <%= select_tag "from", options_for_select(["Excel"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                    <%= select_tag "from", options_for_select(["Excel"]), prompt: "Source", class: "form-control" %>
                   <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == true %>
-                    <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                    <%= select_tag "from", options_for_select(["Jira","Redmine"]), prompt: "Source", class: "form-control" %>
                   <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == true && @guw_model.allow_redmine == false %>
-                    <%= select_tag "from", options_for_select(["Jira"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                    <%= select_tag "from", options_for_select(["Jira"]), prompt: "Source", class: "form-control" %>
                   <% elsif @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == true %>
-                    <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                    <%= select_tag "from", options_for_select(["Redmine"]), prompt: "Source", class: "form-control" %>
                   <% else %>
-                    <%= select_tag "from", options_for_select([""]), prompt: "Sélectionner une type de source", class: "form-control" %>
+                    <%= select_tag "from", options_for_select([""]), prompt: "Source", class: "form-control" %>
                   <% end %>
 
                   <div class ="hide" id="file-block" >

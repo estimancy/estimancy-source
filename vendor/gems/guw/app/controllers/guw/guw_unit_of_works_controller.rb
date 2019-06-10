@@ -2657,7 +2657,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     results = []
 
-    if params[:import_type] == "Remplacer"
+    if params[:import_type] == I18n.t(:replace)
       Guw::GuwUnitOfWorkGroup.where(module_project_id: module_project.id).delete_all
       Guw::GuwUnitOfWork.where(module_project_id: module_project.id).delete_all
     end
