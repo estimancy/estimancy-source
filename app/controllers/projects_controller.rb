@@ -136,7 +136,12 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(i, 3, project.request_number)
         worksheet_cf.add_cell(i, 4, project.project_area.nil? ? '' : project.project_area.name)
         worksheet_cf.add_cell(i, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
-        worksheet_cf.add_cell(i, 6, project.project_category.nil? ? '' : project.project_category.name)
+
+        field = Field.where(name: "Localisation").first
+        unless field.nil?
+          worksheet_wbs.add_cell(i, 6, project.project_fields.where(field_id: field.value))
+        end
+
         worksheet_cf.add_cell(i, 7, project.platform_category.nil? ? '' : project.platform_category.name)
         worksheet_cf.add_cell(i, 8, project.provider.nil? ? '' : project.provider.name)
         worksheet_cf.add_cell(i, 9, project.start_date.to_s)
@@ -221,7 +226,12 @@ class ProjectsController < ApplicationController
       worksheet_wbs.add_cell(iii+1, 3, mpre_project.request_number)
       worksheet_wbs.add_cell(iii+1, 4, mpre_project.project_area.nil? ? '' : mpre_project.project_area.name)
       worksheet_wbs.add_cell(iii+1, 5, mpre_project.acquisition_category.nil? ? '' : mpre_project.acquisition_category.name)
-      worksheet_wbs.add_cell(iii+1, 6, mpre_project.project_category.nil? ? '' : mpre_project.project_category.name)
+
+      field = Field.where(name: "Localisation").first
+      unless field.nil?
+        worksheet_wbs.add_cell(i, 6, project.project_fields.where(field_id: field.value))
+      end
+
       worksheet_wbs.add_cell(iii+1, 7, mpre_project.platform_category.nil? ? '' : mpre_project.platform_category.name)
       worksheet_wbs.add_cell(iii+1, 8, mpre_project.provider.nil? ? '' : mpre_project.provider.name)
       worksheet_wbs.add_cell(iii+1, 9, mpre_project.start_date.to_s)
@@ -304,7 +314,12 @@ class ProjectsController < ApplicationController
       worksheet_synt.add_cell(pi, 3, project.request_number)
       worksheet_synt.add_cell(pi, 4, project.project_area.nil? ? '' : project.project_area.name)
       worksheet_synt.add_cell(pi, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
-      worksheet_synt.add_cell(pi, 6, project.project_category.nil? ? '' : project.project_category.name)
+
+      field = Field.where(name: "Localisation").first
+      unless field.nil?
+        worksheet_wbs.add_cell(i, 6, project.project_fields.where(field_id: field.value))
+      end
+
       worksheet_synt.add_cell(pi, 7, project.platform_category.nil? ? '' : project.platform_category.name)
       worksheet_synt.add_cell(pi, 8, project.provider.nil? ? '' : project.provider.name)
       worksheet_synt.add_cell(pi, 9, project.start_date.to_s)
