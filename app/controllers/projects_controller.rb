@@ -139,7 +139,9 @@ class ProjectsController < ApplicationController
 
         field = Field.where(name: "Localisation").first
         unless field.nil?
-          worksheet_wbs.add_cell(i, 6, project.project_fields.where(field_id: field.value))
+          pf = mpre_project.project_fields.where(field_id: field.id).first
+          value = pf.nil? ? pf.value : nil
+          worksheet_cf.add_cell(i, 6, value)
         end
 
         worksheet_cf.add_cell(i, 7, project.platform_category.nil? ? '' : project.platform_category.name)
@@ -229,7 +231,9 @@ class ProjectsController < ApplicationController
 
       field = Field.where(name: "Localisation").first
       unless field.nil?
-        worksheet_wbs.add_cell(i, 6, project.project_fields.where(field_id: field.value))
+        pf = mpre_project.project_fields.where(field_id: field.id).first
+        value = pf.nil? ? pf.value : nil
+        worksheet_wbs.add_cell(i, 6, value)
       end
 
       worksheet_wbs.add_cell(iii+1, 7, mpre_project.platform_category.nil? ? '' : mpre_project.platform_category.name)
@@ -317,7 +321,9 @@ class ProjectsController < ApplicationController
 
       field = Field.where(name: "Localisation").first
       unless field.nil?
-        worksheet_wbs.add_cell(i, 6, project.project_fields.where(field_id: field.value))
+        pf = mpre_project.project_fields.where(field_id: field.id).first
+        value = pf.nil? ? pf.value : nil
+        worksheet_synt.add_cell(i, 6, value)
       end
 
       worksheet_synt.add_cell(pi, 7, project.platform_category.nil? ? '' : project.platform_category.name)
