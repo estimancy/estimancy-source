@@ -1516,8 +1516,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
           if guw_output.name == "Effort AI (m.d)"
-            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * 1.15
-            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * 1.15
+            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * rand(0.7...1.3).round(1)
+            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * rand(0.7...1.3).round(1)
           else
             if params["ajusted_size"].present?
               if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
@@ -1540,8 +1540,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
               end
             else
-              tmp_hash_res["#{guw_output.id}"] = tmp * rand(0.7...1.3).round(1)
-              tmp_hash_ares["#{guw_output.id}"] = tmp * rand(0.7...1.3).round(1)
+              tmp_hash_res["#{guw_output.id}"] = tmp
+              tmp_hash_ares["#{guw_output.id}"] = tmp
             end
           end
 
