@@ -53,17 +53,27 @@ class BudgetTypesController < ApplicationController
     #authorize! :manage, BudgetType
     @organization = Organization.find(params[:organization_id])
     @budget_type = BudgetType.find(params[:id])
-    @application = Application.find(params[:application_id])
 
-    BudgetTypeStatus.where(organization_id: @organization.id,
-                           budget_type_id: @budget_type.id,
-                           application_id: @application.id ).delete_all
+    BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id).delete_all
+    ApplicationBudgetType.where(organization_id: @organization.id, budget_type_id: @budget_type.id).delete_all
 
     params[:estimation_statuses].each do |k, v|
       BudgetTypeStatus.where(organization_id: @organization.id,
                              budget_type_id: @budget_type.id,
-                             estimation_status_id: k,
-                             application_id: @application.id).first_or_create
+                             estimation_status_id: k).first_or_create
+    end
+
+    # on met à jour les Application-budget-type
+    @organization.budgets.each do |budget|
+      budget.application_budgets.where(is_used: true).map(&:application).each do |application|
+        @budget_type.budget_type_statuses.each do |budget_type_status|
+          ApplicationBudgetType.where(organization_id: @organization.id,
+                                      budget_id: budget.id,
+                                      application_id: application.id,
+                                      budget_type_id: @budget_type.id,
+                                      estimation_status_id: budget_type_status.estimation_status_id).first_or_create
+        end
+      end
     end
 
     if @budget_type.update_attributes(params[:budget_type])

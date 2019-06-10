@@ -125,7 +125,7 @@
     <div id="tabs-budget-types" class="edition-page-group"><span><%= I18n.t('budget_type_management') %></span></div>
     <div>
       <div class="group_button">
-        <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn' %>
+        <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn btn-primary' %>
       </div>
 
       <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
@@ -145,8 +145,8 @@
               <td><%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %></td>
               <td><%= budget_type.color %></td>
               <td class="center">
-                <%= link_to '', edit_organization_budget_type_path(@organization, budget_type), :class => 'icon-pencil', :title => I18n.t('edit') %>
-                <%= link_to '', organization_budget_type_path(@organization, budget_type), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_budget_type_path(@organization, budget_type), :class => 'material-icons', :title => I18n.t('edit') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), organization_budget_type_path(@organization, budget_type), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               </td>
             </tr>
         <% end %>

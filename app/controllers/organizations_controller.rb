@@ -3232,13 +3232,11 @@ class OrganizationsController < ApplicationController
     @fields = @organization.fields
 
     @organization_profiles = @organization.organization_profiles
-
     @work_element_types = @organization.work_element_types
 
     # get organization estimations per year
     #@projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort_by{|created_at, _extras| created_at }
     @projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] }
-
 
     # Budget global
     @data_for_global_budget = []
@@ -3253,23 +3251,29 @@ class OrganizationsController < ApplicationController
     @organization.budgets.each do |budget|
       budget_values = ["#{budget.name}"]
       budget_sum = 0.0
-
       budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
 
-      budget_used_applications.each do |application|
+      # budget_used_applications.each do |application|
+      #   application_values = []
+      #   data = Budget::fetch_project_field_data(@organization, budget, application)
+      #   organization_budget_types.each do |budget_type|
+      #     application_values << data["#{budget_type.name}"].to_f
+      #   end
+      #   budget_sum = application_values.sum
+      #   budget_values << budget_sum
+      # end
 
-        application_values = []
-        data = Budget::fetch_project_field_data(@organization, budget, application)
-        organization_budget_types.each do |budget_type|
-          application_values << data["#{budget_type.name}"].to_f
+      organization_budget_types.each do |budget_type|
+        budget_type_values = []
+        budget_used_applications.each do |application|
+          data = Budget::fetch_project_field_data(@organization, budget, application)
+          budget_type_values << data["#{budget_type.name}"].to_f
         end
-
-        budget_sum = application_values.sum
+        budget_sum = budget_type_values.sum
         budget_values << budget_sum
       end
 
-      budget_values << 0
-
+      budget_values << ''
       @data_for_global_budget << budget_values
     end
 
@@ -3336,8 +3340,7 @@ class OrganizationsController < ApplicationController
           budget_budget_types.each do |budget_type|
             application_values << data["#{budget_type.name}"].to_f
           end
-          application_values << 0
-
+          application_values << ''
           @data << application_values
         end
       end

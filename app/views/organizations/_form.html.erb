@@ -280,7 +280,7 @@
                     <div class="col-6">
                       <div class="card card-widget card-indicator card-indicator-with-module">
                         <div class="card-body">
-                          <%= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data_for_global_budget, budget_name: "", hAxis_title: "Budget", vAxis_title: "" } %>
+                          <%= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data_for_global_budget, div_id: "stacked_bar_chart_div_budget_global", budget_name: "", hAxis_title: "Budget", vAxis_title: "" } %>
                         </div>
 
                         <span style="float: right; margin-left: auto">

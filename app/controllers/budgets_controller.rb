@@ -58,7 +58,7 @@ class BudgetsController < ApplicationController
       budget_budget_types.each do |budget_type|
         application_values << data["#{budget_type.name}"].to_f
       end
-      application_values << 0
+      application_values << ''
 
       @data << application_values
     end
@@ -117,30 +117,49 @@ class BudgetsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     @budget = Budget.find(params[:id])
 
+
     if params[:add_budget_type].present?
-      selected_budget_type_id = params[:selected_budget_type_id]
+      # Il s'agit du bouton d'ajout de type de budget
+      selected_budget_type_id = params[:budget_budget_type_id]
       unless selected_budget_type_id.nil? || selected_budget_type_id.empty?
         add_budget_type(@organization.id, @budget.id, selected_budget_type_id)
+      else
+        #flash[:notice] = I18n.t (:notice_budget_successful_updated)
+        redirect_to edit_organization_budget_path(@organization, @budget)
       end
-
     else
+      # on met à jour les informations du tBudget
       if @budget.update_attributes(params[:budget])
         app_montants = params[:budget_app_montant]
         selected_apps = params[:budget_app_check]
 
+        ApplicationBudget.where(organization_id: @organization.id, budget_id: @budget.id).where.not(application_id: selected_apps).update_all(is_used: false)
+        ApplicationBudgetType.where(organization_id: @organization.id, budget_id: @budget.id).where.not(application_id: selected_apps).delete_all
+
         unless app_montants.empty?
           app_montants.each do |app_id, montant|
-              app_budget = ApplicationBudget.where(organization_id: @organization.id, application_id: app_id, budget_id: @budget.id).first_or_create
-              app_budget.montant = montant.empty? ? nil : montant.to_f
-
-              if app_id.in?(selected_apps)
-                app_budget.is_used = true
-              end
-              app_budget.save
+            app_budget = ApplicationBudget.where(organization_id: @organization.id, application_id: app_id, budget_id: @budget.id).first_or_create
+            app_budget.montant = montant.empty? ? nil : montant.to_f
+            if app_id.in?(selected_apps)
+              app_budget.is_used = true
+            end
+            app_budget.save
           end
         end
 
-        budget_type = params[:budget_budget_type_id]
+        @budget.budget_types.each do |budget_type|
+          selected_apps.each do |application_id|
+            budget_type.budget_type_statuses.each do |budget_type_status|
+              ApplicationBudgetType.where(organization_id: @organization.id,
+                                          budget_id: @budget.id,
+                                          application_id: application_id,
+                                          budget_type_id: budget_type.id,
+                                          estimation_status_id: budget_type_status.estimation_status_id).first_or_create
+            end
+          end
+        end
+
+        #budget_type = params[:budget_budget_type_id]
         # unless budget_type.nil?
         #   budget_budget_type = BudgetBudgetType.where(organization_id: @organization.id, budget_id: @budget.id, budget_type_id: budget_type).first_or_create
         #   budget_budget_type.save

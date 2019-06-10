@@ -21,6 +21,7 @@
             </h1>
           </div>
         </div>
+
         <div class="edition-bloc-content">
           <div class="edition-bloc-form">
             <div class="row">
@@ -92,7 +93,7 @@
                   <%#= label_tag I18n.t :budget_type %>
                   <div class="col">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <%= select_tag :budget_budget_type_id, options_for_select(@organization.budget_types.all.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_buget_type) %>
+                        <%= select_tag :budget_budget_type_id, options_for_select(@organization.budget_types.where.not(id: @budget.budget_type_ids).all.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_buget_type) %>
                         <%= hidden_field_tag "selected_budget_type_id" %>
                     </div>
                   </div>
@@ -181,7 +182,7 @@
                   <div class="col">
                     <div class="span4">
                       <%#= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
-                      <%= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data, budget_name: @budget.name } %>
+                      <%= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data, div_id: "stacked_bar_chart_div_budget", budget_name: @budget.name, hAxis_title: "Applications", vAxis_title: "" } %>
                       <%= hidden_field_tag :application_id, params[:application_id] %>
                     </div>
                   </div>
