@@ -258,7 +258,7 @@ en:
   create_new_project: "Create a new estimate"
 
   # Estimation dashboard
-  create_project: "Create an estimation"
+  create_project: "Create an estimate"
   projects_list: "Estimations list"
   quick_access: "Quick access"
   to_the_latest_estimations_consulted : "to the latest estimations consulted"
@@ -291,7 +291,7 @@ en:
 
   # header
   advanced_research: "ADVANCED RESEARCH"
-  estimation_name, version_number, author : "Estimation name, version number, author"
+  estimation_name, version_number, author : "Estimate name, version number, author"
   home_estimancy: "Home Estimancy"
   model: "Model"
   property: "Property"
