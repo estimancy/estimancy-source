@@ -131,19 +131,19 @@
                           <%= i[0] %>
                         </th>
                       <% end %>
-                    <% elsif i[0] == "Coefficient" %>
+                    <% elsif i[0] == I18n.t(:coefficient) %>
                       <% unless @deported_guw_model_guw_coefficients.map(&:id).empty? %>
                         <th>
                           <%= i[0] %>
                         </th>
                       <% end %>
-                    <% elsif i[0] == "Critères" %>
+                    <% elsif i[0] == I18n.t(:criteria) %>
                       <% if @guw_types.map{ |i| i.allow_criteria }.flatten.include?(true) %>
                         <th>
                           <%= I18n.t :criteria %>
                         </th>
                       <% end %>
-                    <% elsif i[0] == "Coeff. de Complexité" %>
+                    <% elsif i[0] ==  I18n.t(:cplx_coeff) %>
                       <% if i[1].blank? %>
                       <% else %>
                         <th>

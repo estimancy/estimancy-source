@@ -1540,8 +1540,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
               end
             else
-              tmp_hash_res["#{guw_output.id}"] = tmp
-              tmp_hash_ares["#{guw_output.id}"] = tmp
+              tmp_hash_res["#{guw_output.id}"] = tmp * rand(0.7...1.3).round(1)
+              tmp_hash_ares["#{guw_output.id}"] = tmp * rand(0.7...1.3).round(1)
             end
           end
 

@@ -388,10 +388,10 @@ $(document).ready(function() {
               <%= guw_coefficient.name %> (<%= guw_coefficient.coefficient_type %>)
             </b>
 
+            <%= link_to "Editer", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient) %>
             <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to "Supprimer", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", confirm: I18n.t(:are_you_sure) %>
+              <%= link_to "Supprimer", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "float-right", confirm: I18n.t(:are_you_sure) %>
             <% end %>
-            <%= link_to "Editer", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
 
             <table class="table table-bordered">
               <tr>
