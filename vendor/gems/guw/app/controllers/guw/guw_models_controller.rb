@@ -1798,48 +1798,51 @@ class Guw::GuwModelsController < ApplicationController
 
       tjm_array = []
 
-      calculator = Dentaku::Calculator.new
-      unless @wbs_activity.nil?
-        @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
+      begin
+        calculator = Dentaku::Calculator.new
+        unless @wbs_activity.nil?
+          @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-          guw_output_effort = Guw::GuwOutput.where(name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg"], guw_model_id: @guw_model.id).first
-          guw_output_test = Guw::GuwOutput.where(name: ["Assiette Test", "Charges T (jh)", "UC Test Dg"], guw_model_id: @guw_model.id).first
+            guw_output_effort = Guw::GuwOutput.where(name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg"], guw_model_id: @guw_model.id).first
+            guw_output_test = Guw::GuwOutput.where(name: ["Assiette Test", "Charges T (jh)", "UC Test Dg"], guw_model_id: @guw_model.id).first
 
-          mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
+            mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
 
-          guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
+            guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
 
-          begin
-            guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
-          rescue
-            guw_output_test_value = ""
+            begin
+              guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
+            rescue
+              guw_output_test_value = ""
+            end
+
+            corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+
+            final_formula = corresponding_ratio_elt.formula
+                                .gsub("RTU", guw_output_effort_value.to_s)
+                                .gsub("TEST", guw_output_test_value.to_s)
+                                .gsub('%', ' * 0.01 ')
+
+            begin
+              value = calculator.evaluate(final_formula).to_f.round(3)
+            rescue
+              value = 0
+            end
+
+            value_cost = value * mp_ratio_element.tjm.to_f
+
+            tjm_array << mp_ratio_element.tjm.to_f
+
+            worksheet.add_cell(ind, kk + ii, value.round(3))
+            worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
+            ii = ii + 2
           end
 
-          corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
-
-          final_formula = corresponding_ratio_elt.formula
-                              .gsub("RTU", guw_output_effort_value.to_s)
-                              .gsub("TEST", guw_output_test_value.to_s)
-                              .gsub('%', ' * 0.01 ')
-
-          begin
-            value = calculator.evaluate(final_formula).to_f.round(3)
-          rescue
-            value = 0
+          unless tjm_array.empty?
+            worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
           end
-
-          value_cost = value * mp_ratio_element.tjm.to_f
-
-          tjm_array << mp_ratio_element.tjm.to_f
-
-          worksheet.add_cell(ind, kk + ii, value.round(3))
-          worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
-          ii = ii + 2
         end
-
-        unless tjm_array.empty?
-          worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
-        end
+      rescue
       end
 
     end
