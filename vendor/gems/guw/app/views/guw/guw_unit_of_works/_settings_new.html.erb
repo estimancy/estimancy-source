@@ -97,7 +97,7 @@
       <%= @module_project %>
       <div class="edition-bloc-tools">
         <a href="<%= guw.new_guw_unit_of_work_group_path %>"><i class="material-icons">add</i><%= I18n.t("add_a_group") %></a>
-        <button class="btn btn-secondary"><%= I18n.t :recalculate_all %></button>
+        <%= submit_tag I18n.t(:recalculate_all), data: { :"disable-with" => "#{ I18n.t :please_wait }" }, class: "btn btn-secondary" %>
       </div>
     </div>
 

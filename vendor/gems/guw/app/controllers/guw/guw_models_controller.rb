@@ -1716,23 +1716,23 @@ class Guw::GuwModelsController < ApplicationController
         cplx = guow.guw_complexity.name
       end
 
-      worksheet.add_cell(ind, 0, current_module_project.project.organization.name)
-      worksheet.add_cell(ind, 1, current_module_project.project.provider.name)
-      worksheet.add_cell(ind, 2, current_module_project.project.application.name)
-      worksheet.add_cell(ind, 3, current_module_project.project.business_need)
+      worksheet.add_cell(ind, 0, current_module_project.project.organization.name) rescue nil
+      worksheet.add_cell(ind, 1, current_module_project.project.provider.name) rescue nil
+      worksheet.add_cell(ind, 2, current_module_project.project.application.name) rescue nil
+      worksheet.add_cell(ind, 3, current_module_project.project.business_need) rescue nil
       worksheet.add_cell(ind, 4, current_module_project.project.estimation_status.nil? ? nil : current_module_project.project.estimation_status.name)
       worksheet.add_cell(ind, 5, current_module_project.project.project_area.nil? ? nil : current_module_project.project.project_area.name)
       worksheet.add_cell(ind, 6, current_module_project.project.acquisition_category.nil? ? nil : current_module_project.project.acquisition_category.name)
       worksheet.add_cell(ind, 7, current_module_project.project.platform_category.nil? ? nil : current_module_project.project.platform_category.name)
-      worksheet.add_cell(ind, 8, current_module_project.project.title)
-      worksheet.add_cell(ind, 9, current_module_project.project.version_number)
+      worksheet.add_cell(ind, 8, current_module_project.project.title) rescue nil
+      worksheet.add_cell(ind, 9, current_module_project.project.version_number) rescue nil
       worksheet.add_cell(ind, 10, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
       worksheet.add_cell(ind, 11, guow.selected ? 1 : 0)
-      worksheet.add_cell(ind, 12, guow.name)
+      worksheet.add_cell(ind, 12, guow.name) rescue nil
       worksheet.add_cell(ind, 13, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
       worksheet.add_cell(ind, 14, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
-      worksheet.add_cell(ind, 15, guow.quantity)
-      worksheet.add_cell(ind, 16, guow.tracking)
+      worksheet.add_cell(ind, 15, guow.quantity) rescue nil
+      worksheet.add_cell(ind, 16, guow.tracking) rescue nil
       worksheet.add_cell(ind, 17, cplx)
       worksheet.add_cell(ind, 18, guow.intermediate_weight)
 
