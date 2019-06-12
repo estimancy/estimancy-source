@@ -22,8 +22,16 @@
 
           <div class="edition-bloc-content">
             <div class="edition-bloc-form">
-              <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
-              <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+              <div class="row">
+                <div class="col">
+                  <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
+                  <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+                </div>
+                <div class="col">
+                  <%= f.input :display_order, :label => I18n.t('display_order'), :input_html => { :class => 'input-xxlarge' } %>
+                </div>
+              </div>
+
 
               <% @organization.estimation_statuses.each do |es| %>
                 <div class="row-fluid">

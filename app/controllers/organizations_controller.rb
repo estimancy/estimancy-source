@@ -3240,13 +3240,17 @@ class OrganizationsController < ApplicationController
 
     # Budget global
     @data_for_global_budget = []
-    @bt_colors = Hash.new
+    @bt_colors = []
     budget_header = ["Budgets"]
     organization_budget_types = @organization.budget_types
+    @nb_series = organization_budget_types.all.size
+
     organization_budget_types.each do |bt|
       budget_header << bt.name
-      @bt_colors["#{bt.name}"] = bt.color
+      @bt_colors << bt.color
     end
+    @bt_colors << '007DAB'
+
     budget_header << I18n.t(:planned_budget)
     #budget_header << { role: 'annotation' }
     @data_for_global_budget << budget_header
@@ -3320,20 +3324,24 @@ class OrganizationsController < ApplicationController
   def get_budget_details
     @organization = Organization.find(params[:organization_id])
     @data = []
-    @bt_colors = Hash.new
+    @bt_colors = []
     header = ["Applications"]
     @budget_name = ""
+    @nb_series = 0
 
     unless params[:budget_id].blank?
       budget = Budget.find(params[:budget_id])
       if budget
         @budget_name = budget.name
         budget_budget_types = budget.budget_types
+        @nb_series = budget_budget_types.all.size
 
         budget_budget_types.each do |bt|
           header << bt.name
-          @bt_colors["#{bt.name}"] = bt.color
+          @bt_colors << bt.color
         end
+        @bt_colors << '007DAB'
+
         header << I18n.t(:planned_budget)
         header << { role: 'annotation' }
         @data << header

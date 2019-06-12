@@ -27,7 +27,8 @@ class ViewsWidget < ActiveRecord::Base
 
   serialize :equation, Hash
 
-  WIDGETS_COLORS = ["#007DAB","#0099C9", "#84CEE5","#CFD8DC", '#7b7f96', '#e5e4e2', '#96857b', '#7b9693', 'gold', '#C5A5CF', '#b87333', 'silver', '#76A7FA', '#703593', '#871B47', '#BC5679', 'D59931', 'teal', '#00B3FF', '#3399FF']
+  #WIDGETS_COLORS = ["#007DAB","#0099C9", "#84CEE5","#CFD8DC", '#7b7f96', '#e5e4e2', '#96857b', '#7b9693', 'gold', '#C5A5CF', '#b87333', 'silver', '#76A7FA', '#703593', '#871B47', '#BC5679', 'D59931', 'teal', '#00B3FF', '#3399FF']
+  WIDGETS_COLORS = ["#CFD8DC", "#84CEE5", "#0099C9", "#007DAB", '#a1c2fa', '#9661FF', '#4285f4', '#7b7f96', '#e5e4e2', '#96857b', '#7b9693', 'gold', '#C5A5CF', '#b87333', 'silver', '#76A7FA', '#703593', '#871B47', '#BC5679', 'D59931', 'teal', '#00B3FF', '#3399FF']
 
   #after_create :update_widget_pe_attribute
 

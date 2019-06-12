@@ -282,7 +282,7 @@
                           <div class="span4">
                             <!--<div class="widgets-list">-->
                               <%#= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data_for_global_budget, div_id: "stacked_bar_chart_div_budget_global", chart_colors: @bt_colors, budget_name: "", hAxis_title: "Budget", vAxis_title: "" } %>
-                              <%= render :partial => 'budgets/g_budget_report_multiple_stacked_bar_chart', :locals => { :data => @data_for_global_budget, div_id: "stacked_bar_chart_div_budget_global", chart_colors: @bt_colors, budget_name: "", chart_title: I18n.t(:global_budget), hAxis_title: "Budgets", vAxis_title: "" } %>
+                              <%= render :partial => 'budgets/g_budget_report_multiple_stacked_bar_chart', :locals => { :data => @data_for_global_budget, nb_series: @nb_series, div_id: "stacked_bar_chart_div_budget_global", chart_colors: @bt_colors, budget_name: "", chart_title: I18n.t(:global_budget), hAxis_title: "Budgets", vAxis_title: "" } %>
                             <!--</div>-->
                           </div>
                         </div>
