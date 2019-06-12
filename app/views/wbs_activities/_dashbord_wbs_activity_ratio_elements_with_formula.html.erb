@@ -9,7 +9,7 @@
         <%= hidden_field_tag "dashboard_selected_ratio_id", wbs_activity_ratio.id %>
         <% allow_add_new_phase = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.allow_add_new_phase) %>
         <% effort_unit = wbs_activity_ratio.wbs_activity.effort_unit #get_attribute_unit(PeAttribute.find_by_alias("effort")) %>
-        <% cost_unit =  get_attribute_unit(current_module_project.pemodule.pe_attributes.where(alias: "cost").first) %>
+        <% cost_unit = @current_organization.currency.to_s %>
 
         <table class="table phases-table <%= (@wbs_activity.hide_wbs_header == 'show_all' ? 'show' : 'hide') %>">
           <% @module_project_ratio_variables.where("name <> ''").each do |mp_ratio_variable| %>
