@@ -2663,7 +2663,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
 
     if source == "Excel"
-      if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      # if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
         workbook = RubyXL::Parser.parse(params[:file].path)
         worksheet = workbook[0]
         tab = worksheet
@@ -2963,7 +2963,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           end
         end
-      end
+      # end
     else
 
       if default_group == ""
