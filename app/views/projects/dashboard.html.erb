@@ -72,7 +72,7 @@
             <ul class="widget-group-list">
               <% @widgets.keys.each do |k| %>
                 <% view_widget = @widgets[k].first %>
-                <% if (view_widget.estimation_status_id == @project.estimation_status_id) || view_widget.estimation_status_id.nil? %>
+                <% if (view_widget.estimation_status_id == @project.estimation_status_id) || view_widget.estimation_status_id.nil? || @project.is_model == true %>
                   <% value = @widgets[k].last %>
                   <% unless value.is_a?(Hash) %>
                     <li>
