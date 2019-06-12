@@ -128,7 +128,12 @@ class ProjectsController < ApplicationController
     @total_cost = Hash.new {|h,k| h[k] = [] }
     @total_effort = Hash.new {|h,k| h[k] = [] }
 
+    field = Field.where(name: "Localisation").first
+
     @organization.projects.each do |project|
+
+      pf = project.project_fields.where(field_id: field.id).first
+
       project.guw_unit_of_works.each do |guow|
         worksheet_cf.add_cell(i, 0, project.title)
         worksheet_cf.add_cell(i, 1, project.application.nil? ? project.application_name : project.application.name)
@@ -137,9 +142,7 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(i, 4, project.project_area.nil? ? '' : project.project_area.name)
         worksheet_cf.add_cell(i, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
 
-        field = Field.where(name: "Localisation").first
         unless field.nil?
-          pf = project.project_fields.where(field_id: field.id).first
           value = pf.nil? ? nil : pf.value
           worksheet_cf.add_cell(i, 6, value)
         end
@@ -229,7 +232,6 @@ class ProjectsController < ApplicationController
       worksheet_wbs.add_cell(iii+1, 4, mpre_project.project_area.nil? ? '' : mpre_project.project_area.name)
       worksheet_wbs.add_cell(iii+1, 5, mpre_project.acquisition_category.nil? ? '' : mpre_project.acquisition_category.name)
 
-      field = Field.where(name: "Localisation").first
       unless field.nil?
         pf = mpre_project.project_fields.where(field_id: field.id).first
         value = pf.nil? ? nil : pf.value
@@ -319,7 +321,6 @@ class ProjectsController < ApplicationController
       worksheet_synt.add_cell(pi, 4, project.project_area.nil? ? '' : project.project_area.name)
       worksheet_synt.add_cell(pi, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
 
-      field = Field.where(name: "Localisation").first
       unless field.nil?
         pf = project.project_fields.where(field_id: field.id).first
         value = pf.nil? ? nil : pf.value
