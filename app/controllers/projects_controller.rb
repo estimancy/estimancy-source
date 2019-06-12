@@ -224,69 +224,75 @@ class ProjectsController < ApplicationController
     worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
 
     ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
-      mpre_project = mpre.module_project.project
-      worksheet_wbs.add_cell(iii+1, 0, mpre_project.title)
-      worksheet_wbs.add_cell(iii, 1, mpre_project.application.nil? ? mpre_project.application_name : mpre_project.application.name)
-      worksheet_wbs.add_cell(iii+1, 2, mpre_project.business_need)
-      worksheet_wbs.add_cell(iii+1, 3, mpre_project.request_number)
-      worksheet_wbs.add_cell(iii+1, 4, mpre_project.project_area.nil? ? '' : mpre_project.project_area.name)
-      worksheet_wbs.add_cell(iii+1, 5, mpre_project.acquisition_category.nil? ? '' : mpre_project.acquisition_category.name)
 
-      unless field.nil?
+      mpre_project = mpre.module_project.project
+
+      unless mpre_project.is_model == true
+
         pf = mpre_project.project_fields.where(field_id: field.id).first
-        value = pf.nil? ? nil : pf.value
-        worksheet_wbs.add_cell(i, 6, value)
+
+        worksheet_wbs.add_cell(iii+1, 0, mpre_project.title)
+        worksheet_wbs.add_cell(iii+1, 1, mpre_project.application.nil? ? mpre_project.application_name : mpre_project.application.name)
+        worksheet_wbs.add_cell(iii+1, 2, mpre_project.business_need)
+        worksheet_wbs.add_cell(iii+1, 3, mpre_project.request_number)
+        worksheet_wbs.add_cell(iii+1, 4, mpre_project.project_area.nil? ? '' : mpre_project.project_area.name)
+        worksheet_wbs.add_cell(iii+1, 5, mpre_project.acquisition_category.nil? ? '' : mpre_project.acquisition_category.name)
+
+        unless field.nil?
+          value = pf.nil? ? nil : pf.value
+          worksheet_wbs.add_cell(iii+1, 6, value)
+        end
+
+        worksheet_wbs.add_cell(iii+1, 7, mpre_project.platform_category.nil? ? '' : mpre_project.platform_category.name)
+        worksheet_wbs.add_cell(iii+1, 8, mpre_project.provider.nil? ? '' : mpre_project.provider.name)
+        worksheet_wbs.add_cell(iii+1, 9, mpre_project.start_date.to_s)
+        worksheet_wbs.add_cell(iii+1, 10, mpre_project.estimation_status.to_s)
+        worksheet_wbs.add_cell(iii+1, 11, mpre.wbs_activity_ratio.name)
+        worksheet_wbs.add_cell(iii+1, 12, mpre.name)
+        worksheet_wbs.add_cell(iii+1, 13, mpre.tjm)
+        worksheet_wbs.add_cell(iii+1, 14, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
+        worksheet_wbs.add_cell(iii+1, 15, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
+        worksheet_wbs.add_cell(iii+1, 16, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
+        worksheet_wbs.add_cell(iii+1, 17, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
       end
 
-      worksheet_wbs.add_cell(iii+1, 7, mpre_project.platform_category.nil? ? '' : mpre_project.platform_category.name)
-      worksheet_wbs.add_cell(iii+1, 8, mpre_project.provider.nil? ? '' : mpre_project.provider.name)
-      worksheet_wbs.add_cell(iii+1, 9, mpre_project.start_date.to_s)
-      worksheet_wbs.add_cell(iii+1, 10, mpre_project.estimation_status.to_s)
-      worksheet_wbs.add_cell(iii+1, 11, mpre.wbs_activity_ratio.name)
-      worksheet_wbs.add_cell(iii+1, 12, mpre.name)
-      worksheet_wbs.add_cell(iii+1, 13, mpre.tjm)
-      worksheet_wbs.add_cell(iii+1, 14, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
-      worksheet_wbs.add_cell(iii+1, 15, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
-      worksheet_wbs.add_cell(iii+1, 16, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
-      worksheet_wbs.add_cell(iii+1, 17, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
-    end
+      pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
+      @organization.projects.where(is_model: false).each do |project|
+        project_module_projects = project.module_projects
+        module_project = project.module_projects.where(pemodule_id: pemodule_wbs.id).first
+        unless module_project.nil?
+          ModuleProjectRatioElement.where(organization_id: @organization.id,
+                                          wbs_activity_ratio_id: module_project.wbs_activity_ratio_id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
-    pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
-    @organization.projects.where(is_model: false).each do |project|
-      project_module_projects = project.module_projects
-      module_project = project.module_projects.where(pemodule_id: pemodule_wbs.id).first
-      unless module_project.nil?
-        ModuleProjectRatioElement.where(organization_id: @organization.id,
-                                        wbs_activity_ratio_id: module_project.wbs_activity_ratio_id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
-
-          if mpre.module_project_id.in?(project_module_projects.map(&:id))
-            if mpre.wbs_activity_element.is_root?
-              @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
-              @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
+            if mpre.module_project_id.in?(project_module_projects.map(&:id))
+              if mpre.wbs_activity_element.is_root?
+                @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
+                @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
+              end
             end
           end
         end
-      end
 
-      if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
-        fe = Field.where(organization_id: project.organization_id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
-        fc = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
+        if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
+          fe = Field.where(organization_id: project.organization_id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
+          fc = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
 
-        project.module_projects.each do |mp|
-          ViewsWidget.where(module_project_id: mp.id).each do |vw|
-            vw_project_fields = vw.project_fields
-            unless vw_project_fields.empty?
+          project.module_projects.each do |mp|
+            ViewsWidget.where(module_project_id: mp.id).each do |vw|
+              vw_project_fields = vw.project_fields
+              unless vw_project_fields.empty?
 
-              unless fe.nil?
-                vw_project_fields.where(project_id: project.id, field_id: fe.id).each do |pf|
-                  @total_effort[project.id] << pf.value.to_f
+                unless fe.nil?
+                  vw_project_fields.where(project_id: project.id, field_id: fe.id).each do |pf|
+                    @total_effort[project.id] << pf.value.to_f
+                  end
                 end
-              end
 
-              unless fc.nil?
-                vw_project_fields.where(project_id: project.id, field_id: fc.id).each do |pf|
-                  unless pf.field.coefficient.nil?
-                    @total_cost[project.id] << (pf.value.to_f * 1000 / pf.field.coefficient.to_f)
+                unless fc.nil?
+                  vw_project_fields.where(project_id: project.id, field_id: fc.id).each do |pf|
+                    unless pf.field.coefficient.nil?
+                      @total_cost[project.id] << (pf.value.to_f * 1000 / pf.field.coefficient.to_f)
+                    end
                   end
                 end
               end
@@ -314,33 +320,35 @@ class ProjectsController < ApplicationController
     pi = 1
     @total_effort.each do |k, value|
       project = Project.find(k)
-
-      worksheet_synt.add_cell(pi, 0, project.title)
-      worksheet_synt.add_cell(pi, 1, project.application.nil? ? project.application_name : project.application.name)
-      worksheet_synt.add_cell(pi, 2, project.business_need)
-      worksheet_synt.add_cell(pi, 3, project.request_number)
-      worksheet_synt.add_cell(pi, 4, project.project_area.nil? ? '' : project.project_area.name)
-      worksheet_synt.add_cell(pi, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
-
-      unless field.nil?
+      unless project.is_model = true
         pf = project.project_fields.where(field_id: field.id).first
-        value = pf.nil? ? nil : pf.value
-        worksheet_synt.add_cell(i, 6, value)
+
+        worksheet_synt.add_cell(pi, 0, project.title)
+        worksheet_synt.add_cell(pi, 1, project.application.nil? ? project.application_name : project.application.name)
+        worksheet_synt.add_cell(pi, 2, project.business_need)
+        worksheet_synt.add_cell(pi, 3, project.request_number)
+        worksheet_synt.add_cell(pi, 4, project.project_area.nil? ? '' : project.project_area.name)
+        worksheet_synt.add_cell(pi, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
+
+        unless field.nil?
+          value = pf.nil? ? nil : pf.value
+          worksheet_synt.add_cell(pi, 6, value)
+        end
+
+        worksheet_synt.add_cell(pi, 7, project.platform_category.nil? ? '' : project.platform_category.name)
+        worksheet_synt.add_cell(pi, 8, project.provider.nil? ? '' : project.provider.name)
+        worksheet_synt.add_cell(pi, 9, project.start_date.to_s)
+        worksheet_synt.add_cell(pi, 10, project.estimation_status.to_s)
+
+        worksheet_synt.add_cell(pi, 11, @total_effort[k].sum.to_f.round(2))
+        worksheet_synt.add_cell(pi, 12, @total_cost[k].sum.to_f.round(2))
+
+        unless @total_effort[k].sum == 0
+          worksheet_synt.add_cell(pi, 13, (@total_cost[k].sum.to_f / @total_effort[k].sum.to_f).round(2) )
+        end
+
+        pi = pi + 1
       end
-
-      worksheet_synt.add_cell(pi, 7, project.platform_category.nil? ? '' : project.platform_category.name)
-      worksheet_synt.add_cell(pi, 8, project.provider.nil? ? '' : project.provider.name)
-      worksheet_synt.add_cell(pi, 9, project.start_date.to_s)
-      worksheet_synt.add_cell(pi, 10, project.estimation_status.to_s)
-
-      worksheet_synt.add_cell(pi, 11, @total_effort[k].sum.to_f.round(2))
-      worksheet_synt.add_cell(pi, 12, @total_cost[k].sum.to_f.round(2))
-
-      unless @total_effort[k].sum == 0
-        worksheet_synt.add_cell(pi, 13, (@total_cost[k].sum.to_f / @total_effort[k].sum.to_f).round(2) )
-      end
-
-      pi = pi + 1
     end
 
     send_data(workbook.stream.string, filename: "RAW_DATA-#{Time.now.to_s}.xlsx", type: "application/vnd.ms-excel")
