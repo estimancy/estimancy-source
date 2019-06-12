@@ -12,8 +12,8 @@
     <br /><br />
     <div class="actions-tabs">
       <span style="margin-right: 10px;"> <%= check_box_tag "yes_confirmation", 'selected' %>  <%= I18n.t('simple_form.yes') %></span>
-      <%= submit_tag I18n.t('delete'), :class => 'btn', :id => 'yes_delete_project' %>
-      <%= submit_tag I18n.t('cancel'), :class => 'btn', :id => 'cancel_project_deletion' %>
+      <%= submit_tag I18n.t('delete'), :class => 'btn btn-primary', :id => 'yes_delete_project' %>
+      <%= submit_tag I18n.t('cancel'), :class => 'btn btn-secondary', :id => 'cancel_project_deletion' %>
     </div>
   </div>
 <% end %>

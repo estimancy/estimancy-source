@@ -2085,7 +2085,7 @@ class OrganizationsController < ApplicationController
     # projects = @organization.projects.where(:is_model => [nil, false], :estimation_status_id => statuts)
 
     organization_projects = @organization.projects.where(:is_model => [nil, false])
-    if params[:archive_only].present?
+    if params[:archive].present?
       esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
       @all_projects = organization_projects.where(estimation_status_id: esids)
     else

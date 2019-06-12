@@ -181,16 +181,21 @@
     </div>
 
     <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
-    <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
-      <div class="float_left">
-        <span><strong> <%= I18n.t(:change_ratio) %> : </strong></span>
+    <% if @wbs_activity.hide_wbs_header == "show_only_ratio" || @wbs_activity.hide_wbs_header == "show_all" %>
+      <div class="card card-widget">
+        <div class="card-body">
+          <div class="edition-bloc-title">
+            <%= I18n.t(:change_ratio) %>
+          </div>
 
-        <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                                selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
-                                readonly: cannot?(:execute_estimation_plan, @project) %>
+          <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                                  selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
+                                  readonly: cannot?(:execute_estimation_plan, @project), class: "form-control" %>
+        </div>
       </div>
-      <br>
     <% end %>
+
+    <br>
 
     <div class="card card-widget">
       <div class="card-body">
@@ -251,255 +256,253 @@
               <th><%= I18n.t(:comment) %></th>
             </tr>
 
-          <tr class="hide_wbs_header">
-            <!-- Les valeurs d'entreé initiales venant du module du dessous -->
-            <% if wbs_activity.enabled_input %>
-             <% levels.each do |level| %>
-                 <td class="hide_wbs_header">
-                   <% current_inputs_evs.each do |ev| %>
-                     <% entry_level_value =  initial_entry_values["#{level}"][ev.id] %>
-                     <% unless entry_level_value.nil? %>
-                       <%= ev.pe_attribute.alias %> :
-                       <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px;", class: "form-control" %>
+            <tr class="hide_wbs_header">
+              <!-- Les valeurs d'entreé initiales venant du module du dessous -->
+              <% if wbs_activity.enabled_input %>
+               <% levels.each do |level| %>
+                   <td class="hide_wbs_header">
+                     <% current_inputs_evs.each do |ev| %>
+                       <% entry_level_value =  initial_entry_values["#{level}"][ev.id] %>
+                       <% unless entry_level_value.nil? %>
+                         <%= ev.pe_attribute.alias %> :
+                         <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px;", class: "form-control" %>
+                       <% end %>
+                       <br>
                      <% end %>
-                     <br>
-                   <% end %>
-                 </td>
-             <% end %>
-            <% end %>
+                   </td>
+               <% end %>
+              <% end %>
 
-            <% if wbs_activity.three_points_estimation? %>
+              <% if wbs_activity.three_points_estimation? %>
+                <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+                  <td class="hide_wbs_header">
+                    <% if current_inputs_evs.empty? %>
+                        <!-- Anciennes valeurs -->
+                        <%= hidden_field_tag "values[low]", v_low %>
+                        <%= text_field_tag "", v_low.nil? ? nil : convert_with_precision(v_low, user_number_precision, true), disabled: true %>
+                    <% else %>
+                        <!-- nouvelles entrees -->
+                        <% current_inputs_evs.each do |ev| %>
+                            <% entry_low_value =  entry_values["low"][ev.id] %>
+                            <span>
+                              <%= ev.pe_attribute.alias %> :
+                              <%= hidden_field_tag "values[low][#{ev.id}]", entry_low_value %>
+                              <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                            </span><br>
+                        <% end %>
+                    <% end %>
+                  </td>
+                <% else %>
+                  <td class="hide_wbs_header">
+                    <% if current_inputs_evs.empty? %>
+                        <!-- Anciennes valeurs -->
+                        <%= number_field_tag "values[low]", v_low, step: "any" %>
+                    <% else %>
+                        <!-- nouvelles entrees -->
+                        <% current_inputs_evs.each do |ev| %>
+                            <% entry_low_value =  entry_values["low"][ev.id] %>
+                            <span>
+                              <%= ev.pe_attribute.alias %> :
+                              <%= number_field_tag "values[low][#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any" %>
+                            </span> <br>
+                        <% end %>
+                    <% end %>
+                  </td>
+                <% end %>
+              <% end %>
+
+
               <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
                 <td class="hide_wbs_header">
                   <% if current_inputs_evs.empty? %>
                       <!-- Anciennes valeurs -->
-                      <%= hidden_field_tag "values[low]", v_low %>
-                      <%= text_field_tag "", v_low.nil? ? nil : convert_with_precision(v_low, user_number_precision, true), disabled: true %>
+                      <%= hidden_field_tag "values[most_likely]", v_most_likely %>
+                      <%= text_field_tag "", convert_with_precision(v_most_likely, user_number_precision, true), disabled: true %>
                   <% else %>
                       <!-- nouvelles entrees -->
                       <% current_inputs_evs.each do |ev| %>
-                          <% entry_low_value =  entry_values["low"][ev.id] %>
-                          <span>
-                            <%= ev.pe_attribute.alias %> :
-                            <%= hidden_field_tag "values[low][#{ev.id}]", entry_low_value %>
-                            <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, class: "form-control" %>
-                          </span><br>
-                      <% end %>
-                  <% end %>
-                </td>
-              <% else %>
-                <td class="hide_wbs_header">
-                  <% if current_inputs_evs.empty? %>
-                      <!-- Anciennes valeurs -->
-                      <%= number_field_tag "values[low]", v_low, step: "any" %>
-                  <% else %>
-                      <!-- nouvelles entrees -->
-                      <% current_inputs_evs.each do |ev| %>
-                          <% entry_low_value =  entry_values["low"][ev.id] %>
-                          <span>
-                            <%= ev.pe_attribute.alias %> :
-                            <%= number_field_tag "values[low][#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any" %>
-                          </span> <br>
-                      <% end %>
-                  <% end %>
-                </td>
-              <% end %>
-            <% end %>
-
-
-            <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
-              <td class="hide_wbs_header">
-                <% if current_inputs_evs.empty? %>
-                    <!-- Anciennes valeurs -->
-                    <%= hidden_field_tag "values[most_likely]", v_most_likely %>
-                    <%= text_field_tag "", convert_with_precision(v_most_likely, user_number_precision, true), disabled: true %>
-                <% else %>
-                    <!-- nouvelles entrees -->
-                    <% current_inputs_evs.each do |ev| %>
                         <% entry_ml_value = entry_values["most_likely"][ev.id] %>
                         <% unless entry_ml_value.nil? %>
-                          <span>
+                          <span class="float-left">
                             <%= ev.pe_attribute.alias %> :
                             <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_ml_value %>
                             <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, class: "form-control" %>
                           </span>
                           <br>
                         <% end %>
-                    <% end %>
-                <% end %>
-              </td>
-            <% else %>
-              <td class="hide_wbs_header">
-                <!-- Nouvelles entrees -->
-                <% current_inputs_evs.each do |ev| %>
-                  <% entry_ml_value = entry_values["most_likely"][ev.id] %>
-                  <% unless entry_ml_value.nil? %>
-                    <span>
-                      <%= ev.pe_attribute.alias %> :
-                      <%= number_field_tag "values[most_likely][#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", class: "form-control" %>
-                    </span> <br>
-                  <% end %>
-                <% end %>
-              </td>
-            <% end %>
-
-            <% if wbs_activity.three_points_estimation? %>
-              <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
-                <td class="hide_wbs_header">
-                  <%#= hidden_field_tag "values[high]", v_high %>
-                  <%#= text_field_tag "", convert_with_precision(v_high, user_number_precision, true), disabled: true %>
-
-                  <!-- nouvelles entrees -->
-                  <% current_inputs_evs.each do |ev| %>
-                      <% entry_high_value = entry_values["high"][ev.id] %>
-                      <% unless entry_high_value.nil? %>
-                        <span>
-                          <%= ev.pe_attribute.alias %> :
-                          <%= hidden_field_tag "values[high][#{ev.id}]", entry_high_value %>
-                          <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, class: "form-control" %>
-                        </span><br>
                       <% end %>
                   <% end %>
                 </td>
               <% else %>
                 <td class="hide_wbs_header">
-                  <%#= number_field_tag "values[high]", v_high, step: "any", style: "width: 100px;" %>
+                  <!-- Nouvelles entrees -->
                   <% current_inputs_evs.each do |ev| %>
-                      <% entry_high_value = entry_values["high"][ev.id] %>
-                    <% unless entry_high_value.nil? %>
+                    <% entry_ml_value = entry_values["most_likely"][ev.id] %>
+                    <% unless entry_ml_value.nil? %>
                       <span>
                         <%= ev.pe_attribute.alias %> :
-                        <%= number_field_tag "values[high][#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any" %>
-                      </span><br>
+                        <%= number_field_tag "values[most_likely][#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", class: "form-control" %>
+                      </span> <br>
                     <% end %>
                   <% end %>
                 </td>
               <% end %>
-            <% end %>
 
-            <% unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
-                <td class="ratio_hide_wbs_header <%= ((@wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1) ? 'float_left' : '') %>">
-                  <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
-                                 selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
-                                 readonly: cannot?(:execute_estimation_plan, @project), class: "form-control" %>
+              <% if wbs_activity.three_points_estimation? %>
+                <% if (!wbs_activity.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+                  <td class="hide_wbs_header">
+                    <%#= hidden_field_tag "values[high]", v_high %>
+                    <%#= text_field_tag "", convert_with_precision(v_high, user_number_precision, true), disabled: true %>
+
+                    <!-- nouvelles entrees -->
+                    <% current_inputs_evs.each do |ev| %>
+                        <% entry_high_value = entry_values["high"][ev.id] %>
+                        <% unless entry_high_value.nil? %>
+                          <span>
+                            <%= ev.pe_attribute.alias %> :
+                            <%= hidden_field_tag "values[high][#{ev.id}]", entry_high_value %>
+                            <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                          </span><br>
+                        <% end %>
+                    <% end %>
+                  </td>
+                <% else %>
+                  <td class="hide_wbs_header">
+                    <%#= number_field_tag "values[high]", v_high, step: "any", style: "width: 100px;" %>
+                    <% current_inputs_evs.each do |ev| %>
+                        <% entry_high_value = entry_values["high"][ev.id] %>
+                      <% unless entry_high_value.nil? %>
+                        <span>
+                          <%= ev.pe_attribute.alias %> :
+                          <%= number_field_tag "values[high][#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any" %>
+                        </span><br>
+                      <% end %>
+                    <% end %>
+                  </td>
+                <% end %>
+              <% end %>
+
+              <% unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
+                  <td class="ratio_hide_wbs_header <%= ((@wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1) ? 'float_left' : '') %>">
+                    <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
+                                   selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
+                                   readonly: cannot?(:execute_estimation_plan, @project), class: "form-control" %>
+                  </td>
+              <% end %>
+
+              <% if wbs_activity.three_points_estimation? %>
+                <!-- Effort Theorique calculé -->
+                <td class="hide_wbs_header">
+                    <strong>
+                      <% begin %>
+                          <%= convert_with_precision(theorical_cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                      <% rescue %>
+                          -
+                      <% end %>
+                    </strong>
                 </td>
-            <% end %>
 
-            <% if wbs_activity.three_points_estimation? %>
-              <!-- Effort Theorique calculé -->
-              <td class="hide_wbs_header">
-                  <strong>
-                    <% begin %>
-                        <%= convert_with_precision(theorical_cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
-                    <% rescue %>
-                        -
-                    <% end %>
-                  </strong>
-              </td>
-
-              <!-- Effort Retenu -->
-              <td class="hide_wbs_header">
-                <% begin %>
-                  <%= convert_with_precision(cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
-                <% rescue %>
-                  -
-                <% end %>
-              </td>
-            <% end %>
-
-            <!-- Effort Theorique calculé -->
-            <td class="hide_wbs_header">
-              <strong>
-                <% begin %>
-                    <%= convert_with_precision(theorical_cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
-                <% rescue %>
+                <!-- Effort Retenu -->
+                <td class="hide_wbs_header">
+                  <% begin %>
+                    <%= convert_with_precision(cev_output.string_data_low[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                  <% rescue %>
                     -
-                <% end %>
-              </strong>
-            </td>
-
-            <!-- Effort Retenu -->
-            <td class="hide_wbs_header">
-              <strong>
-                <% begin %>
-                  <span id="retained_modified_effort"><%= convert_with_precision(cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %></span>
-                <% rescue %>
-                  -
-                <% end %>
-              </strong>
-            </td>
-
-            <% if wbs_activity.three_points_estimation? %>
+                  <% end %>
+                </td>
+              <% end %>
 
               <!-- Effort Theorique calculé -->
               <td class="hide_wbs_header">
-                  <strong>
-                    <% begin %>
-                        <%= convert_with_precision(theorical_cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
-                    <% rescue %>
-                        -
-                    <% end %>
-                  </strong>
+                <strong>
+                  <% begin %>
+                      <%= convert_with_precision(theorical_cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                  <% rescue %>
+                      -
+                  <% end %>
+                </strong>
               </td>
 
               <!-- Effort Retenu -->
               <td class="hide_wbs_header">
                 <strong>
                   <% begin %>
-                    <%= convert_with_precision(cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                    <span id="retained_modified_effort"><%= convert_with_precision(cev_output.string_data_most_likely[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %></span>
                   <% rescue %>
                     -
                   <% end %>
                 </strong>
               </td>
-            <% end %>
 
-            <td class="hide_wbs_header">
-              <strong>
-                <span id="modified_global_ratio"><%= convert_with_precision(ratio_output.string_data_probable[component_id].to_f, user_number_precision, true) %></span>
-              </strong>
-            </td>
+              <% if wbs_activity.three_points_estimation? %>
 
-            <td class="hide_wbs_header">
-              <% if wai.nil? %>
-                <span class="estimancy">
-                  ----
-                </span>
-              <% else %>
-                  <span class="pull-left estimancy" >
-                    <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static" %>
+                <!-- Effort Theorique calculé -->
+                <td class="hide_wbs_header">
+                    <strong>
+                      <% begin %>
+                          <%= convert_with_precision(theorical_cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                      <% rescue %>
+                          -
+                      <% end %>
+                    </strong>
+                </td>
+
+                <!-- Effort Retenu -->
+                <td class="hide_wbs_header">
+                  <strong>
+                    <% begin %>
+                      <%= convert_with_precision(cev_output.string_data_high[component_id][current_mp_wbs_activity_root_id].to_f / coeff, user_number_precision, true) %>
+                    <% rescue %>
+                      -
+                    <% end %>
+                  </strong>
+                </td>
+              <% end %>
+
+              <td class="hide_wbs_header">
+                <strong>
+                  <span id="modified_global_ratio"><%= convert_with_precision(ratio_output.string_data_probable[component_id].to_f, user_number_precision, true) %></span>
+                </strong>
+              </td>
+
+              <td class="hide_wbs_header">
+                <% if wai.nil? %>
+                  <span class="estimancy">
+                    ----
                   </span>
-                  <div class="modal fade" id="comment<%= wai.id %>" tabindex="-1" role="dialog" aria-labelledby="comment_label<%= wai.id %>" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header modal-drag">
-                          <h4 class="modal-title" id="comment_label<%= wai.id %>">
-                            <b>
-                              <%= wai.wbs_activity.nil? ? '' : wai.wbs_activity.name %>
-                            </b>
-                          </h4>
-                        </div>
-                        <div class="modal-body">
-                          <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area", class: "form-control" %>
-                        </div>
-                        <div class="modal-footer">
-                          <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
-                          <% if can?(:execute_estimation_plan, @project) %>
-                              <button type="submit" class="btn btn-default"><%= I18n.t(:save) %></button>
-                          <% end %>
+                <% else %>
+                    <span class="pull-left estimancy" >
+                      <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static" %>
+                    </span>
+                    <div class="modal fade" id="comment<%= wai.id %>" tabindex="-1" role="dialog" aria-labelledby="comment_label<%= wai.id %>" aria-hidden="true">
+                      <div class="modal-dialog">
+                        <div class="modal-content">
+                          <div class="modal-header modal-drag">
+                            <h4 class="modal-title" id="comment_label<%= wai.id %>">
+                              <b>
+                                <%= wai.wbs_activity.nil? ? '' : wai.wbs_activity.name %>
+                              </b>
+                            </h4>
+                          </div>
+                          <div class="modal-body">
+                            <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area", class: "form-control" %>
+                          </div>
+                          <div class="modal-footer">
+                            <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+                            <% if can?(:execute_estimation_plan, @project) %>
+                                <button type="submit" class="btn btn-default"><%= I18n.t(:save) %></button>
+                            <% end %>
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-              <% end %>
-            </td>
-          </tr>
-        </table>
+                <% end %>
+              </td>
+            </tr>
+          </table>
+          </div>
         </div>
       </div>
-    </div>
-
-    <br>
 
     <!-- Ajout des valeurs des Ratios -->
     <div id="module_project_ratio_elements">

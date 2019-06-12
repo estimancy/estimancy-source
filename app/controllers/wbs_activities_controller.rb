@@ -362,7 +362,10 @@ class WbsActivitiesController < ApplicationController
       wai = @module_project.wbs_activity_inputs.where(wbs_activity_id: @wbs_activity.id, wbs_activity_ratio_id: @ratio_reference.id, pbs_project_element_id: @pbs_project_element.id)
                                                .first_or_create(module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id,
                                                                 wbs_activity_id: @wbs_activity.id, wbs_activity_ratio_id: @ratio_reference.id)
-      wai.comment = params[:comment][wai.id.to_s]
+      unless params[:comment].blank?
+        wai.comment = params[:comment][wai.id.to_s]
+      end
+
       wai.save
     end
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(organization_id: @organization.id,

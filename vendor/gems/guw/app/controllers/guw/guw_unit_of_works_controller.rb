@@ -1516,8 +1516,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
           if guw_output.name == "Effort AI (m.d)"
-            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * 1.15
-            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * 1.15
+            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * rand(0.7...1.3).round(1)
+            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * rand(0.7...1.3).round(1)
           else
             if params["ajusted_size"].present?
               if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
@@ -2657,7 +2657,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     results = []
 
-    if params[:import_type] == "Remplacer"
+    if params[:import_type] == I18n.t(:replace)
       Guw::GuwUnitOfWorkGroup.where(module_project_id: module_project.id).delete_all
       Guw::GuwUnitOfWork.where(module_project_id: module_project.id).delete_all
     end
