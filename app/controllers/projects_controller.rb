@@ -320,7 +320,7 @@ class ProjectsController < ApplicationController
     pi = 1
     @total_effort.each do |k, value|
       project = Project.find(k)
-      unless project.is_model = true
+      unless project.is_model == true
         pf = project.project_fields.where(field_id: field.id).first
 
         worksheet_synt.add_cell(pi, 0, project.title)
