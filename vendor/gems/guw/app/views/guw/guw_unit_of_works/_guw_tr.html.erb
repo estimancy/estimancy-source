@@ -53,7 +53,7 @@
    end
 %>
 
-<td style="border-left: <%= border_color %>" class="guw-cell-ajustment">
+<td style="border-left: <%= "#{ (guow.id % 3 == 0) ? '6px solid red' : '' };" %>" class="guw-cell-ajustment">
   <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id, disabled: !can?(:execute_estimation_plan, @project) %>
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}_group" %>
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
@@ -85,8 +85,7 @@
                    class: "guw_type form-control",
                    prompt: "",
                    guw: guow.id,
-                   title: (@guw_type.description.blank? ? @guw_type.name : @guw_type.description),
-                   style: "background-color: #{ (guow.id % 4 == 0) ? 'lightgrey' : '' };" %>
+                   title: (@guw_type.description.blank? ? @guw_type.name : @guw_type.description) %>
   <% else %>
 
     <%
