@@ -128,7 +128,7 @@ class ProjectsController < ApplicationController
     @total_cost = Hash.new {|h,k| h[k] = [] }
     @total_effort = Hash.new {|h,k| h[k] = [] }
 
-    field = Field.where(name: "Localisation").first
+    field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
     @organization.projects.each do |project|
 
@@ -253,12 +253,13 @@ class ProjectsController < ApplicationController
 
     pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
     @organization.projects.where(is_model: false).each do |project|
+      project_module_projects = project.module_projects
       module_project = project.module_projects.where(pemodule_id: pemodule_wbs.id).first
       unless module_project.nil?
         ModuleProjectRatioElement.where(organization_id: @organization.id,
                                         wbs_activity_ratio_id: module_project.wbs_activity_ratio_id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
-          if mpre.module_project_id.in?(project.module_projects.map(&:id))
+          if mpre.module_project_id.in?(project_module_projects.map(&:id))
             if mpre.wbs_activity_element.is_root?
               @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
               @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
@@ -342,7 +343,7 @@ class ProjectsController < ApplicationController
       pi = pi + 1
     end
 
-    send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "RAW_DATA-#{Time.now.to_s}.xlsx", type: "application/vnd.ms-excel")
 
   end
 
