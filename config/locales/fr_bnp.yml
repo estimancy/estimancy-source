@@ -2411,3 +2411,5 @@ fr_bnp:
   budget_details_per_application: "Détails du budget par application"
   select_budget: "Sélectionner un budget"
   edit_budget_type: "Editer le type de budget"
+  planned_budget: "Budget prévu"
+  global_budget: "Budget global"

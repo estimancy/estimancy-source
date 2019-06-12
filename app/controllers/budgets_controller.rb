@@ -41,16 +41,19 @@ class BudgetsController < ApplicationController
 
     # Get budget graph (for selected budget)
     @data = []
-    bt_colors = Hash.new
+    @bt_colors = Hash.new
     header = ["Applications"]
     budget_budget_types = @budget.budget_types #@organization.budget_types
     budget_budget_types.each do |bt|
       header << bt.name
+      @bt_colors["#{bt.name}"] = bt.color
     end
+    header << I18n.t(:planned_budget)
     header << { role: 'annotation' }
     @data << header
 
     budget_used_applications = @budget.application_budgets.where(is_used: true).map(&:application)
+
     budget_used_applications.each do |application|
       application_values = ["#{application.name}"]
       data = Budget::fetch_project_field_data(@organization, @budget, application)
@@ -58,6 +61,9 @@ class BudgetsController < ApplicationController
       budget_budget_types.each do |budget_type|
         application_values << data["#{budget_type.name}"].to_f
       end
+
+      budget_application = @budget.application_budgets.where(application_id: application.id).first
+      application_values << (budget_application.nil? ? 0 : budget_application.montant.to_f)
       application_values << ''
 
       @data << application_values
@@ -88,7 +94,7 @@ class BudgetsController < ApplicationController
     #   end
     # end
 
-    puts @data
+    #puts @data
     set_page_title I18n.t(:budget)
     set_breadcrumbs I18n.t(:budget) => organization_setting_path(@current_organization, anchor: "tabs-budgets"), I18n.t('budget') => ""
 

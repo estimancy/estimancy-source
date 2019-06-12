@@ -14,7 +14,8 @@
         ]);
 
         var data = google.visualization.arrayToDataTable(r_data);
-        var chart_colors = <%= ViewsWidget::WIDGETS_COLORS.to_json.html_safe %>;
+        var chart_colors1 = <%= ViewsWidget::WIDGETS_COLORS.to_json.html_safe %>;
+        var chart_colors = <%= chart_colors.to_json.html_safe %>;
 
         var options = {
             //width: 600,

@@ -1889,5 +1889,8 @@ en-gb:
   budget_details_per_application: "Budget details per application"
   select_budget: "Select budget"
   edit_budget_type: "Edit budget type"
+  planned_budget: "Planned budget"
+  global_budget: "Global budget"
+
 
 

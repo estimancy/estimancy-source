@@ -3240,12 +3240,15 @@ class OrganizationsController < ApplicationController
 
     # Budget global
     @data_for_global_budget = []
+    @bt_colors = Hash.new
     budget_header = ["Budgets"]
     organization_budget_types = @organization.budget_types
     organization_budget_types.each do |bt|
       budget_header << bt.name
+      @bt_colors["#{bt.name}"] = bt.color
     end
-    budget_header << { role: 'annotation' }
+    budget_header << I18n.t(:planned_budget)
+    #budget_header << { role: 'annotation' }
     @data_for_global_budget << budget_header
 
     @organization.budgets.each do |budget|
@@ -3273,7 +3276,8 @@ class OrganizationsController < ApplicationController
         budget_values << budget_sum
       end
 
-      budget_values << ''
+      budget_values << budget.sum
+      #budget_values << ''
       @data_for_global_budget << budget_values
     end
 
@@ -3316,7 +3320,7 @@ class OrganizationsController < ApplicationController
   def get_budget_details
     @organization = Organization.find(params[:organization_id])
     @data = []
-    bt_colors = Hash.new
+    @bt_colors = Hash.new
     header = ["Applications"]
     @budget_name = ""
 
@@ -3324,11 +3328,13 @@ class OrganizationsController < ApplicationController
       budget = Budget.find(params[:budget_id])
       if budget
         @budget_name = budget.name
-
         budget_budget_types = budget.budget_types
+
         budget_budget_types.each do |bt|
           header << bt.name
+          @bt_colors["#{bt.name}"] = bt.color
         end
+        header << I18n.t(:planned_budget)
         header << { role: 'annotation' }
         @data << header
 
@@ -3340,12 +3346,16 @@ class OrganizationsController < ApplicationController
           budget_budget_types.each do |budget_type|
             application_values << data["#{budget_type.name}"].to_f
           end
+
+          budget_application = budget.application_budgets.where(application_id: application.id).first
+          application_values << (budget_application.nil? ? 0 : budget_application.montant.to_f)
           application_values << ''
+
           @data << application_values
         end
       end
     end
-
+    @data
   end
 
 
