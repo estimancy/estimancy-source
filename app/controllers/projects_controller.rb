@@ -4241,10 +4241,13 @@ public
 
       Thread.new do
         ActiveRecord::Base.connection_pool.with_connection do
-          es = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
+          from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
+          es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
           sleep(30)
-          @project.estimation_status_id = es.id
-          @project.save
+          if @project.estimation_status_id == from_es.id
+            @project.estimation_status_id = es.id
+            @project.save
+          end
         end
       end
 
