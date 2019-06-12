@@ -1,7 +1,7 @@
 <!--Load the Google charts API  -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-    google.charts.load('current', {packages: ['corechart']});
+    google.charts.load('current', {packages: ['corechart', 'bar']});
 </script>
 
 <section class="card card-content-bloc">
@@ -15,8 +15,8 @@
 
         <%= hidden_field_tag "organization_id", @organization.id %>
         <div class="row">
-          <div class="col">
-            <%= label_tag "Budgets" %>
+          <div class="col-2">
+            <%#= label_tag "Budgets" %>
             <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_budget), class: "form-control" %>
           </div>
           <div class="col">
@@ -25,9 +25,8 @@
         </div>
     <% end %>
 
-    <div id="budget_details" class="span6">
-
-    </div>
+    <% chart_width = (@current_user.allow_full_screen_dashboard == true ? '50%' : 'auto')%>
+    <div id="budget_details" class="span6" style="margin-top: 30px; width: <%= chart_width %> ;"> </div>
 
   </div>
 </section>

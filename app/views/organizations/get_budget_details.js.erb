@@ -1,2 +1,2 @@
-$("#budget_details").html("<%= j(render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data, div_id: "stacked_bar_chart_div_budget", budget_name: "", hAxis_title: "Applications", vAxis_title: "" } ) %>");
+$("#budget_details").html("<%= j(render :partial => 'budgets/g_budget_report_multiple_stacked_bar_chart', :locals => { :data => @data, div_id: "stacked_bar_chart_div_budget", chart_colors: @bt_colors, budget_name: "", hAxis_title: "Applications", vAxis_title: "", chart_title: "" } ) %>");
 

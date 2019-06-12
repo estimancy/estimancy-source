@@ -1,7 +1,7 @@
 <!--Load the Google charts API  -->
 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 <script type="text/javascript">
-    google.charts.load('current', {packages: ['corechart']});
+    google.charts.load('current', {packages: ['corechart', 'bar']});
 </script>
 
 <section class="card card-content-bloc estimancy-form">
@@ -67,7 +67,7 @@
                     </div>
                   </div>
 
-                  <script>
+                  <script type="text/javascript">
                       $(document).ready(function () {
                           $(".date-picker").datepicker({
                               language: '<%= set_user_language %>',
@@ -101,11 +101,6 @@
                   <div class="col" style="margin-top: 1em;">
                     <%= submit_tag I18n.t('add_budget_type'), name: "add_budget_type", :class => 'btn btn-primary' %>
                   </div>
-                  <script>
-                      $("#budget_budget_type_id").change(function(){
-                          $("#selected_budget_type_id").val($(this).val());
-                      });
-                  </script>
                 </div>
                 <br/>
 
@@ -182,7 +177,8 @@
                   <div class="col">
                     <div class="span4">
                       <%#= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
-                      <%= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data, div_id: "stacked_bar_chart_div_budget", budget_name: @budget.name, hAxis_title: "Applications", vAxis_title: "" } %>
+                      <%#= render :partial => 'budgets/g_budget_report_stacked_bar_chart', :locals => { :data => @data, div_id: "stacked_bar_chart_div_budget", budget_name: @budget.name, hAxis_title: "Applications", vAxis_title: "" } %>
+                      <%= render :partial => 'budgets/g_budget_report_multiple_stacked_bar_chart', :locals => { :data => @data, div_id: "stacked_bar_chart_div_budget", chart_colors: @bt_colors, budget_name: @budget.name, chart_title: "", hAxis_title: "Applications", vAxis_title: "" } %>
                       <%= hidden_field_tag :application_id, params[:application_id] %>
                     </div>
                   </div>
