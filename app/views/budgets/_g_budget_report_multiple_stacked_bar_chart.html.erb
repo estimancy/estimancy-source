@@ -19,11 +19,14 @@
         var options = {
             //width: 600,
             //height: 400,
+            theme: 'material',
             title: '<%= chart_title %>',
             subtitle: '<%= "" %>',
-            legend: { position: 'top', maxLines: 3, alignment: 'start' },
+            //chartArea: {left:0,  width: "80%", height: "70%" },
+            legend: { position: 'top',  maxLines: 3, alignment: 'start', textStyle: {fontSize: 14} },
             hAxis: {
                 title: '<%= hAxis_title %>',
+                //minValue: 0,
             },
             vAxis: {
                 title: '<%= "Budget #{budget_name} (k€)" %>'
@@ -33,7 +36,7 @@
             bar: { groupWidth: '75%' },
             isStacked: true,
             series: {
-                2: {
+                '<%= nb_series %>': {
                     targetAxisIndex: 1
                 }
             }

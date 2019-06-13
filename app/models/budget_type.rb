@@ -1,5 +1,7 @@
 class BudgetType < ActiveRecord::Base
-  attr_accessible :name, :organization_id, :application_id, :description, :color
+  attr_accessible :name, :organization_id, :application_id, :description, :color, :display_order
+
+  default_scope { order('display_order ASC') }
 
   belongs_to :estimation_status
   has_many :budget_type_statuses, :dependent=> :destroy

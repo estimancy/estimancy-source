@@ -41,13 +41,18 @@ class BudgetsController < ApplicationController
 
     # Get budget graph (for selected budget)
     @data = []
-    @bt_colors = Hash.new
+    @bt_colors = []
+
     header = ["Applications"]
     budget_budget_types = @budget.budget_types #@organization.budget_types
+    @nb_series = budget_budget_types.all.size
+
     budget_budget_types.each do |bt|
       header << bt.name
-      @bt_colors["#{bt.name}"] = bt.color
+      @bt_colors << bt.color
     end
+    @bt_colors << '007DAB'
+
     header << I18n.t(:planned_budget)
     header << { role: 'annotation' }
     @data << header
