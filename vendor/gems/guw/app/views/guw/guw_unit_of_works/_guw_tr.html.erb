@@ -231,7 +231,7 @@
                                          class: "complexity_weight-#{uowg.id} guw-#{guow.id} form-control",
                                          guw: guow.id,
                                          title: guow.cplx_comments,
-                                         readonly: true %>
+                                         readonly: !(@guw_type.allow_retained == true) %>
                     <% if @guw_type.allow_complexity %>
                       <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight.to_f.round(3),
                                            style: "background-color: ##{color}; text-align: right; ",
