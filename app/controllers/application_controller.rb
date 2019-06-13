@@ -577,7 +577,7 @@ class ApplicationController < ActionController::Base
     if resource.password_changed == true || (resource.auth_type == saml_auth_id)
       # if user has no organization, this means that his has no group, so no right
       if resource.organizations.where(is_image_organization: [false, nil]).size == 0
-        fldisplay_effort_or_cost_per_phaseash[:warning] = I18n.t(:you_have_no_right_to_continue)
+        flash[:warning] = I18n.t(:you_have_no_right_to_continue)
         sign_out(resource)
         new_session_path(:user)
       elsif resource.organizations.where(is_image_organization: [false, nil]).size == 1

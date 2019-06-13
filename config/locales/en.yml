@@ -1188,7 +1188,7 @@ en:
   text_index_permissions_guidance: "List all global and project permissions"
   notice_end_of_estimation_execution: "Finish to execute modules"
   label_project_name: "Estimation name"
-  label_product_name: "Product name"
+  label_product_name: "Application"
   label_project_version: "Version"
   label_permission_access: "Access"
   error_group_failed_update: "An error has occurred when during the update"
@@ -2081,6 +2081,7 @@ en:
 
   duplicate: "Duplicate unit of work"
   add: "Create a unit of work"
+  replace: "Replace"
   kpi_unit: "KPI Unit"
   calculate_save: "Calculate and Save"
   calculated_value: "Calculated"

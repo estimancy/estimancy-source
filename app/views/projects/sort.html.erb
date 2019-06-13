@@ -6,23 +6,18 @@
 
 <div class="mb-5">
   <div class="estimation-list">
+
     <div class="estimation-list-filter">
-      <span><%= @projects.count %> Eléments</span>
+      <span><%= @projects.count %> <%= I18n.t("elements") %></span>
       <span>
-        <div class="dropdown">
-          <a class="dropdown-toggle estimation-list-sort" href="#" id="sortDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-          Du plus récent au moins récent
-          </a>
-          <div class="dropdown-menu sort-list" aria-labelledby="sortDropdown">
-            <a class="dropdown-item sort-item" href="#">Du plus récent au moins récent</a>
-            <a class="dropdown-item sort-item" href="#">Du moins récent au plus récent</a>
-          </div>
-        </div>
-      </span>
-      <span>
-        <a href="#">Afficher les archives</a>
+        <% if params[:archive] == "1" %>
+          <a href="<%= organization_estimations_path(@organization) %>">Display all</a>
+        <% else %>
+          <a href="<%= organization_estimations_path(@organization, archive: "1") %>"><%= I18n.t("display_archives") %></a>
+        <% end %>
       </span>
     </div>
+
     <table class="estimation-table">
       <thead>
       <tr>

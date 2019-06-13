@@ -3208,6 +3208,15 @@ public
     @search_value = session[:search_value]
     @search_hash = session[:search_hash]
 
+    organization_projects = @organization.projects.where(:is_model => [nil, false])
+    if params[:archive].present?
+      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+      @projects = organization_projects.where(estimation_status_id: esids)
+    else
+      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+      @projects = organization_projects.where.not(estimation_status_id: esids)
+    end
+
     organization_projects = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
     @search_string = session[:search_string] || ""
 

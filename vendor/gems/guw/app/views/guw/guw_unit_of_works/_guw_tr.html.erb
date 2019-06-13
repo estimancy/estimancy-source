@@ -53,7 +53,7 @@
    end
 %>
 
-<td style="border-left: <%= "#{ (guow.id % 3 == 0) ? '6px solid red' : '' };" %>" class="guw-cell-ajustment" title="Gap detected with Automatic Cotation">
+<td style="border-left: <%= "#{ display_alert(guow) ? '6px solid red' : '' };" %>" class="guw-cell-ajustment" title="Gap detected with Automatic Cotation">
   <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id, disabled: !can?(:execute_estimation_plan, @project) %>
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}_group" %>
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>

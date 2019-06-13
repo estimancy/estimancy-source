@@ -2,6 +2,10 @@ h2, h5, h6{
   margin: 0;
 }
 
+.unclickable:hover{
+  cursor: default;
+}
+
 .modal-header{
   display: block;
 }

@@ -1,6 +1,6 @@
-<div class="row pb-5">
+<div class="row">
   <div class="col-10">
-    <div id="taille" class="edition-page-group py-4"><span><%= I18n.t :size %></span></div> <%# Taille %>
+    <div id="taille" class="edition-page-group py-4"><span><%= I18n.t :size %></span></div>
     <div class="d-flex">
       <div style="flex: 1">
         <h5><%= I18n.t(:label_Guw_model) %></h5>
@@ -87,137 +87,16 @@
       <% end %>
     <% end %>
 
-    <div id="taille" class="edition-page-group py-4"><span>Taille</span></div>
-      <div class="row-fluid">
-        <div class="span6">
-          <h5 class="blue"><%= I18n.t(:module_effort_generique) %></h5>
+    <div id="effort" class="edition-page-group py-4"><span>Effort</span></div>
+    <div class="row">
+      <div class="col-12">
+        <h5 class="blue"><%= I18n.t(:module_effort_generique) %></h5>
 
-          <% if can? :show_modules_instances, ModuleProject %>
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <div class="group_button">
-                  <%= link_to I18n.t(:create_button), ge.new_ge_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-              </div>
-            <% end %>
-
-            <table class="table table-list">
-              <tr>
-                <th><%= I18n.t(:name) %></th>
-                <th><%= I18n.t(:created_date) %></th>
-                <th class="action"><%= I18n.t(:actions) %></th>
-              </tr>
-
-              <% @organization.ge_models.order("name asc").each do |i| %>
-                <tr>
-                  <td class="span5">
-                    <%= link_to i.name, ge.edit_ge_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-                  </td>
-                  <td class="span2 align-center">
-                    <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-                  </td>
-                  <td class="align-center">
-                    <%= link_to I18n.t(:edit), ge.edit_ge_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
-                    <% if can? :manage_modules_instances, ModuleProject %>
-                      <%= link_to I18n.t(:duplicate), ge.ge_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
-                      <%= link_to I18n.t(:delete), ge.ge_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
-                    <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            </table>
-          <% else %>
-            <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-          <% end %>
-
-        <div class="span6">
-          <h5 class="blue"><%= I18n.t(:knowledge_base_module)%></h5>
-
-          <% if can? :show_modules_instances, ModuleProject %>
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <div class="group_button">
-                  <%= link_to I18n.t(:create_button), kb.new_kb_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-              </div>
-          <% end %>
-
-            <table class="table table-list">
-              <tr>
-                <th><%= I18n.t(:name) %></th>
-                <th><%= I18n.t(:created_date) %></th>
-                <th class="action"><%= I18n.t(:actions) %></th>
-              </tr>
-
-              <% @organization.kb_models.order("name asc").each do |i| %>
-                <tr>
-                  <td class="span5">
-                    <%= link_to i.name, kb.edit_kb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-                  </td>
-                  <td class="span2 align-center">
-                    <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-                  </td>
-                  <td class="align-center">
-                    <%= link_to I18n.t(:edit), kb.edit_kb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
-                    <% if can? :manage_modules_instances, ModuleProject %>
-                      <%= link_to I18n.t(:duplicate), kb.kb_model_duplicate_path(i,organization_id: @organization.id), :class => 'fa fa-copy', :title => "Duplicate knowledge base", method: "post" %>
-                      <%= link_to I18n.t(:delete), kb.kb_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
-                    <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            </table>
-          <% else %>
-            <div class="red_color">
-              <%= I18n.t(:notice_cannot_view_modules_instances) %>
-            </div>
-          <% end %>
-        </div>
-      </div>
-      <div class="row-fluid">
-        <div class="span6">
-          <h5 class="blue"><%= I18n.t(:operation_module) %></h5>
-
-          <% if can? :show_modules_instances, ModuleProject %>
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <div class="group_button">
-                  <%= link_to I18n.t(:create_button), operation.new_operation_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-              </div>
-            <% end %>
-
-            <table class="table table-list">
-              <tr>
-                <th><%= I18n.t(:name) %></th>
-                <th><%= I18n.t(:created_date) %></th>
-                <th class="action"><%= I18n.t(:actions) %></th>
-              </tr>
-
-              <% @organization.operation_models.order("name asc").each do |i| %>
-                <tr>
-                  <td class="span5">
-                    <%= link_to i.name, operation.edit_operation_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-                  </td>
-                  <td class="span2 align-center">
-                    <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-                  </td>
-                  <td class="align-center">
-                    <%= link_to I18n.t(:edit), operation.edit_operation_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
-                    <% if can? :manage_modules_instances, ModuleProject %>
-                      <%= link_to I18n.t(:duplicate), operation.operation_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
-                      <%= link_to I18n.t(:delete), operation.operation_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
-                    <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            </table>
-          <% else %>
-            <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-          <% end %>
-        </div>
-
-        <div class="span6">
-
-          <h5 class="blue"><%= I18n.t(:Judgment_Expert_module) %></h5>
+        <% if can? :show_modules_instances, ModuleProject %>
           <% if can? :manage_modules_instances, ModuleProject %>
-              <div class="group_button">
-                  <%= link_to I18n.t(:create_button), expert_judgement.new_instance_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-              </div>
+            <div class="group_button">
+                <%= link_to I18n.t(:create_button), ge.new_ge_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+            </div>
           <% end %>
 
           <table class="table table-list">
@@ -227,74 +106,122 @@
               <th class="action"><%= I18n.t(:actions) %></th>
             </tr>
 
-            <% @organization.expert_judgement_instances.order("name asc").each do |i| %>
+            <% @organization.ge_models.order("name asc").each do |i| %>
               <tr>
                 <td class="span5">
-                  <%= link_to i.name, expert_judgement.edit_instance_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+                  <%= link_to i.name, ge.edit_ge_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
                 </td>
                 <td class="span2 align-center">
-                  -
+                  <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
                 </td>
                 <td class="align-center">
-                  <%= link_to I18n.t(:edit), expert_judgement.edit_instance_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
+                  <%= link_to I18n.t(:edit), ge.edit_ge_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
                   <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to I18n.t(:duplicate), expert_judgement.instance_duplicate_expert_judgment_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
-                    <%= link_to I18n.t(:delete), expert_judgement.instance_path(i, organization_id: @organization.id),  confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                    <%= link_to I18n.t(:duplicate), ge.ge_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
+                    <%= link_to I18n.t(:delete), ge.ge_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
                   <% end %>
                 </td>
               </tr>
             <% end %>
           </table>
-        </div>
+        <% else %>
+          <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
+        <% end %>
       </div>
     </div>
-    <div id="activite">
-      <h5 class="blue"><%= I18n.t(:wbs_activities_module) %></h5>
 
-      <% if can? :show_modules_instances, ModuleProject %>
+    <div class="row">
+      <div class="col-12">
+        <h5 class="blue"><%= I18n.t(:knowledge_base_module)%></h5>
 
-        <% if can? :manage_modules_instances, ModuleProject %>
+        <% if can? :show_modules_instances, ModuleProject %>
+          <% if can? :manage_modules_instances, ModuleProject %>
             <div class="group_button">
-                <%= link_to I18n.t(:create_button), new_organization_wbs_activity_path(@organization), :class => 'btn btn-primary', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+                <%= link_to I18n.t(:create_button), kb.new_kb_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
             </div>
         <% end %>
 
-        <table class="table table-list">
-          <tr>
-            <th><%= I18n.t(:name) %></th>
-            <th><%= I18n.t(:description) %></th>
-            <th><%= I18n.t(:created_at)%></th>
-            <th class="action" style="width: 160px"><%= I18n.t(:actions) %></th>
-          </tr>
-
-          <% @wbs_activities.order("name asc").each do |wbs_activity| %>
+          <table class="table table-list">
             <tr>
-              <td><%= link_to(wbs_activity.name, edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module)) %></td>
-              <td><%= wbs_activity.description %></td>
-              <td class="span2 align-center">
-                <%= wbs_activity.created_at.nil? ? '-' : I18n.l(wbs_activity.created_at) %>
-              </td>
-              <td class="center">
-                <%= link_to I18n.t(:edit), edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
-                <% if can? :manage_modules_instances, ModuleProject %>
-                  <%= link_to I18n.t(:duplicate), duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module) %>
-                  <%= link_to I18n.t(:delete), wbs_activity, confirm: I18n.t(:are_you_sure), method: :delete, organization_id: @organization.id, :class => 'fa fa-trash', :title => I18n.t(:delete) %>
-                <% end %>
-              </td>
+              <th><%= I18n.t(:name) %></th>
+              <th><%= I18n.t(:created_date) %></th>
+              <th class="action"><%= I18n.t(:actions) %></th>
             </tr>
-          <% end %>
-        </table>
-      <% else %>
-        <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-      <% end %>
-    </div>
-    <div id="team">
-      <h5 class="blue"><%= I18n.t(:team_module) %></h5>
 
-      <% if can? :show_modules_instances, ModuleProject %>
+            <% @organization.kb_models.order("name asc").each do |i| %>
+              <tr>
+                <td class="span5">
+                  <%= link_to i.name, kb.edit_kb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+                </td>
+                <td class="span2 align-center">
+                  <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
+                </td>
+                <td class="align-center">
+                  <%= link_to I18n.t(:edit), kb.edit_kb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
+                  <% if can? :manage_modules_instances, ModuleProject %>
+                    <%= link_to I18n.t(:duplicate), kb.kb_model_duplicate_path(i,organization_id: @organization.id), :class => 'fa fa-copy', :title => "Duplicate knowledge base", method: "post" %>
+                    <%= link_to I18n.t(:delete), kb.kb_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        <% else %>
+          <div class="red_color">
+            <%= I18n.t(:notice_cannot_view_modules_instances) %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h5 class="blue"><%= I18n.t(:operation_module) %></h5>
+
+        <% if can? :show_modules_instances, ModuleProject %>
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <div class="group_button">
+                <%= link_to I18n.t(:create_button), operation.new_operation_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+            </div>
+          <% end %>
+
+          <table class="table table-list">
+            <tr>
+              <th><%= I18n.t(:name) %></th>
+              <th><%= I18n.t(:created_date) %></th>
+              <th class="action"><%= I18n.t(:actions) %></th>
+            </tr>
+
+            <% @organization.operation_models.order("name asc").each do |i| %>
+              <tr>
+                <td class="span5">
+                  <%= link_to i.name, operation.edit_operation_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+                </td>
+                <td class="span2 align-center">
+                  <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
+                </td>
+                <td class="align-center">
+                  <%= link_to I18n.t(:edit), operation.edit_operation_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
+                  <% if can? :manage_modules_instances, ModuleProject %>
+                    <%= link_to I18n.t(:duplicate), operation.operation_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
+                    <%= link_to I18n.t(:delete), operation.operation_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        <% else %>
+          <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-12">
+        <h5 class="blue"><%= I18n.t(:Judgment_Expert_module) %></h5>
         <% if can? :manage_modules_instances, ModuleProject %>
           <div class="group_button">
-              <%= link_to I18n.t(:create_button), staffing.new_staffing_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+            <%= link_to I18n.t(:create_button), expert_judgement.new_instance_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
           </div>
         <% end %>
 
@@ -305,27 +232,111 @@
             <th class="action"><%= I18n.t(:actions) %></th>
           </tr>
 
-          <% @organization.staffing_models.order("name asc").each do |i| %>
+          <% @organization.expert_judgement_instances.order("name asc").each do |i| %>
             <tr>
               <td class="span5">
-                <%= link_to i.name, staffing.edit_staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+                <%= link_to i.name, expert_judgement.edit_instance_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
               </td>
               <td class="span2 align-center">
-                <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
+                -
               </td>
               <td class="align-center">
-                <%= link_to I18n.t(:edit), staffing.edit_staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
+                <%= link_to I18n.t(:edit), expert_judgement.edit_instance_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
                 <% if can? :manage_modules_instances, ModuleProject %>
-                  <%= link_to I18n.t(:duplicate), staffing.staffing_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
-                  <%= link_to I18n.t(:delete), staffing.staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                  <%= link_to I18n.t(:duplicate), expert_judgement.instance_duplicate_expert_judgment_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
+                  <%= link_to I18n.t(:delete), expert_judgement.instance_path(i, organization_id: @organization.id),  confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
                 <% end %>
               </td>
             </tr>
           <% end %>
         </table>
-      <% else %>
-        <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-      <% end %>
+      </div>
+    </div>
+
+    <div id="activite" class="edition-page-group py-4"><span><%= I18n.t :activity %></span></div>
+    <div class="row">
+      <div class="col-12">
+        <h5 class="blue"><%= I18n.t(:wbs_activities_module) %></h5>
+
+        <% if can? :show_modules_instances, ModuleProject %>
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <div class="group_button">
+              <%= link_to I18n.t(:create_button), new_organization_wbs_activity_path(@organization), :class => 'btn btn-primary', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+            </div>
+          <% end %>
+
+          <table class="table table-list">
+            <tr>
+              <th><%= I18n.t(:name) %></th>
+              <th><%= I18n.t(:description) %></th>
+              <th><%= I18n.t(:created_at)%></th>
+              <th class="action" style="width: 160px"><%= I18n.t(:actions) %></th>
+            </tr>
+
+            <% @wbs_activities.order("name asc").each do |wbs_activity| %>
+              <tr>
+                <td><%= link_to(wbs_activity.name, edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module)) %></td>
+                <td><%= wbs_activity.description %></td>
+                <td class="span2 align-center">
+                  <%= wbs_activity.created_at.nil? ? '-' : I18n.l(wbs_activity.created_at) %>
+                </td>
+                <td class="center">
+                  <%= link_to I18n.t(:edit), edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
+                  <% if can? :manage_modules_instances, ModuleProject %>
+                    <%= link_to I18n.t(:duplicate), duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module) %>
+                    <%= link_to I18n.t(:delete), wbs_activity, confirm: I18n.t(:are_you_sure), method: :delete, organization_id: @organization.id, :class => 'fa fa-trash', :title => I18n.t(:delete) %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        <% else %>
+          <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
+        <% end %>
+      </div>
+    </div>
+
+    <div id="team" class="edition-page-group py-4"><span><%= I18n.t :team %></span></div>
+    <div class="row">
+      <div class="col-12">
+        <h5 class="blue"><%= I18n.t(:team_module) %></h5>
+
+        <% if can? :show_modules_instances, ModuleProject %>
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <div class="group_button">
+                <%= link_to I18n.t(:create_button), staffing.new_staffing_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+            </div>
+          <% end %>
+
+          <table class="table table-list">
+            <tr>
+              <th><%= I18n.t(:name) %></th>
+              <th><%= I18n.t(:created_date) %></th>
+              <th class="action"><%= I18n.t(:actions) %></th>
+            </tr>
+
+            <% @organization.staffing_models.order("name asc").each do |i| %>
+              <tr>
+                <td class="span5">
+                  <%= link_to i.name, staffing.edit_staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+                </td>
+                <td class="span2 align-center">
+                  <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
+                </td>
+                <td class="align-center">
+                  <%= link_to I18n.t(:edit), staffing.edit_staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
+                  <% if can? :manage_modules_instances, ModuleProject %>
+                    <%= link_to I18n.t(:duplicate), staffing.staffing_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
+                    <%= link_to I18n.t(:delete), staffing.staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+        <% else %>
+          <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
+        <% end %>
+      </div>
     </div>
   </div>
 
