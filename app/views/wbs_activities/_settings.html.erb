@@ -185,7 +185,7 @@
       <div class="card card-widget">
         <div class="card-body">
           <div class="edition-bloc-title">
-            <%= I18n.t(:change_ratio) %>
+            Localization
           </div>
 
           <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
@@ -200,7 +200,7 @@
     <div class="card card-widget">
       <div class="card-body">
         <div class="edition-bloc-title">
-          Valeurs d'entrée
+          Input Value
         </div>
         <div class="edition-bloc-content pb-4">
           <table id="table" class="table phases-table">
