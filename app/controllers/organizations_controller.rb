@@ -3249,7 +3249,7 @@ class OrganizationsController < ApplicationController
       budget_header << bt.name
       @bt_colors << bt.color
     end
-    @bt_colors << '007DAB'
+    @bt_colors << '#007DAB'
 
     budget_header << I18n.t(:planned_budget)
     #budget_header << { role: 'annotation' }

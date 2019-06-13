@@ -15,6 +15,12 @@
         var data = google.visualization.arrayToDataTable(r_data);
         var chart_colors1 = <%= ViewsWidget::WIDGETS_COLORS.to_json.html_safe %>;
         var chart_colors = <%= chart_colors.to_json.html_safe %>;
+        var colors_test = [
+            { color: '#CFD8DC' },  //high
+            { color: '#84CEE5' },      //medium
+            { color: '#0099C9' },   //low
+            { color: '#007DAB' }  //low
+        ];
 
         var options = {
             //width: 600,
@@ -26,20 +32,22 @@
             legend: { position: 'top',  maxLines: 3, alignment: 'start', textStyle: {fontSize: 14} },
             hAxis: {
                 title: '<%= hAxis_title %>',
-                //minValue: 0,
+                minValue: 0,
             },
             vAxis: {
                 title: '<%= "Budget #{budget_name} (k€)" %>'
             },
 
-            colors: chart_colors,
             bar: { groupWidth: '75%' },
             isStacked: true,
+
             series: {
                 '<%= nb_series %>': {
                     targetAxisIndex: 1
                 }
-            }
+            },
+
+            colors: ['#0099C9', '#007DAB', '#cfd8dc', 'blue', 'grey']//chart_colors
         };
 
         //===============
