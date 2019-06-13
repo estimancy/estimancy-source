@@ -1209,6 +1209,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   cplx_coeff = params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].to_f
                   guw_unit_of_work.intermediate_weight = cplx_coeff
                 end
+              else
+                cplx_coeff = params["complexity_coeff"]["#{guw_unit_of_work.id}"].to_f
+                guw_unit_of_work.intermediate_percent = cplx_coeff
+                guw_unit_of_work.intermediate_weight = cplx_coeff
               end
 
               if guw_unit_of_work.intermediate_weight != guw_unit_of_work.intermediate_percent
@@ -1516,8 +1520,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
           if guw_output.name == "Effort AI (m.d)"
-            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * rand(0.7...1.3).round(1)
-            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * rand(0.7...1.3).round(1)
+            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * 1.13
+            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * 1.13
           else
             if params["ajusted_size"].present?
               if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?

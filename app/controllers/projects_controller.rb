@@ -4239,14 +4239,17 @@ public
                                        project_id: @project.id,
                                        transition_date: Time.now)
 
-      Thread.new do
-        ActiveRecord::Base.connection_pool.with_connection do
-          from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
-          es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
-          sleep(30)
-          if @project.estimation_status_id == from_es.id
-            @project.estimation_status_id = es.id
-            @project.save
+      model = Project.where(id: @project.original_model_id).first
+      if model.title == "Sourcing Model"
+        Thread.new do
+          ActiveRecord::Base.connection_pool.with_connection do
+            from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
+            es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
+            sleep(30)
+            if @project.estimation_status_id == from_es.id
+              @project.estimation_status_id = es.id
+              @project.save
+            end
           end
         end
       end

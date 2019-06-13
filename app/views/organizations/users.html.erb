@@ -80,21 +80,21 @@
         <td class="align-center">
           <% if can? :manage, User, :organization_id => @organization.id %>
             <% if user.locked_at.nil? %>
-              <%= link_to('', unlock_user_path(user), :class => 'icon-unlock', :title => I18n.t('lock')) %>
+              <%= link_to('Lock', unlock_user_path(user), :title => I18n.t('lock')) %>
             <% else %>
-              <%= link_to('', unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
+              <%= link_to('Unlock', unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
             <% end %>
 
             <% if user.confirmed_at.nil? %>
-              <%= link_to('', confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
+              <%= link_to('Confirm', confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
             <% else %>
-              <%= link_to('', confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
+              <%= link_to('Unconfirm', confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
             <% end %>
           <% end %>
-          <%= link_to "", edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
+          <%= link_to 'Edit', edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
           <% if can? :manage, User, :organization_id => @organization.id %>
             <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-            <%= link_to '', destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+            <%= link_to 'Delete', destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
           <% end %>
         </td>
       </tr>
