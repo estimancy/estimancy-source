@@ -262,15 +262,15 @@
         <% end %>
       </div>
     <% else %>
-        <% if current_user.allow_full_screen_dashboard %>
-          <div class="container-fluid">
-            <%= yield %>
-          </div>
-        <% else %>
-          <div class="container">
-            <%= yield %>
-          </div>
-        <% end %>
+      <% if current_user.allow_full_screen_dashboard %>
+        <div class="container-fluid">
+          <%= yield %>
+        </div>
+      <% else %>
+        <div class="container">
+          <%= yield %>
+        </div>
+      <% end %>
     <% end %>
 
     <br>

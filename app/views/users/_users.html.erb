@@ -1,19 +1,21 @@
 <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+
   <thead>
-  <tr>
-    <th><%= I18n.t(:first_name) %></th>
-    <th><%= I18n.t(:last_name) %></th>
-    <th><%= I18n.t(:login_name) %></th>
-    <th><%= I18n.t(:organization) %></th>
-    <th><%= I18n.t(:email) %></th>
-    <th><%= I18n.t(:last_login) %></th>
-    <th class="filter-select"><%= I18n.t(:authentication) %></th>
-    <th><%= I18n;t(:Confirmed_at)%></th>
-    <th><%= I18n.t(:locked_at)%></th>
-    <th><%= I18n.t(:subscription_end_date)%></th>
-    <th class="action" style="width: 110px"><%= I18n.t(:actions) %></th>
-  </tr>
+    <tr>
+      <th><%= I18n.t(:first_name) %></th>
+      <th><%= I18n.t(:last_name) %></th>
+      <th><%= I18n.t(:login_name) %></th>
+      <th><%= I18n.t(:organization) %></th>
+      <th><%= I18n.t(:email) %></th>
+      <th><%= I18n.t(:last_login) %></th>
+      <th class="filter-select"><%= I18n.t(:authentication) %></th>
+      <th><%= I18n;t(:Confirmed_at)%></th>
+      <th><%= I18n.t(:locked_at)%></th>
+      <th><%= I18n.t(:subscription_end_date)%></th>
+      <th class="action" style="width: 110px"><%= I18n.t(:actions) %></th>
+    </tr>
   </thead>
+
   <tbody>
     <% if @users.empty? %>
       <p style="text-align:center;"> <%= I18n.t('empty') %></p>
@@ -52,6 +54,7 @@
       <% end %>
 
       <%= render :partial => 'layouts/footer_table' %>
+
     <% end %>
   </tbody>
 </table>
