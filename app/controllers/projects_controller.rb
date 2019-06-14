@@ -4254,9 +4254,10 @@ public
           ActiveRecord::Base.connection_pool.with_connection do
             from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
             es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
-            flash[:custom] = "Deep learning process in progress..."
             sleep(30)
             if @project.estimation_status_id == from_es.id
+              flash[:custom] = "Deep learning process in progress..."
+              flash[:notice] = "Deep learning process in progress..."
               @project.estimation_status_id = es.id
               @project.save
             end
