@@ -47,38 +47,42 @@ module ApplicationHelper
   def display_alert(uo)
     model = Project.where(id: uo.project.original_model_id).first
     if model.title == "IFPUG Sourcing"
-      if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
-        if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-          false
-        elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-          false
-        else
-          true
-        end
-      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
-        if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-          false
-        else
-          true
-        end
-      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
-        if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-          false
-        elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-          false
-        elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-          false
-        else
-          true
-        end
-      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
-        if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
-          false
+      if uo.project.estimation_status.name == "AI Controled"
+        if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
+          if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+            false
+          elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+            false
+          else
+            true
+          end
+        elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
+          if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+            false
+          else
+            true
+          end
+        elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
+          if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+            false
+          elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+            false
+          elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+            false
+          else
+            true
+          end
+        elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
+          if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
+            false
+          else
+            true
+          end
         else
           true
         end
       else
-        true
+        false
       end
     end
   end
