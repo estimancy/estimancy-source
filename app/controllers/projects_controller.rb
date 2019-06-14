@@ -4250,18 +4250,18 @@ public
 
       model = Project.where(id: @project.original_model_id).first
       if model.title == "IFPUG Sourcing"
+        from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
+        es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
         Thread.new do
           ActiveRecord::Base.connection_pool.with_connection do
-            from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
-            es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
             sleep(30)
             if @project.estimation_status_id == from_es.id
-              flash[:custom] = "Deep learning process in progress..."
-              flash[:notice] = "Deep learning process in progress..."
+              flash[:custom] = "Machine learning process in progress..."
+              flash[:notice] = "Machine learning process in progress..."
+              flash[:warning] = "Machine learning process in progress..."
               @project.estimation_status_id = es.id
               @project.save
             end
-
           end
         end
       end

@@ -299,7 +299,7 @@ en:
   values: "Values"
   return: "Return"
   to_the_list: "to the list"
-  see_the_detail: "See the detail"
+  see_the_detail: "See details"
 
   #demand
   demand_type: "Demand type"
@@ -389,7 +389,7 @@ en:
   text_fields: "Text Fields"
   dashboard: "Dashboard"
   action: "Action"
-  menu_super_administrateur: "Menu Super Administrateur"
+  menu_super_administrateur: "Menu"
   import_export: "Import Export"
   save_alt: "Save Alt"
 
@@ -1225,7 +1225,7 @@ en:
   label_AcquisitionCategory: "Acquisition Category"
   label_WbsActivity: "WBS-Activity"
   label_Pemodule: "Module"
-  label_PeAttribute: "Attribute"
+  label_PeAttribute: "Attributes"
   label_WorkElementType: "Work Element Type"
   label_Organization: "Organization"
   label_User: "User"
