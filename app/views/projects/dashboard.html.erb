@@ -80,7 +80,7 @@
                         <div class="card-body">
                           <div class="card-indicator-type"><%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %></div>
                           <div class="card-indicator-text"><%= k %></div>
-                          <div class="<%= (value.to_s.size >= 15) ? 'card-indicator-label' : 'card-indicator-quantity' %>">
+                          <div class="card-indicator-label">
                             <span>
                               <%= value.nil? ? '-' : value %>
                             </span>
