@@ -124,3 +124,13 @@ a:hover.no-underline {
 table td.guw-cell-ajustment{
   vertical-align: middle;
 }
+
+.notifications_fixed_top {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+  border-radius: 0px;
+  z-index: 99
+}

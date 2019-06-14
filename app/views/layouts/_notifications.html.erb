@@ -1,57 +1,55 @@
-<div class="notifications_fixed_top">
-  <% if flash[:warning] %>
-    <div class='alert pull-left'>
-      <button type="button" class="close" data-dismiss="alert">x</button>
-      <%= simple_format(flash[:warning]) %>
-    </div>
-  <% end -%>
-  <% if flash[:notice] %>
-    <div class='alert alert-success pull-left'>
-      <button type="button" class="close" data-dismiss="alert">x</button>
-      <%= flash[:notice] %>
-    </div>
-  <% end %>
-  <% if flash[:error] %>
-    <div class='alert alert-danger pull-left'>
-      <button type="button" class="close" data-dismiss="alert">x</button>
-      <% if flash[:error].is_a? (String)%>
-        <%= raw flash[:error].html_safe %>
-      <% elsif flash[:error].is_a?(Hash) %>
-        <% flash[:error].each do |key, error| %>
-          <% if error.is_a?(Array) %>
-              <% error.each do |error_n| %>
-                <%= raw error_n.html_safe %>
-              <% end %>
-          <% else %>
-            <%= raw error.html_safe %>
+<% if flash[:warning] %>
+  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
+    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+    aaa
+  </div>
+<% end -%>
+<% if flash[:notice] %>
+  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
+    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+    <%= flash[:notice] %>
+  </div>
+<% end %>
+<% if flash[:error] %>
+  <div class="alert alert-warning alert-dismissible fade in text-center notifications_fixed_top" role="alert">
+    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+    <% if flash[:error].is_a? (String)%>
+      <%= raw flash[:error].html_safe %>
+    <% elsif flash[:error].is_a?(Hash) %>
+      <% flash[:error].each do |key, error| %>
+        <% if error.is_a?(Array) %>
+          <% error.each do |error_n| %>
+            <%= raw error_n.html_safe %>
           <% end %>
+        <% else %>
+          <%= raw error.html_safe %>
         <% end %>
-      <% else %>
-          <%= raw flash[:error] %>
       <% end %>
-    </div>
-  <% end -%>
-  <% if flash[:custom] %>
-    <div class='alert pull-left'>
-      <button type="button" class="close" data-dismiss="alert">x</button>
-      <%= flash[:custom] %>
-    </div>
-  <% end -%>
-
-  <!-- for devise flash -->
-  <% if alert && !alert.empty? %>
-    <div class='alert alert-danger pull-left'>
-      <button type="button" class="close" data-dismiss="alert">x</button>
-      <%= flash[:alert] %>
-    </div>
-  <% end %>
-
-  <% unless user_signed_in? %>
-    <% if @disable_access == "1" %>
-      <div class='alert alert-warning pull-left' style="width: 60%">
-        <button type="button" class="close" data-dismiss="alert">x</button>
-        <%= simple_format @offline_message %>
-      </div>
+    <% else %>
+      <%= raw flash[:error] %>
     <% end %>
+  </div>
+<% end -%>
+<% if flash[:custom] %>
+  <div class="alert alert-warning alert-dismissible fade in text-center notifications_fixed_top" role="alert">
+    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+    <%= flash[:custom] %>
+  </div>
+<% end -%>
+
+<!-- for devise flash -->
+<% if alert && !alert.empty? %>
+  <div class="alert alert-warning alert-dismissible fade in text-center notifications_fixed_top" role="alert">
+    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+    <%= flash[:alert] %>
+  </div>
+<% end %>
+
+<% unless user_signed_in? %>
+  <% if @disable_access == "1" %>
+    <div class="alert alert-warning alert-dismissible fade in text-center notifications_fixed_top" role="alert">
+      &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+      <%= simple_format @offline_message %>
+    </div>
   <% end %>
-</div>
+<% end %>
