@@ -2,11 +2,71 @@
   <div style="flex: 1">
     <h1><%= I18n.t("projects_list") %></h1>
   </div>
+  <a href="<%= projects_from_path(organization_id: @organization.id) %>">
+    <button type="button" class="btn btn-primary">
+      <%= I18n.t("create_project") %>
+    </button>
+  </a>
+  <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
+    <%# link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+  <% end %>
 </div>
+
+<% if @current_user.quick_access %>
+  <p>
+    <span class="font-weight-bold"><%= I18n.t("quick_access") %></span> <%= I18n.t("to_the_latest_estimations_consulted") %>
+  </p>
+
+  <div class="mb-5">
+    <div class="quickview-list">
+      <% if current_user.allow_full_screen_dashboard %>
+        <% recent_projects = current_user.recent_projects.nil? ? [] : current_user.recent_projects.uniq.take(5) %>
+      <% else %>
+        <% recent_projects = current_user.recent_projects.nil? ? [] : current_user.recent_projects.uniq.take(4) %>
+      <% end %>
+      <% recent_projects.reverse.each do |project_id| %>
+        <% project = Project.find_by_id(project_id) %>
+        <% unless project.nil? %>
+          <div class="card card-cliquable estimation-quickview w-25">
+            <a href="<%= dashboard_path(project) %>">
+              <div class="card-body">
+                <h5 class="estimation-quickview-title"><%= project.title %></h5>
+                <h6 class="estimation-quickview-status mb-2" style="color: <%= project.status_background_color %>;">
+                  <%= project.estimation_status.name %>
+                </h6>
+                <div class="d-flex"><span class="estimation-quickview-date mb-2 "><%= project.start_date %></span><span class="estimation-quickview-version mb-2 "><%= project.version_number %></span></div>
+                <p class="estimation-quickview-text"><%= simple_format project.description %></p>
+
+                <% @data_widget_hash = {} %>
+                <% @project_module_projects = project.module_projects %>
+                <% @project_module_projects.each do |module_project| %>
+                  <% module_project_view = module_project.view %>
+                  <% unless module_project_view.nil? %>
+                    <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
+                    <% module_project_view_widgets.each do |view_widget| %>
+                      <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                        <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                        <% if view_widget.widget_type == "text" %>
+                          <% @data_widget_hash[view_widget.name] = view_widget_data %>
+                        <% end %>
+                      <% else %>
+                        <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
+                        <% @data_widget_hash[view_widget.name] = view_widget_data %>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </div>
+            </a>
+          </div>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+<% end %>
 
 <div class="mb-5">
   <div class="estimation-list">
-
     <div class="estimation-list-filter">
       <span><%= @projects.count %> <%= I18n.t("elements") %></span>
       <span>
@@ -166,9 +226,9 @@
                         <div class="col">
                           <%= k %>
                           <div class="estimation-overview-info-number">
-                              <span>
-                                <%= value %>
-                              </span>
+                            <span>
+                              <%= value %>
+                            </span>
                           </div>
                         </div>
                       <% end %>
