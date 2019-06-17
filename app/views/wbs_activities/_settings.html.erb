@@ -235,10 +235,8 @@
                 <th>Effort</th>
               <% end %>
 
-              <th><%= I18n.t(:change_ratio) %></th>
-
               <% if wbs_activity.three_points_estimation? %>
-                <th><%= I18n.t(:total_effort) %></th>
+                <th><%= I18n.t(:calculated_effort) %></th>
                 <th><%= I18n.t(:retained_effort) %></th>
 
                 <th><%= I18n.t(:total_effort) %></th>
@@ -248,7 +246,7 @@
                 <th><%= I18n.t(:retained_effort) %></th>
 
               <% else %>
-                <th><%= I18n.t(:total_effort) %></th>
+                <th><%= I18n.t(:calculated_effort) %></th>
                 <th><%= I18n.t(:retained_effort) %></th>
               <% end %>
 
@@ -461,7 +459,7 @@
               <td class="hide_wbs_header">
                 <% if wai.nil? %>
                   <span class="estimancy">
-                    ----
+                    ...
                   </span>
                 <% else %>
                     <span class="pull-left estimancy" >

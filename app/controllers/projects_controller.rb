@@ -3208,6 +3208,15 @@ public
     @search_value = session[:search_value]
     @search_hash = session[:search_hash]
 
+    organization_projects = @organization.projects.where(:is_model => [nil, false])
+    if params[:archive].present?
+      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+      @projects = organization_projects.where(estimation_status_id: esids)
+    else
+      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+      @projects = organization_projects.where.not(estimation_status_id: esids)
+    end
+
     organization_projects = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
     @search_string = session[:search_string] || ""
 
@@ -4240,13 +4249,16 @@ public
                                        transition_date: Time.now)
 
       model = Project.where(id: @project.original_model_id).first
-      if model.title == "Sourcing Model"
+      if model.title == "IFPUG Sourcing"
+        from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
+        es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
         Thread.new do
           ActiveRecord::Base.connection_pool.with_connection do
-            from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
-            es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
             sleep(30)
             if @project.estimation_status_id == from_es.id
+              flash[:custom] = "Machine learning process in progress..."
+              flash[:notice] = "Machine learning process in progress..."
+              flash[:warning] = "Machine learning process in progress..."
               @project.estimation_status_id = es.id
               @project.save
             end
@@ -4254,7 +4266,7 @@ public
         end
       end
 
-      flash[:notice] = I18n.t(:notice_comment_status_successfully_updated)
+      # flash[:notice] = I18n.t(:notice_comment_status_successfully_updated)
     else
       flash[:error] = I18n.t('errors.messages.not_saved')
     end

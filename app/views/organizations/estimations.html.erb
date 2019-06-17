@@ -25,7 +25,7 @@
         <% recent_projects = current_user.recent_projects.nil? ? [] : current_user.recent_projects.uniq.take(4) %>
       <% end %>
         <% recent_projects.reverse.each do |project_id| %>
-          <% project = Project.find(project_id) %>
+          <% project = Project.find_by_id(project_id) %>
           <% unless project.nil? %>
             <div class="card card-cliquable estimation-quickview w-25">
               <a href="<%= dashboard_path(project) %>">

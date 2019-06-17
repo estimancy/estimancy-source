@@ -55,38 +55,41 @@
                   <% end %>
                 </div>
               </div>
+
               <div class="form-row">
                 <div class="col-12">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <%= f.input :business_need, :label => false, :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input' } %>
-                    <label class="mdl-textfield__label" for="need"><%= I18n.t('business_need') %></label>
+                    <label class="mdl-textfield__label"><%= I18n.t('business_need') %></label>
                   </div>
                 </div>
               </div>
+
               <div class="form-row">
                 <div class="col-12">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <%= f.input :request_number, :label => false, :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input' } %>
-                    <label class="mdl-textfield__label" for="number"><%= I18n.t('demand_number') %></label>
-                    <span class="mdl-textfield__error">Merci de saisir un nombre</span>
+                    <label class="mdl-textfield__label" ><%= I18n.t('request_number') %></label>
                   </div>
                 </div>
               </div>
+
               <div class="form-row">
                 <div class="col-12">
+
                   <% if @project.is_model == true %>
                     <% apps = @project.applications %>
                     <% if @current_organization.applications.empty? and apps.empty? %>
                       <%= f.input :application_name,
                                   :label => I18n.t(:label_product_name),
                                   :disabled => !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) ,
-                                  :input_html => { :class => '' } %>
+                                  :input_html => { :class => 'form-control' } %>
                     <% else %>
                       <%= f.association :applications,
                                         as: :select,
                                         collection: @current_organization.applications.active,
                                         :label => I18n.t(:label_product_name),
-                                        :input_html => { :class => '' },
+                                        :input_html => { :class => 'form-control' },
                                         include_blank: true,
                                         :disabled => !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) %>
                     <% end %>
@@ -125,7 +128,7 @@
                                     as: :select,
                                     collection: apps.empty? ? @current_organization_apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]} : apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]},
                                     label: I18n.t(:label_product_name),
-                                    input_html: {:class => 'simple-form'},
+                                    input_html: {:class => 'form-control'},
                                     selected: @project.application_id %>
 
                       <% end %>

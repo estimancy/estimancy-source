@@ -51,7 +51,7 @@ class BudgetsController < ApplicationController
       header << bt.name
       @bt_colors << bt.color
     end
-    @bt_colors << '007DAB'
+    @bt_colors << '#007DAB'
 
     header << I18n.t(:planned_budget)
     header << { role: 'annotation' }
