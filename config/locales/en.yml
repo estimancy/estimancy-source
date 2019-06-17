@@ -299,7 +299,7 @@ en:
   values: "Values"
   return: "Return"
   to_the_list: "to the list"
-  see_the_detail: "See the detail"
+  see_the_detail: "See details"
 
   #demand
   demand_type: "Demand type"
@@ -389,7 +389,7 @@ en:
   text_fields: "Text Fields"
   dashboard: "Dashboard"
   action: "Action"
-  menu_super_administrateur: "Menu Super Administrateur"
+  menu_super_administrateur: "Menu"
   import_export: "Import Export"
   save_alt: "Save Alt"
 
@@ -849,7 +849,7 @@ en:
   wbs_elements: "Wbs Elements (Tree View)"
   ratios: "Ratios"
   ratios_elements: "Ratio elements"
-  change_ratio: "Change Ratio"
+  change_ratio: "Ratio"
 
   #wbs activity elements
   edit_wbs_activity_element: "Edit a wbs activity element"
@@ -1188,7 +1188,7 @@ en:
   text_index_permissions_guidance: "List all global and project permissions"
   notice_end_of_estimation_execution: "Finish to execute modules"
   label_project_name: "Estimation name"
-  label_product_name: "Product name"
+  label_product_name: "Application"
   label_project_version: "Version"
   label_permission_access: "Access"
   error_group_failed_update: "An error has occurred when during the update"
@@ -1225,7 +1225,7 @@ en:
   label_AcquisitionCategory: "Acquisition Category"
   label_WbsActivity: "WBS-Activity"
   label_Pemodule: "Module"
-  label_PeAttribute: "Attribute"
+  label_PeAttribute: "Attributes"
   label_WorkElementType: "Work Element Type"
   label_Organization: "Organization"
   label_User: "User"
@@ -1900,7 +1900,7 @@ en:
   Destroy: "Destroy"
   label_Guw_model: "Units of work model"
   operation_module: "Operation Module"
-  total_effort: "Total effort (%{parameter})"
+  total_effort: "Total effort"
   Exel_generator: "Excel Report Generator"
   what_he_do: "The team module allows to calculate the duration and size of the project teams. We propose 2 méthods: <br><b>- Linear approach (Keystone) <br>- Rayleigh Curve <br></b><br>if we dont have the duration, we propose to calculate with the McDonnell formula: <br>Duration = <b>coef. * K^n</b><br>by default we have: <b>K</b> = effort (men/week) ; <b>coef</b> = 6 and <b>n</b> = 1/3<br>"
   what_to_do: "   - <b>(x0, y0)</b> : a start report x0, and the start staffing y0 <br>            - <b>x1</b> : when staffing max will be reached <br>            - <b>x2 </b>: when the staffing will begin to decrease<br>            - <b>(x3, y3)</b> : The dead line and the staffing end.<br>              <br>            for simplifie ; we define x0, x1, x2, x3 in <b>pourcentage</b> of the <b>project duration D,</b> and y0, y3 in <b>M pourcentage</b>, the maximun staffing will be directly calculate.<br>"
@@ -2081,6 +2081,7 @@ en:
 
   duplicate: "Duplicate unit of work"
   add: "Create a unit of work"
+  replace: "Replace"
   kpi_unit: "KPI Unit"
   calculate_save: "Calculate and Save"
   calculated_value: "Calculated"

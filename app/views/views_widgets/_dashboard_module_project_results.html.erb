@@ -72,10 +72,10 @@
                         <% end %>
                       </div>
 
-                      <div class="<%= (value.to_s.size >= 15) ? 'card-indicator-label' : 'card-indicator-quantity' %>">
-                          <span>
-                            <%= value.nil? ? '-' : value %>
-                          </span>
+                      <div class="card-indicator-label'">
+                        <span>
+                          <%= value.nil? ? '-' : value %>
+                        </span>
                         <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
                             <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
                             <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
