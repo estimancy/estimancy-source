@@ -1603,7 +1603,7 @@ class ProjectsController < ApplicationController
       when I18n.t('cancel')
         redirect_to (is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
       else
-          render :template => 'projects/confirm_deletion'
+        render :template => 'projects/confirm_deletion'
     end
   end
 
