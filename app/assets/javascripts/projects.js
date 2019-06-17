@@ -1,12 +1,5 @@
 jQuery(function() {
 
-    $(".date-picker").datepicker({
-        language: 'fr',
-        autoclose: true,
-        todayHighlight: true,
-        todayBtn: true
-    });
-
     $('.input-small').css('text-align', 'right');
 
     var wbs_numbers_precision = parseInt('<%= user_number_precision %>');

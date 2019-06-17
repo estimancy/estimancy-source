@@ -4,8 +4,6 @@
     google.charts.load('current', {packages: ['corechart', 'bar']});
 </script>
 
-<link rel="preload" as="font" href="/fonts/custom-font.woff" type="font/woff" crossorigin="anonymous">
-
 <section class="card card-content-bloc estimancy-form">
   <%= simple_form_for([@organization, @budget]) do |f| %>
       <div class="card-body">
@@ -63,23 +61,22 @@
 
                     <div class="col-5">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <%= f.input :end_date, :as => :string ,:label => false, :input_html => { :class => 'date-picker mdl-textfield__input', :value => @budget.end_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.end_date) } %>
+                        <%= f.input :end_date, :as => :string, :label => false, :input_html => { :class => 'date-picker mdl-textfield__input', :value => @budget.end_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.end_date) } %>
                         <label class="mdl-textfield__label" for="start_date"><%= I18n.t(:end_date_budget) %></label>
                       </div>
                     </div>
                   </div>
 
                   <script type="text/javascript">
-                      // $(document).ready(function () {
-                      //     $(".date-picker").datepicker({
-                      //         language: 'fr',
-                      //         autoclose: true,
-                      //         todayHighlight: true,
-                      //         todayBtn: true
-                      //     });
-                      // });
+                      $(document).ready(function () {
+                          $(".date-picker").datepicker({
+                              language: '<%= set_user_language %>',
+                              autoclose: true,
+                              todayHighlight: true,
+                              todayBtn: true
+                          });
+                      });
                   </script>
-
                 </div>
 
               <div class="col">
