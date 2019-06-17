@@ -179,7 +179,13 @@
                                                     <% effort_per_phase +=  wbs_profiles_value %>
                                                   <% end %>
                                               <% end %>
-                                              <%= wbs_profiles_value.nil? ? "-" : "#{convert_with_precision(wbs_profiles_value, user_number_precision, true)} #{wbs_unit}" %>
+
+                                              <% if wbs_unit == "€" %>
+                                                <%= wbs_profiles_value.nil? ? "-" : "#{convert_with_precision(wbs_profiles_value, user_number_precision, true)} #{wbs_unit}" %>
+                                              <% else %>
+                                                <%= wbs_profiles_value.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(wbs_profiles_value, user_number_precision, true)}" %>
+                                              <% end %>
+
                                             </td>
                                         <% end %>
                                     <% else %>
@@ -193,9 +199,15 @@
 
                             <!-- on ajoute que les descendants directs -->
                             <% if wbs_activity_elt.parent_id == wbs_activity_element_root.id %>
-                                <% total_per_phase_to_sum <<  effort_per_phase %>
+                                <% total_per_phase_to_sum << effort_per_phase %>
                             <% end %>
-                            <td style="text-align: right"><%= effort_per_phase.nil? ? "-" :  "#{convert_with_precision(effort_per_phase, user_number_precision, true)} #{wbs_unit}" %></td>
+                            <td style="text-align: right">
+                              <% if wbs_unit == "€" %>
+                                <%= effort_per_phase.nil? ? "-" :  "#{convert_with_precision(effort_per_phase, user_number_precision, true)} #{wbs_unit}" %>
+                              <% else %>
+                                <%= effort_per_phase.nil? ? "-" :  "#{wbs_unit} #{convert_with_precision(effort_per_phase, user_number_precision, true)}" %>
+                              <% end %>
+                            </td>
                           </tr>
                       <% end %>
                   <% end %>
@@ -239,7 +251,11 @@
                                   <% end %>
                               <% end %>
                               <br />
-                              <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(root_effort_per_profile, user_number_precision, true)} #{wbs_unit}" %>
+                              <% if wbs_unit == "€" %>
+                                <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(root_effort_per_profile, user_number_precision, true)} #{wbs_unit}" %>
+                              <% else %>
+                                <%= root_effort_per_profile.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(root_effort_per_profile, user_number_precision, true)}" %>
+                              <% end %>
                             </td>
                         <% end %>
                     <% else %>
