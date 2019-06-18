@@ -71,13 +71,13 @@
 
       <% if can? :execute_estimation_plan, @project %>
         <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
-          <%= link_to raw("<i class='material-icons'>import_export</i>"), "#!", "data-toggle": "modal", "data-target": "#extract", class: "float-right", title: I18n.t(:import) %>
+          <%= link_to raw("<i class='material-icons'>save_alt</i>"), "#!", "data-toggle": "modal", "data-target": "#extract", class: "float-right", title: I18n.t(:import) %>
         <% end %>
       <% end %>
 
       <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
-        <%= link_to raw("<i class='material-icons'>save_alt</i>"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
-        <%= link_to raw("<i class='material-icons'>archive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
+        <%= link_to raw("<i class='material-icons'>launch</i>"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
+        <%= link_to raw("<i class='material-icons'>unarchive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
     <% else %>
         <%= link_to raw("<i class='material-icons'>archive</i>"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
       <% end %>
