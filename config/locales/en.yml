@@ -259,7 +259,7 @@ en:
 
   # Estimation dashboard
   create_project: "Create an estimate"
-  projects_list: "Estimates list"
+  projects_list: "Supplier quotations"
   quick_access: "Quick access"
   to_the_latest_estimations_consulted : "to the latest estimations consulted"
   from_most_recent_to_least_recent: "From most recent to least recent"
