@@ -123,7 +123,7 @@ Projestimate::Application.routes.draw do
   get '/support' => redirect("https://estimancy-themes.com/en/support/")
 
 
-  post 'multiple_export_dashboard' => 'projects#multiple_export_dashboard', :as => 'multiple_export_dashboard'
+  get 'multiple_export_dashboard' => 'projects#multiple_export_dashboard', :as => 'multiple_export_dashboard'
   post 'export_dashboard' => 'projects#export_dashboard', :as => 'export_dashboard'
   get 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
   get 'display_states' => 'users#display_states', :as => 'display_states'
@@ -449,7 +449,8 @@ Projestimate::Application.routes.draw do
   get 'render_selected_wbs_activity_elements' => 'projects#render_selected_wbs_activity_elements', as: 'render_selected_wbs_activity_elements'
   post 'projects/:id/display_estimation_plan' => 'projects#display_estimation_plan', :as => 'display_estimation_plan'
 
-  post 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
+  # post 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
+  get 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
   post 'projects/:project_id/locked_plan' => 'projects#locked_plan', :as => :locked_plan
   get 'show_project_history' => 'projects#show_project_history', :as => :show_project_history
   get 'confirm_deletion' => 'projects#confirm_deletion', :as => :confirm_deletion

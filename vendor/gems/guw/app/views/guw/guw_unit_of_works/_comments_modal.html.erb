@@ -4,7 +4,7 @@
     <h4 class="modal-title" id="comments_label<%= guow.id %>">
       <b>
         <%= guow.guw_type %>
-      </b> - Details %> </h4>
+      </b> - Details </h4>
   </div>
   <div class="modal-body">
 
@@ -24,14 +24,14 @@
 
     <label>
       <b>
-        Traçabilité
+        <%= I18n.t(:tracability) %>
       </b>
     </label>
     <%= text_area_tag "trackings[#{guow.id}]", guow.tracking, class: "attribute_note_area form-control", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
 
     <label>
       <b>
-        Groupe
+        <%= I18n.t(:group) %>
       </b>
     </label>
     <%= select_tag :guw_unit_of_work_group_id,
@@ -44,7 +44,7 @@
     <% if guow.guw_model.allow_ml == true %>
       <label>
         <b>
-          URL d'origine
+          URL
         </b>
       </label>
       <% if guow.url %>

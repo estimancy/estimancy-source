@@ -1587,11 +1587,7 @@ class ProjectsController < ApplicationController
             ###current_user.delete_recent_project(@project.id)
             session[:project_id] = current_user.projects.first
             flash[:notice] = I18n.t(:notice_project_successful_deleted, :value => 'Project')
-            if !params[:from_tree_history_view].blank? && params['current_showed_project_id'] != params[:id]
-              redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history')
-            else
-              redirect_to (is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
-            end
+            redirect_to organization_estimations_path(@current_organization)
           else
             flash[:warning] = I18n.t(:error_access_denied)
             redirect_to (params[:from_tree_history_view].nil? ?  organization_estimations_path(@organization) : edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'))
