@@ -734,9 +734,10 @@ class ApplicationController < ActionController::Base
       projects =  projects.reorder("start_date desc")
     else
       case k
-        when "start_date", "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"
-          projects = projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
-
+        when "start_date"
+          projects = projects.order("created_at DESC") #projects.reorder(k + ' ' + s)
+        when "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"
+          projects = projects.reorder("#{k} #{s})") #projects.reorder(k + ' ' + s)
         when "application"
           projects = Project.unscoped
                           .joins("LEFT JOIN applications ON projects.application_id = applications.id")

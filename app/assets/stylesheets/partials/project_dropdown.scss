@@ -39,6 +39,19 @@
     height: auto;
   }
 }
+.project-title-selected-without-caret {
+  color: white;
+  font-family: "Roboto";
+  font-size: 18px;
+  line-height: 21px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &:hover {
+    color: white
+  }
+}
 
 .project-subtitle-selected {
   color: rgba(255, 255, 255, 0.9);
