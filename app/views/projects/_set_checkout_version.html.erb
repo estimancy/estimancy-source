@@ -12,13 +12,13 @@
 
     <div>
       <div class="row">
-        <div class="span4"><%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-xlarge'}, disabled: true %></div>
-        <div class="span2"><%= f.input :version_number, label: I18n.t(:current_version), :input_html => {:class => ''}, disabled: true  %></div>
+        <div class="col-8"><%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'form-control'}, disabled: true %></div>
+        <div class="col-4"><%= f.input :version_number, label: I18n.t(:current_version), :input_html => {:class => 'form-control'}, disabled: true  %></div>
       </div>
 
       <div>
         <label><%= I18n.t(:new_version) %></label>
-        <p><%= text_field_tag "new_version", "", :class => 'input-xlarge' %></p>
+        <p><%= text_field_tag "new_version", "", :class => 'form-control' %></p>
       </div>
 
       <% if @archive_status && can?(:can_archive_version, @project) %>
@@ -41,14 +41,14 @@
     <div>
 
       <label style="margin-top: 10px"><b><%= I18n.t('description') %></b></label>
-      <%= text_area_tag "description", @project.description, rows: 5, cols: 150, class: "input-xlarge tinymce" %>
+      <%= text_area_tag "description", @project.description, rows: 5, cols: 150, class: "form-control" %>
     </div>
 
     <br>
     <div class="actions-tabs">
       <% if can? :create_project_from_template, Project %>
-        <%= f.submit I18n.t('save'), :id =>'checkout_project', :class => 'btn submit_project' %>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+        <%= f.submit I18n.t('save'), :id =>'checkout_project', :class => "btn btn-primary" %>
+        <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
       <% end %>
     </div>
     </div>
