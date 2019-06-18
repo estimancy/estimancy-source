@@ -318,11 +318,11 @@
                       <% current_inputs_evs.each do |ev| %>
                         <% entry_ml_value = entry_values["most_likely"][ev.id] %>
                         <% unless entry_ml_value.nil? %>
-                          <span class="float-left">
+                          <span class="float-left" style="word-wrap: break-word;overflow-wrap: break-word; width: 51%;">
                             <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_ml_value %>
                             <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, class: "form-control" %>
                           </span>
-                          <br>
+                          <br />
                         <% end %>
                       <% end %>
                   <% end %>
