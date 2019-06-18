@@ -28,8 +28,10 @@
           <% unless controller.action_name == "all_organizations" %>
             <div class="project-block">
               <div class="dropdown">
-                <a class="dropdown-toggle project-title-selected" href="#" id="projectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="project-title-selected-without-caret" href="<%= main_app.organization_estimations_path(@current_organization) %>">
                   <%= @current_organization %>
+                </a>
+                <a class="dropdown-toggle project-title-selected" href="#" id="projectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 </a>
                 <div class="dropdown-menu project-list" aria-labelledby="projectDropdown">
                   <% @organizations.each do |organization| %>
