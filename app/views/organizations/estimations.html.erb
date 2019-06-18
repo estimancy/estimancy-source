@@ -178,8 +178,8 @@
                   <% end %>
 
                   <div class="d-flex estimation-overview-quantity mb-5 row">
-                    <% unless @widgets.keys.reverse[0..1].nil? %>
-                      <% @widgets.keys.reverse[0..1].each do |k| %>
+                    <% unless @widgets.keys.reverse[0..2].nil? %>
+                      <% @widgets.keys.reverse[0..2].each do |k| %>
                         <% value = @widgets[k] %>
                         <% unless value.is_a?(Hash) %>
                           <div class="col">
@@ -200,8 +200,8 @@
                   </div>
 
                   <div class="row estimation-overview-infos mb-3">
-                    <% unless @widgets.keys.reverse[2..4].nil? %>
-                      <% @widgets.keys.reverse[2..4].each do |k| %>
+                    <% unless @widgets.keys.reverse[3..5].nil? %>
+                      <% @widgets.keys.reverse[3..5].each do |k| %>
                         <% value = @widgets[k] %>
                         <% unless value.is_a?(Hash) %>
                           <div class="col">
@@ -218,8 +218,8 @@
                   </div>
 
                   <div class="row estimation-overview-infos mb-3">
-                    <% unless @widgets.keys.reverse[4..6].nil? %>
-                      <% @widgets.keys.reverse[4..6].each do |k| %>
+                    <% unless @widgets.keys.reverse[6..8].nil? %>
+                      <% @widgets.keys.reverse[6..8].each do |k| %>
                         <% value = @widgets[k] %>
                         <% unless value.is_a?(Hash) %>
                           <div class="col">
@@ -236,8 +236,8 @@
                   </div>
 
                   <div class="row estimation-overview-infos mb-3">
-                    <% unless @widgets.keys.reverse[6..8].nil? %>
-                      <% @widgets.keys.reverse[6..8].each do |k| %>
+                    <% unless @widgets.keys.reverse[9..11].nil? %>
+                      <% @widgets.keys.reverse[9..11].each do |k| %>
                         <% value = @widgets[k] %>
                         <% unless value.is_a?(Hash) %>
                           <div class="col">

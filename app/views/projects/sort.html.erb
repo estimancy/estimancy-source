@@ -136,7 +136,7 @@
                   </div>
                   <a href="<%= dashboard_path(project) %>">
                     <button type="button" class="btn btn-secondary">
-                      Voir le détail
+                      <%= I18n.t(:see_the_detail) %>
                     </button>
                   </a>
                 </div>
@@ -179,8 +179,8 @@
                 <% end %>
 
                 <div class="d-flex estimation-overview-quantity mb-5 row">
-                  <% unless @data_widget_hash.keys.reverse[0..1].nil? %>
-                    <% @data_widget_hash.keys.reverse[0..1].each do |k| %>
+                  <% unless @data_widget_hash.keys.reverse[0..2].nil? %>
+                    <% @data_widget_hash.keys.reverse[0..2].each do |k| %>
                       <% value = @data_widget_hash[k] %>
                       <% unless value.is_a?(Hash) %>
                         <div class="col">
@@ -201,8 +201,8 @@
                 </div>
 
                 <div class="row estimation-overview-infos mb-3">
-                  <% unless @data_widget_hash.keys.reverse[1..3].nil? %>
-                    <% @data_widget_hash.keys.reverse[1..3].each do |k| %>
+                  <% unless @data_widget_hash.keys.reverse[3..5].nil? %>
+                    <% @data_widget_hash.keys.reverse[3..5].each do |k| %>
                       <% value = @data_widget_hash[k] %>
                       <% unless value.is_a?(Hash) %>
                         <div class="col">
@@ -219,8 +219,8 @@
                 </div>
 
                 <div class="row estimation-overview-infos mb-3">
-                  <% unless @data_widget_hash.keys.reverse[3..5].nil? %>
-                    <% @data_widget_hash.keys.reverse[3..5].each do |k| %>
+                  <% unless @data_widget_hash.keys.reverse[6..8].nil? %>
+                    <% @data_widget_hash.keys.reverse[6..8].each do |k| %>
                       <% value = @data_widget_hash[k] %>
                       <% unless value.is_a?(Hash) %>
                         <div class="col">
@@ -237,8 +237,8 @@
                 </div>
 
                 <div class="row estimation-overview-infos mb-3">
-                  <% unless @data_widget_hash.keys.reverse[5..7].nil? %>
-                    <% @data_widget_hash.keys.reverse[5..7].each do |k| %>
+                  <% unless @data_widget_hash.keys.reverse[9..11].nil? %>
+                    <% @data_widget_hash.keys.reverse[9..11].each do |k| %>
                       <% value = @data_widget_hash[k] %>
                       <% unless value.is_a?(Hash) %>
                         <div class="col">
