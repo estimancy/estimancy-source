@@ -2,6 +2,14 @@
   <div style="flex: 1">
     <h1><%= I18n.t("projects_list") %></h1>
   </div>
+  <a href="<%= projects_from_path(organization_id: @current_organization.id) %>">
+    <button type="button" class="btn btn-primary">
+      <%= I18n.t("create_project") %>
+    </button>
+  </a>
+  <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
+    <%# link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+  <% end %>
 </div>
 
 <div class="mb-5">

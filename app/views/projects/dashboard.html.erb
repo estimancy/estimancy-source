@@ -129,9 +129,9 @@
                     <div class="card card-widget">
                       <div class="card-body">
                         <div class="effort-bloc-tools d-flex justify-content-end mb-2">
-                          <a href="#" title="<%= I18n.t :get_app %>"><i class="material-icons">get_app</i></a>
-                          <a href="#" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
-                          <a href="#" title="<%= I18n.t :delete %>"><i class="material-icons">delete</i></a>
+                          <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: vw.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => vw.name) %>
+                          <a href="<%= main_app.edit_views_widget_path(vw, module_project_id: current_module_project.id, view_id: current_module_project.view_id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
+                          <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(vw), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
                         </div>
                         <div class="effort-table">
                           <%= get_view_widget_data(vw.module_project_id, vw.id)[:value_to_show] %>

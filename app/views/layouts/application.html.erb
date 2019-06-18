@@ -54,7 +54,7 @@
                     <i class="material-icons">search</i>
                   </span>
                 </div>
-                <input name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>" aria-label="search" aria-describedby="search-icon">
+                <input value="<%= params[:advanced_search] %>" name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>" aria-label="search" aria-describedby="search-icon">
                 <div class="input-group-append global-search-bar-append">
                   <a class="input-group-text unclickable" href="#" style="text-decoration: none;"><%= I18n.t :advanced_research %></a>
                 </div>
