@@ -1,28 +1,78 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:application) %> </a></li>
-    <li><a href="#tabs-2">Types du budget</a></li>
-  </ul>
-
-  <div id="tabs-1">
+<section class="card card-content-bloc estimancy-form">
     <%= simple_form_for([@organization, @application]) do |f| %>
     <%= f.error_notification %>
 
+    <div class="card-body">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h1>
+            <%= Application %>
+          </h1>
+        </div>
+      </div>
+
     <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
 
-    <div class="row-fluid input-xxlarge">
-      <div class="span7">
-        <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
-        <%= f.input :forfait_mco, :label => I18n.t('forfait_mco'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
-        <%= f.input :start_date, :label => I18n.t('start_date'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
-        <%= f.input :end_date, :label => I18n.t('end_date'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
-        <%= f.input :month_number, :label => I18n.t('month_number'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label: false,  :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :forfait_mco, label: false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="forfait_mco"><%= I18n.t(:forfait_mco) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%#= f.input :start_date,  label: false, :input_html => {:class => 'date-picker mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+<!--            <label class="mdl-textfield__label" for="start_date"><%#= I18n.t('start_date') %></label>-->
+                <%= f.input :start_date, :as => :string, label: 'Date de début',
+                            :input_html => {:class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%#= f.input :end_date,  label: false, :input_html => {:class => 'date-picker mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+<!--            <label class="mdl-textfield__label" for="end_date"><%#= I18n.t('end_date') %></label>-->
+                <%= f.input :end_date, :as => :string, label: 'Date de fin',
+                            :input_html => {:class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :month_number, label: false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="month_number"><%= I18n.t('month_number') %></label>
+              </div>
+
+            </div>
+          </div>
+
+          <script>
+              $(document).ready(function () {
+                  $(".date-picker").datepicker({
+                      language: '<%= set_user_language %>',
+                      autoclose: true,
+                      todayHighlight: true,
+                      todayBtn: true,
+                      icons: {
+                          rightIcon: '<i class="material-icons">event</i>'
+                      }
+                  });
+              });
+          </script>
+
       </div>
-      <div class="span5">
-        <label class="checkbox"></label>
-        <%= f.input :is_ignored, as: :boolean, :label => I18n.t('is_ignored') %>
+        <%= f.input :is_ignored, as: :boolean, label: I18n.t('is_ignored'), type: "checkbox", id:"application[is_ignored]", class: "mdl-checkbox__input" %>
+<!--        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mt-3" for="application[is_ignored]">-->
+<!--          <input type="checkbox" name="application[is_ignored]" id="application_is_ignored]" class="mdl-checkbox__input" as="boolean" >-->
+<!--          <label class="mdl-checkbox__label" for="is_ignored"><%#= I18n.t('is_ignored') %></label>-->
+<!--        </label>-->
       </div>
-    </div>
+
+    <br>
 
       <div class="actions-tabs">
         <% if action_name.in?(%w(new create)) %>
@@ -32,35 +82,9 @@
           <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
           <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-applications'), :class => 'btn' %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-applications'), :class => 'btn btn-secondary' %>
       </div>
-    <% end %>
-  </div>
 
-  <div id="tabs-2">
-
-    <table class="table">
-      <tr>
-        <th>Libelle du budget</th>
-        <th>Estimation statuses</th>
-        <th>Budget Colors</th>
-        <th>Actions</th>
-      </tr>
-      <% @application.budget_types.each do |bt| %>
-        <tr>
-          <td><%= bt.name %></td>
-          <td><%= bt.budget_type_statuses.map{ |i| i.estimation_status.name }.join(", ") %></td>
-          <td><%= bt.color %></td>
-          <td clas="center">
-            <%= link_to '', edit_organization_budget_application_budget_type_path(@organization, @application, bt), :class => 'icon-pencil' %>
-            <% if can? :manage, BudgetType %>
-              <%= link_to '',organization_budget_application_budget_type_path(@organization, @application, bt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-            <% end %>
-          </td>
-        </tr>
-      <% end %>
-    </table>
-
-  </div>
-</div>
-
+    </div>
+  <% end %>
+</section>

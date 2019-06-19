@@ -16,3 +16,4 @@
 //= require poppers
 //= require main
 //= require jquery-number
+//= require jscolor

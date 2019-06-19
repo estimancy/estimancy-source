@@ -2319,9 +2319,9 @@ frsncf:
 
   # setting_demand
   demands: "Demandes"
-  demands_types: "Demandes Types"
+  demands_types: "Types de demande"
   livrable: "Livrables"
-  demands_statuses: "Demandes Statuts"
+  demands_statuses: "Statuts de demande"
 
   service_id: "Services"
 
@@ -2430,3 +2430,12 @@ frsncf:
   edit_budget_type: "Editer le type de budget"
   planned_budget: "Budget prévu"
   global_budget: "Budget global"
+
+  #application
+  forfait_mco: "Forfait MCO"
+  month_number: "Nombre de mois"
+  edit_application: "Editer"
+
+  #guw/guw_models/guw_attributes
+  Edit_attribute: "Editer"
+  default: "Valeur par défaut"

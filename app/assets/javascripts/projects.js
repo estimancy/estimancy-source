@@ -1,5 +1,7 @@
 jQuery(function() {
 
+    jscolor.init();
+
     $('.input-small').css('text-align', 'right');
 
     var wbs_numbers_precision = parseInt('<%= user_number_precision %>');
