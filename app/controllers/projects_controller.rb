@@ -134,7 +134,8 @@ class ProjectsController < ApplicationController
 
         field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
-        @organization_projects.where(:created_at => (Time.now-1.year)..(Time.now)).each do |project|
+        # @organization_projects.where(:created_at => (Time.now-1.year)..(Time.now)).each do |project|
+        @organization_projects.each do |project|
 
           pf = project.project_fields.where(field_id: field.id).first
 
@@ -235,7 +236,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
 
         pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
-        @wbs_organization_projects = @organization_projects.where(is_model: false, :created_at => (Time.now-1.year)..(Time.now))
+        @wbs_organization_projects = @organization_projects.where(is_model: false)
 
         ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
