@@ -276,6 +276,8 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
       gcce.delete
     end
 
+    # Guw::GuwUnitOfWorkAttribute.where("most_likely IS NULL").delete_all
+
     Guw::GuwCoefficientElement.all.each do |gce|
       if gce.default_display_value.nil?
         gce.default_display_value = gce.value

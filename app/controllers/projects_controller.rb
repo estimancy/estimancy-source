@@ -97,6 +97,7 @@ class ProjectsController < ApplicationController
         workbook = RubyXL::Workbook.new
 
         @organization = Organization.where(id: params[:organization_id]).first
+        @organization_projects = @organization.projects
 
         worksheet_cf = workbook.worksheets[0]
         worksheet_cf.sheet_name = 'Composants Fonctionnels'
@@ -133,25 +134,32 @@ class ProjectsController < ApplicationController
 
         field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
-        @organization.projects.where(:created_at => (Time.now-1.year)..(Time.now)).each do |project|
+        @organization_projects.where(:created_at => (Time.now-1.year)..(Time.now)).each do |project|
 
           pf = project.project_fields.where(field_id: field.id).first
 
           project.guw_unit_of_works.each do |guow|
+
+            project_application = project.application
+            project_project_area = project.project_area
+            project_acquisition_category = project_acquisition_category
+            project_platform_category = project.platform_category
+            project_provider = project.provider
+
             worksheet_cf.add_cell(i, 0, project.title)
-            worksheet_cf.add_cell(i, 1, project.application.nil? ? project.application_name : project.application.name)
+            worksheet_cf.add_cell(i, 1, project_application.nil? ? project.application_name : project_application.name)
             worksheet_cf.add_cell(i, 2, project.business_need)
             worksheet_cf.add_cell(i, 3, project.request_number)
-            worksheet_cf.add_cell(i, 4, project.project_area.nil? ? '' : project.project_area.name)
-            worksheet_cf.add_cell(i, 5, project.acquisition_category.nil? ? '' : project.acquisition_category.name)
+            worksheet_cf.add_cell(i, 4, project_project_area.nil? ? '' : project_project_area.name)
+            worksheet_cf.add_cell(i, 5, project_acquisition_category.nil? ? '' : project_acquisition_category.name)
 
             unless field.nil?
               value = pf.nil? ? nil : pf.value
               worksheet_cf.add_cell(i, 6, value)
             end
 
-            worksheet_cf.add_cell(i, 7, project.platform_category.nil? ? '' : project.platform_category.name)
-            worksheet_cf.add_cell(i, 8, project.provider.nil? ? '' : project.provider.name)
+            worksheet_cf.add_cell(i, 7, project_platform_category.nil? ? '' : project_platform_category.name)
+            worksheet_cf.add_cell(i, 8, project_provider.nil? ? '' : project_provider.name)
             worksheet_cf.add_cell(i, 9, project.start_date.to_s)
             worksheet_cf.add_cell(i, 10, project.estimation_status.to_s)
             worksheet_cf.add_cell(i, 11, guow.name)
@@ -260,7 +268,7 @@ class ProjectsController < ApplicationController
           end
 
           pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
-          @organization.projects.where(is_model: false, :created_at => (Time.now-1.year)..(Time.now)).each do |project|
+          @organization_projects.where(is_model: false, :created_at => (Time.now-1.year)..(Time.now)).each do |project|
             project_module_projects = project.module_projects
             module_project = project.module_projects.where(pemodule_id: pemodule_wbs.id).first
             unless module_project.nil?
@@ -280,27 +288,28 @@ class ProjectsController < ApplicationController
               fe = Field.where(organization_id: project.organization_id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
               fc = Field.where(organization_id: project.organization_id, name: "Coût (k€)").first
 
-              project.module_projects.each do |mp|
-                ViewsWidget.where(module_project_id: mp.id).each do |vw|
-                  vw_project_fields = vw.project_fields
-                  unless vw_project_fields.empty?
+              # project.module_projects.each do |mp|
+              #   ViewsWidget.where(module_project_id: mp.id).each do |vw|
+              #     vw_project_fields = vw.project_fields
+              project_fields = ProjectField.where(project_id: project.id)
+              unless project_fields.empty?
 
-                    unless fe.nil?
-                      vw_project_fields.where(project_id: project.id, field_id: fe.id).each do |pf|
-                        @total_effort[project.id] << pf.value.to_f
-                      end
-                    end
+                unless fe.nil?
+                  project_fields.where(field_id: fe.id).each do |pf|
+                    @total_effort[project.id] << pf.value.to_f
+                  end
+                end
 
-                    unless fc.nil?
-                      vw_project_fields.where(project_id: project.id, field_id: fc.id).each do |pf|
-                        unless pf.field.coefficient.nil?
-                          @total_cost[project.id] << (pf.value.to_f * 1000 / pf.field.coefficient.to_f)
-                        end
-                      end
+                unless fc.nil?
+                  project_fields.where(field_id: fc.id).each do |pf|
+                    unless pf.field.coefficient.nil?
+                      @total_cost[project.id] << (pf.value.to_f * 1000 / pf.field.coefficient.to_f)
                     end
                   end
                 end
               end
+                # end
+              # end
             end
           end
         end
