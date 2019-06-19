@@ -23,6 +23,14 @@ class UserMailer < ActionMailer::Base
   default from: SETTINGS['FROM']
   OLD_LOCALE = I18n.locale
 
+  def send_raw_data_extraction(file_path)
+    # if Rails.env == "production"
+
+    attachments['Export des Données Brutes'] = File.open("#{Rails.root}/RAW_DATA.xlsx", "r")
+    mail(:to => ["nicolas.renard@estimancy.com"], :subject => "Export des données brutes")
+    # end
+  end
+
   def crash_log(exception, user, orga, project)
     if Rails.env == "production"
       @exception = exception
