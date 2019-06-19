@@ -444,9 +444,9 @@ class WbsActivitiesController < ApplicationController
         #input_effort_values["#{level}"] = params[:values]["#{level}"].to_f * effort_unit_coefficient
         input_effort_values["#{level}"] = Hash.new
         if @wbs_activity.three_points_estimation?
-          current_entry_value = params[:values][level]
+          current_entry_value = params[:values][level] rescue nil
         else
-          current_entry_value = params[:values]["most_likely"]
+          current_entry_value = params[:values]["most_likely"] rescue nil
         end
 
         unless current_entry_value.nil?
@@ -497,7 +497,7 @@ class WbsActivitiesController < ApplicationController
       effort_ids = module_project_attributes.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
       current_inputs_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input")
       current_inputs_evs.each do |ev|
-        effort_value = params['values']['most_likely']["#{ev.id}"].to_f * effort_unit_coefficient
+        effort_value = (params['values']['most_likely']["#{ev.id}"].to_f * effort_unit_coefficient) rescue nil
         calculator.store(:"#{ev.pe_attribute.alias.to_s.downcase}" => effort_value)
       end
 
@@ -1045,9 +1045,9 @@ class WbsActivitiesController < ApplicationController
               entry_level_value = nil
               if @wbs_activity.three_points_estimation?
                 if est_val.pe_attribute.alias.in?(["theoretical_effort", "effort"])
-                  entry_level_value = params[:values][level].first.last
+                  entry_level_value = params[:values][level].first.last rescue nil
                 else
-                  entry_level_value = params[:values][level]["#{est_val.id}"]
+                  entry_level_value = params[:values][level]["#{est_val.id}"] rescue nil
                 end
                 ###level_estimation_value[@pbs_project_element.id] = params[:values][level].to_f * effort_unit_coefficient
                 if entry_level_value.nil? || entry_level_value.empty?
@@ -1059,9 +1059,9 @@ class WbsActivitiesController < ApplicationController
 
               else
                 if est_val.pe_attribute.alias.in?(["theoretical_effort", "effort"])
-                  entry_level_value = params[:values]["most_likely"].first.last
+                  entry_level_value = params[:values]["most_likely"].first.last rescue nil
                 else
-                  entry_level_value = params[:values]["most_likely"]["#{est_val.id}"]
+                  entry_level_value = params[:values]["most_likely"]["#{est_val.id}"]  rescue nil
                 end
                 ###level_estimation_value[@pbs_project_element.id] = params[:values]["most_likely"].to_f * effort_unit_coefficient
                 if entry_level_value.nil? || entry_level_value.empty?

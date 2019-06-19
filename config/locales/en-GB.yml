@@ -250,7 +250,7 @@ en-gb:
 
   # Estimation dashboard
   create_project : "Create an estimation"
-  projects_list: "Estimation list"
+  projects_list: "Supplier quotations"
   to_the_latest_estimations_consulted : "to the latest estimations consulted"
   from_most_recent_to_least_recent: "From most recent to least recent"
   from_least_recent_to_most_recent: "From least recent to most recent"

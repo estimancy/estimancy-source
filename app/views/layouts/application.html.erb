@@ -28,8 +28,10 @@
           <% unless controller.action_name == "all_organizations" %>
             <div class="project-block">
               <div class="dropdown">
-                <a class="dropdown-toggle project-title-selected" href="#" id="projectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="project-title-selected-without-caret" href="<%= main_app.organization_estimations_path(@current_organization) %>">
                   <%= @current_organization %>
+                </a>
+                <a class="dropdown-toggle project-title-selected" href="#" id="projectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 </a>
                 <div class="dropdown-menu project-list" aria-labelledby="projectDropdown">
                   <% @organizations.each do |organization| %>
@@ -54,7 +56,7 @@
                     <i class="material-icons">search</i>
                   </span>
                 </div>
-                <input name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>" aria-label="search" aria-describedby="search-icon">
+                <input value="<%= params[:advanced_search] %>" name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>" aria-label="search" aria-describedby="search-icon">
                 <div class="input-group-append global-search-bar-append">
                   <a class="input-group-text unclickable" href="#" style="text-decoration: none;"><%= I18n.t :advanced_research %></a>
                 </div>

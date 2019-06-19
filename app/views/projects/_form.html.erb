@@ -16,7 +16,7 @@
               Estimation
             </div>
 
-            <div class="edition-bloc-form">
+            <div class="edition-bloc-form" style="width: 900px;">
               <div class="form-row">
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -70,6 +70,15 @@
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <%= f.input :request_number, :label => false, :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input' } %>
                     <label class="mdl-textfield__label" ><%= I18n.t('request_number') %></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-12">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :start_date, as: :string, :label => false, :value => I18n.l(Time.now.to_date), :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input date-picker ' } %>
+                    <label class="mdl-textfield__label" ><%= I18n.t('start_date') %></label>
                   </div>
                 </div>
               </div>
@@ -134,6 +143,19 @@
                       <% end %>
                     <% end %>
                   <% end %>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-12">
+                  <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
+                  <%= f.input :creator_id,
+                              as: :select,
+                              collection: @organization.users.where(locked_at: nil).reject{|i| i.initials == (owner_key.nil? ? '' : owner_key.value) }.map{ |i| [i.name, i.id] },
+                              label: I18n.t('creator'),
+                              selected: @project.creator_id.nil? ? current_user.id : @project.creator_id,
+                              input_html: { selected: current_user.id,:class => 'form-control', disabled: !(can?(:alter_creator, @project) || can_alter_model) } %>
+
                 </div>
               </div>
 
@@ -248,30 +270,30 @@
                 </div>
               </div>
 
-            </div>
+              <div class="actions">
+                <% if action_name.in?(['edit', 'update', 'duplicate']) %>
+                  <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) ||
+                      ( can?(:alter_project_areas, @project) || can?(:alter_acquisition_categories, @project) || can?(:alter_platform_categories, @project) ||
+                          can?(:alter_project_categories, @project) || can?(:alter_providers, @project) || can?(:alter_request_number, @project)
+                      )
+                  %>
+                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                  <% end %>
 
-            <div class="actions">
-              <% if action_name.in?(['edit', 'update', 'duplicate']) %>
-                <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) ||
-                    ( can?(:alter_project_areas, @project) || can?(:alter_acquisition_categories, @project) || can?(:alter_platform_categories, @project) ||
-                        can?(:alter_project_categories, @project) || can?(:alter_providers, @project) || can?(:alter_request_number, @project)
-                    )
-                %>
-                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                <% elsif action_name.in?(['new', 'create']) %>
+                  <% if (@is_model.in?(["true", true]) && can?(:manage_estimation_models, Project)) || (!@is_model.in?(["true", true]) && can?(:create_project_from_scratch, Project)) %>
+                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                  <% end %>
                 <% end %>
 
-              <% elsif action_name.in?(['new', 'create']) %>
-                <% if (@is_model.in?(["true", true]) && can?(:manage_estimation_models, Project)) || (!@is_model.in?(["true", true]) && can?(:create_project_from_scratch, Project)) %>
-                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                <% if @project.is_model %>
+                  <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
+                <% else %>
+                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
                 <% end %>
-              <% end %>
+              </div>
 
-              <% if @project.is_model %>
-                <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
-              <% else %>
-                <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
-              <% end %>
             </div>
           </div>
         </div>
@@ -554,6 +576,16 @@
               }
               if ($(document).scrollTop() < 200){
                   $("#edition-sidebar").css({position: "static", top: 0});
+              }
+          });
+
+          $(".date-picker").datepicker({
+              language: 'fr',
+              autoclose: true,
+              todayHighlight: true,
+              todayBtn: true,
+              icons: {
+                  rightIcon: '<i class="material-icons">event</i>'
               }
           });
       });

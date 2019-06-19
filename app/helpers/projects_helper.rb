@@ -1251,7 +1251,8 @@ module ProjectsHelper
           "#{ convert_with_precision(convert(value, project.organization), precision, true) } #{convert_label(value, project.organization)}"
         when 'integer'
           "#{convert(value, project.organization).round(precision)} #{convert_label(value, project.organization)}"
-        else
+      else
+        convert(value, project.organization)
       end
     end
   end

@@ -28,16 +28,6 @@
       </tr>
 
         <% if estimation_pbs_probable_results.nil? || ratio_reference.nil? %>
-          <%# added_module_project_ratio_elements.each do |added_phase| %>
-              <!--<tr>-->
-                <!--<td><%#= added_phase.name %></td>-->
-                <!--<td colspan="<%#= project_organization_profiles.length %>"></td>-->
-                <!--<td style="text-align: right">-->
-                  <!--<%# mp_ratio_element_value = added_phase.send("#{pe_attribute_alias}_probable") %>-->
-                  <!--<%#= "#{convert_with_precision(convert(mp_ratio_element_value, @current_organization), user_number_precision, true)} #{wbs_unit}" %>-->
-                <!--</td>-->
-              <!--</tr>-->
-          <%# end %>
 
           <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
               <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
@@ -143,12 +133,14 @@
                                       <% unless wbs_profiles_value.nil? %>
                                         <% effort_per_phase +=  wbs_profiles_value %>
                                       <% end %>
-                                      <%#= "#{convert_with_precision(convert(wbs_profiles_value, @current_organization), user_number_precision, true)} #{wbs_unit}" %>
-
                                       <% if view_widget.use_organization_effort_unit == true %>
                                           <%= "#{convert_with_precision(convert_effort_with_organization_unit(wbs_profiles_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
                                       <% else %>
+                                        <% if wbs_unit == "€" %>
                                           <%= "#{convert_with_precision(convert_wbs_activity_value(wbs_profiles_value, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
+                                        <% else %>
+                                          <%= "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(wbs_profiles_value, effort_unit_coefficient), user_number_precision, true)}" %>
+                                        <% end %>
                                       <% end %>
 
                                     </td>
@@ -167,7 +159,6 @@
                             <% total_per_phase_to_sum <<  effort_per_phase %>
                         <% end %>
                         <td style="text-align: right">
-                          <%#= effort_per_phase.nil? ? "-" :  "#{convert_with_precision(convert(effort_per_phase, @current_organization), user_number_precision, true)} #{wbs_unit}" %>
                           <% if view_widget.use_organization_effort_unit == true %>
                               <%= effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(effort_per_phase, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
                           <% else %>
@@ -180,17 +171,6 @@
                 <% end %>
               <% end %>
             <% end %>
-          <%# added_module_project_ratio_elements.each do |added_phase| %>
-              <!--<tr>-->
-                <!--<td><%#= added_phase.name %></td>-->
-                <!--<td colspan="<%#= project_organization_profiles.length %>"></td>-->
-                <!--<td style="text-align: right">-->
-                  <!--<%# mp_ratio_element_value = added_phase.send("#{pe_attribute_alias}_probable") %>-->
-                  <!--<%#= "#{convert_with_precision(convert(mp_ratio_element_value, @current_organization), user_number_precision, true)} #{wbs_unit}" %>-->
-                <!--</td>-->
-              <!--</tr>-->
-          <%# end %>
-
           <tr>
             <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
               <% if wbs_activity_elt.is_root? %>
@@ -209,11 +189,15 @@
                             <% root_effort_per_phase +=  root_effort_per_profile %>
                         <% end %>
                         <br />
-                        <%#= "#{convert_with_precision(convert(root_effort_per_profile, @current_organization), user_number_precision, true)} #{wbs_unit}" %>
                         <% if view_widget.use_organization_effort_unit == true %>
                             <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(root_effort_per_profile, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
                         <% else %>
+
+                          <% if wbs_unit == "€" %>
                             <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(root_effort_per_profile, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
+                          <% else %>
+                            <%= root_effort_per_profile.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(root_effort_per_profile, effort_unit_coefficient), user_number_precision, true)}" %>
+                          <% end %>
                         <% end %>
                       </td>
                     <% end %>
@@ -223,11 +207,14 @@
                 <td>
                   <div class="pull-right">
                     <strong>
-                      <%#= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(convert(total_per_phase_to_sum.map(&:to_f).sum.to_f, @current_organization), user_number_precision, true)} #{wbs_unit}" %>
                       <% if view_widget.use_organization_effort_unit == true %>
-                          <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(total_per_phase_to_sum.map(&:to_f).sum.to_f, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                        <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(total_per_phase_to_sum.map(&:to_f).sum.to_f, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
                       <% else %>
+                        <% if wbs_unit == "€" %>
                           <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(total_per_phase_to_sum.map(&:to_f).sum.to_f, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
+                        <% else %>
+                          <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(total_per_phase_to_sum.map(&:to_f).sum.to_f, effort_unit_coefficient), user_number_precision, true)}" %>
+                        <% end %>
                       <% end %>
                     </strong>
                   </div>
@@ -239,7 +226,11 @@
                       <% if view_widget.use_organization_effort_unit == true  %>
                           <%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(root_effort_per_phase, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
                       <% else %>
+                        <% if wbs_unit == "€" %>
                           <%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(root_effort_per_phase, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
+                        <% else %>
+                          <%= root_effort_per_phase.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(root_effort_per_phase, effort_unit_coefficient), user_number_precision, true)}" %>
+                        <% end %>
                       <% end %>
                     </strong>
                   </div>

@@ -157,7 +157,7 @@
 
         <% end %>
       <% end %>
-    <% elsif i[0] == I18n.t(:criteria) %>
+    <% elsif i[0] == "Criteria" %>
       <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
         <td class="guw-cell-ajustment">
           <% unless @guw_type.nil? %>
@@ -178,7 +178,7 @@
           <% end %>
         </td>
       <% end %>
-    <% elsif i[0] == I18n.t(:cplx_coeff) %>
+    <% elsif i[0] == "Coeff. complexity" %>
       <% unless @guw_type.nil? %>
         <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
       <% end %>
@@ -437,13 +437,15 @@
             <% elsif got.display_type == "modif" %>
               <%# if (@guw_output.estimation_status_id == @project.estimation_status_id) || @guw_output.estimation_status_id.nil? %>
 
-                <%
-                   if guow.size["#{@guw_output.id}"] != guow.ajusted_size["#{@guw_output.id}"]
-                     color = "background-color: ##{@guw_output.color_code};"
-                   else
-                     color = "background-color: transparent;"
-                   end
-                %>
+                <% unless guow.ajusted_size.nil? || guow.size.nil? %>
+                  <%
+                     if guow.size["#{@guw_output.id}"] != guow.ajusted_size["#{@guw_output.id}"]
+                       color = "background-color: ##{@guw_output.color_code};"
+                     else
+                       color = "background-color: transparent;"
+                     end
+                  %>
+                <% end %>
 
                 <span class="ajusted_size_<%= guow.id %>">
                   <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
