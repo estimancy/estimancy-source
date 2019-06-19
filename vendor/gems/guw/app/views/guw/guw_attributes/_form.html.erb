@@ -1,28 +1,51 @@
-<div class="tabs">
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
+      <div class="card-body">
 
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        <%= I18n.t(:pe_attributes) %>
-      </a>
-    </li>
-  </ul>
+        <div class="edition-bloc-title">
+            <h4>
+              <a href="#tabs-1"><%= I18n.t(:pe_attributes) %></a>
+            </h4>
+        </div>
 
-  <div id="tabs-1">
-    <%= simple_form_for(@guw_attribute) do |f| %>
-      <%= f.error_notification %>
+        <div id="tabs-1">
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+              <%= simple_form_for(@guw_attribute) do |f| %>
+                <%= f.error_notification %>
 
-      <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+                <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
 
-      <div class="form-inputs">
-        <%= f.input :name %>
-        <%= f.input :description, input_html: { rows: "5"} %>
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="automatic_quotation_number"><%= I18n.t(:name) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :description, label:false, :input_html => { :class => 'mdl-textfield__input', rows: "5"} %>
+                      <label class="mdl-textfield__label" for="automatic_quotation_number"><%= I18n.t(:description) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <% if can? :manage_modules_instances, ModuleProject %>
+                  <%= f.button :submit, I18n.t('save'), class: "btn btn-primary btn-estimancy"  %>
+                <% end %>
+                  <%= link_to I18n.t(:back), :back, class: "btn btn-secondary btn-estimancy" %>
+              <% end %>
+
+            </div>
+          </div>
+        </div>
+
       </div>
-
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= f.button :submit, I18n.t('save'), class: "btn btn-primary"  %>
-      <% end %>
-      <%= link_to I18n.t(:back), :back, class: "btn" %>
-    <% end %>
+    </div>
   </div>
-</div>
+</section>

@@ -1,32 +1,67 @@
-<div class="tabs">
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        <%= I18n.t :demands_statuses %>
-      </a>
-    </li>
-  </ul>
-  <div id="tabs-1">
-    <%= simple_form_for([@organization, @demand_status]) do |f| %>
-      <%= f.error_notification %>
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
 
-      <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
-      <%= f.input :status_number, :label => I18n.t('status_number'), :input_html => { :class => 'input-xlarge' } %>
-      <%= f.input :status_alias, :label => 'Status alias', :input_html => { :class => 'input-xlarge' } %>
-      <%= f.input :status_color, :label => I18n.t('status_color'), :input_html => { :class => 'input-xlarge' } %>
-      <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, :label => I18n.t('demand_type'), :input_html => { :class => 'input-xlarge' } %>
-      <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
-
-      <div class="actions-tabs">
-        <% if action_name == 'new' || action_name=="create" %>
-          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-        <% elsif action_name == 'edit' || action_name=="update" %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-        <% end %>
-        <%= link_to I18n.t('back'), :back, :class => 'btn' %>
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h2>
+          <%= I18n.t :demands_statuses %>
+        </h2>
       </div>
-    <% end %>
+    </div>
+
+    <div class="edition-bloc-content">
+
+      <%= simple_form_for([@organization, @demand_status]) do |f| %>
+        <%= f.error_notification %>
+        <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
+
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_number, :label => false, :input_html => { :class => 'mdl-textfield__input' } %>
+                <label class="mdl-textfield__label" for="status_number"><%= I18n.t(:status_number) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_alias, :label => false, :input_html => { :class => 'mdl-textfield__input' } %>
+                <label class="mdl-textfield__label" for="status_alias">Statut Alias</label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_color, :label => false, :input_html => { :class => 'mdl-textfield__input' } %>
+                <label class="mdl-textfield__label" for="status_color"><%= I18n.t(:status_color) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :demand_type_id, as: :select, collection: @organization.demand_types, :label => false, :input_html => { :class => 'mdl-textfield__input' } %>
+                <label class="mdl-textfield__label" for="demand_type_id"><%= I18n.t(:demand_type) %></label>
+              </div>
+
+            </div>
+          </div>
+
+          <br>
+
+          <div class="actions-tabs">
+            <% if action_name == 'new' || action_name=="create" %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <% elsif action_name == 'edit' || action_name=="update" %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <% end %>
+            <%= link_to I18n.t('back'), :back, :class => 'btn' %>
+          </div>
+      <% end %>
+      </div>
+    </div>
+
   </div>
-</div>
+</section>
