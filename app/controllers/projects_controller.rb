@@ -234,6 +234,9 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 16, "Coût calculé (€)")
         worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
 
+        pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
+        @wbs_organization_projects = @organization_projects.where(is_model: false, :created_at => (Time.now-1.year)..(Time.now))
+
         ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
           mpre_project = mpre.module_project.project
@@ -267,8 +270,7 @@ class ProjectsController < ApplicationController
             worksheet_wbs.add_cell(iii+1, 17, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
           end
 
-          pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
-          @organization_projects.where(is_model: false, :created_at => (Time.now-1.year)..(Time.now)).each do |project|
+          @wbs_organization_projects.each do |project|
             project_module_projects = project.module_projects
             module_project = project.module_projects.where(pemodule_id: pemodule_wbs.id).first
             unless module_project.nil?
