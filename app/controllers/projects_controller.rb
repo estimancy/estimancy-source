@@ -92,8 +92,8 @@ class ProjectsController < ApplicationController
 
   def raw_data_extraction
 
-    # Thread.new do
-    #   ActiveRecord::Base.connection_pool.with_connection do
+    Thread.new do
+      ActiveRecord::Base.connection_pool.with_connection do
         workbook = RubyXL::Workbook.new
 
         @organization = Organization.where(id: params[:organization_id]).first
@@ -303,50 +303,50 @@ class ProjectsController < ApplicationController
             worksheet_wbs.add_cell(iii+1, 16, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
             worksheet_wbs.add_cell(iii+1, 17, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
           end
+        end
 
-          @wbs_organization_projects.each do |project|
-            # project_module_projects = project.module_projects
-            # module_project = project_module_projects.where(pemodule_id: pemodule_wbs.id).first
-            # unless module_project.nil?
-            #   ModuleProjectRatioElement.where(organization_id: @organization.id,
-            #                                   wbs_activity_ratio_id: module_project.wbs_activity_ratio_id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
+        @wbs_organization_projects.each do |project|
+          # project_module_projects = project.module_projects
+          # module_project = project_module_projects.where(pemodule_id: pemodule_wbs.id).first
+          # unless module_project.nil?
+          #   ModuleProjectRatioElement.where(organization_id: @organization.id,
+          #                                   wbs_activity_ratio_id: module_project.wbs_activity_ratio_id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
+          #
+          #     if mpre.module_project_id.in?(project_module_projects.map(&:id))
+          #       if mpre.wbs_activity_element.is_root?
+          #         @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
+          #         @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
+          #       end
+          #     end
+          #   end
+          # end
+
+          if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
+            # project.module_projects.each do |mp|
+            #   ViewsWidget.where(module_project_id: mp.id).each do |vw|
+            #     vw_project_fields = vw.project_fields
             #
-            #     if mpre.module_project_id.in?(project_module_projects.map(&:id))
-            #       if mpre.wbs_activity_element.is_root?
-            #         @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
-            #         @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
-            #       end
-            #     end
-            #   end
+            # project_fields = @pfs[project.id]
+            #
+            # unless project_fields.empty?
+
+              unless fe.nil?
+                @pfs["#{project.id}_#{fe.id}"].each do |pf|
+                  @total_effort[project.id] << pf.value.to_f
+                end
+              end
+
+              unless fc.nil?
+                @pfs["#{project.id}_#{fc.id}"].each do |pf|
+                  fc_coefficient = fc.coefficient
+                  unless fc_coefficient.nil?
+                    @total_cost[project.id] << (pf.value.to_f * 1000 / fc_coefficient.to_f)
+                  end
+                end
+              end
             # end
-
-            if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
-              # project.module_projects.each do |mp|
-              #   ViewsWidget.where(module_project_id: mp.id).each do |vw|
-              #     vw_project_fields = vw.project_fields
-              #
-              # project_fields = @pfs[project.id]
-              #
-              # unless project_fields.empty?
-
-                unless fe.nil?
-                  @pfs["#{project.id}_#{fe.id}"].each do |pf|
-                    @total_effort[project.id] << pf.value.to_f
-                  end
-                end
-
-                unless fc.nil?
-                  @pfs["#{project.id}_#{fc.id}"].each do |pf|
-                    fc_coefficient = fc.coefficient
-                    unless fc_coefficient.nil?
-                      @total_cost[project.id] << (pf.value.to_f * 1000 / fc_coefficient.to_f)
-                    end
-                  end
-                end
               # end
-                # end
-              # end
-            end
+            # end
           end
         end
 
@@ -416,8 +416,8 @@ class ProjectsController < ApplicationController
 
         # UserMailer.send_raw_data_extraction(file).deliver_now
 
-    #   end
-    # end
+      end
+    end
 
     # redirect_to :back
 
