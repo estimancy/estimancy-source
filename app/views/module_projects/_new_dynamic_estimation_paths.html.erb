@@ -38,10 +38,15 @@
                     [ "Arrow", { width:10, length:10, location:-1, id:"arrow", foldback: 0.4 } ]
                 ],
 
+                endpoint_radius = 5,
+                endpoint_style1 = ["Dot", { cssClass: "endpointClass", radius: 5, hoverClass: "endpointHoverClass" } ],
+                endpoint_style2 = ["Rectangle", { cssClass: "endpointClass", radius: 2, hoverClass: "endpointHoverClass" } ],
+                endpoint_style3 = ["Rectangle", { width: 10, height: 10 }],
+
                 container_box = "module_box";
 
                 anEndpoint = {
-                    endpoint: ["Rectangle", { width: 20 }],
+                    endpoint: endpoint_style3,
                     hoverPaintStyle: { fillStyle: "#3498db" },
                     maxConnections: -1,
                     connector: connector,
@@ -53,7 +58,7 @@
 
             var instance = jsPlumb.getInstance({
                 DragOptions: { cursor: 'pointer', zIndex: 2000 },
-                Container: container_box, //"module_box", //Container: "canvas"
+                Container: container_box, //"module_box",
                 ConnectionOverlays: connectionOverlays,
             });
 
