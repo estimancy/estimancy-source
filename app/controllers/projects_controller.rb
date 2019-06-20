@@ -177,7 +177,7 @@ class ProjectsController < ApplicationController
             worksheet_cf.add_cell(i, 9, project.start_date.to_s)
             worksheet_cf.add_cell(i, 10, project_estimation_status.to_s)
             worksheet_cf.add_cell(i, 11, guow.name)
-            # worksheet_cf.add_cell(i, 12, guow.guw_type.nil? ? '-' : guow.guw_type.name)
+            worksheet_cf.add_cell(i, 12, guow.guw_type.nil? ? '-' : guow.guw_type.name)
             worksheet_cf.add_cell(i, 13, guow.intermediate_percent)
             worksheet_cf.add_cell(i, 14, guow.intermediate_weight)
 
@@ -230,6 +230,9 @@ class ProjectsController < ApplicationController
             @total_cost[project.id] << guw_output_cost_value.to_f
           end
         end
+
+
+        ########
 
         worksheet_wbs.add_cell(0, 0, "Devis")
         worksheet_wbs.add_cell(0, 1, "Application")
@@ -305,48 +308,25 @@ class ProjectsController < ApplicationController
           end
         end
 
+
+
+        ########
         @wbs_organization_projects.each do |project|
-          # project_module_projects = project.module_projects
-          # module_project = project_module_projects.where(pemodule_id: pemodule_wbs.id).first
-          # unless module_project.nil?
-          #   ModuleProjectRatioElement.where(organization_id: @organization.id,
-          #                                   wbs_activity_ratio_id: module_project.wbs_activity_ratio_id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
-          #
-          #     if mpre.module_project_id.in?(project_module_projects.map(&:id))
-          #       if mpre.wbs_activity_element.is_root?
-          #         @total_effort[project.id] << mpre.retained_effort_most_likely.to_f
-          #         @total_cost[project.id] << mpre.retained_cost_most_likely.to_f
-          #       end
-          #     end
-          #   end
-          # end
-
           if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
-            # project.module_projects.each do |mp|
-            #   ViewsWidget.where(module_project_id: mp.id).each do |vw|
-            #     vw_project_fields = vw.project_fields
-            #
-            # project_fields = @pfs[project.id]
-            #
-            # unless project_fields.empty?
+            unless fe.nil?
+              @pfs["#{project.id}_#{fe.id}"].each do |pf|
+                @total_effort[project.id] << pf.value.to_f
+              end
+            end
 
-              unless fe.nil?
-                @pfs["#{project.id}_#{fe.id}"].each do |pf|
-                  @total_effort[project.id] << pf.value.to_f
+            unless fc.nil?
+              @pfs["#{project.id}_#{fc.id}"].each do |pf|
+                fc_coefficient = fc.coefficient
+                unless fc_coefficient.nil?
+                  @total_cost[project.id] << (pf.value.to_f * 1000 / fc_coefficient.to_f)
                 end
               end
-
-              unless fc.nil?
-                @pfs["#{project.id}_#{fc.id}"].each do |pf|
-                  fc_coefficient = fc.coefficient
-                  unless fc_coefficient.nil?
-                    @total_cost[project.id] << (pf.value.to_f * 1000 / fc_coefficient.to_f)
-                  end
-                end
-              end
-            # end
-              # end
-            # end
+            end
           end
         end
 
@@ -406,20 +386,6 @@ class ProjectsController < ApplicationController
         end
 
         send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
-
-        # send_file "#{Rails.root}/public/apple-app-site-association"
-
-        # file = File.open('RAW_DATA.xlsx', 'w')
-        # file.puts workbook.stream.string
-        # file.type = "application/vnd.ms-excel"
-        # file.close
-
-        # UserMailer.send_raw_data_extraction(file).deliver_now
-
-    #   end
-    # end
-
-    # redirect_to :back
 
   end
 
