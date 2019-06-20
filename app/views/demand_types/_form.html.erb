@@ -1,284 +1,326 @@
-<div class="tabs">
-  <ul>
+<div class="row">
+  <div class="col-10">
 
-    <li>
-      <a href="#tabs-1">
-        Type de demande
-      </a>
-    </li>
+    <%= simple_form_for([@organization, @demand_type]) do |f| %>
 
-    <li>
-      <a href="#tabs-2">
-        Services
-      </a>
-    </li>
+      <div id="tabs-1">
+        <%= f.error_notification %>
 
-    <li>
-      <a href="#tabs-3">
-        Facturation
-      </a>
-    </li>
+        <div class="edition-page-group py-4">
+          <span><%= I18n.t(:demand_type) %></span>
+        </div>
 
-    <li>
-      <a href="#tabs-4">
-        Configuration des SLA
-      </a>
-    </li>
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+            <div class="form-row">
+              <div class="col-5">
 
-    <li>
-      <a href="#tabs-5">
-        Workflow des statuts
-      </a>
-    </li>
-
-  </ul>
-
-  <%= simple_form_for([@organization, @demand_type]) do |f| %>
-
-    <div id="tabs-1">
-      <%= f.error_notification %>
-
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-      <%= f.input :description, :as => :text, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge'} %>
-
-      <%= f.input :cost_from, as: :select, collection: ["Devis", "Saisie", "Cout associé à l'application"], :label => "Provenance coût à facturer", :input_html => {:class => 'input-xlarge'} %>
-      <%= f.input :demand_status_id, as: :select, collection: @demand_statuses.map{|i| [i.name, i.id]} , :label => "Statut de départ", :input_html => {:class => 'input-xlarge'} %>
-
-      <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
-
-      <hr>
-
-      <div class="actions-tabs">
-        <% if action_name == 'new' || action_name=="create" %>
-          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-        <% elsif action_name == 'edit' || action_name=="update" %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-        <% end %>
-        <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
-      </div>
-
-    </div>
-
-    <div id="tabs-2">
-      <h4>
-        Cochez les services associés à ce type de demande
-      </h4>
-      <br>
-      <div class="row-fluid">
-        <div class="span4">
-          <%= f.collection_check_boxes(:service_ids, Service.where(organization_id: @organization.id).all, :id, :to_s) do |b| %>
-            <div class="row-fluid">
-              <%= b.label(class: "check_box") do %>
-                <div class="span1">
-                  <%= b.check_box(class: "check_box") %>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                  <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
                 </div>
-                <div class="span11">
-                  <%= b.object.name %>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :description, :as => :text, :label => false, :input_html => {:class => 'mdl-textfield__input', :rows => 5 } %>
+                  <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
                 </div>
-              <% end %>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :cost_from, as: :select, collection: ["Devis", "Saisie", "Cout associé à l'application"], :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+                  <label class="mdl-textfield__label" for="cost_from">Provenance coût à facturer</label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :demand_status_id, as: :select, collection: @demand_statuses.map{|i| [i.name, i.id]} , :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+                  <label class="mdl-textfield__label" for="demand_status_id">Statut de départ</label>
+                </div>
+
+                <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
+
+                <br>
+              </div>
             </div>
-          <% end %>
-        </div>
-      </div>
 
-      <div class="actions-tabs">
-        <hr>
-        <% if action_name == 'new' || action_name=="create" %>
-          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-        <% elsif action_name == 'edit' || action_name=="update" %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-        <% end %>
-        <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
-      </div>
-
-    </div>
-
-    <div id="tabs-3">
-
-      <h4>
-        Configuration des élements de facturation
-      </h4>
-      <br>
-
-      <div class="row-fluid">
-
-        <div class="span3">
-          <%= f.input :billing, as: :select, collection: ["Echéance", "Abonnement", "Sans facturation"], :label => "Billing" ,
-                      :input_html => {:class => 'input-xlarge'} %>
-        </div>
-
-        <div class="span4">
-          <table class="table table-list">
-            <tr>
-              <th>Statut</th>
-              <th>Pourcentage</th>
-            </tr>
-            <% @demand_statuses.each do |ds| %>
-              <tr>
-                <td>
-                  <%= ds.status_number %> - <%= ds.name %>
-                </td>
-                <td class="span3">
-                  <%
-                    dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
-                                                          demand_type_id: @demand_type.id,
-                                                          demand_status_id: ds.id).first
-                  %>
-                  <%= text_field_tag "percent_#{ds.id}", dsdt.nil? ? nil : dsdt.percent %>
-                </td>
-              </tr>
-            <% end %>
-          </table>
-        </div>
-      </div>
-
-      <div class="actions-tabs">
-        <hr>
-        <% if action_name == 'new' || action_name=="create" %>
-          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-        <% elsif action_name == 'edit' || action_name=="update" %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-        <% end %>
-        <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
-      </div>
-
-
-    </div>
-
-    <div id="tabs-4">
-
-      <div class="row-fluid">
-        <div class="span6">
-          <h4>
-            Configuration des élements de calcul des SLA
-          </h4>
-        </div>
-        <div class="span6">
-          <%= link_to "Créer un nouveau SLA", new_organization_demand_type_agreement_path(@organization, @demand_type), class: "btn btn-default pull-right" %>
-        </div>
-      </div>
-
-      <hr>
-
-      <% @demand_type.agreements.each do |agreement| %>
-        <div class="row-fluid">
-          <div class="span6">
-
-            <p>
-              <b>
-                <%= link_to agreement.name, edit_organization_demand_type_agreement_path(@organization, @demand_type, agreement) %>
-              </b>
-            </p>
-
-            <table class="table table-list">
-              <tr>
-                <th></th>
-                <% @organization.severities.each do |severity| %>
-                  <th class="center">
-                    <%= severity.name %>
-                  </th>
-                <% end %>
-                <th>Départ</th>
-                <th>Fin</th>
-              </tr>
-              <% @organization.criticalities.each do |criticality| %>
-                <tr>
-                  <th>
-                    <%= criticality.name %>
-                  </th>
-                  <% @organization.severities.each do |severity| %>
-                    <td>
-                      <%
-                        cs = CriticalitySeverity.where(organization_id: @organization.id,
-                                                       demand_type_id: @demand_type.id,
-                                                       criticality_id: criticality.id,
-                                                       severity_id: severity.id,
-                                                       agreement_id: agreement.id).first
-                      %>
-                      <%= text_field_tag "duration_#{agreement.id}_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.duration, class: "input-small" %>
-                      <%= text_field_tag "priority_#{agreement.id}_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.priority, class: "input-small" %>
-                    </td>
-                  <% end %>
-                  <td>
-                    <%
-                      cs = CriticalitySeverity.where(organization_id: @organization.id,
-                                                     demand_type_id: @demand_type.id,
-                                                     criticality_id: criticality.id,
-                                                     agreement_id: agreement.id).first
-                    %>
-                    <%
-                      grouped_options = {
-                          'Demandes' => @organization.demand_statuses.where(demand_type_id: @demand_type.id).map{ |i| [i.name, i.id] },
-                          'Devis' => @organization.estimation_statuses.map{ |i| [i.name, i.id] } }
-                    %>
-                    <%= select_tag "origin_status_#{agreement.id}_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.origin_status_id) %>
-                  </td>
-                  <td>
-                    <%= select_tag "target_status_#{agreement.id}_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.target_status_id) %>
-                  </td>
-                </tr>
+            <div class="actions-tabs">
+              <% if action_name == 'new' || action_name=="create" %>
+                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <% elsif action_name == 'edit' || action_name=="update" %>
+                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
               <% end %>
-            </table>
+              <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn btn-secondary btn-estimancy' %>
+            </div>
+
           </div>
         </div>
-      <% end %>
 
-      <div class="actions-tabs">
-        <hr>
-        <% if action_name == 'new' || action_name=="create" %>
-          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-        <% elsif action_name == 'edit' || action_name=="update" %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-        <% end %>
-        <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
       </div>
 
-    </div>
+      <% unless @demand_type.new_record?  %>
+        <div id="tabs-2">
+          <div class="edition-page-group py-4">
+            <span>Cochez les services associés à ce type de demande</span>
+          </div>
 
-  <% end %>
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+              <div class="form-row">
+                <div class="col-5">
+                  <%= f.collection_check_boxes(:service_ids, Service.where(organization_id: @organization.id).all, :id, :to_s) do |b| %>
+                    <table class="table table-list">
+                      <%= b.label do %>
+                        <tr>
+                          <td>
+                            <%= b.check_box(class: "custom-checkbox") %>
+                            <%= b.object.name %>
+                          </td>
+                        </tr>
+                      <% end %>
+                    </table>
+                  <% end %>
+                </div>
+              </div>
 
-  <div id="tabs-5">
-    <%= form_tag '/set_demand_status_workflow', :method => 'POST', :class => 'simple_form' do %>
+              <div class="actions-tabs">
+                <hr>
+                <% if action_name == 'new' || action_name=="create" %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                <% elsif action_name == 'edit' || action_name=="update" %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                <% end %>
+                <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn btn-secondary btn-estimancy' %>
+              </div>
 
-      <%= hidden_field_tag "organization_id", @organization.id %>
-      <%= hidden_field_tag "demand_type_id", @demand_type.id %>
-      <table class="table table-striped table-bordered table-condensed permissions">
-        <tr>
-          <th><%= I18n.t(:demands_statuses) %></th>
-          <% @demand_statuses.each do |status| %>
-            <th><%= status.name %></th>
-          <% end %>
-        </tr>
+            </div>
+          </div>
 
-        <% @demand_statuses.order("status_number ASC").each do |demand_status| %>
-          <tr>
-            <td><%= demand_status.name %></td>
-            <% @demand_statuses.order("status_number ASC").each do |status| %>
-              <% if demand_status == status %>
-                <td class="center">
-                  <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
-                </td>
-              <% else %>
-                <td class="center">
-                  <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
-                </td>
+        </div>
+
+        <div id="tabs-3">
+          <div class="edition-page-group py-4">
+            <span>Configuration des élements de facturation</span>
+          </div>
+
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+              <div class="form-row">
+                <div class="col-5">
+                  <table class="table table-list">
+                    <thead>
+                    <tr>
+                      <th>Statut</th>
+                      <th>Pourcentage</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <% @demand_statuses.each do |ds| %>
+                      <tr>
+                        <td>
+                          <%= ds.status_number %> - <%= ds.name %>
+                        </td>
+                        <td class="span3">
+                          <%
+                            dsdt = DemandStatusesDemandType.where(organization_id: @organization.id,
+                                                                  demand_type_id: @demand_type.id,
+                                                                  demand_status_id: ds.id).first
+                          %>
+                          <%= text_field_tag "percent_#{ds.id}", dsdt.nil? ? nil : dsdt.percent %>
+                        </td>
+                      </tr>
+                    <% end %>
+                    </table>
+                </div>
+              </div>
+
+              <div class="actions-tabs">
+                <hr>
+                <% if action_name == 'new' || action_name=="create" %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                <% elsif action_name == 'edit' || action_name=="update" %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                <% end %>
+                <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn btn-secondary btn-estimancy' %>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+
+        <div id="tabs-4">
+          <div class="edition-page-group py-4">
+            <span>Configuration des élements de calcul des SLA</span>
+          </div>
+
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+              <div class="form-row">
+                <div class="col-5">
+                  <%#= link_to "Créer un nouveau SLA", new_organization_demand_type_agreement_path(@organization, @demand_type), class: "btn btn-default pull-right" %>
+
+                  <% @demand_type.agreements.each do |agreement| %>
+                    <div class="row-fluid">
+                      <div class="span6">
+
+                        <p>
+                          <b>
+                            <%= link_to agreement.name, edit_organization_demand_type_agreement_path(@organization, @demand_type, agreement) %>
+                          </b>
+                        </p>
+
+                        <table class="table table-list">
+                          <tr>
+                            <th></th>
+                            <% @organization.severities.each do |severity| %>
+                              <th class="center">
+                                <%= severity.name %>
+                              </th>
+                            <% end %>
+                            <th>Départ</th>
+                            <th>Fin</th>
+                          </tr>
+                          <% @organization.criticalities.each do |criticality| %>
+                            <tr>
+                              <th>
+                                <%= criticality.name %>
+                              </th>
+                              <% @organization.severities.each do |severity| %>
+                                <td>
+                                  <%
+                                    cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                                   demand_type_id: @demand_type.id,
+                                                                   criticality_id: criticality.id,
+                                                                   severity_id: severity.id,
+                                                                   agreement_id: agreement.id).first
+                                  %>
+                                  <%= text_field_tag "duration_#{agreement.id}_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.duration, class: "input-small" %>
+                                  <%= text_field_tag "priority_#{agreement.id}_#{criticality.id}_#{severity.id}", cs.nil? ? nil : cs.priority, class: "input-small" %>
+                                </td>
+                              <% end %>
+                              <td>
+                                <%
+                                  cs = CriticalitySeverity.where(organization_id: @organization.id,
+                                                                 demand_type_id: @demand_type.id,
+                                                                 criticality_id: criticality.id,
+                                                                 agreement_id: agreement.id).first
+                                %>
+                                <%
+                                  grouped_options = {
+                                      'Demandes' => @organization.demand_statuses.where(demand_type_id: @demand_type.id).map{ |i| [i.name, i.id] },
+                                      'Devis' => @organization.estimation_statuses.map{ |i| [i.name, i.id] } }
+                                %>
+                                <%= select_tag "origin_status_#{agreement.id}_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.origin_status_id) %>
+                              </td>
+                              <td>
+                                <%= select_tag "target_status_#{agreement.id}_#{criticality.id}", grouped_options_for_select(grouped_options, selected: cs.nil? ? nil : cs.target_status_id) %>
+                              </td>
+                            </tr>
+                          <% end %>
+                        </table>
+                      </div>
+                    </div>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="actions-tabs">
+                <hr>
+                <% if action_name == 'new' || action_name=="create" %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                <% elsif action_name == 'edit' || action_name=="update" %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                <% end %>
+                <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn btn-secondary btn-estimancy' %>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      <% end %>
+    <% end %>
+
+    <% unless @demand_type.new_record?  %>
+      <div id="tabs-5">
+        <div class="edition-page-group py-4">
+          <span>Workflow des statuts</span>
+        </div>
+
+        <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+              <%= form_tag '/set_demand_status_workflow', :method => 'POST', :class => 'simple_form' do %>
+
+                <%= hidden_field_tag "organization_id", @organization.id %>
+                <%= hidden_field_tag "demand_type_id", @demand_type.id %>
+                <table class="table table-list">
+                  <tr>
+                    <th><%= I18n.t(:demands_statuses) %></th>
+                    <% @demand_statuses.each do |status| %>
+                      <th><%= status.name %></th>
+                    <% end %>
+                  </tr>
+
+                  <% @demand_statuses.order("status_number ASC").each do |demand_status| %>
+                    <tr>
+                      <td><%= demand_status.name %></td>
+                      <% @demand_statuses.order("status_number ASC").each do |status| %>
+                        <% if demand_status == status %>
+                          <td class="center">
+                            <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
+                          </td>
+                        <% else %>
+                          <td class="center">
+                            <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
+                          </td>
+                        <% end %>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                </table>
+              </div>
+            </div>
+
+                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                <%= submit_tag I18n.t('cancel'),  :class => 'btn btn-secondary btn-estimancy' %>
               <% end %>
-            <% end %>
-          </tr>
-        <% end %>
-      </table>
 
-      <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-      <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
+            </div>
+        </div>
+      </div>
     <% end %>
   </div>
 
+  <div class="col-2">
+    <div id="edition-sidebar">
+      <h4 class="mb-0">Navigation</h4>
+      <ul class="nav flex-column">
+
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-1"><span>Type de demande</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-2"><span>Services</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-3"><span>Facturation</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-4"><span>Configuration des SLA</span></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link group" href="#tabs-5"><span>Workflow des statuts</span></a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
 </div>

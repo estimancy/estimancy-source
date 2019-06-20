@@ -4,6 +4,8 @@
     google.charts.load('current', {packages: ['corechart', 'bar']});
 </script>
 
+<link rel="preload" as="font" href="/fonts/custom-font.woff" type="font/woff" crossorigin="anonymous">
+
 <section class="card card-content-bloc estimancy-form">
   <%= simple_form_for([@organization, @budget]) do |f| %>
       <div class="card-body">
