@@ -150,6 +150,12 @@ class ProjectsController < ApplicationController
         # @organization_projects.where(:created_at => (Time.now-1.year)..(Time.now)).each do |project|
         @organization_projects.each do |project|
 
+          @guw_model = project.module_projects.where("guw_model_id IS NOT NULL").first.guw_model
+          @guw_coefficients = @guw_model.guw_coefficients
+          @guw_model_guw_attributes = @guw_model.guw_attributes
+          guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
+          guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
+
           pf = @pf_hash_2[project.id]
 
           project_application = project.application
@@ -180,13 +186,6 @@ class ProjectsController < ApplicationController
             worksheet_cf.add_cell(i, 12, guow.guw_type.nil? ? '-' : guow.guw_type.name)
             worksheet_cf.add_cell(i, 13, guow.intermediate_percent)
             worksheet_cf.add_cell(i, 14, guow.intermediate_weight)
-
-            @guw_model = guow.guw_model
-            @guw_coefficients = @guw_model.guw_coefficients
-            @guw_model_guw_attributes = @guw_model.guw_attributes
-
-            guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
-            guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
             j = 0
             @guw_coefficients.each do |gc|
