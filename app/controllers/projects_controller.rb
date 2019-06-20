@@ -937,7 +937,17 @@ class ProjectsController < ApplicationController
     @project.urgent_project = params[:project][:urgent_project]
 
     if @project.start_date.nil? or @project.start_date.blank?
-      @project.start_date = Time.now.to_date
+      @project.start_date = Time.now#.to_date
+    else
+      begin
+        start_date = Date.strptime(params[:project][:start_date], I18n.t('date.formats.default'))
+        tmp_start_datetime = start_date.to_datetime
+        time_now = Time.now
+        start_datetime = tmp_start_datetime.change(hour: time_now.hour, min: time_now.min, sec: time_now.sec)
+        @project.start_date = start_datetime #start_date
+      rescue
+        @project.start_date = Time.now#.to_date
+      end
     end
 
     Project.transaction do
@@ -1376,9 +1386,12 @@ class ProjectsController < ApplicationController
         begin
           #start_date = Date.strptime(params[:project][:start_date], I18n.t('%m/%d/%Y'))
           start_date = Date.strptime(params[:project][:start_date], I18n.t('date.formats.default'))
-          @project.start_date = start_date
+          tmp_start_datetime = start_date.to_datetime
+          time_now = Time.now
+          start_datetime = tmp_start_datetime.change(hour: time_now.hour, min: time_now.min, sec: time_now.sec)
+          @project.start_date = start_datetime #start_date
         rescue
-          @project.start_date = Time.now.to_date
+          @project.start_date = Time.now#.to_date
         end
 
         # Initialization Module

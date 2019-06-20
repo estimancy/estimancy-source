@@ -6,6 +6,7 @@ fr1:
       short: ! '%d %b %H:%M'
       long: ! '%A %d %B %Y %H:%M'
       audit: ! "%d/%m/%Y %H:%M:%S"
+      date_month_year_concise: "%d/%m/%Y"
     am: am
     pm: pm
   #standard local format
@@ -50,6 +51,7 @@ fr1:
       default: "%d/%m/%Y"
       long: "%e %B %Y"
       short: "%e %b"
+      date_month_year_concise: "%d/%m/%Y"
     # Don't forget the nil at the beginning; there's no such thing as a 0th month
     month_names:
       - ~
