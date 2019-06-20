@@ -27,7 +27,7 @@
             <% end %>
 
             <% unless "saas".in?(request.original_url) %>
-              <%# link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
+              <%= link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
             <% end %>
 
           </td>
@@ -36,7 +36,7 @@
       </table>
 
       <div id="organization_projects">
-        <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
+        <%# render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
       </div>
     </div>
   </div>
