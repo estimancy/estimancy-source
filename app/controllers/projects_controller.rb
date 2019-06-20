@@ -337,9 +337,9 @@ class ProjectsController < ApplicationController
 
                 unless fc.nil?
                   @pfs["#{project.id}_#{fc.id}"].each do |pf|
-                    pf_field_coefficient = pf.field.coefficient
-                    unless pf_field_coefficient.nil?
-                      @total_cost[project.id] << (pf.value.to_f * 1000 / pf_field_coefficient.to_f)
+                    fc_coefficient = fc.coefficient
+                    unless fc_coefficient.nil?
+                      @total_cost[project.id] << (pf.value.to_f * 1000 / fc_coefficient.to_f)
                     end
                   end
                 end
