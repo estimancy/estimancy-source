@@ -127,7 +127,8 @@ class BudgetsController < ApplicationController
   def update
     @organization = Organization.find(params[:organization_id])
     @budget = Budget.find(params[:id])
-
+    start_date = Date.strptime(params[:budget][:start_date], I18n.t('time.formats.date_month_year_concise')) rescue nil
+    end_date = Date.strptime(params[:budget][:end_date], I18n.t('time.formats.date_month_year_concise')) rescue nil
 
     if params[:add_budget_type].present?
       # Il s'agit du bouton d'ajout de type de budget
@@ -141,6 +142,10 @@ class BudgetsController < ApplicationController
     else
       # on met à jour les informations du tBudget
       if @budget.update_attributes(params[:budget])
+        @budget.start_date = start_date
+        @budget.end_date = end_date
+        @budget.save
+
         app_montants = params[:budget_app_montant]
         selected_apps = params[:budget_app_check]
 
