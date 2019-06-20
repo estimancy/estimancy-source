@@ -42,35 +42,43 @@
 
 <% coeff = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient %>
 
-<% cev = EstimationValue.where(:pe_attribute_id => effort.id,
+<% cev = EstimationValue.where(organization_id: organization.id,
                                :module_project_id => module_project.id,
+                               :pe_attribute_id => effort.id,
                                :in_out => "input").first unless effort.nil? %>
-<% cev_output = EstimationValue.where(:pe_attribute_id => effort.id,
+
+<% cev_output = EstimationValue.where(organization_id: organization.id,
                                       :module_project_id => module_project.id,
+                                      :pe_attribute_id => effort.id,
                                       :in_out => "output").first unless effort.nil? %>
 
-<% theorical_cev_input = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
-                               :module_project_id => module_project.id,
-                               :in_out => "input").first unless theoretical_effort.nil? %>
+<% theorical_cev_input = EstimationValue.where(organization_id: organization.id,
+                                               :module_project_id => module_project.id,
+                                               :pe_attribute_id => theoretical_effort.id,
+                                                :in_out => "input").first unless theoretical_effort.nil? %>
 
-<% theorical_cev_output = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
-                                      :module_project_id => module_project.id,
-                                      :in_out => "output").first unless theoretical_effort.nil? %>
+<% theorical_cev_output = EstimationValue.where(organization_id: organization.id,
+                                                :module_project_id => module_project.id,
+                                                :pe_attribute_id => theoretical_effort.id,
+                                                :in_out => "output").first unless theoretical_effort.nil? %>
 
-<% ratio_output = EstimationValue.where(:pe_attribute_id => ratio.id,
-                                      :module_project_id => module_project.id,
-                                      :in_out => "output").first unless ratio.nil? %>
+<% ratio_output = EstimationValue.where(organization_id: organization.id,
+                                        :module_project_id => module_project.id,
+                                        :pe_attribute_id => ratio.id,
+                                        :in_out => "output").first unless ratio.nil? %>
 
-<% pev_save = EstimationValue.where(:pe_attribute_id => effort.id,
-                               :module_project_id => module_project.previous.first,
-                               :in_out => "output").first unless effort.nil? %>
+<% pev_save = EstimationValue.where(organization_id: organization.id,
+                                    :module_project_id => module_project.previous.first,
+                                    :pe_attribute_id => effort.id,
+                                    :in_out => "output").first unless effort.nil? %>
 
 <% possible_module_projects = module_project.possible_previous_mp_for_attribute(effort) %>
 
 <% begin %>
-    <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
-                               :module_project_id => possible_module_projects.last.id,
-                               :in_out => "output").first unless effort.nil? %>
+    <% pev = EstimationValue.where(organization_id: organization.id,
+                                   :module_project_id => possible_module_projects.last.id,
+                                   :pe_attribute_id => effort.id,
+                                    :in_out => "output").first unless effort.nil? %>
 <% rescue %>
   <% pev = nil %>
 <% rescue %>
@@ -114,7 +122,7 @@
 <% end %>
 
 <% effort_ids = PeAttribute.where(alias: WbsActivity::  INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-<% current_inputs_evs = module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+<% current_inputs_evs = module_project.estimation_values.where(organization_id: organization.id, pe_attribute_id: effort_ids, in_out: "input") %>
 
 <% initial_entry_values = {} %>
 <% entry_values = {} %>
@@ -132,7 +140,7 @@
         <% current_inputs_evs.each do |ev| %>
             <% current_ev = ev.send("string_data_#{level}")[component_id] %>
             <% begin %>
-                <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
+                <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.where(organization_id: organization.id, id: ev.estimation_value_id).first #.find(ev.estimation_value_id) %>
             <% rescue %>
                 <% previous_mp_ev = nil %>
             <% end %>
@@ -172,7 +180,7 @@
     <% end %>
 <% end %>
 
-<%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
+<%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form', remote: true do %>
 
   <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
   <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
@@ -495,8 +503,8 @@
   <!-- Fin Ajout des valeurs des Ratios -->
 
   <% if can?(:execute_estimation_plan, @project) %>
-    <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary" %>
-    <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right" %>
+    <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "pull-right btn btn-primary", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
+    <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "pull-right btn btn-inverse button_margin_right", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
   <% end %>
 
 <% end %>
@@ -517,7 +525,7 @@
 
 
 <script>
-  $(document).ready(function(){
+  $(document).on('ready turbolinks:load', function() {
 
     var root_mp_ratio_element_id = $("#root_mp_ratio_element_id").val();
 

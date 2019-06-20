@@ -147,7 +147,7 @@
       <% organization_id = @ge_model.organization_id %>
       <% current_mp = current_module_project %>
       <% current_mp_pe_attributes = current_mp.pemodule.pe_attributes %>
-      <% current_mp_estimation_values = EstimationValue.where(organization_id: organization_id, module_project_id: current_mp) #current_mp.estimation_values %>
+      <% current_mp_estimation_values = current_mp.estimation_values.where(organization_id: organization_id)  %>
       <% attr = current_mp_pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size") %>
       <% unless @ge_model.input_pe_attribute.nil? %>
           <% attr = @ge_model.input_pe_attribute %>
@@ -190,12 +190,14 @@
       </h4>
 
       <% possible_module_projects = current_mp.possible_previous_mp_for_attribute(attr) %>
-      <% previous_ev = EstimationValue.where(:pe_attribute_id => attr.id,
+      <% previous_ev = EstimationValue.where(organization_id: organization_id,
                                              :module_project_id => possible_module_projects.last,
+                                             :pe_attribute_id => attr.id,
                                              :in_out => "output").first %>
 
-      <% current_ev = EstimationValue.where(:pe_attribute_id => attr.id,
+      <% current_ev = EstimationValue.where(organization_id: organization_id,
                                              :module_project_id => current_mp.id,
+                                             :pe_attribute_id => attr.id,
                                              :in_out => "input").first %>
 
       <% component_id = current_component.id %>
@@ -233,8 +235,9 @@
                         <% previous_mp_ev = EstimationValue.find(ev.estimation_value_id) %>
                       <% else %>
                         <% possible_module_projects = current_mp.possible_previous_mp_for_attribute(ev.pe_attribute) %>
-                        <% previous_mp_ev = EstimationValue.where(:pe_attribute_id => ev.pe_attribute.id, :in_out => "output",
-                                                                  :module_project_id => possible_module_projects.last).first %>
+                        <% previous_mp_ev = EstimationValue.where(organization_id: organization_id,
+                                                                  :module_project_id => possible_module_projects.last,
+                                                                  :pe_attribute_id => ev.pe_attribute.id, :in_out => "output").first %>
                       <% end %>
 
                       <% previous_mp = previous_mp_ev.module_project %>

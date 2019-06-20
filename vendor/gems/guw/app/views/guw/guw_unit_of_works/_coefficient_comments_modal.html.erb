@@ -6,8 +6,12 @@
   <%= hidden_field_tag "value", @value %>
   <%= hidden_field_tag "previousValue", @previousValue %>
 
-  <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: guw_coefficient_element.id,
+  <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: guw_unit_of_work.organization_id,
+                                                       guw_model_id: guw_unit_of_work.guw_model_id,
                                                        guw_coefficient_id: guw_coefficient.id,
+                                                       guw_coefficient_element_id: guw_coefficient_element.id,
+                                                       project_id: guw_unit_of_work.project_id,
+                                                       module_project_id: guw_unit_of_work.module_project_id,
                                                        guw_unit_of_work_id: guw_unit_of_work.id).first %>
 
   <div class="modal-header modal-drag">

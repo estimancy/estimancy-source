@@ -93,7 +93,7 @@
             <% effort_ids = module_project_attributes.where(alias: Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS).map(&:id).flatten %>
         <% end %>
 
-        <% current_evs = @module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+        <% current_evs = @module_project.estimation_values.where(organization_id: @organization.id, pe_attribute_id: effort_ids, in_out: "input") %>
 
         <% if current_evs.all.empty? || effort_ids.length != current_evs.length
              all_current_evs = @module_project.get_mp_inputs_outputs_estimation_values(effort_ids, output_attribute_ids)
@@ -103,7 +103,7 @@
 
       <h5><%= I18n.t(:associate_inputs_with_outputs, current_mp: @module_project) %> <br></h5>
       <% guw_preceding_module_project = @module_project.preceding.select{ |i| i.pemodule.alias == "guw" }.last %>
-      <% guw_outputs_estimation_values = guw_preceding_module_project.nil? ? [] : guw_preceding_module_project.estimation_values.where(in_out: "output") %>
+      <% guw_outputs_estimation_values = guw_preceding_module_project.nil? ? [] : guw_preceding_module_project.estimation_values.where(organization_id: @organization.id, in_out: "output") %>
 
       <% unless current_evs.all.empty? %>
         <% current_evs.each do |cev| %>
@@ -118,7 +118,7 @@
 
           <% if !cev.associated_estimation_value.nil?
                preceding_mp = ModuleProject.find(cev.associated_estimation_value.module_project_id)
-               preceding_outputs_estimation_values = preceding_mp.estimation_values.where(in_out: "output")
+               preceding_outputs_estimation_values = preceding_mp.estimation_values.where(organization_id: @organization.id, in_out: "output")
              end
 
              if preceding_outputs_estimation_values.nil?

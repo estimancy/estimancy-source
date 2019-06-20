@@ -1,5 +1,6 @@
 class AddIndexesToGuwModels < ActiveRecord::Migration
   def up
+
     #Guw::GuwUnitOfWorkGroup
     add_index :guw_guw_unit_of_work_groups, [:organization_id, :project_id, :module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups unless index_exists?(:guw_guw_unit_of_work_groups, [:organization_id, :project_id, :module_project_id, :pbs_project_element_id, :name], name: :module_project_guw_groups)
 
@@ -23,7 +24,7 @@ class AddIndexesToGuwModels < ActiveRecord::Migration
     add_index :guw_guw_unit_of_work_attributes, [:guw_type_id, :guw_attribute_id, :guw_unit_of_work_id], name: :guw_unit_of_work_attributes unless index_exists?(:guw_guw_unit_of_work_attributes, [:guw_type_id, :guw_attribute_id, :guw_unit_of_work_id], name: :guw_unit_of_work_attributes)
 
     #Guw::GuwCoefficientElementUnitOfWork
-    add_index :guw_guw_coefficient_element_unit_of_works, [:guw_unit_of_work_id, :guw_coefficient_id, :guw_coefficient_element_id], name: :guw_unit_of_work_guw_coefficient_elements unless index_exists?(:guw_guw_coefficient_element_unit_of_works, [:guw_unit_of_work_id, :guw_coefficient_id, :guw_coefficient_element_id], name: :guw_unit_of_work_guw_coefficient_elements)
+    add_index :guw_guw_coefficient_element_unit_of_works, [:module_project_id, :guw_unit_of_work_id, :guw_coefficient_id, :guw_coefficient_element_id], name: :guw_unit_of_work_guw_coefficient_elements unless index_exists?(:guw_guw_coefficient_element_unit_of_works, [:guw_unit_of_work_id, :guw_coefficient_id, :guw_coefficient_element_id], name: :guw_unit_of_work_guw_coefficient_elements)
 
     #Guw::GuwOutputComplexity
     add_index :guw_guw_output_complexities, [:guw_complexity_id, :guw_output_id], name: :guw_output_complexities unless index_exists?(:guw_guw_output_complexities, [:guw_complexity_id, :guw_output_id], name: :guw_output_complexities)
@@ -106,7 +107,6 @@ class AddIndexesToGuwModels < ActiveRecord::Migration
 
     #Guw::GuwComplexityCoefficientElement
     remove_index :guw_guw_complexity_coefficient_elements, name: :guw_complexity_coefficient_elements #if index_exists?(:guw_guw_complexity_coefficient_elements, [:guw_complexity_id, :guw_coefficient_element_id, :guw_output_id], name: :guw_complexity_coefficient_elements)
-
 
   end
 end

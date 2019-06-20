@@ -1,15 +1,1 @@
-<h4 class="ui-widget">
-  <% if params[:is_model] == "true" %>
-      <%= I18n.t(:edit_estimation_model, :value => "#{@project.title} (version:#{@project.version_number})") %>
-  <% else %>
-    <%= I18n.t(:edit_project, :value => "#{@project.title} (version:#{@project.version_number})") %>
-  <% end %>
-</h4>
-<% unless controller.action_name == 'new' %>
-  <div style="margin-bottom: 35px; margin-top: -24px;">
-    <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary", title: "Afficher le tableau de bord" %>
-  </div>
-<% end %>
-<div>
-  <%= render 'form' %>
-</div>
+<%= render 'form' %>

@@ -377,10 +377,9 @@ class User < ActiveRecord::Base
   end
 
   #Load user project securities for selected project id
-  def project_securities_for_select(prj_id)
-    self.project_securities.select { |i| i.project_id == prj_id &&
-                                         i.is_model_permission == true &&
-                                         i.is_estimation_permission == false }.first
+  def project_securities_for_select(prj_id, organization_id)
+    ###self.project_securities.select { |i| i.project_id == prj_id && i.is_model_permission == true && i.is_estimation_permission == false }.first
+    self.project_securities.where(organization_id: organization_id, project_id: prj_id).select { |i| i.is_model_permission == true && i.is_estimation_permission == false }.first
   end
 
   def locale

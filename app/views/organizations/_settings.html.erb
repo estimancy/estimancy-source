@@ -7,7 +7,6 @@
     <li><a href="#tabs-project-categories"><%= I18n.t(:project_categories) %></a></li>
     <li><a href="#tabs-providers"><%= I18n.t(:providers) %></a></li>
     <li><a href="#tabs-wet"><%= I18n.t(:label_WorkElementType) %></a></li>
-    <li><a href="#tabs-technology"><%= I18n.t(:organization_technology) %> </a></li>
     <li><a href="#tabs-estimations-statuses"><%= I18n.t(:estimations_statuses) %> </a></li>
     <li><a href="#tabs-profile"><%= I18n.t(:profiles) %></a></li>
     <li><a href="#tabs-fields"><%= I18n.t(:fields) %></a></li>
@@ -359,55 +358,6 @@
       </table>
     <% else %>
       <div class="red_color"><%= I18n.t(:notice_cannot_view_acquisition_categories) %></div>
-    <% end %>
-  </div>
-
-  <div id="tabs-technology">
-    <!--<b class="pull-right"><%#= I18n.t(:text_organization_technology) %></b>-->
-
-    <% if can? :show_organization_technologies, OrganizationTechnology %>
-      <% if can? :manage, OrganizationTechnology %>
-        <div class="group_button">
-            <%= link_to I18n.t('create_button'), new_organization_technology_path(:organization_id => @organization.id), :class => 'btn' %>
-            <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationTechnology"), :class => 'btn'%>
-        </div>
-      <% end %>
-
-      <table id="table_list_6" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
-        <thead>
-        <tr>
-          <th><%= I18n.t(:name) %></th>
-          <th><%= I18n.t(:alias) %></th>
-          <th><%= I18n.t(:description) %></th>
-          <th><%= I18n.t(:productivity_ratio) %></th>
-          <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @organization.organization_technologies.each do |ot| %>
-          <% if ot.state == 'retired' %>
-            <tr style="font-style:italic; color:Red">
-          <% elsif ot.state == 'draft' %>
-            <tr>
-          <% else %>
-            <tr>
-          <% end %>
-          <td><%= ot.name %></td>
-          <td><%= ot.alias %></td>
-          <td><%= ot.description %></td>
-          <td><%= ot.productivity_ratio %></td>
-          <td class="center">
-            <%= link_to '', edit_organization_technology_path(ot.id, :organization_id => @organization.id), :class => 'icon-pencil', :title => I18n.t('edit') %>
-            <% if can? :manage, OrganizationTechnology %>
-              <%= link_to '', ot, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-            <% end %>
-          </td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <div class="red_color"><%= I18n.t(:notice_cannot_view_organization_technologies) %></div>
     <% end %>
   </div>
 

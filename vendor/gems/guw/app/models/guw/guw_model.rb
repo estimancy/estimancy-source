@@ -102,8 +102,8 @@ module Guw
         end
 
         if is_organization_copy == true
-          guw_model.module_projects.each do |module_project|
-            module_project.estimation_values.where(pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
+          guw_model.module_projects.where(organization_id: guw_model_organization.id).each do |module_project|
+            module_project.estimation_values.where(organization_id: guw_model_organization.id, pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
 
               estimation_value.pe_attribute_id = new_pe_attribute.id
               estimation_value.save
@@ -156,13 +156,11 @@ module Guw
             end
           end
 
-          guw_complexity.guw_output_associations.each do |new_goa|
+          guw_complexity.guw_output_associations.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id).each do |new_goa|
 
-            go = GuwOutput.where(guw_model_id: guw_model.id,
-                                 copy_id: new_goa.guw_output_id).first
+            go = GuwOutput.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id, copy_id: new_goa.guw_output_id).first
 
-            goa = GuwOutput.where(guw_model_id: guw_model.id,
-                                  copy_id: new_goa.guw_output_associated_id).first
+            goa = GuwOutput.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id, copy_id: new_goa.guw_output_associated_id).first
 
             new_goa.guw_output_id = go.nil? ? nil : go.id
             new_goa.guw_output_associated_id =  goa.nil? ? nil : goa.id
@@ -170,19 +168,19 @@ module Guw
             new_goa.save(validate: false)
           end
 
-          guw_complexity.guw_output_complexities.each do |new_goc|
+          guw_complexity.guw_output_complexities.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id).each do |new_goc|
 
-            go = GuwOutput.where(guw_model_id: guw_model.id,
-                                 copy_id: new_goc.guw_output_id).first
+            go = GuwOutput.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id, copy_id: new_goc.guw_output_id).first
 
             new_goc.guw_output_id = go.nil? ? nil : go.id
 
             new_goc.save(validate: false)
           end
 
-          guw_complexity.guw_output_complexity_initializations.each do |new_goci|
+          guw_complexity.guw_output_complexity_initializations.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id).each do |new_goci|
 
-            go = GuwOutput.where(guw_model_id: guw_model.id,
+            go = GuwOutput.where(organization_id: guw_model_organization.id,
+                                 guw_model_id: guw_model.id,
                                  copy_id: new_goci.guw_output_id).first
 
             new_goci.guw_output_id = go.nil? ? nil : go.id
@@ -192,13 +190,17 @@ module Guw
         end
 
         #Guw UnitOfWorkAttributes && Guw UnitOfWorks AJUSTED_SIZE and SIZE update if is_organization_copy=true
-        guw_type.guw_unit_of_works.each do |guw_unit_of_work|
+        guw_type.guw_unit_of_works.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id).each do |guw_unit_of_work|
 
-          guw_unit_of_work.guw_unit_of_work_attributes.each do |guw_uow_attr|
-            new_guw_type = guw_model.guw_types.where(copy_id: guw_uow_attr.guw_type_id).first
+          guw_unit_of_work.guw_unit_of_work_attributes.where(organization_id: guw_model_organization.id,
+                                                             guw_model_id: guw_model.id).each do |guw_uow_attr|
+            new_guw_type = guw_model.guw_types.where(organization_id: guw_model_organization.id,
+                                                     copy_id: guw_uow_attr.guw_type_id).first
             new_guw_type_id = new_guw_type.nil? ? nil : new_guw_type.id
 
-            new_guw_attribute = guw_model.guw_attributes.where(copy_id: guw_uow_attr.guw_attribute_id).first
+            new_guw_attribute = guw_model.guw_attributes.where(organization_id: guw_model_organization.id,
+                                                               guw_model_id: guw_model.id,
+                                                               copy_id: guw_uow_attr.guw_attribute_id).first
             new_guw_attribute_id = new_guw_attribute.nil? ? nil : new_guw_attribute.id
 
             guw_uow_attr.update_attributes(guw_type_id: new_guw_type_id, guw_attribute_id: new_guw_attribute_id)
@@ -210,7 +212,7 @@ module Guw
             if guw_unit_of_work.ajusted_size.is_a?(Hash)
               new_ajusted_size = Hash.new
               guw_unit_of_work.ajusted_size.each do |guw_output_key, value|
-                new_guw_ouput = GuwOutput.where(guw_model_id: guw_model.id, copy_id: guw_output_key).first
+                new_guw_ouput = GuwOutput.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id, copy_id: guw_output_key).first
                 unless new_guw_ouput.nil?
                   new_ajusted_size["#{new_guw_ouput.id}"] = value
                 end
@@ -222,7 +224,7 @@ module Guw
             if guw_unit_of_work.size.is_a?(Hash)
               new_size = Hash.new
               guw_unit_of_work.size.each do |guw_output_key, value|
-                new_guw_ouput = GuwOutput.where(guw_model_id: guw_model.id, copy_id: guw_output_key).first
+                new_guw_ouput = GuwOutput.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id, copy_id: guw_output_key).first
                 unless new_guw_ouput.nil?
                   new_size["#{new_guw_ouput.id}"] = value
                 end
@@ -239,8 +241,8 @@ module Guw
 
       end
 
-      guw_model.guw_attributes.each do |guw_attribute|
-        guw_attribute.guw_attribute_complexities.each do |guw_attr_complexity|
+      guw_model.guw_attributes.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id).each do |guw_attribute|
+        guw_attribute.guw_attribute_complexities.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id).each do |guw_attr_complexity|
           new_guw_type = guw_model.guw_types.where(copy_id: guw_attr_complexity.guw_type_id).first
           new_guw_type_id = new_guw_type.nil? ? nil : new_guw_type.id
 

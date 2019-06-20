@@ -109,10 +109,11 @@ class Group < ActiveRecord::Base
   #Return group project_securities for selected project_id
   def project_securities_for_select(prj_id, is_model_permission=nil)
     if is_model_permission == true
-      #self.project_securities.select { |i| i.project_id == prj_id }.first
-      self.project_securities.select { |i| i.project_id == prj_id && i.is_model_permission == true}.first
+      #self.project_securities.select { |i| i.project_id == prj_id && i.is_model_permission == true}.first
+      self.project_securities.where(organization_id: self.organization_id, project_id: prj_id).select { |i| i.is_model_permission == true}.first
     else
-      self.project_securities.select { |i| i.project_id == prj_id && i.is_model_permission != true}.first
+      #self.project_securities.select { |i| i.project_id == prj_id && i.is_model_permission != true}.first
+      self.project_securities.where(organization_id: self.organization_id, project_id: prj_id).select { |i| i.is_model_permission != true}.first
     end
   end
 

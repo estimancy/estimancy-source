@@ -1,5 +1,6 @@
 <%= form_tag guw.save_uo_with_multiple_outputs_path, method: "post", remote: true, class: "uo_form" do %>
 
+  <% organization_id = @project.organization_id %>
   <% guw_type = @guw_type.nil? ? guow.guw_type : @guw_type %>
   <%= hidden_field_tag "guw_unit_of_work_id", guow.id %>
   <%# hidden_field_tag "guw_work_unit_id", guow.guw_work_unit_id %>
@@ -10,9 +11,12 @@
   <%= hidden_field_tag "hidden_technology[#{guow.id}]", guow.organization_technology %>
   <% @guw_model.guw_coefficients.each do |guw_coefficient| %>
 
-    <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+    <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                         guw_model_id: @guw_model.id,
                                                          guw_coefficient_id: guw_coefficient.id,
-                                                         module_project_id: current_module_project.id).first %>
+                                                         project_id: @project.id,
+                                                         module_project_id: current_module_project.id,
+                                                         guw_unit_of_work_id: guow.id).first %>
 
     <% if guw_coefficient.coefficient_type == "Liste" %>
       <%= hidden_field_tag "hidden_coefficient_element[#{guow.id}][#{guw_coefficient.id}]", guw_coefficient.id %>
@@ -54,12 +58,12 @@
         <th></th>
       </tr>
 
-      <% guow.guw_unit_of_work_attributes.where(guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
-        <% gat = Guw::GuwAttributeType.where( guw_type_id: guw_type.id,
-                                              guw_attribute_id: uowa.guw_attribute_id).first_or_create %>
+      <% guow.guw_unit_of_work_attributes.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
+        <% gat = Guw::GuwAttributeType.where(organization_id: organization_id, guw_model_id: @guw_model.id,
+                                             guw_attribute_id: uowa.guw_attribute_id, guw_type_id: guw_type.id).first_or_create %>
           <tr>
             <% unless guw_type.nil? %>
-              <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
+              <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
             <% end %>
             <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
               <td class="span3">

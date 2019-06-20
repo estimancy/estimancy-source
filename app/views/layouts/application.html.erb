@@ -56,7 +56,10 @@
   <div class="container-fluid" style="margin-top: 8px; padding-right: 10px; padding-left: 10px;">
     <div class="row-fluid">
       <div class="span12">
-        <%= yield %>
+        <div id="main">
+          <%= yield %>
+          <%= content_for :render_async %>
+        </div>
       </div>
     </div>
   </div>

@@ -600,6 +600,7 @@ class Ge::GeModelsController < ApplicationController
 
     @ge_model = Ge::GeModel.find(params[:ge_model_id])
     @ge_input = @ge_model.ge_inputs.where(module_project_id: current_module_project.id).first_or_create
+    organization_id = @project.organization_id
     @calculated = {}
 
     if @ge_model.coeff_a.blank? || @ge_model.coeff_b.blank?
@@ -710,8 +711,8 @@ class Ge::GeModelsController < ApplicationController
     input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
     output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten  ###input_attribute_ids
 
-    defined_input_ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => input_pe_attribute.id, in_out: "input").first
-    current_mp_estimation_values = current_module_project.estimation_values
+    defined_input_ev = EstimationValue.where(organization_id: organization_id, :module_project_id => current_module_project.id, :pe_attribute_id => input_pe_attribute.id, in_out: "input").first
+    current_mp_estimation_values = current_module_project.estimation_values.where(organization_id: organization_id)
     input_evs = current_mp_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
     output_evs = current_mp_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
     @output_attribute_evs = output_evs
@@ -739,7 +740,7 @@ class Ge::GeModelsController < ApplicationController
     ###current_module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
 
-      #ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+      #ev = EstimationValue.where(organization_id: organization_id, :module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
 
       unless input_evs.nil? || output_evs.nil?
 
@@ -868,6 +869,7 @@ class Ge::GeModelsController < ApplicationController
   def save_efforts
     authorize! :execute_estimation_plan, @project
 
+    organization_id = @project.organization_id
     @ge_model = Ge::GeModel.find(params[:ge_model_id])
     @ge_input = @ge_model.ge_inputs.where(module_project_id: current_module_project.id).first_or_create
 
@@ -986,8 +988,8 @@ class Ge::GeModelsController < ApplicationController
     input_attribute_ids = PeAttribute.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
     output_attribute_ids = PeAttribute.where(alias: Ge::GeModel::TRANSFORMATION_OUTPUT_ATTRIBUTES_ALIAS).map(&:id).flatten #input_attribute_ids
 
-    defined_input_ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => input_pe_attribute.id, in_out: "input").first
-    #output_evs = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => output_pe_attribute.id, in_out: "output")#.first
+    defined_input_ev = EstimationValue.where(organization_id: organization_id, :module_project_id => current_module_project.id, :pe_attribute_id => input_pe_attribute.id, in_out: "input").first
+    #output_evs = EstimationValue.where(organization_id: organization_id, :module_project_id => current_module_project.id, :pe_attribute_id => output_pe_attribute.id, in_out: "output")#.first
     current_mp_estimation_values = current_module_project.estimation_values
 
     input_evs = current_mp_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")

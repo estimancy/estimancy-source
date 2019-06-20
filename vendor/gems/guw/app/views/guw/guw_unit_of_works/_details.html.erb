@@ -1,4 +1,7 @@
-<% unless @guw_model.guw_types.empty? %>
+<% organization_id = @guw_model.organization_id %>
+<% current_mp = current_module_project %>
+
+<% unless @guw_model.guw_types.where(organization_id: organization_id).empty? %>
   <div class="accordion" id="accordion1">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
@@ -13,23 +16,29 @@
         <tr>
           <th>Type</th>
           <th>Nombre de Composants Fonctionnels</th>
-          <% @guw_model.guw_outputs.each do |guw_output| %>
+          <% @guw_model.guw_outputs.where(organization_id: organization_id).each do |guw_output| %>
             <th>
               <%= guw_output.name %>
             </th>
           <% end %>
         </tr>
-        <% @guw_model.guw_types.uniq.each do |guw_type| %>
+        <% @guw_model.guw_types.where(organization_id: organization_id).uniq.each do |guw_type| %>
           <tr>
             <td>
               <%= guw_type.name %>
             </td>
             <td>
-              <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).count.to_i %>
+              <%= guw_type.guw_unit_of_works.where(organization_id: organization_id,
+                                                   guw_model_id: @guw_model.id,
+                                                   project_id: current_mp.project_id,
+                                                   module_project_id: current_mp.id).count.to_i %>
             </td>
-            <% @guw_model.guw_outputs.each do |guw_output| %>
+            <% @guw_model.guw_outputs.where(organization_id: organization_id).each do |guw_output| %>
               <td>
-                <%= guw_type.guw_unit_of_works.where(module_project_id: current_module_project.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
+                <%= guw_type.guw_unit_of_works.where(organization_id: organization_id,
+                                                     guw_model_id: @guw_model.id,
+                                                     project_id: current_mp.project_id,
+                                                     module_project_id: current_mp.id).map{|i| i.ajusted_size.nil? ? 0 : i.ajusted_size["#{guw_output.id}"].to_f }.compact.sum.to_f %>
               </td>
             <% end %>
           </tr>
@@ -39,7 +48,7 @@
   </div>
 <% end %>
 
-<% @guw_model.guw_coefficients.where(deported: false).each do |coefficient| %>
+<% @guw_model.guw_coefficients.where(organization_id: organization_id, deported: false).each do |coefficient| %>
   <div class="accordion" id="accordion<%= coefficient.id %>">
     <div class="accordion-heading">
       <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion<%= coefficient.id %>" href="#coll_<%= coefficient.id %>">
@@ -55,28 +64,34 @@
         <tr>
           <th><%= coefficient.name %></th>
           <th>Nombre de Composants Fonctionnels</th>
-          <% @guw_model.guw_outputs.each do |guw_output| %>
+          <% @guw_model.guw_outputs.where(organization_id: organization_id).each do |guw_output| %>
             <th>
               <%= guw_output.name %>
             </th>
           <% end %>
         </tr>
 
-        <% coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
+        <% coefficient.guw_coefficient_elements.where(organization_id: organization_id,  guw_model_id: @guw_model.id).each do |guw_coefficient_element| %>
           <tr>
             <td>
               <%= guw_coefficient_element.name %>
             </td>
             <td>
-              <%= Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: guw_coefficient_element.id,
+              <%= Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                             guw_model_id: @guw_model.id,
                                                              guw_coefficient_id: coefficient.id,
-                                                             module_project_id: current_module_project.id).size %>
+                                                             guw_coefficient_element_id: guw_coefficient_element.id,
+                                                             project_id: current_mp.project_id,
+                                                             module_project_id: current_mp.id).size %>
             </td>
-            <% @guw_model.guw_outputs.each do |guw_output| %>
+            <% @guw_model.guw_outputs.where(organization_id: organization_id).each do |guw_output| %>
               <td>
-                <%= Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_element_id: guw_coefficient_element.id,
+                <%= Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                               guw_model_id: @guw_model.id,
                                                                guw_coefficient_id: coefficient.id,
-                                                               module_project_id: current_module_project.id).all.map do |i|
+                                                               guw_coefficient_element_id: guw_coefficient_element.id,
+                                                               project_id: current_mp.project_id,
+                                                               module_project_id: current_mp.id).all.map do |i|
                   i.guw_unit_of_work.nil? ? nil : i.guw_unit_of_work.ajusted_size["#{guw_output.id}"].to_f
                 end.compact.sum.to_f.round(2) %>
               </td>

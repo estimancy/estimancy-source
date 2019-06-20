@@ -180,37 +180,17 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    # unless @project.nil?
-    #   if controller_name == "projects" and @project.persisted?
-    #     @current_organization = @project.organization
-    #   end
-    # end
-    #@current_ability ||= Ability.new(current_user, @current_organization, [@project])
-
     begin
       if current_user.organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
-          when "estimations", "sort", "search", "add_filter_on_project_version"
-            # Rails.cache.fetch("ability_#{@current_organization.id}_#{current_user}") do
-
-              @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.projects)
-
-              # u = current_user
-              # u.ability = @current_ability
-              # u.save
-
-            # end
+          when "async_estimations", "estimations", "sort", "search", "add_filter_on_project_version"
+            @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.projects)
           when "projects_from"
             estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
             @current_ability ||= Ability.new(current_user, @current_organization, estimation_models)
         else
           @current_ability ||= Ability.new(current_user, @current_organization, [@project])
-
-          # u = current_user
-          # u.ability = @current_ability
-          # u.save
-
         end
       else
         @current_ability = Ability.new(current_user, nil, nil)
@@ -713,7 +693,7 @@ class ApplicationController < ActionController::Base
     unless search_hash.blank?
       ###projects = get_search_results(organization_id, projects, search_column, search_value)
       organization_projects = get_multiple_search_results(organization_id, projects, search_hash)
-      projects = Project.where(id: organization_projects.map(&:id))
+      projects = Project.where(organization_id: organization_id, id: organization_projects.map(&:id))
     end
 
     project_ids = projects.map(&:id)
@@ -762,7 +742,7 @@ class ApplicationController < ActionController::Base
         when "status_name"
           projects = Project.unscoped
                           .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                          .where(organization_id: @organization.id, id: project_ids)
+                          .where(organization_id: organization_id, id: project_ids)
                           .order("estimation_statuses.name #{s}")
         when "creator"
           projects = Project.unscoped

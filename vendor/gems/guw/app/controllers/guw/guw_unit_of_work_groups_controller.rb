@@ -22,7 +22,11 @@
 class Guw::GuwUnitOfWorkGroupsController < ApplicationController
 
   def index
-    @guw_unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id).all
+    module_project = current_module_project
+    @guw_unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: module_project.organization_id,
+                                                             project_id: module_project.project_id,
+                                                             module_project_id: module_project.id,
+                                                             pbs_project_element_id: current_component.id).all
     set_page_title I18n.t(:label_Group)
   end
 
@@ -55,7 +59,9 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     @organization = @project.organization
 
     @guw_unit_of_work_group.module_project_id = module_project.id
+    @guw_unit_of_work_group.guw_model_id = module_project.guw_model_id
     @guw_unit_of_work_group.pbs_project_element_id = current_component.id
+
     @guw_unit_of_work_group.save
 
     redirect_to main_app.dashboard_path(@project)
@@ -72,7 +78,7 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     @guw_unit_of_work_group.module_project_id = module_project.id
     @guw_unit_of_work_group.organization_id = params[:organization_id]
     @guw_unit_of_work_group.project_id = params[:project_id]
-    @guw_unit_of_work_group.module_project_id = module_project.id
+    @guw_unit_of_work_group.guw_model_id = module_project.guw_model_id
     @guw_unit_of_work_group.pbs_project_element_id = current_component.id
 
     @guw_unit_of_work_group.save

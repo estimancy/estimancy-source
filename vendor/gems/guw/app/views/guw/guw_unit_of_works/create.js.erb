@@ -1,35 +1,44 @@
 <%
-  @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-  @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
-  @guw_types = @guw_model.guw_types
+  organization_id = @project.organization_id
+  @module_positions = ModuleProject.where(organization_id: organization_id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+  @module_positions_x = @project.module_projects.where(organization_id: organization_id).order(:position_x).all.map(&:position_x).max
+  @guw_types = @guw_model.guw_types.where(organization_id: organization_id)
   @guw_type = @guw_unit_of_work.guw_type
   @module_project = current_module_project
 %>
 
 <% @hash_guw_outputs = {} %>
-<% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
+<% Guw::GuwOutput.where(organization_id: organization_id,
+                        guw_model_id: @guw_model.id,
                         name: @guw_model.orders.map(&:first)).each do |guw_output| %>
   <% @hash_guw_outputs[guw_output.name] = guw_output %>
 <% end %>
 
 <% @hash_guw_coefficients = {} %>
-<% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+<% Guw::GuwCoefficient.where(organization_id: organization_id,
+                             guw_model_id: @guw_model.id,
                              name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
   <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
 <% end %>
 
 <% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
-<% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: @module_project.id).each do |gceuw| %>
+<% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                              guw_model_id: @guw_model.id,
+                                              project_id: @project.id,
+                                              module_project_id: @module_project.id).each do |gceuw| %>
   <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
 <% end %>
 
 <% @hash_guw_output_types = {} %>
-<%Guw::GuwOutputType.where(guw_model_id: @guw_model.id).each do |guw_output_type| %>
+<%Guw::GuwOutputType.where(organization_id: organization_id, guw_model_id: @guw_model.id).each do |guw_output_type| %>
   <% @hash_guw_output_types["#{guw_output_type.guw_type_id}_#{guw_output_type.guw_output_id}"] = guw_output_type %>
 <% end %>
 
 <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
-<% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: @module_project.id).order("updated_at ASC").each do |gceuw| %>
+<% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                              guw_model_id: @guw_model.id,
+                                              project_id: @project.id,
+                                              module_project_id: @module_project.id).order("updated_at ASC").each do |gceuw| %>
   <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
 <% end %>
 
@@ -47,10 +56,13 @@ $(".<%= @group.id %>_selected").html("<%= @group_selected_of_unit_of_works %>");
 
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
-$("#modified_guw_line_ids").val("<%= @group.guw_unit_of_works.map(&:id).flatten.join(",") %>");
+$("#modified_guw_line_ids").val("<%= @group.guw_unit_of_works.where(organization_id: organization_id,
+                                                                    guw_model_id: @guw_model.id,
+                                                                    project_id: @project.id,
+                                                                    module_project_id: @module_project.id).map(&:id).flatten.join(",") %>");
 
 var my_array = [];
-$(document).ready(function(){
+$(document).on('ready turbolinks:load', function() {
 
   $("input#name").val("");
   $("textarea#comments").val("");

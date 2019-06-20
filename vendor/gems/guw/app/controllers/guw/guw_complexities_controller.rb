@@ -49,6 +49,9 @@ class Guw::GuwComplexitiesController < ApplicationController
     @guw_complexity.bottom_range = params[:guw_complexity][:bottom_range].to_i
     @guw_complexity.top_range = params[:guw_complexity][:top_range].to_i
 
+    @guw_complexity.organization_id = @current_organization.id
+    @guw_complexity.guw_model_id = @guw_type.guw_model_id
+
     @guw_complexity.save
 
     @guw_model = @guw_type.guw_model

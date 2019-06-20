@@ -116,7 +116,8 @@ class Ability
         @array_owners = Array.new
 
         #Specfic project security loading
-        prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(user_id: user.id,
+        prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
+                                                                                      user_id: user.id,
                                                                                       is_model_permission: false,
                                                                                       is_estimation_permission: true).all
         unless prj_scrts.empty?
@@ -165,7 +166,8 @@ class Ability
         end
 
         if owner
-          prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(user_id: owner.id,
+          prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
+                                                                                        user_id: owner.id,
                                                                                         is_model_permission: false,
                                                                                         is_estimation_permission: true).all
         end
@@ -200,7 +202,8 @@ class Ability
         end
 
         user_groups.each do |grp|
-          prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(group_id: grp.id,
+          prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
+                                                                                        group_id: grp.id,
                                                                                         is_model_permission: false,
                                                                                         is_estimation_permission: true).all
           unless prj_scrts.empty?
@@ -233,7 +236,7 @@ class Ability
             end
           end
 
-          grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).each do |esgr|
+          grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).where(organization_id: organization.id).each do |esgr|
 
             esgr_security_level = esgr.project_security_level
             esgr_estimation_status_id = esgr.estimation_status_id
@@ -264,8 +267,8 @@ class Ability
         status_global = [status, global].inject(:&)
 
         pe = Permission.where(id: status_global.map{|i| i[0]}.uniq).all
-        pp = Project.where(id: status_global.map{|i| i[1]}.uniq).all
-        ss = EstimationStatus.where(id: status_global.map{|i| i[2]}.uniq).all
+        pp = Project.where(organization_id: organization.id, id: status_global.map{|i| i[1]}.uniq).all
+        ss = EstimationStatus.where(organization_id: organization.id, id: status_global.map{|i| i[2]}.uniq).all
 
         hash_permission = Hash.new
         hash_project = Hash.new

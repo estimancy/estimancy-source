@@ -17,7 +17,8 @@
       </th>
     </tr>
 
-    <% @guw_model.guw_coefficients.where(deported: true).each do |guw_coefficient| %>
+    <% organization_id =  @guw_model.organization_id %>
+    <% @guw_model.guw_coefficients.where(organization_id: organization_id).where(deported: true).each do |guw_coefficient| %>
 
       <tr>
 
@@ -29,11 +30,15 @@
 
         <td>
           <span class="pull-left">
-            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: @guw_unit_of_work.id,
-                                                                 guw_coefficient_id: guw_coefficient.id).first %>
+            <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                 guw_model_id: @guw_model.id,
+                                                                 guw_coefficient_id: guw_coefficient.id,
+                                                                 project_id: @project.id,
+                                                                 module_project_id: current_module_project.id,
+                                                                 guw_unit_of_work_id: @guw_unit_of_work.id).first %>
 
             <%
-               results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+               results = guw_coefficient.guw_coefficient_elements.where(organization_id: organization_id, guw_model_id: @guw_model.id).map{|i| i.guw_complexity_coefficient_elements
                     .includes(:guw_coefficient_element)
                     .where(guw_type_id: @guw_type.id)
                     .select{|ct| ct.value != nil }
@@ -43,7 +48,7 @@
                     .sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
             %>
 
-            <% default = guw_coefficient.guw_coefficient_elements.where(default: true).first %>
+            <% default = guw_coefficient.guw_coefficient_elements.where(organization_id: organization_id, guw_model_id: @guw_model.id, default: true).first %>
 
             <% unless results.empty? %>
               <%= select_tag "deported_guw_coefficient[#{@guw_unit_of_work.id}][#{guw_coefficient.id}]",
