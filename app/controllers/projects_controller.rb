@@ -270,7 +270,7 @@ class ProjectsController < ApplicationController
           end
         end
 
-        ModuleProjectRatioElement.where(organization_id: @organization.id).joins(:wbs_activity_ratio, :application, :project_area, :acquisition_category, :platform_category).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
+        ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
           mpre_project = mpre.module_project.project
 
