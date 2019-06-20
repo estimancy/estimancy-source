@@ -92,8 +92,8 @@ class ProjectsController < ApplicationController
 
   def raw_data_extraction
 
-    Thread.new do
-      ActiveRecord::Base.connection_pool.with_connection do
+    # Thread.new do
+    #   ActiveRecord::Base.connection_pool.with_connection do
         workbook = RubyXL::Workbook.new
 
         @organization = Organization.where(id: params[:organization_id]).first
@@ -416,8 +416,8 @@ class ProjectsController < ApplicationController
 
         # UserMailer.send_raw_data_extraction(file).deliver_now
 
-      end
-    end
+    #   end
+    # end
 
     # redirect_to :back
 
