@@ -240,6 +240,9 @@ class ProjectsController < ApplicationController
 
         ########
 
+        @total_cost = Hash.new {|h,k| h[k] = [] }
+        @total_effort = Hash.new {|h,k| h[k] = [] }
+
         worksheet_wbs.add_cell(0, 0, "Devis")
         worksheet_wbs.add_cell(0, 1, "Application")
         worksheet_wbs.add_cell(0, 2, "Besoin Métier")
