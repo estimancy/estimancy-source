@@ -240,9 +240,6 @@ class ProjectsController < ApplicationController
 
         ########
 
-        @total_cost = Hash.new {|h,k| h[k] = [] }
-        @total_effort = Hash.new {|h,k| h[k] = [] }
-
         worksheet_wbs.add_cell(0, 0, "Devis")
         worksheet_wbs.add_cell(0, 1, "Application")
         worksheet_wbs.add_cell(0, 2, "Besoin Métier")
@@ -321,7 +318,7 @@ class ProjectsController < ApplicationController
 
         ########
         @wbs_organization_projects.each do |project|
-          # if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
+          if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
             unless fe.nil?
               @pfs["#{project.id}_#{fe.id}"].each do |pf|
                 if pf.value.is_a?(Numeric)
@@ -340,7 +337,7 @@ class ProjectsController < ApplicationController
                 end
               end
             end
-          # end
+          end
         end
 
         worksheet_synt.add_cell(0, 0, "Devis")
