@@ -237,7 +237,6 @@ class ProjectsController < ApplicationController
           end
         end
 
-
         ########
 
         worksheet_wbs.add_cell(0, 0, "Devis")
@@ -317,24 +316,31 @@ class ProjectsController < ApplicationController
         end
 
         ########
+
+        # @total_cost = Hash.new {|h,k| h[k] = [] }
+        # @total_effort = Hash.new {|h,k| h[k] = [] }
+
+        @total_cost = Hash.new
+        @total_effort = Hash.new
+
         @wbs_organization_projects.each do |project|
           if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
             unless fe.nil?
               @pfs["#{project.id}_#{fe.id}"].each do |pf|
-                # if pf.value.is_a?(Numeric)
-                  @total_effort[project.id] << pf.value
-                # end
+                if pf.value.is_a?(Numeric)
+                  @total_effort[project.id] = pf.value.to_f
+                end
               end
             end
 
             unless fc.nil?
               @pfs["#{project.id}_#{fc.id}"].each do |pf|
-                # fc_coefficient = fc.coefficient
-                # unless fc_coefficient.nil?
-                #   if pf.value.is_a?(Numeric)
-                    @total_cost[project.id] << pf.value.to_f
-                  # end
-                # end
+                fc_coefficient = fc.coefficient
+                unless fc_coefficient.nil?
+                  if pf.value.is_a?(Numeric)
+                    @total_cost[project.id] = pf.value.to_f
+                  end
+                end
               end
             end
           end
@@ -390,12 +396,12 @@ class ProjectsController < ApplicationController
             worksheet_synt.add_cell(pi, 9, project.start_date.to_s)
             worksheet_synt.add_cell(pi, 10, project.estimation_status.to_s)
 
-            worksheet_synt.add_cell(pi, 11, @total_effort)
-            worksheet_synt.add_cell(pi, 12, @total_cost)
+            worksheet_synt.add_cell(pi, 11, @total_effort[project.id].sum.to_f.round(2))
+            worksheet_synt.add_cell(pi, 12, @total_cost[project.id].sum.to_f.round(2))
 
-            # unless @total_effort[project.id].sum == 0
-              # worksheet_synt.add_cell(pi, 13, (@total_cost[project.id].sum.to_f / @total_effort[project.id].sum.to_f).round(2) )
-            # end
+            unless @total_effort[project.id].sum == 0
+              worksheet_synt.add_cell(pi, 13, (@total_cost[project.id].sum.to_f / @total_effort[project.id].sum.to_f).round(2) )
+            end
 
             pi = pi + 1
           end
