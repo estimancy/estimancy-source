@@ -317,19 +317,16 @@ class ProjectsController < ApplicationController
 
         ########
 
-        # @total_cost = Hash.new {|h,k| h[k] = [] }
-        # @total_effort = Hash.new {|h,k| h[k] = [] }
-
-        @total_cost = Hash.new
-        @total_effort = Hash.new
+        @total_cost = Hash.new {|h,k| h[k] = [] }
+        @total_effort = Hash.new {|h,k| h[k] = [] }
 
         @wbs_organization_projects.each do |project|
           if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
             unless fe.nil?
               @pfs["#{project.id}_#{fe.id}"].each do |pf|
-                if pf.value.is_a?(Numeric)
-                  @total_effort[project.id] = pf.value.to_f
-                end
+                # if pf.value.is_a?(Numeric)
+                  @total_effort[project.id] << pf.value.to_f
+                # end
               end
             end
 
@@ -337,9 +334,9 @@ class ProjectsController < ApplicationController
               @pfs["#{project.id}_#{fc.id}"].each do |pf|
                 fc_coefficient = fc.coefficient
                 unless fc_coefficient.nil?
-                  if pf.value.is_a?(Numeric)
-                    @total_cost[project.id] = pf.value.to_f
-                  end
+                  # if pf.value.is_a?(Numeric)
+                    @total_cost[project.id] << pf.value.to_f
+                  # end
                 end
               end
             end
