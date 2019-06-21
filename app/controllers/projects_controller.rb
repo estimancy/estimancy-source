@@ -393,9 +393,9 @@ class ProjectsController < ApplicationController
             worksheet_synt.add_cell(pi, 11, @total_effort)
             worksheet_synt.add_cell(pi, 12, @total_cost)
 
-            unless @total_effort[project.id].sum == 0
+            # unless @total_effort[project.id].sum == 0
               # worksheet_synt.add_cell(pi, 13, (@total_cost[project.id].sum.to_f / @total_effort[project.id].sum.to_f).round(2) )
-            end
+            # end
 
             pi = pi + 1
           end
