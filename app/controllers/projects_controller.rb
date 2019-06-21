@@ -269,8 +269,10 @@ class ProjectsController < ApplicationController
         fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
         fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
 
-        ProjectField.all.each do |pf|
-          @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
+        @organization_projects.each do |project|
+          project.project_fields.each do |pf|
+            @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
+          end
         end
 
         @organization.estimation_statuses.each do |es|
@@ -319,7 +321,9 @@ class ProjectsController < ApplicationController
           if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
             unless fe.nil?
               @pfs["#{project.id}_#{fe.id}"].each do |pf|
-                @total_effort[project.id] << pf.value.to_f
+                if pf.value.is_a?(Number)
+                  @total_effort[project.id] << pf.value.to_f
+                end
               end
             end
 
@@ -327,7 +331,9 @@ class ProjectsController < ApplicationController
               @pfs["#{project.id}_#{fc.id}"].each do |pf|
                 fc_coefficient = fc.coefficient
                 unless fc_coefficient.nil?
-                  @total_cost[project.id] << (pf.value.to_f * 1000 / fc_coefficient.to_f)
+                  if pf.value.is_a?(Number)
+                    @total_cost[project.id] << pf.value.to_f
+                  end
                 end
               end
             end
@@ -363,7 +369,7 @@ class ProjectsController < ApplicationController
 
             project_application = project.application
             project_project_area = project.project_area
-            project_acquisition_category = project_acquisition_category
+            project_acquisition_category = project.acquisition_category
             project_platform_category = project.platform_category
             project_provider = project.provider
 
