@@ -1855,11 +1855,11 @@ class Guw::GuwModelsController < ApplicationController
       unless @wbs_activity.nil?
         @wbs_activity.wbs_activity_elements.where(organization_id: organization_id).select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-          guw_output_effort = Guw::GuwOutput.where(name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg", "Charge RTU Avec Dégr."], guw_model_id: @guw_model.id).first
-          guw_output_test = Guw::GuwOutput.where(name: ["Assiette Test", "Assiette Test (jh)", "Charges T (jh)", "UC Test Dg"], guw_model_id: @guw_model.id).first
+          guw_output_effort = Guw::GuwOutput.where(organization_id: organization_id, guw_model_id: @guw_model.id,
+                                                   name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg", "Charge RTU Avec Dégr."]).first
 
           guw_output_test = Guw::GuwOutput.where(organization_id: organization_id, guw_model_id: @guw_model.id,
-                                                 name: ["Assiette Test", "Charges T (jh)", "UC Test Dg"]).first
+                                                 name: ["Assiette Test", "Assiette Test (jh)", "Charges T (jh)", "UC Test Dg"]).first
 
           mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
 
