@@ -92,8 +92,6 @@ class ProjectsController < ApplicationController
 
   def raw_data_extraction
 
-    # Thread.new do
-    #   ActiveRecord::Base.connection_pool.with_connection do
     workbook = RubyXL::Workbook.new
 
     @organization = Organization.where(id: params[:organization_id]).first
@@ -137,9 +135,9 @@ class ProjectsController < ApplicationController
     @statuses_hash = Hash.new
     @guw_hash = Hash.new {|h,k| h[k] = [] }
 
-    field = Field.where(organization_id: @current_organization.id, name: "Localisation").first
+    field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
-    Guw::GuwUnitOfWork.where(organization_id: @current_organization.id).each do |guow|
+    Guw::GuwUnitOfWork.where(organization_id: @organization.id).each do |guow|
       @guw_hash[guow.project_id] << guow
     end
 
@@ -147,7 +145,6 @@ class ProjectsController < ApplicationController
       @pf_hash_2[pf.project_id] = pf
     end
 
-    # @organization_projects.where(:created_at => (Time.now-1.year)..(Time.now)).each do |project|
     @organization_projects.each do |project|
 
       pmp = project.module_projects.where("guw_model_id IS NOT NULL").first
@@ -203,7 +200,11 @@ class ProjectsController < ApplicationController
               @guw_coefficient_guw_coefficient_elements = gc.guw_coefficient_elements
               default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
 
-              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                guw_model_id: @guw_model.id,
+                                                                project_id: project.id,
+                                                                module_project_id: pmp.id,
+                                                                guw_unit_of_work_id: guow.id,
                                                                 guw_coefficient_id: gc.id,
                                                                 module_project_id: guow.module_project_id).order("updated_at ASC").last
 
@@ -407,15 +408,8 @@ class ProjectsController < ApplicationController
       end
     end
 
-    # workbook.write("#{Rails.root}/public/RAW_DATA.xlsx")
-    # UserMailer.send_raw_data_extraction(@organization).deliver_now
-    #
-    #   end
-    # end
     send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
 
-
-    # redirect_to :back
   end
 
   def build_rapport
