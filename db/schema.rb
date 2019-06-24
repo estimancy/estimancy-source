@@ -343,12 +343,12 @@ ActiveRecord::Schema.define(version: 20190618100900) do
   end
 
   create_table "budgets", force: :cascade do |t|
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.integer  "sum",             limit: 4
-    t.string   "name",            limit: 255
-    t.integer  "organization_id", limit: 4
-    t.string   "field_id",        limit: 255
+    t.date    "start_date"
+    t.date    "end_date"
+    t.integer "sum",             limit: 4
+    t.string  "name",            limit: 255
+    t.integer "organization_id", limit: 4
+    t.string  "field_id",        limit: 255
   end
 
   create_table "criticalities", force: :cascade do |t|
