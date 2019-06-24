@@ -167,16 +167,8 @@ class ProjectsController < ApplicationController
         project_platform_category = project.platform_category
         project_provider = project.provider
         project_estimation_status = project.estimation_status
-            @guw_coefficient_guw_coefficient_elements = gc.guw_coefficient_elements.where(guw_model_id: @guw_model.id)
-            default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
 
         @guow_guw_types = Hash.new
-            ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                              guw_model_id: @guw_model.id,
-                                                              guw_coefficient_id: gc.id,
-                                                              project_id: project.id,
-                                                              module_project_id: guow.module_project_id,
-                                                              guw_unit_of_work_id: guow.id).order("updated_at ASC").last
 
         @guw_hash[project.id].each do |guow|
 
@@ -197,33 +189,23 @@ class ProjectsController < ApplicationController
           worksheet_cf.add_cell(i, 9, project.start_date.to_s)
           worksheet_cf.add_cell(i, 10, project_estimation_status.to_s)
           worksheet_cf.add_cell(i, 11, guow.name)
-          worksheet_cf.add_cell(i, 12, guow.guw_type_id)
+
+          guow_guw_type = guow.guw_type
+          worksheet_cf.add_cell(i, 12, guow_guw_type.nil? ? '' : guow_guw_type.name)
+
           worksheet_cf.add_cell(i, 13, guow.intermediate_percent)
           worksheet_cf.add_cell(i, 14, guow.intermediate_weight)
 
           j = 0
           @guw_coefficients.each do |gc|
             if gc.coefficient_type == "Pourcentage"
-        guow.guw_unit_of_work_attributes.where(organization_id: @organization.id,
-                                               guw_model_id: @guw_model.id,
-                                               guw_type_id: guow.guw_type_id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
-          worksheet_cf.add_cell(i, 19 + j, uowa.nil? ? nil : uowa.most_likely)
-        end
 
               @guw_coefficient_guw_coefficient_elements = gc.guw_coefficient_elements
               default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
-        # if j == 0
-        @guw_model.guw_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each_with_index do |guw_attribute, ii|
-          worksheet_cf.add_cell(0, 19+ii, guw_attribute.name)
-        end
-        # end
 
               ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                 guw_coefficient_id: gc.id,
                                                                 module_project_id: guow.module_project_id).order("updated_at ASC").last
-        i = i + 1
-        guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: ["Charges T (jh)"]).first
-        guw_output_cost = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: ["Coût Services (€)"]).first
 
               worksheet_cf.add_cell(i, 15 + j, default.nil? ? 100 : default.value.to_f)
               worksheet_cf.add_cell(i, 15 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
@@ -258,7 +240,6 @@ class ProjectsController < ApplicationController
       end
     end
 
-
     ########
 
     worksheet_wbs.add_cell(0, 0, "Devis")
@@ -290,8 +271,10 @@ class ProjectsController < ApplicationController
     fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
     fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
 
-    ProjectField.all.each do |pf|
-      @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
+    @organization_projects.each do |project|
+      project.project_fields.each do |pf|
+        @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
+      end
     end
 
     @organization.estimation_statuses.each do |es|
@@ -336,11 +319,16 @@ class ProjectsController < ApplicationController
     end
 
     ########
+    @total_cost = Hash.new {|h,k| h[k] = [] }
+    @total_effort = Hash.new {|h,k| h[k] = [] }
+
     @wbs_organization_projects.each do |project|
       if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
         unless fe.nil?
           @pfs["#{project.id}_#{fe.id}"].each do |pf|
+            # if pf.value.is_a?(Numeric)
             @total_effort[project.id] << pf.value.to_f
+            # end
           end
         end
 
@@ -348,7 +336,9 @@ class ProjectsController < ApplicationController
           @pfs["#{project.id}_#{fc.id}"].each do |pf|
             fc_coefficient = fc.coefficient
             unless fc_coefficient.nil?
-              @total_cost[project.id] << (pf.value.to_f * 1000 / fc_coefficient.to_f)
+              # if pf.value.is_a?(Numeric)
+              @total_cost[project.id] << pf.value.to_f
+              # end
             end
           end
         end
@@ -384,7 +374,7 @@ class ProjectsController < ApplicationController
 
         project_application = project.application
         project_project_area = project.project_area
-        project_acquisition_category = project_acquisition_category
+        project_acquisition_category = project.acquisition_category
         project_platform_category = project.platform_category
         project_provider = project.provider
 
@@ -416,8 +406,15 @@ class ProjectsController < ApplicationController
       end
     end
 
+    # workbook.write("#{Rails.root}/public/RAW_DATA.xlsx")
+    # UserMailer.send_raw_data_extraction(@organization).deliver_now
+    #
+    #   end
+    # end
     send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
 
+
+    # redirect_to :back
   end
 
 
