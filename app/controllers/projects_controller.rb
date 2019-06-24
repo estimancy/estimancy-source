@@ -283,7 +283,12 @@ class ProjectsController < ApplicationController
       end
     end
 
-    ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
+    pbs_project_element = current_component
+    current_mp = current_module_project
+
+    ModuleProjectRatioElement.where(organization_id: @organization.id,
+                                    pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
+                                    module_project_id: current_mp.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
       mpre_project = mpre.module_project.project
 

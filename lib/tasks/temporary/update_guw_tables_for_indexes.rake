@@ -32,9 +32,6 @@ namespace :guw do
       # ActiveRecord::Base.transaction do
         guw_unit_of_work = ceuow.guw_unit_of_work
         unless guw_unit_of_work.nil?
-          puts "ceuow_id = #{ceuow.id}"
-          puts "uow_id = #{guw_unit_of_work.id}"
-
           ceuow.organization_id = guw_unit_of_work.organization_id
           ceuow.guw_model_id = guw_unit_of_work.guw_model_id
           ceuow.project_id = guw_unit_of_work.project_id
