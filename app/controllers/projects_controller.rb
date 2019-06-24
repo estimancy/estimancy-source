@@ -189,7 +189,10 @@ class ProjectsController < ApplicationController
               worksheet_cf.add_cell(i, 9, project.start_date.to_s)
               worksheet_cf.add_cell(i, 10, project_estimation_status.to_s)
               worksheet_cf.add_cell(i, 11, guow.name)
-              worksheet_cf.add_cell(i, 12, guow.guw_type.name)
+
+              guow_guw_type = guow.guw_type
+              worksheet_cf.add_cell(i, 12, guow_guw_type.nil? ? '' : guow_guw_type.name)
+
               worksheet_cf.add_cell(i, 13, guow.intermediate_percent)
               worksheet_cf.add_cell(i, 14, guow.intermediate_weight)
 
