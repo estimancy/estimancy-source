@@ -7,8 +7,9 @@ namespace :guw do
   task update_guw_tables_for_indexes: :environment do
 
     # Re-executer la migration de guw
-    # rake db:migrate:down VERSION=20171027100650
-    # rake db:migrate:up VERSION=20171027100650
+    # rake db:migrate RAILS_ENV=production
+    # rake db:migrate:down VERSION=20171027100650 RAILS_ENV=production
+    # rake db:migrate:up VERSION=20171027100650 RAILS_ENV=production
 
     # 1
     ModuleProject.all.each do |mp|

@@ -131,6 +131,12 @@ class ProjectsController < ApplicationController
     @total_effort = Hash.new {|h,k| h[k] = [] }
     @pfs = Hash.new {|h,k| h[k] = [] }
     @pf_hash = Hash.new
+    @app_hash = Hash.new
+    @ac_hash = Hash.new
+    @pa_hash = Hash.new
+    @plc_hash = Hash.new
+    @a_hash = Hash.new
+    @p_hash = Hash.new
     @pf_hash_2 = Hash.new
     @statuses_hash = Hash.new
     @guw_hash = Hash.new {|h,k| h[k] = [] }
@@ -146,6 +152,48 @@ class ProjectsController < ApplicationController
     end
 
     @organization_projects.each do |project|
+      project.project_fields.each do |pf|
+        @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
+      end
+    end
+
+    @organization.estimation_statuses.each do |es|
+      es.projects.each do |project|
+        @statuses_hash[project.id] = es.to_s
+      end
+    end
+
+    @organization.applications.each do |application|
+      application.projects.each do |project|
+        @app_hash[project.id] = application.name
+      end
+    end
+
+    @organization.project_areas.each do |pa|
+      pa.projects.each do |project|
+        @pa_hash[project.id] = pa.name
+      end
+    end
+
+    @organization.acquisition_categories.each do |ac|
+      ac.projects.each do |project|
+        @ac_hash[project.id] = ac.name
+      end
+    end
+
+    @organization.platform_categories.each do |pc|
+      pc.projects.each do |project|
+        @plc_hash[project.id] = pc.name
+      end
+    end
+
+    @organization.providers.each do |p|
+      p.projects.each do |project|
+        @p_hash[project.id] = p.name
+      end
+    end
+
+    @organization_projects.each do |project|
 
       pmp = project.module_projects.where("guw_model_id IS NOT NULL").first
 
@@ -158,33 +206,33 @@ class ProjectsController < ApplicationController
 
         pf = @pf_hash_2[project.id]
 
-        project_application = project.application
-        project_project_area = project.project_area
-        project_acquisition_category = project.acquisition_category
-        project_platform_category = project.platform_category
-        project_provider = project.provider
-        project_estimation_status = project.estimation_status
+        project_application = @p_hash[project.id]
+        project_project_area = @pa_hash[project.id]
+        project_acquisition_category = @ac_hash[project.id]
+        project_platform_category = @plc_hash[project.id]
+        project_provider = @p_hash[project.id]
+        project_estimation_status = @statuses_hash[project.id]
 
         @guow_guw_types = Hash.new
 
         @guw_hash[project.id].each do |guow|
 
           worksheet_cf.add_cell(i, 0, project.title)
-          worksheet_cf.add_cell(i, 1, project_application.nil? ? project.application_name : project_application.name)
+          worksheet_cf.add_cell(i, 1, project_application.nil? ? project.application_name : project_application)
           worksheet_cf.add_cell(i, 2, project.business_need)
           worksheet_cf.add_cell(i, 3, project.request_number)
-          worksheet_cf.add_cell(i, 4, project_project_area.nil? ? '' : project_project_area.name)
-          worksheet_cf.add_cell(i, 5, project_acquisition_category.nil? ? '' : project_acquisition_category.name)
+          worksheet_cf.add_cell(i, 4, project_project_area.nil? ? '' : project_project_area)
+          worksheet_cf.add_cell(i, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
           unless field.nil?
             value = pf.nil? ? nil : pf.value
             worksheet_cf.add_cell(i, 6, value)
           end
 
-          worksheet_cf.add_cell(i, 7, project_platform_category.nil? ? '' : project_platform_category.name)
-          worksheet_cf.add_cell(i, 8, project_provider.nil? ? '' : project_provider.name)
+          worksheet_cf.add_cell(i, 7, project_platform_category.nil? ? '' : project_platform_category)
+          worksheet_cf.add_cell(i, 8, project_provider.nil? ? '' : project_provider)
           worksheet_cf.add_cell(i, 9, project.start_date.to_s)
-          worksheet_cf.add_cell(i, 10, project_estimation_status.to_s)
+          worksheet_cf.add_cell(i, 10, project_estimation_status)
           worksheet_cf.add_cell(i, 11, guow.name)
 
           guow_guw_type = guow.guw_type
@@ -241,7 +289,7 @@ class ProjectsController < ApplicationController
       end
     end
 
-    ########
+    # ########
 
     worksheet_wbs.add_cell(0, 0, "Devis")
     worksheet_wbs.add_cell(0, 1, "Application")
@@ -263,7 +311,7 @@ class ProjectsController < ApplicationController
     worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
 
     # pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
-    @wbs_organization_projects = @organization_projects.where(is_model: false)
+    @wbs_organization_projects = @organization_projects.where(is_model: false).joins(:project_fields)
 
     ProjectField.where(field_id: field.id).each do |pf|
       @pf_hash[pf.project_id] = pf
@@ -272,41 +320,35 @@ class ProjectsController < ApplicationController
     fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
     fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
 
-    @organization_projects.each do |project|
-      project.project_fields.each do |pf|
-        @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
-      end
-    end
-
-    @organization.estimation_statuses.each do |es|
-      es.projects.each do |project|
-        @statuses_hash[project.id] = es.to_s
-      end
-    end
 
     ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").each_with_index do |mpre, iii|
 
       mpre_project = mpre.module_project.project
 
+      project_application = @p_hash[mpre_project.id]
+      project_project_area = @pa_hash[mpre_project.id]
+      project_acquisition_category = @ac_hash[mpre_project.id]
+      project_platform_category = @plc_hash[mpre_project.id]
+      project_provider = @p_hash[mpre_project.id]
+
       unless mpre_project.is_model == true
 
-        # pf = mpre_project.project_fields.where(field_id: field.id).first
         pf = @pf_hash[mpre_project.id]
 
         worksheet_wbs.add_cell(iii+1, 0, mpre_project.title)
-        worksheet_wbs.add_cell(iii+1, 1, mpre_project.application.nil? ? mpre_project.application_name : mpre_project.application.name)
+        worksheet_wbs.add_cell(iii+1, 1, project_application.nil? ? mpre_project.application_name : project_application)
         worksheet_wbs.add_cell(iii+1, 2, mpre_project.business_need)
-        worksheet_wbs.add_cell(iii+1, 3, mpre_project.request_number)
-        worksheet_wbs.add_cell(iii+1, 4, mpre_project.project_area.nil? ? '' : mpre_project.project_area.name)
-        worksheet_wbs.add_cell(iii+1, 5, mpre_project.acquisition_category.nil? ? '' : mpre_project.acquisition_category.name)
+        worksheet_synt.add_cell(iii+1, 3, mpre_project.request_number)
+        worksheet_wbs.add_cell(iii+1, 4, project_project_area.nil? ? '' : project_project_area)
+        worksheet_wbs.add_cell(iii+1, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
         unless field.nil?
           value = pf.nil? ? nil : pf.value
           worksheet_wbs.add_cell(iii+1, 6, value)
         end
 
-        worksheet_wbs.add_cell(iii+1, 7, mpre_project.platform_category.nil? ? '' : mpre_project.platform_category.name)
-        worksheet_wbs.add_cell(iii+1, 8, mpre_project.provider.nil? ? '' : mpre_project.provider.name)
+        worksheet_wbs.add_cell(iii+1, 7, project_platform_category.nil? ? '' : project_platform_category)
+        worksheet_wbs.add_cell(iii+1, 8, project_provider.nil? ? '' : project_provider)
         worksheet_wbs.add_cell(iii+1, 9, mpre_project.start_date.to_s)
         worksheet_wbs.add_cell(iii+1, 10, @statuses_hash[mpre_project.id])
         worksheet_wbs.add_cell(iii+1, 11, mpre.wbs_activity_ratio.name)
@@ -319,7 +361,7 @@ class ProjectsController < ApplicationController
       end
     end
 
-    ########
+    # ########
 
     @total_cost = Hash.new {|h,k| h[k] = [] }
     @total_effort = Hash.new {|h,k| h[k] = [] }
@@ -372,30 +414,33 @@ class ProjectsController < ApplicationController
     @wbs_organization_projects.each do |project|
       # project = Project.find(k)
       unless project.is_model == true
-        pf = project.project_fields.where(field_id: field.id).first
+        # pf = ProjectField.where(field_id: field.id, project_id: project.id).first
+        # pf = project.project_fields.where(field_id: field.id).first
+        pf = @pf_hash[project.id]
 
-        project_application = project.application
-        project_project_area = project.project_area
-        project_acquisition_category = project.acquisition_category
-        project_platform_category = project.platform_category
-        project_provider = project.provider
+        project_application = @p_hash[project.id]
+        project_project_area = @pa_hash[project.id]
+        project_acquisition_category = @ac_hash[project.id]
+        project_platform_category = @plc_hash[project.id]
+        project_provider = @p_hash[project.id]
+        project_status = @statuses_hash[project.id]
 
         worksheet_synt.add_cell(pi, 0, project.title)
-        worksheet_synt.add_cell(pi, 1, project_application.nil? ? project.application_name : project_application.name)
+        worksheet_synt.add_cell(pi, 1, project_application.nil? ? project.application_name : project_application)
         worksheet_synt.add_cell(pi, 2, project.business_need)
         worksheet_synt.add_cell(pi, 3, project.request_number)
-        worksheet_synt.add_cell(pi, 4, project_project_area.nil? ? '' : project_project_area.name)
-        worksheet_synt.add_cell(pi, 5, project_acquisition_category.nil? ? '' : project_acquisition_category.name)
+        worksheet_synt.add_cell(pi, 4, project_project_area.nil? ? '' : project_project_area)
+        worksheet_synt.add_cell(pi, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
         unless field.nil?
           value = pf.nil? ? nil : pf.value
           worksheet_synt.add_cell(pi, 6, value)
         end
 
-        worksheet_synt.add_cell(pi, 7, project_platform_category.nil? ? '' : project_platform_category.name)
-        worksheet_synt.add_cell(pi, 8, project_provider.nil? ? '' : project_provider.name)
+        worksheet_synt.add_cell(pi, 7, project_platform_category.nil? ? '' : project_platform_category)
+        worksheet_synt.add_cell(pi, 8, project_provider.nil? ? '' : project_provider)
         worksheet_synt.add_cell(pi, 9, project.start_date.to_s)
-        worksheet_synt.add_cell(pi, 10, project.estimation_status.to_s)
+        worksheet_synt.add_cell(pi, 10, project_status)
 
         worksheet_synt.add_cell(pi, 11, @total_effort[project.id].sum.to_f.round(2))
         worksheet_synt.add_cell(pi, 12, @total_cost[project.id].sum.to_f.round(2))
