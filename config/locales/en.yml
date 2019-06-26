@@ -46,6 +46,7 @@ en:
       default: '%m/%d/%Y'
       long: '%B %d, %Y'
       short: '%b %d'
+      date_month_year_concise: "%m/%d/%Y"
     # Don't forget the nil at the beginning; there's no such thing as a 0th month
     month_names:
     - ~
@@ -134,6 +135,7 @@ en:
       short: "%d %b %H:%M"
       long: "%B %d, %Y %H:%M"
       audit: ! "%m/%d/%Y %I:%M:%S"
+      date_month_year_concise: "%m/%d/%Y"
     am: "am"
     pm: "pm"
 

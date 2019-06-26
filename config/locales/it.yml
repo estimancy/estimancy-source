@@ -43,6 +43,7 @@ it:
       default: "%d/%m/%Y"
       long: "%d %B %Y"
       short: "%d %b"
+      date_month_year_concise: "%d/%m/%Y"
     month_names:
     -
     - gennaio
@@ -206,6 +207,7 @@ it:
       default: "%a %d %b %Y, %H:%M:%S %z"
       long: "%d %B %Y %H:%M"
       short: "%d %b %H:%M"
+      date_month_year_concise: "%d/%m/%Y"
     pm: pm
 
   projects: "progetti"
