@@ -327,65 +327,66 @@
         <div class="edition-bloc-title">
           <%= I18n.t('estimations_permissions') %>
         </div>
-      </div>
 
-      <% if can? :show_estimations_permissions, Permission %>
-        <%= form_tag({:action => 'set_rights_project_security', :controller => 'permissions'}, :method => 'post', :class => '') do %>
-          <%= hidden_field_tag :organization_id, @organization.id %>
+        <% if can? :show_estimations_permissions, Permission %>
+          <%= form_tag({:action => 'set_rights_project_security', :controller => 'permissions'}, :method => 'post', :class => 'col-12') do %>
 
-          <table class="table table-list">
-            <tr>
-              <th style="text-align:left;"><%= I18n.t(:groups_and_roles) %></th>
-              <% @project_security_levels.each do |ps| %>
-                <th style="text-align:center;">
-                  <%= link_to ps.name, "#", title: ps.description %>
-                  &nbsp;
-                  <%= link_to '', '#', :id => "cols_select_all_project_security_#{ps.id}", 'data-project_security_id' => ps.id, 'data-rows_or_cols_project_security' => 'cols', :remote => true, :class => 'fa fa-check-square-o', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'project_security_id', 'permission_project_id', 'project_security');" %>
-                </th>
-              <% end %>
-            </tr>
+            <%= hidden_field_tag :organization_id, @organization.id %>
 
-            <tbody>
-            <% @permissions_classes_projects.each do |cla| %>
+            <table class="table table-list">
               <tr>
-                <th style="text-align:left; vertical-align:middle;">
-                  <%= cla.blank? ? '' : cla %>
-                </th>
+                <th><%= I18n.t(:groups_and_roles) %></th>
                 <% @project_security_levels.each do |ps| %>
-                  <th style="text-align:center; font-style:italic; vertical-align:bottom; font-size: 85%; color: #999; border-left: 0;">
-                    <%= ps.name %>
+                  <th>
+                    <%= link_to ps.name, "#", title: ps.description %>
+                    &nbsp;
+                    <%= link_to '', '#', :id => "cols_select_all_project_security_#{ps.id}", 'data-project_security_id' => ps.id, 'data-rows_or_cols_project_security' => 'cols', :remote => true, :class => 'fa fa-check-square-o', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'project_security_id', 'permission_project_id', 'project_security');" %>
                   </th>
                 <% end %>
               </tr>
-              <% @permission_projects.each do |perm| %>
+
+              <tbody>
+              <% @permissions_classes_projects.each do |cla| %>
                 <tr>
-                  <% if perm.category.to_s == cla %>
-                    <td>
-                      &nbsp;
-                      <%= link_to '', '#', :id => "lines_select_all_global_#{perm.id}", 'data-permission_global_id' => perm.id, 'data-rows_or_cols_global' => 'rows', :remote => true, :class => 'fa-check-square-o fa', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'group_global_id', 'permission_global_id', 'global');" %>
-                      &nbsp;
-                      <%= link_to perm.name, edit_permission_path(perm), title: perm.description %>
-                    </td>
-                    <% @project_security_levels.each do |ps| %>
-                      <td style="text-align: center;">
-                        <%= check_box_tag("permissions[#{ps.id}][]", perm.id, (ps.permissions.map(&:id).include? perm.id), :id => nil, :class => "project_security_id_#{ps.id} permission_project_id_#{perm.id}") %>
-                      </td>
-                    <% end %>
+                  <th style="text-align:left; vertical-align:middle;">
+                    <%= cla.blank? ? '' : cla %>
+                  </th>
+                  <% @project_security_levels.each do |ps| %>
+                    <th style="text-align:center; font-style:italic; vertical-align:bottom; font-size: 85%; color: #999; border-left: 0;">
+                      <%= ps.name %>
+                    </th>
                   <% end %>
                 </tr>
+                <% @permission_projects.each do |perm| %>
+                  <tr>
+                    <% if perm.category.to_s == cla %>
+                      <td>
+                        &nbsp;
+                        <%= link_to '', '#', :id => "lines_select_all_global_#{perm.id}", 'data-permission_global_id' => perm.id, 'data-rows_or_cols_global' => 'rows', :remote => true, :class => 'fa-check-square-o fa', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'group_global_id', 'permission_global_id', 'global');" %>
+                        &nbsp;
+                        <%= link_to perm.name, edit_permission_path(perm), title: perm.description %>
+                      </td>
+                      <% @project_security_levels.each do |ps| %>
+                        <td style="text-align: center;">
+                          <%= check_box_tag("permissions[#{ps.id}][]", perm.id, (ps.permissions.map(&:id).include? perm.id), :id => nil, :class => "project_security_id_#{ps.id} permission_project_id_#{perm.id}") %>
+                        </td>
+                      <% end %>
+                    <% end %>
+                  </tr>
+                <% end %>
               <% end %>
-            <% end %>
-            </tbody>
-          </table>
+              </tbody>
+            </table>
 
-          <% if can? :manage_estimations_permissions, Permission %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy', :tab_name => 'tabs-estimation-permissions' %>
-            <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary btn-estimancy'%>
+            <% if can? :manage_estimations_permissions, Permission %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy', :tab_name => 'tabs-estimation-permissions' %>
+              <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary btn-estimancy'%>
+            <% end %>
           <% end %>
+        <% else %>
+          <div class="red_color"><%= I18n.t(:notice_cannot_view_estimations_permissions) %></div>
         <% end %>
-      <% else %>
-        <div class="red_color"><%= I18n.t(:notice_cannot_view_estimations_permissions) %></div>
-      <% end %>
+      </div>
     </div>
   </div>
 
