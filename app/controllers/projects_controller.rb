@@ -95,7 +95,7 @@ class ProjectsController < ApplicationController
     workbook = RubyXL::Workbook.new
 
     @organization = Organization.where(id: params[:organization_id]).first
-    @organization_projects = @organization.projects
+    @organization_projects = @organization.projects.where(is_model: false)
 
     worksheet_cf = workbook.worksheets[0]
     worksheet_cf.sheet_name = 'Composants Fonctionnels'
@@ -310,8 +310,6 @@ class ProjectsController < ApplicationController
     worksheet_wbs.add_cell(0, 16, "Coût calculé (€)")
     worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
 
-    # pemodule_wbs = Pemodule.where(alias: "effort_breakdown").first
-    @wbs_organization_projects = @organization_projects.where(is_model: false).joins(:project_fields)
 
     ProjectField.where(field_id: field.id).each do |pf|
       @pf_hash[pf.project_id] = pf
@@ -366,7 +364,7 @@ class ProjectsController < ApplicationController
     @total_cost = Hash.new {|h,k| h[k] = [] }
     @total_effort = Hash.new {|h,k| h[k] = [] }
 
-    @wbs_organization_projects.each do |project|
+    @organization_projects.each do |project|
       if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
         unless fe.nil?
           @pfs["#{project.id}_#{fe.id}"].each do |pf|
@@ -411,7 +409,7 @@ class ProjectsController < ApplicationController
       @pf_hash[pf.project_id] = pf
     end
 
-    @wbs_organization_projects.each do |project|
+    @organization_projects.each do |project|
       # project = Project.find(k)
       unless project.is_model == true
         # pf = ProjectField.where(field_id: field.id, project_id: project.id).first
