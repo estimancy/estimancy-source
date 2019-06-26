@@ -137,6 +137,7 @@ class ProjectsController < ApplicationController
     @plc_hash = Hash.new
     @a_hash = Hash.new
     @p_hash = Hash.new
+    @ce_hash = Hash.new
     @pf_hash_2 = Hash.new
     @statuses_hash = Hash.new
     @guw_hash = Hash.new {|h,k| h[k] = [] }
@@ -193,14 +194,26 @@ class ProjectsController < ApplicationController
       end
     end
 
+    @organization.guw_coefficients.each do |gc|
+      @ce_hash[gc.id] = gc.guw_coefficient_elements.where(default: true).first
+    end
+
+
     @organization_projects.each do |project|
 
       pmp = project.module_projects.where("guw_model_id IS NOT NULL").first
 
+      @gceuow = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                           guw_model_id: @guw_model.id,
+                                                           project_id: project.id,
+                                                           module_project_id: pmp.id)
+
       unless pmp.nil?
+
         @guw_model = pmp.guw_model
         @guw_coefficients = @guw_model.guw_coefficients
         @guw_model_guw_attributes = @guw_model.guw_attributes
+
         guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)", "Charge RTU Avec Dégr."], guw_model_id: @guw_model.id).first
         guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
@@ -245,16 +258,10 @@ class ProjectsController < ApplicationController
           @guw_coefficients.each do |gc|
             if gc.coefficient_type == "Pourcentage"
 
-              @guw_coefficient_guw_coefficient_elements = gc.guw_coefficient_elements
-              default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
+              default = @ce_hash[gc.id]
 
-              ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                                guw_model_id: @guw_model.id,
-                                                                project_id: project.id,
-                                                                module_project_id: pmp.id,
-                                                                guw_unit_of_work_id: guow.id,
-                                                                guw_coefficient_id: gc.id,
-                                                                module_project_id: guow.module_project_id).order("updated_at ASC").last
+              ceuw = @gceuow.where(guw_unit_of_work_id: guow.id,
+                                   guw_coefficient_id: gc.id).order("updated_at ASC").last
 
               worksheet_cf.add_cell(i, 15 + j, default.nil? ? 100 : default.value.to_f)
               worksheet_cf.add_cell(i, 15 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
