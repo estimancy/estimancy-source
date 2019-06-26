@@ -1800,7 +1800,7 @@ fr:
   manage_the_scale_factor: "Gérer les facteurs d'ajustements"
   manage_the_groups: "Gérer les groupes"
   manage_the_attribute: "Gérer les attributs"
-  new_type_thresold: "Créer un seuil de type d'UO"
+  new_type_thresold: "Ajouter un seuil"
   new_attribute_thresold: "Créer un seuil d'attribut"
   Enable: "Activer"
   bottom: "Bas"
