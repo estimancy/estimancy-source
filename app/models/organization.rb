@@ -80,7 +80,8 @@ class Organization < ActiveRecord::Base
   has_many :views, dependent: :destroy
   has_many :applications, dependent: :destroy
 
-  has_many :guw_coefficients, dependent: :destroy
+  has_many :guw_coefficients, class_name: "Guw::GuwCoefficient", dependent: :destroy
+  has_many :guw_coefficient_elements, class_name: "Guw::GuwCoefficientElement", dependent: :destroy
 
   has_many :providers
   has_many :versions, class_name: "PaperTrail::Version", dependent: :destroy
