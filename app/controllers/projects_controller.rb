@@ -203,12 +203,12 @@ class ProjectsController < ApplicationController
 
       pmp = project.module_projects.where("guw_model_id IS NOT NULL").first
 
-      @gceuow = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                           guw_model_id: @guw_model.id,
-                                                           project_id: project.id,
-                                                           module_project_id: pmp.id)
-
       unless pmp.nil?
+
+        @gceuow = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                             guw_model_id: @guw_model.id,
+                                                             project_id: project.id,
+                                                             module_project_id: pmp.id)
 
         @guw_model = pmp.guw_model
         @guw_coefficients = @guw_model.guw_coefficients
