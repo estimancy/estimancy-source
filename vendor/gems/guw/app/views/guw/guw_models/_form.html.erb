@@ -8,20 +8,20 @@
       <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
 
         <li class="nav-item">
-          <a class="nav-link show active"  data-toggle="pill" id="tabs-model_tab" href="#tabs-model" role="tab" aria-selected="true"><%= I18n.t(:label_Guw_model) %></a>
+          <a class="nav-link show active"  data-toggle="pill" id="tabs-model_tab" href="#tabs-model" role="tab" aria-selected="true">Propriétés</a>
         </li>
 
         <% unless @guw_model.new_record? %>
           <li class="nav-item">
-            <a class="nav-link"  data-toggle="pill" id="tabs-attributs_tab" href="#tabs-attributs" role="tab" aria-selected="false">Gérer les attributs</a>
+            <a class="nav-link"  data-toggle="pill" id="tabs-attributs_tab" href="#tabs-attributs" role="tab" aria-selected="false">Attributs</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link"  data-toggle="pill" id="tabs-coefficients_tab" href="#tabs-coefficients" role="tab" aria-selected="false">Configurer les coefficients de pondération</a>
+            <a class="nav-link"  data-toggle="pill" id="tabs-coefficients_tab" href="#tabs-coefficients" role="tab" aria-selected="false">Coefficients</a>
           </li>
 
           <li class="nav-item">
-            <a class="nav-link"  data-toggle="pill" id="tabs-output_tab" href="#tabs-output" role="tab" aria-selected="false">Configurer les sorties</a>
+            <a class="nav-link"  data-toggle="pill" id="tabs-output_tab" href="#tabs-output" role="tab" aria-selected="false">Sorties</a>
           </li>
         <% end  %>
       </ul>
@@ -35,6 +35,44 @@
               <div class="edition-bloc-content">
 
                 <div class="edition-bloc-form">
+
+                  <% unless @guw_model.new_record? %>
+                    <div class="group_button">
+                      <% if @guw_model.config_type == "new" %>
+                        <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary btn-estimancy' %>
+                      <% else %>
+                        <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary btn-estimancy' %>
+                      <% end %>
+
+                      <% if @guw_model.default_display == "tab" %>
+                        <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary btn-estimancy' %>
+                      <% else %>
+                        <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary btn-estimancy' %>
+                      <% end %>
+                    </div>
+                  <% else %>
+                    <a href="#import" role="button" class="btn btn-primary pull-right" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
+                      <%= I18n.t(:import) %>
+                    </a>
+                    <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                      <%= form_tag guw.import_new_config_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                        <div class="modal-header modal-drag">
+                          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                          <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
+                        </div>
+                        <div class="modal-body">
+                          <%= file_field_tag :file %>
+                        </div>
+                        <div class="modal-footer">
+                          <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
+                          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                        </div>
+                        <div class="loading span11 hide">
+                          <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
+                        </div>
+                      <% end %>
+                    </div>
+                  <% end %>
 
                     <%= simple_form_for(@guw_model) do |f| %>
                       <%= f.error_notification %>
@@ -54,14 +92,12 @@
                         </div>
                       </div>
 
-                      <h5><%= I18n.t :other_settings %></h5>
-
                       <div class="col-5">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                          <%= f.input :config_type, as: :select, collection: [["#{I18n.t :old_configuration}", "old"], ["#{I18n.t :new_configuration}", "new"]], label: "#{I18n.t :type_of_configuration}" %>
+                          <%= f.input :config_type, as: :select, collection: [["#{I18n.t :old_configuration}", "old"], ["#{I18n.t :new_configuration}", "new"]], label: "#{I18n.t :type_of_configuration}", input_html: { class: "form-control", rows: "5" } %>
                           <%= f.input :allow_technology, label: I18n.t(:allow_technologies) %>
                           <%= f.input :view_data, label: "#{I18n.t :enable_data_visualization}" %> <%# Activer la visualiation des données %>
-                          <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:display_default), input_html: { class: "input-xxlarge", rows: "5" } %>
+                          <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:display_default), input_html: { class: "form-control", rows: "5" } %>
                           <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
                         </div>
                       </div>
@@ -283,7 +319,7 @@
                       </tbody>
                     </table>
 
-                      <div class="actions-tabs">
+                    <div class="actions-tabs">
                       <% if can? :manage_modules_instances, ModuleProject %>
                         <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
                         <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
@@ -292,44 +328,6 @@
                     </div>
                     <% end %>
                 </div>
-
-                <% unless @guw_model.new_record? %>
-                  <div class="span3">
-                    <% if @guw_model.config_type == "new" %>
-                      <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary float-right' %>
-                    <% else %>
-                      <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary float-right' %>
-                    <% end %>
-
-                    <% if @guw_model.default_display == "tab" %>
-                      <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary float-right' %>
-                    <% else %>
-                      <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary float-right' %>
-                    <% end %>
-                  </div>
-                <% else %>
-                  <a href="#import" role="button" class="btn btn-primary pull-right" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
-                    <%= I18n.t(:import) %>
-                  </a>
-                  <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                    <%= form_tag guw.import_new_config_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-                      <div class="modal-header modal-drag">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                        <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
-                      </div>
-                      <div class="modal-body">
-                        <%= file_field_tag :file %>
-                      </div>
-                      <div class="modal-footer">
-                        <button class="btn" data-dismiss="modal" aria-hidden="true">Fermer</button>
-                        <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-                      </div>
-                      <div class="loading span11 hide">
-                        <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
-                      </div>
-                    <% end %>
-                  </div>
-                <% end %>
               </div>
             </div>
           </div>
