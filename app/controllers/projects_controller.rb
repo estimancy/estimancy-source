@@ -205,12 +205,13 @@ class ProjectsController < ApplicationController
 
       unless pmp.nil?
 
+        @guw_model = pmp.guw_model
+
         @gceuow = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                              guw_model_id: @guw_model.id,
                                                              project_id: project.id,
                                                              module_project_id: pmp.id)
 
-        @guw_model = pmp.guw_model
         @guw_coefficients = @guw_model.guw_coefficients
         @guw_model_guw_attributes = @guw_model.guw_attributes
 
