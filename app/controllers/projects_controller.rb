@@ -201,7 +201,7 @@ class ProjectsController < ApplicationController
         @guw_model = pmp.guw_model
         @guw_coefficients = @guw_model.guw_coefficients
         @guw_model_guw_attributes = @guw_model.guw_attributes
-        guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
+        guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)", "Charge RTU Avec Dégr."], guw_model_id: @guw_model.id).first
         guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
         pf = @pf_hash_2[project.id]
@@ -338,7 +338,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 0, mpre_project.title)
         worksheet_wbs.add_cell(iii+1, 1, project_application.nil? ? mpre_project.application_name : project_application)
         worksheet_wbs.add_cell(iii+1, 2, mpre_project.business_need)
-        worksheet_synt.add_cell(iii+1, 3, mpre_project.request_number)
+        worksheet_wbs.add_cell(iii+1, 3, mpre_project.request_number)
         worksheet_wbs.add_cell(iii+1, 4, project_project_area.nil? ? '' : project_project_area)
         worksheet_wbs.add_cell(iii+1, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
