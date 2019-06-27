@@ -1,76 +1,39 @@
-<% if @guw_model.config_type == "old" %>
-
-<% else %>
-  <h5>
-    <strong>
-      <%= link_to @guw_model, guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
-    </strong>
-  </h5>
-
-  <div class="group_button" style="margin-bottom: 45px; margin-top: -35px;">
-    <% if can? :manage_modules_instances, ModuleProject %>
-      <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), :class => 'btn pull-right button_margin_right'%>
-    <% end %>
-    <%= link_to "Afficher sous forme d'un tableau", guw.guw_model_all_guw_types_path(@guw_model), class: "btn pull-right button_margin_right" %>
-  </div>
-
-  <% guw_model_guw_types = @guw_model.guw_types %>
-  <% guw_model_guw_attributes = @guw_model.guw_attributes %>
-
-  <div class="tabs">
-    <ul>
-      <% if guw_model_guw_types.empty? %>
-        <li>
-          <a href="#tabs-default">
-            <%= @guw_model %>
-          </a>
-        </li>
-      <% else %>
-        <% guw_model_guw_types.each do |guw_type| %>
-          <li>
-            <a href="#tabs-<%= guw_type.name.gsub(/[^0-9A-Za-z]/, '') %>">
-              <%= guw_type.name %>
-            </a>
-          </li>
-        <% end %>
-      <% end %>
-    </ul>
-
+<div class="row pb-5">
+  <div class="col-10">
+    <% guw_model_guw_types = @guw_model.guw_types %>
+    <% guw_model_guw_attributes = @guw_model.guw_attributes %>
     <% guw_outputs = Guw::GuwOutput.where(guw_model_id: @guw_model.id).order("display_order ASC") %>
 
-    <% if guw_model_guw_types.empty? %>
-      <div id="tabs-default">
-        <p>
-          <%= I18n.t :no_uo_type %>
-        </p>
+    <% guw_model_guw_types.each do |guw_type| %>
+      <div id="tabs-<%= guw_type.id %>" class="edition-page-group py-4">
+        <span>
+          <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type) %>
+        </span>
       </div>
-    <% else %>
-      <% guw_model_guw_types.each do |guw_type| %>
+      <div class="card card-content-bloc estimation-edition">
+        <div class="card-body">
+          <div class="edition-bloc-title">
+            <%= link_to "< Back", guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
 
-        <% guw_type_guw_complexities = guw_type.guw_complexities %>
-        <% guw_type_guw_type_complexities = guw_type.guw_type_complexities %>
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), class: "btn btn-secondary" %>
+            <% end %>
+          </div>
 
-        <div id="tabs-<%= guw_type.name.gsub(/[^0-9A-Za-z]/, '') %>">
+          <% guw_type_guw_complexities = guw_type.guw_complexities %>
+          <% guw_type_guw_type_complexities = guw_type.guw_type_complexities %>
 
-          <%= link_to "#{I18n.t(:edit)}", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "btn btn-primary" %>
           <%= simple_format(guw_type.description) %>
-
-          <h4>
-            <b>
-              <%= I18n.t(:UO_type_complexity_of, parameter: guw_type) %>
-            </b>
-          </h4>
 
           <div class="group_button">
             <% if can? :manage_modules_instances, ModuleProject %>
-              <%#= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn" %>
-              <%= link_to I18n.t(:create_button), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
+              <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
             <% end %>
           </div>
 
           <%= form_tag guw_complexity_work_units_save_complexity_work_units_path do %>
             <%= hidden_field_tag :guw_type_id, guw_type.id %>
-            <table class="table table-bordered table-condensed">
+            <table class="table table-list">
               <tr>
                 <th></th>
                 <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
@@ -78,7 +41,7 @@
                     <%= guw_cplx.name %> <%= guw_cplx.default_value == true ? '(par défault)' : '' %> -
                     <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type, guw_cplx) %>
                     <% if can? :manage_modules_instances, ModuleProject %>
-                        - <%= link_to I18n.t(:delete), guw_cplx, method: :delete, confirm: I18n.t(:are_you_sure) %>
+                      - <%= link_to I18n.t(:delete), guw_cplx, method: :delete, confirm: I18n.t(:are_you_sure) %>
                     <% end %>
                   </th>
                 <% end %>
@@ -135,7 +98,7 @@
                       <% oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_complexity.id,
                                                                             guw_output_id: guw_output.id).first %>
 
-                      <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? '' : oci.init_value, class: "input-mini" %>
+                      <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? '' : oci.init_value, class: "form-control" %>
                     </td>
                   <% end %>
                 <% end %>
@@ -149,7 +112,7 @@
                       <% oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_complexity.id,
                                                               guw_output_id: guw_output.id).first %>
 
-                      <%= text_field_tag "value_cplx[#{guw_complexity.id}][#{guw_output.id}]", oc.nil? ? '' : oc.value, class: "input-mini" %>
+                      <%= text_field_tag "value_cplx[#{guw_complexity.id}][#{guw_output.id}]", oc.nil? ? '' : oc.value, class: "form-control" %>
                     </td>
                   <% end %>
                 <% end %>
@@ -168,7 +131,7 @@
                                                        ["Afficher sans modification", "display"],
                                                        ["Afficher avec modification", "display_modif"],
                                                        ["Modifier seulement", "modif"]],
-                                                      selected: got.nil? ? nil : got.display_type), class: "input-large" %>
+                                                      selected: got.nil? ? nil : got.display_type), class: "form-control" %>
                   </td>
                   <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
                     <% guw_outputs.each do |guw_output| %>
@@ -177,7 +140,7 @@
                                                                guw_output_associated_id: aguw_output.id,
                                                                guw_output_id: guw_output.id).first %>
                       <td class="align-center">
-                        <%= text_field_tag "config[#{guw_complexity.id}][#{guw_output.id}][#{aguw_output.id}]", oa.nil? ? '' : oa.value, class: "input-mini" %>
+                        <%= text_field_tag "config[#{guw_complexity.id}][#{guw_output.id}][#{aguw_output.id}]", oa.nil? ? '' : oa.value, class: "form-control" %>
                       </td>
                     <% end %>
                   <% end %>
@@ -215,7 +178,7 @@
                       <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
                         <% guw_outputs.each do |guw_output| %>
                           <td class="align-center">
-                            <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", guw_complexity_coefficient_elements["#{guw_cplx.id}_#{guw_coefficient_element.id}_#{guw_output.id}"], class: "input-mini" %>
+                            <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", guw_complexity_coefficient_elements["#{guw_cplx.id}_#{guw_coefficient_element.id}_#{guw_output.id}"], class: "form-control" %>
                           </td>
                         <% end %>
                       <% end %>
@@ -223,7 +186,7 @@
 
                   <% end %>
                   </td>
-                </tr>
+                  </tr>
               <% end %>
 
               <% if @guw_model.allow_technology == true %>
@@ -247,7 +210,7 @@
                       <% tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_cplx.id,
                                                                     organization_technology_id: technology.id).first %>
                       <td colspan="<%= guw_outputs.size %>" class="align-center">
-                        <%= text_field_tag "technology_value[#{guw_cplx.id}][#{technology.id}]", tcplx.nil? ? '' : tcplx.coefficient, class: "input-mini" %>
+                        <%= text_field_tag "technology_value[#{guw_cplx.id}][#{technology.id}]", tcplx.nil? ? '' : tcplx.coefficient, class: "form-control" %>
                       </td>
                     <% end %>
                     </td>
@@ -258,14 +221,14 @@
             </table>
 
             <% if can? :manage_modules_instances, ModuleProject %>
-              <div class="group_button">
-                <%= submit_tag I18n.t(:label_save), class: "btn btn-primary" %>
+              <div class="group_button" style="width: 100%;">
+                <%= submit_tag I18n.t(:label_save), class: "btn btn-primary", style: "float: right;" %>
               </div>
             <% end %>
           <% end %>
 
-          <br>
-          <hr>
+            <br>
+            <hr>
 
           <% if guw_type.allow_criteria == true %>
 
@@ -278,7 +241,7 @@
 
 
             <%= form_tag guw_model_guw_type_guw_attribute_complexities_save_attributs_complexities_path(@guw_model, guw_type.id), method: "POST" do %>
-              <table class="table table-bordered">
+              <table class="table table-list">
                 <tr>
                   <th>
                     Seuils de complexité
@@ -286,7 +249,7 @@
                   <% guw_type_guw_type_complexities.order("display_order asc").each do |type_complexity| %>
                     <th colspan="5">
                       <%= type_complexity.name %> (<%= type_complexity.value %>) -
-                      <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type, type_complexity) %>
+                      <%= link_to "#{I18n.t(:edit)} #{guw_type}", guw.edit_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type, type_complexity) %>
                       <% if can? :manage_modules_instances, ModuleProject %>
                         <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, confirm: I18n.t(:are_you_sure) %>
                       <% end %>
@@ -328,19 +291,19 @@
                       <% ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: guw_attribute.id, guw_type_id: guw_type, guw_type_complexity_id: type_complexity.id).first %>
 
                       <td class="align-center">
-                        <%= check_box_tag "enable[#{guw_attribute.id}][#{type_complexity.id}]", "enable", ac.nil? ? false : ac.enable_value, class: "input-mini" %>
+                        <%= check_box_tag "enable[#{guw_attribute.id}][#{type_complexity.id}]", "enable", ac.nil? ? false : ac.enable_value, class: "form-control" %>
                       </td>
                       <td class="align-center">
-                        <%= text_field_tag "bottom[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.bottom_range, class: "input-mini" %>
+                        <%= text_field_tag "bottom[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.bottom_range, class: "form-control" %>
                       </td>
                       <td class="align-center">
-                        <%= text_field_tag "top[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.top_range, class: "input-mini" %>
+                        <%= text_field_tag "top[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.top_range, class: "form-control" %>
                       </td>
                       <td class="align-center">
-                        <%= text_field_tag "coefficient[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value, class: "input-mini" %>
+                        <%= text_field_tag "coefficient[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value, class: "form-control" %>
                       </td>
                       <td class="align-center">
-                        <%= text_field_tag "value_b[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value_b, class: "input-mini" %>
+                        <%= text_field_tag "value_b[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value_b, class: "form-control" %>
                       </td>
                     <% end %>
                   </tr>
@@ -358,7 +321,38 @@
             <% end %>
           <% end %>
         </div>
-      <% end %>
+      </div>
     <% end %>
   </div>
-<% end %>
+
+  <div class="col-2">
+    <div id="edition-sidebar">
+      <h4 class="mb-0">Type d'Unité Oeuvre</h4>
+      <ul class="nav flex-column">
+        <% guw_model_guw_types.each do |guw_type| %>
+          <li class="nav-item">
+            <a class="nav-link group" href="#tabs-<%= guw_type.id %>">
+              <span>
+                <%= guw_type %>
+              </span>
+            </a>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $(document).on('scroll', function(){
+            if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+                $("#edition-sidebar").css({position: "fixed", top: -5});
+            }
+            if ($(document).scrollTop() < 200){
+                $("#edition-sidebar").css({position: "static", top: 0});
+            }
+        });
+    });
+</script>
