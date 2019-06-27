@@ -208,7 +208,7 @@ class ProjectsController < ApplicationController
 
             # Guw::GuwUnitOfWork.where(project_id: 10030).joins(:guw_type, :guw_unit_of_work_attributes).select('guw_guw_unit_of_works.*, guw_guw_unit_of_work_attributes.*, guw_guw_types.name as guw_type_name').each do |guow|
             # Guw::GuwUnitOfWork.where(project_id: 10030).includes(:guw_unit_of_work_attributes).joins(:guw_type).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name').each do |guow|
-            project.guw_unit_of_works.includes(:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).joins(:guw_type, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name').each do |guow|
+            project.guw_unit_of_works.includes(:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application)
@@ -251,7 +251,7 @@ class ProjectsController < ApplicationController
               end
 
               # guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
-              guow.guw_unit_of_work_attributes.includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
+              guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
                 worksheet_cf.add_cell(i, 19 + j, uowa.most_likely)
               end
 
