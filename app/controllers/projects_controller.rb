@@ -196,22 +196,22 @@ class ProjectsController < ApplicationController
               worksheet_cf.add_cell(i, 13, guow.intermediate_percent)
               worksheet_cf.add_cell(i, 14, guow.intermediate_weight)
 
-              j = 0
-              @guw_coefficients.each do |gc|
-                if gc.coefficient_type == "Pourcentage"
-
-                  @guw_coefficient_guw_coefficient_elements = gc.guw_coefficient_elements
-                  default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
-
-                  ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                    guw_coefficient_id: gc.id,
-                                                                    module_project_id: guow.module_project_id).order("updated_at ASC").last
-
-                  worksheet_cf.add_cell(i, 15 + j, default.nil? ? 100 : default.value.to_f)
-                  worksheet_cf.add_cell(i, 15 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
-                  j = j + 2
-                end
-              end
+              # j = 0
+              # @guw_coefficients.each do |gc|
+              #   if gc.coefficient_type == "Pourcentage"
+              #
+              #     @guw_coefficient_guw_coefficient_elements = gc.guw_coefficient_elements
+              #     default = @guw_coefficient_guw_coefficient_elements.where(default: true).first
+              #
+              #     ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+              #                                                       guw_coefficient_id: gc.id,
+              #                                                       module_project_id: guow.module_project_id).order("updated_at ASC").last
+              #
+              #     worksheet_cf.add_cell(i, 15 + j, default.nil? ? 100 : default.value.to_f)
+              #     worksheet_cf.add_cell(i, 15 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
+              #     j = j + 2
+              #   end
+              # end
 
 
               # guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
