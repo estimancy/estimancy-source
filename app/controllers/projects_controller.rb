@@ -214,9 +214,9 @@ class ProjectsController < ApplicationController
               end
 
 
-              guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
-                worksheet_cf.add_cell(i, 19 + j, uowa.nil? ? nil : uowa.most_likely)
-              end
+              # guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
+              #   worksheet_cf.add_cell(i, 19 + j, uowa.nil? ? nil : uowa.most_likely)
+              # end
 
               # if j == 0
               @guw_model_guw_attributes.each_with_index do |guw_attribute, ii|
