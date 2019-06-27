@@ -349,7 +349,7 @@ Projestimate::Application.routes.draw do
   get 'search' => 'projects#search', :as => 'search'
   get 'append_pemodule' => 'projects#append_pemodule'
   get 'select_categories' => 'projects#select_categories', :as => 'select_categories'
-  #post 'raw_data_extraction' => 'projects#raw_data_extraction', :as => 'raw_data_extraction'
+  post 'raw_data_extraction' => 'projects#raw_data_extraction', :as => 'raw_data_extraction'
 
   post 'run_estimation' => 'projects#run_estimation', :as => 'run_estimation'
   post 'copy_security/:project_id' => 'projects#copy_security', :as => 'copy_security'
