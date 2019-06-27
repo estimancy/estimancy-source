@@ -238,7 +238,7 @@ class ProjectsController < ApplicationController
                 if gc.coefficient_type == "Pourcentage"
 
                   default = gc.guw_coefficient_elements.select{|i| i.default == true}.first
-                  ceuw = guow.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.order("updated_at ASC").last
+                  ceuw = guow.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
 
                   # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                   #                                                   guw_coefficient_id: gc.id,
