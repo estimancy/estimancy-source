@@ -96,11 +96,42 @@ class ProjectsController < ApplicationController
     #   ActiveRecord::Base.connection_pool.with_connection do
         workbook = RubyXL::Workbook.new
 
-        @organization = Organization.where(id: params[:organization_id]).first
-        @organization_projects = Project.where(is_model: false).includes(:module_projects).joins(:application, :provider, :project_area, :acquisition_category, :platform_category, :provider, :estimation_status).select("applications.name as application_name, providers.name as project_area_name,
-                                               projects.*, project_areas.name as project_area_name, acquisition_categories.name as acquisition_category_name,
-                                               providers.name as provider_name, estimation_statuses.name as estimation_status_name,
-                                               platform_categories.name as platform_category_name")
+        @organization = Organization.where(id: 71).first
+#         sql = "SELECT DISTINCT
+# projects.title,
+# applications.name as application_name,
+# projects.business_need,
+# projects.request_number,
+# project_areas.name as project_area_name,
+# acquisition_categories.name as acquisition_category_name,
+# platform_categories.name as platform_categoriy_name,
+# providers.name as provider_name,
+# projects.start_date,
+# estimation_statuses.name as estimation_status_name,
+# guw_guw_unit_of_works.name as guw_guw_unit_of_works_name,
+# guw_guw_types.name,
+# guw_guw_unit_of_works.intermediate_percent,
+# guw_guw_unit_of_works.intermediate_weight,
+# guw_guw_coefficient_element_unit_of_works.percent,
+# guw_guw_coefficient_elements.value as default_value
+# FROM `projects`
+# INNER JOIN `organizations` ON `organizations`.`id` = 71
+# INNER JOIN `applications` ON `applications`.`id` = `projects`.`application_id`
+# INNER JOIN `providers` ON `providers`.`id` = `projects`.`provider_id`
+# INNER JOIN `project_areas` ON `project_areas`.`id` = `projects`.`project_area_id`
+# INNER JOIN `acquisition_categories` ON `acquisition_categories`.`id` = `projects`.`acquisition_category_id`
+# INNER JOIN `platform_categories` ON `platform_categories`.`id` = `projects`.`platform_category_id`
+# INNER JOIN `estimation_statuses` ON `estimation_statuses`.`id` = `projects`.`estimation_status_id`
+# INNER JOIN `guw_guw_unit_of_works` ON `guw_guw_unit_of_works`.`project_id` = `projects`.`id`
+# INNER JOIN `guw_guw_types` ON `guw_guw_types`.`id` = `guw_guw_unit_of_works`.`guw_type_id`
+# INNER JOIN `guw_guw_coefficient_element_unit_of_works` ON `guw_guw_coefficient_element_unit_of_works`.`guw_unit_of_work_id` = `guw_guw_unit_of_works`.`id`
+# INNER JOIN `guw_guw_coefficient_elements` ON `guw_guw_coefficient_elements`.`id` = `guw_guw_coefficient_element_unit_of_works`.`guw_coefficient_element_id`
+# INNER JOIN `guw_guw_coefficients` ON `guw_guw_coefficients`.`id` = `guw_guw_coefficient_element_unit_of_works`.`guw_coefficient_id`
+# WHERE `guw_guw_coefficients`.`coefficient_type` = 'Pourcentage'"
+
+#         @organization_projects = ActiveRecord::Base.connection.exec_query(sql)
+
+        @organization_projects = @organization.projects.where(is_model: false).includes(:guw_unit_of_works, :module_projects)
 
 
         worksheet_cf = workbook.worksheets[0]
@@ -158,27 +189,26 @@ class ProjectsController < ApplicationController
 
           unless pmp.nil?
             @guw_model = pmp.guw_model
-
-            @guw_coefficients = @guw_model.guw_coefficients.joins(:guw_coefficient_elements).select("guw_guw_coefficients.*, guw_guw_coefficient_elements.*")
-
             @guw_model_guw_attributes = @guw_model.guw_attributes
+            @guw_coefficients = @guw_model.guw_coefficients.includes(:guw_coefficient_elements)
+
             guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
             guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
             pf = @pf_hash_2[project.id]
 
-            project_application = project.application_name
-            project_project_area = project.project_area_name
-            project_acquisition_category = project.acquisition_category_name
-            project_platform_category = project.platform_category_name
-            project_provider = project.provider_name
-            project_estimation_status = project.estimation_status_name
+            project_application = project.application
+            project_project_area = project.project_area
+            project_acquisition_category = project.acquisition_category
+            project_platform_category = project.platform_category
+            project_provider = project.provider
+            project_estimation_status = project.estimation_status
 
             @guow_guw_types = Hash.new
 
             # Guw::GuwUnitOfWork.where(project_id: 10030).joins(:guw_type, :guw_unit_of_work_attributes).select('guw_guw_unit_of_works.*, guw_guw_unit_of_work_attributes.*, guw_guw_types.name as guw_type_name').each do |guow|
             # Guw::GuwUnitOfWork.where(project_id: 10030).includes(:guw_unit_of_work_attributes).joins(:guw_type).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name').each do |guow|
-            Guw::GuwUnitOfWork.where(project_id: project.id).includes(:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works, :guw_type).joins(:guw_type, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name, guw_guw_unit_of_work_attributes.*, guw_guw_coefficient_element_unit_of_works.*').each do |guow|
+            project.guw_unit_of_works.includes(:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).joins(:guw_type, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name').each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application)
@@ -194,25 +224,21 @@ class ProjectsController < ApplicationController
 
               worksheet_cf.add_cell(i, 7, project_platform_category)
               worksheet_cf.add_cell(i, 8, project_provider)
-              worksheet_cf.add_cell(i, 9, project.start_date.to_s)
+              worksheet_cf.add_cell(i, 9, project['start_date'])
               worksheet_cf.add_cell(i, 10, project_estimation_status)
-              worksheet_cf.add_cell(i, 11, guow.name)
+              worksheet_cf.add_cell(i, 11, project['name'])
 
-              worksheet_cf.add_cell(i, 12, guow.guw_type.name)
+              worksheet_cf.add_cell(i, 12, project['guw_type_name'])
 
-              worksheet_cf.add_cell(i, 13, guow.intermediate_percent)
-              worksheet_cf.add_cell(i, 14, guow.intermediate_weight)
+              worksheet_cf.add_cell(i, 13, project['intermediate_percent'])
+              worksheet_cf.add_cell(i, 14, project['intermediate_weight'])
 
               j = 0
               @guw_coefficients.each do |gc|
                 if gc.coefficient_type == "Pourcentage"
-                  if gc.default == true
-                    default = gc
-                  end
 
-
-                  ceuw = guow.guw_coefficient_element_unit_of_works.where(guw_coefficient_id: gc.id,
-                                                                          module_project_id: guow.module_project_id).order("updated_at ASC").last
+                  default = gc.guw_coefficient_elements.select{|i| i.default == true}.first
+                  ceuw = guow.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.order("updated_at ASC").last
 
                   # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                   #                                                   guw_coefficient_id: gc.id,
@@ -226,14 +252,12 @@ class ProjectsController < ApplicationController
 
               # guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
               guow.guw_unit_of_work_attributes.includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
-                worksheet_cf.add_cell(i, 19 + j, uowa.nil? ? nil : uowa.most_likely)
+                worksheet_cf.add_cell(i, 19 + j, uowa.most_likely)
               end
 
-              # if j == 0
               @guw_model_guw_attributes.each_with_index do |guw_attribute, ii|
                 worksheet_cf.add_cell(0, 19+ii, guw_attribute.name)
               end
-              # end
 
               i = i + 1
 
