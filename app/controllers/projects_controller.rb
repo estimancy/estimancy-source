@@ -178,7 +178,7 @@ class ProjectsController < ApplicationController
 
             # Guw::GuwUnitOfWork.where(project_id: 10030).joins(:guw_type, :guw_unit_of_work_attributes).select('guw_guw_unit_of_works.*, guw_guw_unit_of_work_attributes.*, guw_guw_types.name as guw_type_name').each do |guow|
             # Guw::GuwUnitOfWork.where(project_id: 10030).includes(:guw_unit_of_work_attributes).joins(:guw_type).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name').each do |guow|
-            Guw::GuwUnitOfWork.where(project_id: project.id).includes(:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).joins(:guw_type, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name, guw_guw_unit_of_work_attributes.*, guw_guw_coefficient_element_unit_of_works.*').each do |guow|
+            Guw::GuwUnitOfWork.where(project_id: project.id).includes(:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works, :guw_type).joins(:guw_type, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name, guw_guw_unit_of_work_attributes.*, guw_guw_coefficient_element_unit_of_works.*').each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application)
@@ -198,7 +198,7 @@ class ProjectsController < ApplicationController
               worksheet_cf.add_cell(i, 10, project_estimation_status)
               worksheet_cf.add_cell(i, 11, guow.name)
 
-              worksheet_cf.add_cell(i, 12, guow.guw_type_name)
+              worksheet_cf.add_cell(i, 12, guow.guw_type.name)
 
               worksheet_cf.add_cell(i, 13, guow.intermediate_percent)
               worksheet_cf.add_cell(i, 14, guow.intermediate_weight)
