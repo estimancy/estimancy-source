@@ -174,7 +174,7 @@ class ProjectsController < ApplicationController
         @plc_hash = Hash.new
         @a_hash = Hash.new
         @p_hash = Hash.new
-        @ce_hash = Hash.new
+        # @ce_hash = Hash.new
         @pf_hash_2 = Hash.new
         @statuses_hash = Hash.new
         @guw_hash = Hash.new {|h,k| h[k] = [] }
@@ -227,9 +227,9 @@ class ProjectsController < ApplicationController
           @pf_hash[pf.project_id] = pf
         end
 
-        @organization.guw_coefficients.each do |gc|
-          @ce_hash[gc.id] = gc.guw_coefficient_elements.where(default: true).first
-        end
+        # @organization.guw_coefficients.each do |gc|
+        #   @ce_hash[gc.id] = gc.guw_coefficient_elements.where(default: true).first
+        # end
 
         @organization_projects.each do |project|
 
