@@ -27,10 +27,14 @@ class Demand < ActiveRecord::Base
       if organization.nil?
         nil
       else
-        initial_status = dt.demand_statuses.first_or_create(organization_id: organization.id,
-                                                            demand_type_id: dt.id,
-                                                            name: 'Préliminaire')
-        [[initial_status.name, initial_status.id]]
+        if dt.nil?
+          nil
+        else
+          initial_status = dt.demand_statuses.first_or_create(organization_id: organization.id,
+                                                              demand_type_id: dt.id,
+                                                              name: 'Préliminaire')
+          [[initial_status.name, initial_status.id]]
+        end
       end
       #nil
     else

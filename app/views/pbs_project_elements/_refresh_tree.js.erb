@@ -38,7 +38,7 @@ $(".header_data").html("<h5><%= @current_component %> - <%= current_module_proje
 $('#edit_component').modal('hide');
 
 $(".date-picker").datepicker({
-    language: '<%= set_user_language %>',
+    language: '<%= set_user_language_for_datepicker %>',
     autoclose: true,
     todayHighlight: true,
     todayBtn: true

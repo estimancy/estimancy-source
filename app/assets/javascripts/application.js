@@ -17,3 +17,13 @@
 //= require main
 //= require jquery-number
 //= require jscolor
+
+//Test1
+//= require bootstrap-datepicker
+//Te
+////= require bootstrap-datepicker/core
+////= require bootstrap-datepicker/locales/bootstrap-datepicker.fr.js
+////= require locales/bootstrap-datepicker.frsncf.js
+
+
+

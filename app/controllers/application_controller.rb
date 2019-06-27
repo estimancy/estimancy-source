@@ -77,6 +77,7 @@ class ApplicationController < ActionController::Base
   helper_method :load_admin_setting
   helper_method :set_locale_from_browser
   helper_method :set_user_language
+  helper_method :set_user_language_for_datepicker
   helper_method :initialization_module
   helper_method :user_number_precision
 
@@ -447,6 +448,19 @@ class ApplicationController < ActionController::Base
     end
     @current_locale = session[:current_locale]
     I18n.locale = session[:current_locale]
+  end
+
+  def set_user_language_for_datepicker
+    unless current_user.nil? || current_user.language.nil?
+      session[:current_locale] = current_user.language.locale.downcase
+    else
+      session[:current_locale] = set_locale_from_browser
+    end
+    user_local_for_datepicker = session[:current_locale]
+    if !user_local_for_datepicker.in?(["en", "en-gb"])
+      user_local_for_datepicker = "fr"
+    end
+    user_local_for_datepicker
   end
 
   def set_user_time_zone

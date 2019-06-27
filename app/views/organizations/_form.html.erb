@@ -42,6 +42,7 @@
               <div class="edition-bloc-content">
                 <div class="edition-bloc-form">
                   <div class="form-row">
+
                     <div class="col-5">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
@@ -73,7 +74,7 @@
                     <div class="col-12">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
-                        <label class="mdl-textfield__label" for="need"><%= I18n.t(:description) %></label>
+                        <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
                       </div>
                     </div>
                   </div>

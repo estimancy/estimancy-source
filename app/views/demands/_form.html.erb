@@ -8,17 +8,21 @@
     </li>
 
     <% unless controller.action_name == "new" %>
-      <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
-        <li>
-          <a href="#services">
-            Services
-          </a>
-        </li>
-        <li>
-          <a href="#devis">
-            Devis
-          </a>
-        </li>
+      <% if @demand.demand_type  %>
+          <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
+            <li>
+              <a href="#services">
+                Services
+              </a>
+            </li>
+            <li>
+              <a href="#devis">
+                Devis
+              </a>
+            </li>
+          <% else %>
+            <li> - </li>
+          <% end %>
       <% end %>
     <% end %>
 
@@ -54,7 +58,7 @@
                           as: :select,
                           label: "Statut de la demande",
                           collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
-                          selected: @demand.demand_type.demand_status_id,
+                          selected: (@demand.demand_type.nil? ? nil : @demand.demand_type.demand_status_id),
                           input_html: { class: 'input-xxlarge' } %>
             <% else %>
               <% if (!("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) && (@demand.demand_status.name == "En chiffrage")) %>
@@ -132,9 +136,9 @@
 
           <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', rows: 5 } %>
           <% unless @demand.new_record? %>
-            <% if @demand.demand_type.name == "FRAIS" %>
+            <% if @demand.demand_type && @demand.demand_type.name == "FRAIS" %>
               <%= f.input :cost, :label => "Coût", :input_html => {:class => 'input-xlarge' } %>
-            <% elsif @demand.demand_type.name == "EVO" || @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "MCO" %>
+            <% elsif @demand.demand_type && (@demand.demand_type.name == "EVO" || @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "MCO") %>
               <span>
                 Coût (€) :
               </span>
@@ -192,7 +196,7 @@
                 <br>
                 -
               <% end %>
-            <% elsif @demand.demand_type.name == "ANO" %>
+            <% elsif @demand.demand_type && @demand.demand_type.name == "ANO" %>
               <% demand_application = Application.find(@demand.application_id) %>
                 <span>
                 Coût (€) :
@@ -351,7 +355,7 @@
     </div>
 
     <% unless controller.action_name == "new" %>
-      <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
+      <% if @demand.demand_type && (@demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO") %>
         <div id="services">
           <div class="row-fluid">
             <div class="span12" style="overflow: visible;">
@@ -540,14 +544,13 @@
     <% end %>
   <% end %>
 <% end %>
-
-
 </div>
 
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
     $(document).ready(function () {
         $(".date-picker").datepicker({
-            language: '<%= set_user_language %>',
+            language: '<%= set_user_language_for_datepicker %>',
             autoclose: true,
             todayHighlight: true,
             todayBtn: true
