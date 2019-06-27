@@ -224,14 +224,14 @@ class ProjectsController < ApplicationController
 
               worksheet_cf.add_cell(i, 7, project_platform_category)
               worksheet_cf.add_cell(i, 8, project_provider)
-              worksheet_cf.add_cell(i, 9, project['start_date'])
+              worksheet_cf.add_cell(i, 9, project.start_date)
               worksheet_cf.add_cell(i, 10, project_estimation_status)
-              worksheet_cf.add_cell(i, 11, project['name'])
+              worksheet_cf.add_cell(i, 11, project.name)
 
-              worksheet_cf.add_cell(i, 12, project['guw_type_name'])
+              worksheet_cf.add_cell(i, 12, project.guw_type.name)
 
-              worksheet_cf.add_cell(i, 13, project['intermediate_percent'])
-              worksheet_cf.add_cell(i, 14, project['intermediate_weight'])
+              worksheet_cf.add_cell(i, 13, project.intermediate_percent)
+              worksheet_cf.add_cell(i, 14, project.intermediate_weight)
 
               j = 0
               @guw_coefficients.each do |gc|
