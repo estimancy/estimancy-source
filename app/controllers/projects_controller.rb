@@ -96,13 +96,14 @@ class ProjectsController < ApplicationController
 
     @organization = Organization.where(id: params[:organization_id]).first
 
-    @organization_projects_for_pf = @organization.projects.includes(:project_fields, :application, :project_areas, :acquisition_categories, :platform_categories, :providers,
-                                                                    :estimation_statuses)
+    @organization_projects_for_pf = @organization.projects.includes(:project_fields, :application, :project_area,
+                                                                    :acquisition_category, :platform_category, :provider,
+                                                                    :estimation_status)
 
     @organization_projects = @organization.projects
                                  .where(is_model: false)
-                                 .includes(:application, :project_areas, :acquisition_categories, :platform_categories, :providers,
-                                           :estimation_statuses, :guw_model, :guw_attributes, :guw_coefficients,
+                                 .includes(:application, :project_area, :acquisition_category, :platform_category, :provider,
+                                           :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                            :guw_types, :guw_unit_of_works, :module_projects,
                                            :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
 
