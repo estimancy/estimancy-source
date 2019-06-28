@@ -96,8 +96,15 @@ class ProjectsController < ApplicationController
 
     @organization = Organization.where(id: params[:organization_id]).first
 
-    @organization_projects_for_pf = @organization.projects.includes(:project_fields)
-    @organization_projects = @organization.projects.where(is_model: false).includes(:guw_model, :guw_attributes, :guw_coefficients, :guw_types, :guw_unit_of_works, :module_projects, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+    @organization_projects_for_pf = @organization.projects.includes(:project_fields, :application, :project_areas, :acquisition_categories, :platform_categories, :providers,
+                                                                    :estimation_statuses)
+
+    @organization_projects = @organization.projects
+                                 .where(is_model: false)
+                                 .includes(:application, :project_areas, :acquisition_categories, :platform_categories, :providers,
+                                           :estimation_statuses, :guw_model, :guw_attributes, :guw_coefficients,
+                                           :guw_types, :guw_unit_of_works, :module_projects,
+                                           :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
 
     worksheet_cf = workbook.worksheets[0]
     worksheet_cf.sheet_name = 'Composants Fonctionnels'
@@ -149,41 +156,41 @@ class ProjectsController < ApplicationController
       end
     end
 
-    @organization.estimation_statuses.each do |es|
-      es.projects.each do |project|
-        @statuses_hash[project.id] = es.to_s
-      end
-    end
+    # @organization.estimation_statuses.each do |es|
+    #   es.projects.each do |project|
+    #     @statuses_hash[project.id] = es.to_s
+    #   end
+    # end
 
-    @organization.applications.each do |application|
-      application.projects.each do |project|
-        @app_hash[project.id] = application.name
-      end
-    end
+    # @organization.applications.each do |application|
+    #   application.projects.each do |project|
+    #     @app_hash[project.id] = application.name
+    #   end
+    # end
 
-    @organization.project_areas.each do |pa|
-      pa.projects.each do |project|
-        @pa_hash[project.id] = pa.name
-      end
-    end
+    # @organization.project_areas.each do |pa|
+    #   pa.projects.each do |project|
+    #     @pa_hash[project.id] = pa.name
+    #   end
+    # end
 
-    @organization.acquisition_categories.each do |ac|
-      ac.projects.each do |project|
-        @ac_hash[project.id] = ac.name
-      end
-    end
+    # @organization.acquisition_categories.each do |ac|
+    #   ac.projects.each do |project|
+    #     @ac_hash[project.id] = ac.name
+    #   end
+    # end
 
-    @organization.platform_categories.each do |pc|
-      pc.projects.each do |project|
-        @plc_hash[project.id] = pc.name
-      end
-    end
+    # @organization.platform_categories.each do |pc|
+    #   pc.projects.each do |project|
+    #     @plc_hash[project.id] = pc.name
+    #   end
+    # end
 
-    @organization.providers.each do |p|
-      p.projects.each do |project|
-        @p_hash[project.id] = p.name
-      end
-    end
+    # @organization.providers.each do |p|
+    #   p.projects.each do |project|
+    #     @p_hash[project.id] = p.name
+    #   end
+    # end
 
     ProjectField.where(field_id: field.id).each do |pf|
       @pf_hash[pf.project_id] = pf
@@ -204,12 +211,12 @@ class ProjectsController < ApplicationController
 
         pf = @pf_hash_2[project.id]
 
-        project_application = @app_hash[project.id]
-        project_project_area = @pa_hash[project.id]
-        project_acquisition_category = @ac_hash[project.id]
-        project_platform_category = @plc_hash[project.id]
-        project_provider = @p_hash[project.id]
-        project_estimation_status = @statuses_hash[project.id]
+        project_application = project.application.nil? ? nil : project.application.name
+        project_project_area = project.project_area.nil? ? nil : project.project_area.name
+        project_acquisition_category = project.acquisition_category.nil? ? nil : project.acquisition_category.name
+        project_platform_category = project.platform_category.nil? ? nil : project.platform_category.name
+        project_provider = project.provider.nil? ? nil : project.provider.name
+        project_estimation_status = project.estimation_status.nil? ? nil : project.estimation_status.name
 
         @guow_guw_types = Hash.new
 
@@ -304,11 +311,12 @@ class ProjectsController < ApplicationController
 
       mpre_project = mpre.module_project.project
 
-      project_application = @p_hash[mpre_project.id]
-      project_project_area = @pa_hash[mpre_project.id]
-      project_acquisition_category = @ac_hash[mpre_project.id]
-      project_platform_category = @plc_hash[mpre_project.id]
-      project_provider = @p_hash[mpre_project.id]
+      project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
+      project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
+      project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
+      project_platform_category = mpre_project.platform_category.nil? ? nil : mpre_project.platform_category.name
+      project_provider = mpre_project.provider.nil? ? nil : mpre_project.provider.name
+      project_estimation_status = mpre_project.estimation_status.nil? ? nil : mpre_project.estimation_status.name
 
       unless mpre_project.is_model == true
 
@@ -389,11 +397,12 @@ class ProjectsController < ApplicationController
       # project = Project.find(k)
       unless project.is_model == true
 
-        project_application = @p_hash[project.id]
-        project_project_area = @pa_hash[project.id]
-        project_acquisition_category = @ac_hash[project.id]
-        project_platform_category = @plc_hash[project.id]
-        project_provider = @p_hash[project.id]
+        project_application = project.application.nil? ? nil : project.application.name
+        project_project_area = project.project_area.nil? ? nil : project.project_area.name
+        project_acquisition_category = project.acquisition_category.nil? ? nil : project.acquisition_category.name
+        project_platform_category = project.platform_category.nil? ? nil : project.platform_category.name
+        project_provider = project.provider.nil? ? nil : project.provider.name
+        project_estimation_status = project.estimation_status.nil? ? nil : project.estimation_status.name
 
         worksheet_synt.add_cell(pi, 0, project.title)
         worksheet_synt.add_cell(pi, 1, project_application)
