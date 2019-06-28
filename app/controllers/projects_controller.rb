@@ -194,7 +194,7 @@ class ProjectsController < ApplicationController
       pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
 
       unless pmp.nil?
-        @guw_model = pmp.guw_model.first
+        @guw_model = pmp.guw_model
         @guw_model_guw_attributes = @guw_model.guw_attributes
         @guw_coefficients = @guw_model.guw_coefficients.includes(:guw_coefficient_elements)
         @guw_coefficient_elements = @guw_coefficients.flat_map(&:guw_coefficient_elements)
