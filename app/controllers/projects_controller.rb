@@ -405,33 +405,35 @@ class ProjectsController < ApplicationController
           @pf_hash[pf.project_id] = pf
         end
 
+        @organization_projects = @organization.projects.includes(:project_fields)
         @organization_projects.each do |project|
           # project = Project.find(k)
           unless project.is_model == true
-            pf = project.project_fields.where(field_id: field.id).first
 
-            project_application = project.application
-            project_project_area = project.project_area
-            project_acquisition_category = project.acquisition_category
-            project_platform_category = project.platform_category
-            project_provider = project.provider
+            pf = project.project_fields.select{|i| i.field_id == field.id }
+
+            project_application = @p_hash[project.id]
+            project_project_area = @pa_hash[project.id]
+            project_acquisition_category = @ac_hash[project.id]
+            project_platform_category = @plc_hash[project.id]
+            project_provider = @p_hash[project.id]
 
             worksheet_synt.add_cell(pi, 0, project.title)
-            worksheet_synt.add_cell(pi, 1, project_application.nil? ? project.application_name : project_application.name)
+            worksheet_synt.add_cell(pi, 1, project_application)
             worksheet_synt.add_cell(pi, 2, project.business_need)
             worksheet_synt.add_cell(pi, 3, project.request_number)
-            worksheet_synt.add_cell(pi, 4, project_project_area.nil? ? '' : project_project_area.name)
-            worksheet_synt.add_cell(pi, 5, project_acquisition_category.nil? ? '' : project_acquisition_category.name)
+            worksheet_synt.add_cell(pi, 4, project_project_area)
+            worksheet_synt.add_cell(pi, 5, project_acquisition_category)
 
             unless field.nil?
               value = pf.nil? ? nil : pf.value
               worksheet_synt.add_cell(pi, 6, value)
             end
 
-            worksheet_synt.add_cell(pi, 7, project_platform_category.nil? ? '' : project_platform_category.name)
-            worksheet_synt.add_cell(pi, 8, project_provider.nil? ? '' : project_provider.name)
-            worksheet_synt.add_cell(pi, 9, project.start_date.to_s)
-            worksheet_synt.add_cell(pi, 10, project.estimation_status.to_s)
+            worksheet_synt.add_cell(pi, 7, project_platform_category)
+            worksheet_synt.add_cell(pi, 8, project_provider)
+            worksheet_synt.add_cell(pi, 9, project.start_date)
+            worksheet_synt.add_cell(pi, 10, project.estimation_status)
 
             worksheet_synt.add_cell(pi, 11, @total_effort[project.id].sum.to_f.round(2))
             worksheet_synt.add_cell(pi, 12, @total_cost[project.id].sum.to_f.round(2))
