@@ -424,4 +424,6 @@ Projestimate::Application.routes.draw do
   root :to => 'organizations#organizationals_params'
 
   get 'projects_quantity' => 'organizations#projects_quantity'
+
+  get "download" => 'projects#download', as: 'download'
 end
