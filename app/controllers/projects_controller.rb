@@ -422,7 +422,7 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(pi, 7, project_platform_category)
         worksheet_synt.add_cell(pi, 8, project_provider)
         worksheet_synt.add_cell(pi, 9, project.start_date)
-        worksheet_synt.add_cell(pi, 10, @statuses_hash[project.id])
+        worksheet_synt.add_cell(pi, 10, project_estimation_status)
 
         worksheet_synt.add_cell(pi, 11, @total_effort[project.id].sum.to_f.round(2))
         worksheet_synt.add_cell(pi, 12, @total_cost[project.id].sum.to_f.round(2))

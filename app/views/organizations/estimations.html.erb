@@ -27,7 +27,7 @@
             <% end %>
 
             <% unless "saas".in?(request.original_url) %>
-              <%= link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post', "disabled-with": "Veuillez patienter..." %>
+              <%= link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post', "disable-with": "Veuillez patienter..." %>
             <% end %>
 
           </td>
