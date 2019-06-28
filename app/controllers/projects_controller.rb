@@ -96,7 +96,7 @@ class ProjectsController < ApplicationController
 
     @organization = Organization.where(id: params[:organization_id]).first
 
-    # @organization_projects_for_pf = @organization.projects.includes(:application, :project_area,
+    # @organization_projects_for_pf = @organization.projects.includes(:project_fields, :application, :project_area,
     #                                                                 :acquisition_category, :platform_category, :provider,
     #                                                                 :estimation_status)
 
@@ -162,7 +162,7 @@ class ProjectsController < ApplicationController
     #     @statuses_hash[project.id] = es.to_s
     #   end
     # end
-
+    #
     # @organization.applications.each do |application|
     #   application.projects.each do |project|
     #     @app_hash[project.id] = application.name
@@ -192,10 +192,10 @@ class ProjectsController < ApplicationController
     #     @p_hash[project.id] = p.name
     #   end
     # end
-
-    ProjectField.where(field_id: field.id).each do |pf|
-      @pf_hash[pf.project_id] = pf
-    end
+    #
+    # ProjectField.where(field_id: field.id).each do |pf|
+    #   @pf_hash[pf.project_id] = pf
+    # end
 
     @organization_projects.each do |project|
 
@@ -210,7 +210,7 @@ class ProjectsController < ApplicationController
         guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
         guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
-        pf = @pf_hash_2[project.id]
+        pf = project.project_fields.select{ |i| i.field_id == field.id }
 
         project_application = project.application.nil? ? nil : project.application.name
         project_project_area = project.project_area.nil? ? nil : project.project_area.name
@@ -328,7 +328,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 4, project_project_area.nil? ? '' : project_project_area)
         worksheet_wbs.add_cell(iii+1, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
-        pf = @pf_hash[mpre_project.id]
+        pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }
 
         unless field.nil?
           value = pf.nil? ? nil : pf.value
@@ -358,9 +358,7 @@ class ProjectsController < ApplicationController
       if @total_effort[project.id].sum.to_f == 0 || @total_effort[project.id].sum.to_f == 0
         unless fe.nil?
           @pfs["#{project.id}_#{fe.id}"].each do |pf|
-            # if pf.value.is_a?(Numeric)
-              @total_effort[project.id] << pf.value.to_f
-            # end
+            @total_effort[project.id] << pf.value.to_f
           end
         end
 
@@ -368,9 +366,7 @@ class ProjectsController < ApplicationController
           @pfs["#{project.id}_#{fc.id}"].each do |pf|
             fc_coefficient = fc.coefficient
             unless fc_coefficient.nil?
-              # if pf.value.is_a?(Numeric)
-                @total_cost[project.id] << pf.value.to_f
-              # end
+              @total_cost[project.id] << pf.value.to_f
             end
           end
         end
@@ -412,7 +408,7 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(pi, 4, project_project_area)
         worksheet_synt.add_cell(pi, 5, project_acquisition_category)
 
-        pf = @pf_hash[project.id]
+        pf = project.project_fields.select{ |i| i.field_id == field.id }
 
         unless field.nil?
           value = pf.nil? ? nil : pf.value
