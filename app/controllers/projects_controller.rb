@@ -210,7 +210,7 @@ class ProjectsController < ApplicationController
         guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
         guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
 
-        pf = project.project_fields.select{ |i| i.field_id == field.id }
+        pf = project.project_fields.select{ |i| i.field_id == field.id }.first
 
         project_application = project.application.nil? ? nil : project.application.name
         project_project_area = project.project_area.nil? ? nil : project.project_area.name
@@ -328,7 +328,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(iii+1, 4, project_project_area.nil? ? '' : project_project_area)
         worksheet_wbs.add_cell(iii+1, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
-        pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }
+        pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
 
         unless field.nil?
           value = pf.nil? ? nil : pf.value
@@ -408,7 +408,7 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(pi, 4, project_project_area)
         worksheet_synt.add_cell(pi, 5, project_acquisition_category)
 
-        pf = project.project_fields.select{ |i| i.field_id == field.id }
+        pf = project.project_fields.select{ |i| i.field_id == field.id }.first
 
         unless field.nil?
           value = pf.nil? ? nil : pf.value
