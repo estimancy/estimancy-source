@@ -131,7 +131,7 @@ class ProjectsController < ApplicationController
 
 #         @organization_projects = ActiveRecord::Base.connection.exec_query(sql)
 
-        @organization_projects = @organization.projects.where(is_model: false).includes(:guw_unit_of_works, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+        @organization_projects = @organization.projects.where(is_model: false).includes(:guw_unit_of_works, :module_projects, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
 
         worksheet_cf = workbook.worksheets[0]
         worksheet_cf.sheet_name = 'Composants Fonctionnels'
@@ -244,12 +244,12 @@ class ProjectsController < ApplicationController
 
             pf = @pf_hash_2[project.id]
 
-            project_application = project.application
-            project_project_area = project.project_area
-            project_acquisition_category = project.acquisition_category
-            project_platform_category = project.platform_category
-            project_provider = project.provider
-            project_estimation_status = project.estimation_status
+            project_application = @app_hash[project.id]
+            project_project_area = @pa_hash[project.id]
+            project_acquisition_category = @ac_hash[project.id]
+            project_platform_category = @plc_hash[project.id]
+            project_provider = @p_hash[project.id]
+            project_estimation_status = @statuses_hash[project.id]
 
             @guow_guw_types = Hash.new
 
@@ -258,21 +258,21 @@ class ProjectsController < ApplicationController
               project.guw_unit_of_works.each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
-              worksheet_cf.add_cell(i, 1, project_application)
+              worksheet_cf.add_cell(i, 1, project_application.to_s)
               worksheet_cf.add_cell(i, 2, project.business_need)
               worksheet_cf.add_cell(i, 3, project.request_number)
-              worksheet_cf.add_cell(i, 4, project_project_area)
-              worksheet_cf.add_cell(i, 5, project_acquisition_category)
+              worksheet_cf.add_cell(i, 4, project_project_area.to_s)
+              worksheet_cf.add_cell(i, 5, project_acquisition_category.to_s)
 
               unless field.nil?
                 value = pf.nil? ? nil : pf.value
                 worksheet_cf.add_cell(i, 6, value)
               end
 
-              worksheet_cf.add_cell(i, 7, project_platform_category)
-              worksheet_cf.add_cell(i, 8, project_provider)
+              worksheet_cf.add_cell(i, 7, project_platform_category.to_s)
+              worksheet_cf.add_cell(i, 8, project_provider.to_s)
               worksheet_cf.add_cell(i, 9, project.start_date)
-              worksheet_cf.add_cell(i, 10, project_estimation_status)
+              worksheet_cf.add_cell(i, 10, project_estimation_status.to_s)
               worksheet_cf.add_cell(i, 11, guow.name)
 
               worksheet_cf.add_cell(i, 12, guow.guw_type)
