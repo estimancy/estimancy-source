@@ -191,7 +191,7 @@ class ProjectsController < ApplicationController
 
     @organization_projects.each do |project|
 
-      pmp = project.module_projects.where("guw_model_id IS NOT NULL").first
+      pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
 
       unless pmp.nil?
         @guw_model = pmp.guw_model
