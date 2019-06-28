@@ -389,7 +389,7 @@ class ProjectsController < ApplicationController
           end
         end
 
-        workbook.write("#{Rails.root}/public/RAW_DATA.xlsx")
+        workbook.write("#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx")
 
       end
     end
@@ -399,7 +399,7 @@ class ProjectsController < ApplicationController
   
   def download
     send_file(
-        "#{Rails.root}/public/RAW_DATA.xlsx",
+        "#{Rails.root}/public/#{@current_organization.name}-RAW_DATA.xlsx",
         filename: "RAW_DATA.xlsx",
         type: "application/vnd.ms-excel"
     )
