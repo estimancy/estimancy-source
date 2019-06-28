@@ -131,8 +131,7 @@ class ProjectsController < ApplicationController
 
 #         @organization_projects = ActiveRecord::Base.connection.exec_query(sql)
 
-        @organization_projects = @organization.projects.where(is_model: false).includes(:guw_unit_of_works, :module_projects)
-
+        @organization_projects = @organization.projects.where(is_model: false).includes(:guw_unit_of_works, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
 
         worksheet_cf = workbook.worksheets[0]
         worksheet_cf.sheet_name = 'Composants Fonctionnels'
@@ -255,8 +254,8 @@ class ProjectsController < ApplicationController
             @guow_guw_types = Hash.new
 
             # Guw::GuwUnitOfWork.where(project_id: 10030).joins(:guw_type, :guw_unit_of_work_attributes).select('guw_guw_unit_of_works.*, guw_guw_unit_of_work_attributes.*, guw_guw_types.name as guw_type_name').each do |guow|
-            # Guw::GuwUnitOfWork.where(project_id: 10030).includes(:guw_unit_of_work_attributes).joins(:guw_type).select('guw_guw_unit_of_works.*, guw_guw_types.name as guw_type_name').each do |guow|
-            project.guw_unit_of_works.includes(:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).each do |guow|
+            # Guw::GuwUnitOfWork.where(project_id: 10030).joins(:guw_type).select('guw_guw_types.name as guw_type_name').each do |guow|
+              project.guw_unit_of_works.each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application)
@@ -286,7 +285,8 @@ class ProjectsController < ApplicationController
                 if gc.coefficient_type == "Pourcentage"
 
                   default = gc.guw_coefficient_elements.select{|i| i.default == true}.first
-                  ceuw = guow.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+                  # ceuw = guow.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+                  ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
 
                   # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                   #                                                   guw_coefficient_id: gc.id,
@@ -299,7 +299,8 @@ class ProjectsController < ApplicationController
               end
 
               # guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
-              guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
+              # guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
+              project.guw_unit_of_work_attributes.each_with_index do |uowa, j|
                 worksheet_cf.add_cell(i, 19 + j, uowa.most_likely)
               end
 
