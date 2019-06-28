@@ -96,13 +96,13 @@ class ProjectsController < ApplicationController
 
     @organization = Organization.where(id: params[:organization_id]).first
 
-    @organization_projects_for_pf = @organization.projects.includes(:project_fields, :application, :project_area,
-                                                                    :acquisition_category, :platform_category, :provider,
-                                                                    :estimation_status)
+    # @organization_projects_for_pf = @organization.projects.includes(:application, :project_area,
+    #                                                                 :acquisition_category, :platform_category, :provider,
+    #                                                                 :estimation_status)
 
     @organization_projects = @organization.projects
                                  .where(is_model: false)
-                                 .includes(:application, :project_area, :acquisition_category, :platform_category, :provider,
+                                 .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
                                            :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                            :guw_types, :guw_unit_of_works, :module_projects,
                                            :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
@@ -151,7 +151,7 @@ class ProjectsController < ApplicationController
 
     field = Field.where(organization_id: @current_organization.id, name: "Localisation").first
 
-    @organization_projects_for_pf.each do |project|
+    @organization_projects.each do |project|
       project.project_fields.each do |pf|
         @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
       end
@@ -394,7 +394,7 @@ class ProjectsController < ApplicationController
 
     pi = 1
 
-    @organization_projects_for_pf.each do |project|
+    @organization_projects.each do |project|
       # project = Project.find(k)
       unless project.is_model == true
 
