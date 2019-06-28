@@ -1,9 +1,10 @@
-Bonjour,
+Bonjour <%= @user %>,
 
 <br>
 
-L'export de données brutes du <%= @organization.name %> est téléchargeable en cliquant sur <%= link_to "lien suivant", download_url(@organization.id) %>
+Votre export des données brutes lancé sur Estimancy pour le <%= @organization.name %> est téléchargeable directement en cliquant sur <%= link_to "lien suivant", download_url(@organization.id) %>.
 
+<br>
 <br>
 
 Bien cordialement,

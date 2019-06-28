@@ -26,7 +26,7 @@ class UserMailer < ActionMailer::Base
   def send_raw_data_extraction(user, organization)
     @organization = organization
     @user = user
-    mail(:to => ["nicolas.renard@estimancy.com"], :subject => "Export des données brutes")
+    mail(:to => [user.email], :subject => "[ESTIMANCY] - Export des données brutes")
   end
 
   def crash_log(exception, user, orga, project)
