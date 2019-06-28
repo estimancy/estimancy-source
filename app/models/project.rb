@@ -65,6 +65,7 @@ class Project < ActiveRecord::Base
 
   has_many :guw_unit_of_works, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
 
+  has_many :guw_types, :through => :guw_unit_of_works, class_name: "Guw::GuwType"
   has_many :guw_unit_of_work_attributes, :through => :guw_unit_of_works, class_name: "Guw::GuwUnitOfWorkAttribute"
   has_many :guw_coefficient_element_unit_of_works, :through => :guw_unit_of_works, class_name: "Guw::GuwCoefficientElementUnitOfWork"
 
