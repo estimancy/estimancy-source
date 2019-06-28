@@ -300,7 +300,7 @@ class ProjectsController < ApplicationController
 
               # guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j|
               # guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
-              project.guw_unit_of_work_attributes.each_with_index do |uowa, j|
+              guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
                 worksheet_cf.add_cell(i, 19 + j, uowa.most_likely)
               end
 
