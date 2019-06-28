@@ -391,6 +391,8 @@ class ProjectsController < ApplicationController
 
         workbook.write("#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx")
 
+        UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
+
       end
     end
 
@@ -400,9 +402,10 @@ class ProjectsController < ApplicationController
   end
   
   def download
+    @organization = Organization.find(params[:organization_id])
     send_file(
-        "#{Rails.root}/public/#{@current_organization.name}-RAW_DATA.xlsx",
-        filename: "#{@current_organization.name}-RAW_DATA.xlsx",
+        "#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx",
+        filename: "#{@organization.name}-RAW_DATA.xlsx",
         type: "application/vnd.ms-excel"
     )
   end

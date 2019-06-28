@@ -425,5 +425,5 @@ Projestimate::Application.routes.draw do
 
   get 'projects_quantity' => 'organizations#projects_quantity'
 
-  get "download" => 'projects#download', as: 'download'
+  get "download/:organization_id" => 'projects#download', as: 'download'
 end

@@ -23,12 +23,10 @@ class UserMailer < ActionMailer::Base
   default from: SETTINGS['FROM']
   OLD_LOCALE = I18n.locale
 
-  def send_raw_data_extraction(organization)
-    # if Rails.env == "production"
+  def send_raw_data_extraction(user, organization)
     @organization = organization
-
+    @user = user
     mail(:to => ["nicolas.renard@estimancy.com"], :subject => "Export des données brutes")
-    # end
   end
 
   def crash_log(exception, user, orga, project)
