@@ -97,7 +97,7 @@ class ProjectsController < ApplicationController
     @organization = Organization.where(id: params[:organization_id]).first
 
     @organization_projects_for_pf = @organization.projects.includes(:project_fields)
-    @organization_projects = @organization.projects.where(is_model: false).includes(:guw_types, :guw_unit_of_works, :module_projects, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+    @organization_projects = @organization.projects.where(is_model: false).includes(:guw_model, :guw_attributes, :guw_coefficients, :guw_types, :guw_unit_of_works, :module_projects, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
 
     worksheet_cf = workbook.worksheets[0]
     worksheet_cf.sheet_name = 'Composants Fonctionnels'
@@ -194,9 +194,10 @@ class ProjectsController < ApplicationController
       pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
 
       unless pmp.nil?
-        @guw_model = pmp.guw_model
+        @guw_model = pmp.guw_model.first
         @guw_model_guw_attributes = @guw_model.guw_attributes
         @guw_coefficients = @guw_model.guw_coefficients.includes(:guw_coefficient_elements)
+        @guw_coefficient_elements = @guw_coefficients.flat_map(&:guw_coefficient_elements)
 
         guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
         guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
@@ -241,7 +242,7 @@ class ProjectsController < ApplicationController
           @guw_coefficients.each do |gc|
             if gc.coefficient_type == "Pourcentage"
 
-              default = gc.guw_coefficient_elements.select{ |i| i.default == true }.first
+              default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
               ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
 
               worksheet_cf.add_cell(i, 15 + j, default.nil? ? 100 : default.value.to_f)
