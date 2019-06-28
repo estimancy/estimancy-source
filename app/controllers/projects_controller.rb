@@ -394,13 +394,15 @@ class ProjectsController < ApplicationController
       end
     end
 
+    redirect_to :back
+
     # send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
   end
   
   def download
     send_file(
         "#{Rails.root}/public/#{@current_organization.name}-RAW_DATA.xlsx",
-        filename: "RAW_DATA.xlsx",
+        filename: "#{@current_organization.name}-RAW_DATA.xlsx",
         type: "application/vnd.ms-excel"
     )
   end
