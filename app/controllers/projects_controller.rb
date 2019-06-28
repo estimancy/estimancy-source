@@ -314,7 +314,7 @@ class ProjectsController < ApplicationController
         fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
         fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
 
-        ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project).each_with_index do |mpre, iii|
+        ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio).each_with_index do |mpre, iii|
 
           mpre_project = mpre.module_project.project
 
@@ -399,11 +399,6 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(0, 13, "Prix moyen pondéré")
 
         pi = 1
-
-        @pf_hash = Hash.new
-        ProjectField.where(field_id: field.id).each do |pf|
-          @pf_hash[pf.project_id] = pf
-        end
 
         @organization_projects = @organization.projects.includes(:project_fields)
         @organization_projects.each do |project|
