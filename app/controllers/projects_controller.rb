@@ -98,8 +98,8 @@ class ProjectsController < ApplicationController
 
         @organization = Organization.where(id: params[:organization_id]).first
 
-@organization = Organization.find(70)
-@organization_projects = @organization.projects.where(is_model: false).includes(:guw_types, :guw_unit_of_works, :module_projects, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+# @organization = Organization.find(70)
+# @organization_projects = @organization.projects.where(is_model: false).includes(:guw_types, :guw_unit_of_works, :module_projects, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
 
         @organization_projects = @organization.projects.where(is_model: false).includes(:guw_unit_of_works, :module_projects, :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works).joins(:guw_types).select("guw_guw_types.name as guw_type_name")
 
