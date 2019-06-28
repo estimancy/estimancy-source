@@ -410,7 +410,7 @@ class ProjectsController < ApplicationController
           # project = Project.find(k)
           unless project.is_model == true
 
-            pf = project.project_fields.select{|i| i.field_id == field.id }
+            pf = project.project_fields.select{|i| i.field_id == field.id }.first
 
             project_application = @p_hash[project.id]
             project_project_area = @pa_hash[project.id]
