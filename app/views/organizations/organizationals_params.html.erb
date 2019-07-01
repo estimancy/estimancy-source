@@ -36,7 +36,11 @@
               <% if i.is_image_organization || i.copy_in_progress==true %>
                 <%= i.name %>
               <% else %>
-                <%= link_to i.name, organization_estimations_path(i) %>
+                <% if !current_user.super_admin? && current_user.subscription_end_date <= Time.now %>
+                  <%= i.name %>
+                <% else %>
+                  <%= link_to i.name, organization_estimations_path(i) %>
+                <% end %>
               <% end %>
             </td>
             <% if current_user.super_admin? %>
@@ -50,13 +54,13 @@
               <% if can? :show_organizations, Organization %>
                 <% if i.copy_in_progress != true %>
                     <%= link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
-
-                    <% if can? :manage, Organization %>
-                      <%#= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy copy_an_organization", remote: true  %>
-                      <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"),
+                    <% if can? :manage, Organization && !(!current_user.super_admin? && current_user.subscription_end_date <= Time.now) %>
+                        <%#= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy copy_an_organization", remote: true  %>
+                        <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"),
                                   class: "icon icon-copy copy_an_organization", remote: true, data: {toggle: "modal", target: "#modal-window_copy_organization"}  %>
-                      <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :title => I18n.t('delete'))  %>
+                        <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :titles => I18n.t('delete'))  %>
                     <% end %>
+
                 <% else %>
                     <%= I18n.t(:copy_in_progress) %>
                 <% end %>

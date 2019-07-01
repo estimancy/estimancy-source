@@ -64,6 +64,7 @@ class SessionsController < Devise::SessionsController
         else
           if d.to_i <= 0
             flash[:error] = "Attention #{resource.name}. \n Votre abonnement a expiré depuis le (#{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+            redirect_to organizationals_params_path and return
           end
       end
     end
