@@ -48,22 +48,23 @@ class SessionsController < Devise::SessionsController
       d = Date.parse(resource.subscription_end_date.to_s) - Date.parse(Time.now.to_s)
       case d.to_i
         when 90
-          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 3 mois (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+          #flash[:warning] = I18n.t(:subscription_end_date_has_expired_90, :resource_name => resource.name, :duration => "3 mois", :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => "3 mois", :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
         when 30
-          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 1 mois (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => "1 mois", :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
         when 15
-          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 15 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => "15 jours", :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
         when 7
-          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 7 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => "1 semaine", :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
         when 3
-          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 3 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => "3 jours", :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
         when 2
-          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 2 jours (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => "2 jours", :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
         when 1
-          flash[:warning] = "Bienvenue #{resource.name}. \n Votre compte expire dans 1 jour (le #{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => "1 jour", :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
         else
           if d.to_i <= 0
-            flash[:error] = "Attention #{resource.name}. \n Votre abonnement a expiré depuis le (#{resource.subscription_end_date.strftime("%-d %b %Y")}). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+            flash[:error] = I18n.t(:subscription_end_date_has_expired, :resource_name => resource.name, :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
             redirect_to organizationals_params_path and return
           end
       end
