@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190618100900) do
+ActiveRecord::Schema.define(version: 20190701140312) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -343,12 +343,12 @@ ActiveRecord::Schema.define(version: 20190618100900) do
   end
 
   create_table "budgets", force: :cascade do |t|
-    t.datetime "start_date"
-    t.datetime "end_date"
-    t.integer  "sum",             limit: 4
-    t.string   "name",            limit: 255
-    t.integer  "organization_id", limit: 4
-    t.string   "field_id",        limit: 255
+    t.date    "start_date"
+    t.date    "end_date"
+    t.integer "sum",             limit: 4
+    t.string  "name",            limit: 255
+    t.integer "organization_id", limit: 4
+    t.string  "field_id",        limit: 255
   end
 
   create_table "criticalities", force: :cascade do |t|
@@ -1159,6 +1159,7 @@ ActiveRecord::Schema.define(version: 20190618100900) do
     t.float    "intermediate_percent",          limit: 24
     t.string   "url",                           limit: 255
     t.text     "cplx_comments",                 limit: 65535
+    t.integer  "guw_unit_of_work_id",           limit: 4
   end
 
   add_index "guw_guw_unit_of_works", ["guw_model_id", "module_project_id", "pbs_project_element_id", "guw_unit_of_work_group_id", "guw_type_id", "selected"], name: "module_project_guw_unit_of_works", using: :btree
@@ -1652,6 +1653,18 @@ ActiveRecord::Schema.define(version: 20190618100900) do
 
   add_index "organization_profiles_wbs_activities", ["organization_profile_id", "wbs_activity_id"], name: "wbs_activity_profiles_index", unique: true, using: :btree
   add_index "organization_profiles_wbs_activities", ["wbs_activity_id", "organization_profile_id"], name: "wbs_activity_organization_profiles", using: :btree
+
+  create_table "organization_technologies", force: :cascade do |t|
+    t.integer  "organization_id",    limit: 4
+    t.string   "name",               limit: 255
+    t.string   "alias",              limit: 255
+    t.text     "description",        limit: 65535
+    t.float    "productivity_ratio", limit: 24
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "state",              limit: 20
+    t.integer  "copy_id",            limit: 4
+  end
 
   create_table "organization_technologies_unit_of_works", id: false, force: :cascade do |t|
     t.integer  "organization_technology_id", limit: 4
