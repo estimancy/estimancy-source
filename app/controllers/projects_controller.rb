@@ -205,7 +205,9 @@ class ProjectsController < ApplicationController
                 @guw_coefficients.each do |gc|
                   if gc.coefficient_type == "Liste" && gc.name == "Taille"
                     ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id && i.module_project_id == guow.module_project_id }.last
-                    guw_coefficient_element_name = ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name
+                    unless ceuw.nil?
+                      guw_coefficient_element_name = ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name
+                    end
 
                     worksheet_cf.add_cell(i, 13, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
                     worksheet_cf.add_cell(i, 14, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
