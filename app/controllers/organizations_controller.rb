@@ -3414,11 +3414,11 @@ class OrganizationsController < ApplicationController
       @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
     end
 
-    if !current_user.super_admin? && current_user.subscription_end_date <= Time.now
-      flash[:warning] = I18n.t("subscription_end_date_message")
+    if !current_user.super_admin? && current_user.subscription_end_date < Time.now
+      flash[:error] = I18n.t("subscription_end_date_has_expired")
     else
       if @organizations.size == 1 && !current_user.super_admin?
-        redirect_to organization_estimations_path(@organizations.first)
+        redirect_to organization_estimations_path(@organizations.first) and return
       end
     end
 
@@ -3839,10 +3839,8 @@ class OrganizationsController < ApplicationController
   private
   def check_if_organization_is_image(organization)
     if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)
-      redirect_to("/organizationals_params",
-                  flash: {
-                      error: "Vous ne pouvez pas accéder aux estimations d'une organization image"
-                  }) and return
+      error_message = (organization.is_image_organization == true)? "Vous ne pouvez pas accéder aux estimations d'une organization image" : "Vous n'êtes pas autorisé à accéder à cette organisation"
+      redirect_to("/organizationals_params", flash: { error: error_message }) and return
     end
   end
 
