@@ -2215,3 +2215,6 @@ fr:
   val_min: "Valeur min"
   val_max: "Valeur max"
   submit_requests: "Soumettre vos demandes"
+
+  subscription_end_date_has_expired: "Attention \"%{resource_name}\". \n Votre abonnement a expiré depuis le (\"%{subscription_end_date}\"). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
+  subscription_end_date_has_expired_in: "Bienvenue \"%{resource_name}\". \n Votre compte expire dans \"%{duration}\" (le \"%{subscription_end_date}\"). \n <a href='mailto:contact@estimancy.com'>Demande de réabonnement</a>"
