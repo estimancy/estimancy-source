@@ -2143,3 +2143,13 @@ frsncf:
   submit_requests: "Soumettre vos demandes"
   your_configuration: "Votre configuration"
 
+  3_months: "3 mois"
+  1_month: "1 mois"
+  15_days: "15 jours"
+  1_week: "1 semaine"
+  3_days: "3 jours"
+  2_days: "2 jours"
+  1_day: "1 jour"
+
+  subscription_end_date_has_expired: "Attention %{resource_name}. \n Votre abonnement a expiré depuis le (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Demande de réabonnement</a>"
+  subscription_end_date_has_expired_in: "Bienvenue %{resource_name}. \n Votre compte expire dans %{duration} (le %{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Demande de réabonnement</a>"

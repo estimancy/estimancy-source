@@ -2167,3 +2167,14 @@ en:
   date_max: Date max
   submit_requests: "Submit your requests"
   your_configuration: "Your configuration"
+
+  3_months: "3 months"
+  1_month: "1 month"
+  15_days: "15 days"
+  1_week: "1 week"
+  3_days: "3 days"
+  2_days: "2 days"
+  1_day: "1 day"
+
+  subscription_end_date_has_expired: "Warning %{resource_name}. \n Your subscription has expired since (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Request for renewal subscription</a>"
+  subscription_end_date_has_expired_in: "Welcome %{resource_name}. \n Your account expires in %{duration} (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Request for renewal subscription</a>"
