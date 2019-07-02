@@ -11,6 +11,9 @@ namespace :guw do
     # rake db:migrate:down VERSION=20171027100650 RAILS_ENV=production
     # rake db:migrate:up VERSION=20171027100650 RAILS_ENV=production
 
+    puts "Update_guw_tables_for_indexes en cours"
+
+    puts "ModuleProject"
     # 1
     ModuleProject.all.each do |mp|
       unless mp.project.nil?
@@ -20,6 +23,7 @@ namespace :guw do
       end
     end
 
+    puts "EstimationValue"
     # 2
     EstimationValue.all.each do |ev|
       unless ev.module_project.nil?
@@ -28,6 +32,7 @@ namespace :guw do
       end
     end
 
+    puts "GuwCoefficientElementUnitOfWork"
     # 3 (attention c'est long)
     Guw::GuwCoefficientElementUnitOfWork.all.each do |ceuow|
       # ActiveRecord::Base.transaction do
@@ -42,7 +47,7 @@ namespace :guw do
       # end
     end
 
-
+    puts "GuwUnitOfWorkAttribute"
     # 4 (attention, c'est long)
     Guw::GuwUnitOfWorkAttribute.all.each do |uow_attr|
       # ActiveRecord::Base.transaction do
@@ -58,6 +63,7 @@ namespace :guw do
     end
 
 
+    puts "GuwUnitOfWorkGroup"
     #5
     Guw::GuwUnitOfWorkGroup.all.each do |uow_gr|
       # ActiveRecord::Base.transaction do
@@ -71,7 +77,7 @@ namespace :guw do
       # end
     end
 
-
+    puts "GuwCoefficient"
     #6
     Guw::GuwCoefficient.all.each do |coef|
       ActiveRecord::Base.transaction do
@@ -83,6 +89,7 @@ namespace :guw do
       end
     end
 
+    puts "GuwCoefficientElement"
     #7
     Guw::GuwCoefficientElement.all.each do |coef_elt|
       # ActiveRecord::Base.transaction do
@@ -94,6 +101,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwType"
     #8
     Guw::GuwType.all.each do |type|
       # ActiveRecord::Base.transaction do
@@ -105,6 +113,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwOutput"
     #9
     Guw::GuwOutput.all.each do |output|
       # ActiveRecord::Base.transaction do
@@ -116,6 +125,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwOutputType"
     #10
     Guw::GuwOutputType.all.each do |output_type|
       # ActiveRecord::Base.transaction do
@@ -127,6 +137,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwWorkUnit"
     #11
     Guw::GuwWorkUnit.all.each do |wu|
       # ActiveRecord::Base.transaction do
@@ -138,6 +149,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwComplexity"
     #12
     Guw::GuwComplexity.all.each do |cplx|
       # ActiveRecord::Base.transaction do
@@ -150,6 +162,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwOutputAssociation"
     #13 guw_guw_output_associations
     Guw::GuwOutputAssociation.all.each do |output_ass|
       # ActiveRecord::Base.transaction do
@@ -162,7 +175,7 @@ namespace :guw do
       # end
     end
 
-
+    puts "GuwComplexityTechnology"
     #14
     Guw::GuwComplexityTechnology.all.each do |cplx_tech|
       # ActiveRecord::Base.transaction do
@@ -175,6 +188,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwComplexityWorkUnit"
     #15 guw_type_id et guw_output_id ne sont pas tout le temps remplis
     Guw::GuwComplexityWorkUnit.all.each do |cplx_wu|
       # ActiveRecord::Base.transaction do
@@ -187,7 +201,7 @@ namespace :guw do
       # end
     end
 
-
+    puts "GuwOutputComplexity"
     #16
     Guw::GuwOutputComplexity.all.each do |output_cplx|
       # ActiveRecord::Base.transaction do
@@ -200,6 +214,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwOutputComplexityInitialization"
     #17
     Guw::GuwOutputComplexityInitialization.all.each do |oci|
       # ActiveRecord::Base.transaction do
@@ -212,7 +227,7 @@ namespace :guw do
       # end
     end
 
-
+    puts "GuwComplexityCoefficientElement"
     #18
     Guw::GuwComplexityCoefficientElement.all.each do |cplx_ce|
       ActiveRecord::Base.transaction do
@@ -225,6 +240,7 @@ namespace :guw do
       end
     end
 
+    puts "GuwAttribute"
     #19
     Guw::GuwAttribute.all.each do |attr|
       # ActiveRecord::Base.transaction do
@@ -236,6 +252,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwAttributeType"
     #20
     Guw::GuwAttributeType.all.each do |attr_type|
       # ActiveRecord::Base.transaction do
@@ -248,6 +265,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwAttributeComplexity"
     #21
     Guw::GuwAttributeComplexity.all.each do |attr_cplx|
       # ActiveRecord::Base.transaction do
@@ -260,6 +278,7 @@ namespace :guw do
       # end
     end
 
+    puts "GuwTypeComplexity"
     #22
     Guw::GuwTypeComplexity.all.each do |type_cplx|
       # ActiveRecord::Base.transaction do
