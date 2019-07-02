@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190701140312) do
+ActiveRecord::Schema.define(version: 20190702094053) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -483,6 +483,7 @@ ActiveRecord::Schema.define(version: 20190701140312) do
     t.boolean  "is_new_status"
     t.text     "transaction_id",                          limit: 65535
     t.boolean  "create_new_version_when_changing_status"
+    t.boolean  "allow_correction_before_change"
   end
 
   create_table "estimation_statuses_projects", force: :cascade do |t|

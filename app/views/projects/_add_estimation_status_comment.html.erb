@@ -13,7 +13,7 @@
                   label: I18n.t(:change_estimation_status),
                   as: :select,
                   collection: @project.project_estimation_statuses(@organization),
-                  input_html: { :class => 'form-control', disabled: @project.is_locked },
+                  input_html: { :class => 'form-control', disabled: (@project.is_locked || @project.estimation_status.allow_correction_before_change != true) },
                   include_blank: false %>
 
 
