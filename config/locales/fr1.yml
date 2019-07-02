@@ -1301,7 +1301,7 @@ fr1:
   user_need_at_least_one_organization: "Veuillez créer votre première organisation avant de continuer"
   label_add_status_change_comment: "Gestion du statut - Ajout de commentaire"
   notice_comment_status_successfully_updated: "Le commentaire concernant le changement de status a été mis à jour avec succès"
-  change_estimation_status_from_to: "Status changé de \"%{from_status}\" à \"%{to_status}\" par %{current_user_name}"
+  change_estimation_status_from_to: "Statut changé de \"%{from_status}\" à \"%{to_status}\" par %{current_user_name}"
   views_widgets: "Vues & Vignettes"
   label_view: "Vue"
   label_widget: "Vignette"

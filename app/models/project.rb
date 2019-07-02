@@ -292,6 +292,7 @@ class Project < ActiveRecord::Base
 
   def create_new_version_when_changing_status(next_status, new_version_number=nil)
     current_user = User.find(User.current) rescue nil
+    last_estimation_status_name = self.estimation_status_id.nil? ? "" : self.estimation_status.name
 
     if new_version_number.blank?
       new_version_number = self.set_next_project_version
@@ -306,9 +307,10 @@ class Project < ActiveRecord::Base
 
     # On cree la nouvelle version
     new_project_version = self.checkout_project_base(current_user, self.description, new_version_number, automatic_change_old_versions)
+    new_estimation_status_name = next_status.nil? ? "" : next_status.name
 
     # Puis on lui change de statut
-    new_comments_for_version = "#{I18n.l(Time.now)} : Version créée automatiquement par l'automatisme de changement de version. \r\n" + "___________________________________________________________________________\r\n" + self.status_comment
+    new_comments_for_version = "#{I18n.l(Time.now)} : Version créée automatiquement par l'automatisme de changement de version. \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + self.status_comment
     new_project_version.update_attributes(estimation_status_id: next_status.id, status_comment: new_comments_for_version)
     new_project_version
   end
