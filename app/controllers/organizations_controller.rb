@@ -3414,11 +3414,11 @@ class OrganizationsController < ApplicationController
       @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
     end
 
-    if !current_user.super_admin? && current_user.subscription_end_date <= Time.now
-      flash[:warning] = I18n.t("subscription_end_date_message")
+    if !current_user.super_admin? && current_user.subscription_end_date < Time.now
+      flash[:error] = I18n.t("subscription_end_date_has_expired")
     else
       if @organizations.size == 1 && !current_user.super_admin?
-        redirect_to organization_estimations_path(@organizations.first)
+        redirect_to organization_estimations_path(@organizations.first) and return
       end
     end
 
