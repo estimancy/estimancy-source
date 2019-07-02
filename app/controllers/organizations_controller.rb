@@ -3839,10 +3839,8 @@ class OrganizationsController < ApplicationController
   private
   def check_if_organization_is_image(organization)
     if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)
-      redirect_to("/organizationals_params",
-                  flash: {
-                      error: "Vous ne pouvez pas accéder aux estimations d'une organization image"
-                  }) and return
+      error_message = (organization.is_image_organization == true)? "Vous ne pouvez pas accéder aux estimations d'une organization image" : "Vous n'êtes pas autorisé à accéder à cette organisation"
+      redirect_to("/organizationals_params", flash: { error: error_message }) and return
     end
   end
 
