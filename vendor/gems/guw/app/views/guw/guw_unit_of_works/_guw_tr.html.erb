@@ -61,7 +61,11 @@
 
 <td class="guw-cell-ajustment">
   <b>
-    #<%= guow.id %>
+    <% if guow.guw_unit_of_work.nil? %>
+      #<%= guow.id %>
+    <% else %>
+      -
+    <% end %>
   </b>
 </td>
 
@@ -148,11 +152,8 @@
           %>
 
           <td class="">
-            <%# if has_element == true %>
             <% v = elmnts.flatten.compact.inject(&:*) %>
             <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
-            <%# else %>
-            <%# end %>
           </td>
 
         <% end %>
@@ -538,12 +539,15 @@
           <i class="material-icons" style="z-index: 0">more_vert</i>
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton" x-placement="top-end" style="position: absolute; transform: translate3d(-209px, -185px, 0px); top: 0px; left: 0px; will-change: transform;">
-          <a class="dropdown-item" href="<%= guw.guw_unit_of_work_duplicate_path(guow) %>" method="POST"><i class="material-icons">file_copy</i>Add to Knowledge DB</a>
-          <a class="dropdown-item" href="<%=  %>" method="POST"><i class="material-icons">file_copy</i>Suggest a correction</a>
-          <%= link_to "Suggest a correction (test)", guw.guw_unit_of_work_add_correction_path(guow), method: "post" %>
-          <a class="dropdown-item" href="#"><i class="material-icons">file_copy</i><%= I18n.t(:label_duplicate_project) %></a>
+          <% if guow.guw_unit_of_work.nil? %>
+            <a class="dropdown-item" href="<%= guw.guw_unit_of_work_duplicate_path(guow) %>" method="POST"><i class="material-icons">file_copy</i>Add to Knowledge DB</a>
+            <%= link_to raw("<i class='material-icons'>file_copy</i> Suggest a correction"), guw.guw_unit_of_work_add_correction_path(guow), method: "post", class: "dropdown-item" %>
+            <%= link_to raw("<i class='material-icons'>file_copy</i> Duplicate"), guw.guw_unit_of_work_duplicate_path(guow), method: "post", remote: true, class: "dropdown-item" %>
+          <% else %>
+            <%= link_to raw("<i class='material-icons'>check</i> Accept"), guw.guw_unit_of_work_accept_correction_path(guow), method: "post", class: "dropdown-item" %>
+          <% end %>
           <div class="dropdown-divider"></div>
-          <%= link_to raw("<i class='material-icons'>delete</i>") + I18n.t(:delete), guw.guw_unit_of_work_path(guow), method: :delete, remote: true %>
+          <%= link_to raw("<i class='material-icons'>delete</i>") + I18n.t(:delete), guw.guw_unit_of_work_path(guow), method: :delete, remote: true, class: "dropdown-item" %>
         </div>
       </div>
     </div>

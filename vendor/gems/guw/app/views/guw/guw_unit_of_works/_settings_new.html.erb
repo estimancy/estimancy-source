@@ -104,7 +104,7 @@
 
     <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-    <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.where(guw_unit_of_work_id: nil).order("display_order ASC") %>
+    <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("display_order ASC") %>
 
     <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
 
@@ -197,13 +197,12 @@
                   <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
                 <% end %>
 
-                <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
+                <% unless guow.guw_unit_of_work_id.nil? %>
+                  <% color = "#d3d3d34d;" %>
+                <% end %>
+                <tr style="background-color: <%= color %>" id="<%= guow.id %>" data-guw-id="<%= guow.id %>">
                   <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
-                  <% if guow.guw_unit_of_work_id != nil %>
-                    <%= render partial: "guw/guw_unit_of_works/guw_correction", locals: {"guow" => guow, "uowg" => uowg} %>
-                  <% end %>
                 </tr>
-
               <% end %>
             </table>
           </div>

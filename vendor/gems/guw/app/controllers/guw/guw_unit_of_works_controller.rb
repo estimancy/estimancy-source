@@ -280,6 +280,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_model = @guw_unit_of_work.guw_model
     @guw_outputs = @guw_model.guw_outputs
+
+    redirect_to :back
+  end
+
+  def accept_correction
+    @accepted_guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+
+    @old_guw_unit_of_work = @accepted_guw_unit_of_work.guw_unit_of_work
+    @old_guw_unit_of_work.delete
+
+    @old_guw_unit_of_work.guw_unit_of_work_id = nil
+    @old_guw_unit_of_work.save
+
+    redirect_to :back
   end
 
   # def save_uo
@@ -770,39 +784,39 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                              project_id: @project.id,
                                              module_project_id: module_project.id,
                                              pbs_project_element_id: component.id,
-                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
+                                             guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
 
     @theorical_size = Guw::GuwUnitOfWork.where(selected: true,
                                                pbs_project_element_id: component.id,
                                                module_project_id: module_project.id,
-                                               guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
+                                               guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
 
     @effort = Guw::GuwUnitOfWork.where(selected: true,
                                        organization_id: @project.organization_id,
                                        project_id: @project.id,
                                        module_project_id: module_project.id,
                                        pbs_project_element_id: component.id,
-                                       guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.effort.to_f }.sum.to_f.round(user_number_precision)
+                                       guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map{|i| i.effort.to_f }.sum.to_f.round(user_number_precision)
 
     @cost = Guw::GuwUnitOfWork.where(selected: true,
                                      organization_id: @project.organization_id,
                                      project_id: @project.id,
                                      module_project_id: module_project.id,
                                      pbs_project_element_id: component.id,
-                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.cost.to_f }.sum.to_f.round(number_precision)
+                                     guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map{|i| i.cost.to_f }.sum.to_f.round(number_precision)
 
     @number_of_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @project.organization_id,
                                                         project_id: @project.id,
                                                         module_project_id: module_project.id,
                                                         pbs_project_element_id: component.id,
-                                                        guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(number_precision)
+                                                        guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map(&:quantity).sum.to_f.round(number_precision)
 
     @selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
                                                           organization_id: @project.organization_id,
                                                           project_id: @project.id,
                                                           module_project_id: module_project.id,
                                                           pbs_project_element_id: component.id,
-                                                          guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(number_precision)
+                                                          guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map(&:quantity).sum.to_f.round(number_precision)
 
     update_estimation_values
     update_view_widgets_and_project_fields
@@ -3135,22 +3149,24 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         retained_size = Guw::GuwUnitOfWork.where(guw_model_id: @guw_model.id,
                                                  module_project_id: @module_project.id,
                                                  pbs_project_element_id: component.id,
-                                                 selected: true).map(&:ajusted_size).compact.sum
+                                                 selected: true,
+                                                 guw_unit_of_work_id: nil).map(&:ajusted_size).compact.sum
 
         theorical_size = Guw::GuwUnitOfWork.where(guw_model_id: @guw_model.id,
                                                   module_project_id: @module_project.id,
                                                   pbs_project_element_id: component.id,
-                                                  selected: true).map(&:size).compact.sum
+                                                  selected: true,
+                                                  guw_unit_of_work_id: nil).map(&:size).compact.sum
 
         effort = Guw::GuwUnitOfWork.where(guw_model_id: @guw_model.id,
                                           module_project_id: @module_project.id,
                                           pbs_project_element_id: component.id,
-                                          selected: true).map(&:effort).compact.sum
+                                          selected: true, guw_unit_of_work_id: nil).map(&:effort).compact.sum
 
         cost = Guw::GuwUnitOfWork.where(guw_model_id: @guw_model.id,
                                         module_project_id: @module_project.id,
                                         pbs_project_element_id: component.id,
-                                        selected: true).map(&:cost).compact.sum
+                                        selected: true, guw_unit_of_work_id: nil).map(&:cost).compact.sum
 
         number_of_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
                                                                pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works}.flatten.size
@@ -3245,7 +3261,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @selected_guw_unit_of_works = Guw::GuwUnitOfWork.where( guw_model_id: @guw_model.id,
                                                                 module_project_id: @module_project.id,
                                                                 pbs_project_element_id: component.id,
-                                                                selected: true)
+                                                                selected: true,
+                                                                guw_unit_of_work_id: nil)
 
         @hash_evs = Hash.new {|h,k| h[k] = Array.new }
         EstimationValue.where(:module_project_id => @module_project.id).each do |tmp_ev|
