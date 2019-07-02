@@ -284,7 +284,7 @@ public
 
 
   #Update user
-  def    update
+  def update
     specific_message = ""
     @user = User.find(params[:id])
     if current_user != @user
@@ -309,11 +309,11 @@ public
       if params[:organizations].nil?
         @user.organizations.each do |organization|
           organization.groups.each do |group|
-            if @user.estimations.where(organization_id: organization.id).empty?
+            if @user.projects.where(organization_id: organization.id).empty?
               GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
               @user.organization_ids = []
             else
-              specific_message = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.estimations.where(organization_id: organization.id).join(', ')})"
+              specific_message = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: organization.id).join(', ')})"
             end
           end
         end
@@ -325,11 +325,11 @@ public
         old_organizations.each do |organization_id|
           organization = Organization.find(organization_id)
           organization.groups.each do |group|
-            if @user.estimations.where(organization_id: organization.id).empty?
+            if @user.projects.where(organization_id: organization.id).empty?
               GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
             else
               new_organizations_array << organization_id
-              specific_message = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.estimations.where(organization_id: organization.id).join(', ')})"
+              specific_message = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: organization.id).join(', ')})"
             end
           end
         end
@@ -493,7 +493,7 @@ public
 
     @user = User.find(params[:id])
 
-    if @user.estimations.where(organization_id: params[:organization_id].to_i).empty?
+    if @user.projects.where(organization_id: params[:organization_id].to_i).empty?
       @user.destroy
       if params[:organization_id]
         redirect_to organization_users_path(organization_id: params[:organization_id]) and return
@@ -504,7 +504,7 @@ public
       end
       flash[:success] = "L'utilisateur a bien été supprimé"
     else
-      flash[:error] = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.estimations.where(organization_id: params[:organization_id]).join(', ')})"
+      flash[:error] = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: params[:organization_id]).join(', ')})"
       if params[:organization_id]
         redirect_to organization_users_path(organization_id: params[:organization_id]) and return
       else
@@ -518,7 +518,7 @@ public
   def destroy_user_from_organization
     begin
       @user = User.find(params[:user_id])
-      if @user.estimations.where(organization_id: params[:organization_id].to_i).empty?
+      if @user.projects.where(organization_id: params[:organization_id].to_i).empty?
         organization_id = params[:organization_id].to_i
 
         # Detach user from all groups of the current organization
@@ -530,7 +530,7 @@ public
 
         flash[:success] = "L'utilisateur a bien été supprimé"
       else
-        flash[:error] = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations dans cette organisation (#{@user.estimations.where(organization_id: params[:organization_id]).join(', ')})"
+        flash[:error] = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations dans cette organisation (#{@user.projects.where(organization_id: params[:organization_id]).join(', ')})"
       end
 
       redirect_to :back and return

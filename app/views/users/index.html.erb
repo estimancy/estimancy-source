@@ -1,18 +1,28 @@
-<div class="tabs">
+<section class="card card-content-bloc estimancy-form">
 
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:users) %> </a></li>
-  </ul>
+  <div class="mb-5">
+    <div class="effort-bloc">
+      <div class="card-body">
+        <div class="edition-bloc-left">
+          <div class="edition-bloc-title">
+            <h1>
+              <%= I18n.t(:users) %>
+            </h1>
+          </div>
+        </div>
 
-  <div id="tabs-1">
-    <div class="group_button">
-        <%= link_to I18n.t('create_button'), new_user_path, :class => 'btn btn-primary btn-estimancy' %>
+
+        <div class="group_button">
+            <%= link_to I18n.t('create_button'), new_user_path, :class => 'btn btn-primary btn-estimancy' %>
+        </div>
+
+        <div id="users" style="width:100%;overflow:auto;">
+          <%= render :partial => 'users', :object => @users %>
+        </div>
+
+      </div>
     </div>
-
-    <div id="users" style="width:100%;overflow:auto;">
-      <%= render :partial => 'users', :object => @users %>
-    </div>
-
   </div>
 </div>
 
+</section>

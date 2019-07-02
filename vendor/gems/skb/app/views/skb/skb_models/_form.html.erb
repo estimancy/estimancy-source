@@ -63,16 +63,11 @@
           <% end %>
         <% end %>
 
-        <% user_local =  set_user_language
-           if !user_local.in?(["en", "en-gb"])
-             user_local = "fr"
-           end
-
-        %>
+        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
         <script type="text/javascript">
           $(document).ready(function () {
             $(".date-picker").datepicker({
-              language: '<%= user_local %>',
+              language: '<%= set_user_language_for_datepicker %>',
               autoclose: true,
               todayHighlight: true,
               todayBtn: true
