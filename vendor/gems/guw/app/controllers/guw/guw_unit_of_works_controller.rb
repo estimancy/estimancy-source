@@ -290,8 +290,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @old_guw_unit_of_work = @accepted_guw_unit_of_work.guw_unit_of_work
     @old_guw_unit_of_work.delete
 
-    @old_guw_unit_of_work.guw_unit_of_work_id = nil
-    @old_guw_unit_of_work.save
+    @accepted_guw_unit_of_work.guw_unit_of_work_id = nil
+    @accepted_guw_unit_of_work.save
 
     redirect_to :back
   end
