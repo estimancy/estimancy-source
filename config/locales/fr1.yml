@@ -1791,3 +1791,7 @@ fr1:
 
   subscription_end_date_has_expired: "Attention %{resource_name}. \n Votre abonnement a expiré depuis le (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Demande de réabonnement</a>"
   subscription_end_date_has_expired_in: "Bienvenue %{resource_name}. \n Votre compte expire dans %{duration} (le %{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Demande de réabonnement</a>"
+
+  can_not_access_the_estimates_of_an_image_organization: "Vous ne pouvez pas accéder aux estimations d'une organization image"
+  not_authorized_to_access_this_organization: "Vous n'êtes pas autorisé à accéder à cette organisation"
+  account_associated_with_external_authentication: "Ce compte est associé à une authentification externe"

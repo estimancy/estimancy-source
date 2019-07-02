@@ -1753,3 +1753,7 @@ en-gb:
 
   subscription_end_date_has_expired: "Warning %{resource_name}. \n Your subscription has expired since (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Request for renewal subscription</a>"
   subscription_end_date_has_expired_in: "Welcome %{resource_name}. \n Your account expires in %{duration} (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Request for renewal subscription</a>"
+
+  can_not_access_the_estimates_of_an_image_organization: "You can not access the estimates of an image organization"
+  not_authorized_to_access_this_organization: "You are not authorized to access this organization"
+  account_associated_with_external_authentication: "This account is associated with external authentication"
