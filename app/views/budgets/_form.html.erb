@@ -45,6 +45,8 @@
                       </div>
                     </div>
 
+                    <!--<div role="wrapper" class="gj-datepicker gj-datepicker-md gj-unselectable"><input class="string optional date-picker mdl-textfield__input" value="12/05/2019" type="text" name="budget[start_date]" id="budget_start_date" data-type="datepicker" data-guid="7fbdea9b-b54e-6a01-dc71-95db8fa004ee" data-datepicker="true" role="input" day="2019-11-5"><i class="material-icons active" role="right-icon">event</i></div>-->
+
                     <div class="col-5">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :field_id, as: :select, collection: @organization.fields.map{|i| [i.name, i.id]}, label: false, selected: @budget.field_id, input_html: { selected: I18n.t(:Indifferent), :class => 'mdl-textfield__input' } %>
@@ -59,6 +61,7 @@
                         <%#= f.input :start_date, :as => :string, :label => false, :input_html => { :class => 'date-picker mdl-textfield__input', :value => @budget.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@budget.start_date) } %>
                         <%= f.input :start_date, :as => :string, :label => false, :input_html => { :class => 'date-picker mdl-textfield__input', :value => @budget.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@budget.start_date) } %>
                         <label class="mdl-textfield__label" for="start_date"><%= I18n.t(:start_date_budget) %></label>
+                        <!--<i class="material-icons active" role="right-icon">event</i>-->
                       </div>
                     </div>
 
