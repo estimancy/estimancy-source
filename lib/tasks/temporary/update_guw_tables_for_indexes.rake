@@ -15,22 +15,22 @@ namespace :guw do
 
     puts "ModuleProject"
     # 1
-    ModuleProject.all.each do |mp|
-      unless mp.project.nil?
-        project = mp.project
-        mp.organization_id = project.organization_id
-        mp.save
-      end
-    end
+    # ModuleProject.all.each do |mp|
+    #   unless mp.project.nil?
+    #     project = mp.project
+    #     mp.organization_id = project.organization_id
+    #     mp.save
+    #   end
+    # end
 
     puts "EstimationValue"
     # 2
-    EstimationValue.all.each do |ev|
-      unless ev.module_project.nil?
-        ev.organization_id = ev.module_project.organization_id
-        ev.save
-      end
-    end
+    # EstimationValue.all.each do |ev|
+    #   unless ev.module_project.nil?
+    #     ev.organization_id = ev.module_project.organization_id
+    #     ev.save
+    #   end
+    # end
 
     puts "GuwCoefficientElementUnitOfWork"
     # 3 (attention c'est long)

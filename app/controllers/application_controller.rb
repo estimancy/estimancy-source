@@ -701,6 +701,7 @@ class ApplicationController < ActionController::Base
     project_ids = projects.map(&:id)
 
     if k.blank?
+      #projects =  projects.reorder("start_date desc").order('created_at desc')
       projects =  projects.reorder("start_date desc")
     else
       case k
