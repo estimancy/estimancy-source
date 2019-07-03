@@ -701,18 +701,17 @@ class ApplicationController < ActionController::Base
     project_ids = projects.map(&:id)
 
     if k.blank?
-      #projects =  projects.reorder("start_date desc").order('created_at desc')
-      projects =  projects.reorder("start_date desc")
+      projects =  projects.reorder("start_date desc").order('created_at desc')
     else
       case k
         when "start_date", "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"
-          projects = projects.reorder("#{k} #{s}") #projects.reorder(k + ' ' + s)
+          projects = projects.reorder("#{k} #{s}, created_at DESC")
 
         when "application"
           projects = Project.unscoped
                           .joins("LEFT JOIN applications ON projects.application_id = applications.id")
                           .where(organization_id: organization_id, id: project_ids)
-                          .order("applications.name #{s}")
+                          .order("applications.name #{s}, created_at DESC")
 
         when "original_model"
           #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
@@ -726,39 +725,39 @@ class ApplicationController < ActionController::Base
           projects = Project.unscoped
                           .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
                           .where(organization_id: organization_id, id: project_ids)
-                          .order("project_areas.name #{s}")
+                          .order("project_areas.name #{s}, created_at DESC")
         when "project_category"
           projects = Project.unscoped
                           .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
                           .where(organization_id: organization_id, id: project_ids)
-                          .order("project_categories.name #{s}")
+                          .order("project_categories.name #{s}, created_at DESC")
         when "platform_category"
           projects = Project.unscoped
                           .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
                           .where(organization_id: organization_id, id: project_ids)
-                          .order("platform_categories.name #{s}")
+                          .order("platform_categories.name #{s}, created_at DESC")
         when "acquisition_category"
           projects = Project.unscoped
                           .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
                           .where(organization_id: organization_id, id: project_ids)
-                          .order("acquisition_categories.name #{s}")
+                          .order("acquisition_categories.name #{s}, created_at DESC")
         when "status_name"
           projects = Project.unscoped
                           .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
                           .where(organization_id: organization_id, id: project_ids)
-                          .order("estimation_statuses.name #{s}")
+                          .order("estimation_statuses.name #{s}, created_at DESC")
         when "creator"
           projects = Project.unscoped
                           .joins("LEFT JOIN users ON projects.creator_id = users.id")
                           .where(organization_id: organization_id, id: project_ids)
-                          .order("users.first_name #{s}, users.last_name #{s}")
+                          .order("users.first_name #{s}, users.last_name #{s}, created_at DESC")
         when "provider"
           projects = Project.unscoped
                          .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
                          .where(organization_id: organization_id, id: project_ids)
-                         .order("providers.name #{s}")
+                         .order("providers.name #{s}, created_at DESC")
         else
-          projects = projects.order(k + ' ' + s)
+          projects = projects.order("#{k} #{s}, created_at DESC")
       end
     end
 
