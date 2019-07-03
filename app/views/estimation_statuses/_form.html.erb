@@ -11,15 +11,16 @@
 
       <div class="form-inputs">
         <div class="row-fluid">
-          <%= f.input :status_number, label: I18n.t(:status_number) %>
-          <%= f.input :name, label: I18n.t(:name) %>
-          <%= f.input :status_alias, label: I18n.t(:alias) %>
-          <%= f.input :allow_correction_before_change, label: I18n.t(:allow_correction_before_change) %>
-          <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
-          <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
-          <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed) %>
-          <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
-          <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'input-xxlarge', :rows => 5} %>
+          <%= f.input :status_number, label: I18n.t(:status_number), input_html: {:class => 'form-control', :rows => 5}  %>
+          <%= f.input :name, label: I18n.t(:name), input_html: {:class => 'form-control', :rows => 5}  %>
+          <%= f.input :status_alias, label: I18n.t(:alias), input_html: {:class => 'form-control', :rows => 5}  %>
+          <%= f.input :allow_correction_before_change, label: I18n.t(:allow_correction_before_change), input_html: {:class => 'form-control', :rows => 5}  %>
+          <%= f.input :is_archive_status, label: I18n.t(:is_archive_status), input_html: {:class => 'form-control', :rows => 5}  %>
+          <%= f.input :is_new_status, label: I18n.t(:is_new_status), input_html: {:class => 'form-control', :rows => 5}  %>
+          <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed), input_html: {:class => 'form-control', :rows => 5}  %>
+          <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color form-control'} %>
+          <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'form-control', :rows => 5} %>
+          <%= f.input :notification_emails, label: I18n.t(:email), input_html: {:class => 'form-control', :rows => 5} %>
         </div>
       </div>
 
