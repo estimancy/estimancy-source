@@ -4158,7 +4158,7 @@ public
     new_status = EstimationStatus.find(new_status_id)
     new_status_name = EstimationStatus.find(new_status_id).name rescue nil
 
-    if new_status.allow_correction_before_change != true && @project.guw_unit_of_works.map(&:guw_unit_of_work_id).flatten.compact.empty?
+    if (new_status.allow_correction_before_change == false || new_status.allow_correction_before_change == nil) && @project.guw_unit_of_works.map(&:guw_unit_of_work_id).flatten.compact.empty?
       StatusHistory.create(organization: @project.organization.name,
                            demand: @project.demand.nil? ? nil : @project.demand,
                            project_id: @project.id,
