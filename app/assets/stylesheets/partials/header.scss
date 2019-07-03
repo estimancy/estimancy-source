@@ -67,15 +67,15 @@
       padding: 0.5rem 1.5rem;
       position: relative;
 
-      &::after {
-        font-family: 'Material Icons';
-        content: '\e315';
-        color: $brand-first-color;
-        -webkit-font-smoothing: antialiased;
-        position: absolute;
-        right: 10px;
-        font-size: 1.5rem
-      }
+      //&::after {
+      //  font-family: 'Material Icons';
+      //  content: '\e315';
+      //  color: $brand-first-color;
+      //  -webkit-font-smoothing: antialiased;
+      //  position: absolute;
+      //  right: 10px;
+      //  font-size: 1.5rem
+      //}
     }
 
     &:before {
