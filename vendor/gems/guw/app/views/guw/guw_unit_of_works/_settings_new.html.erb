@@ -197,10 +197,12 @@
                   <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
                 <% end %>
 
-                <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
+                <% unless guow.guw_unit_of_work_id.nil? %>
+                  <% color = "#d3d3d34d;" %>
+                <% end %>
+                <tr style="background-color: <%= color %>" id="<%= guow.id %>" data-guw-id="<%= guow.id %>">
                   <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
                 </tr>
-
               <% end %>
             </table>
           </div>

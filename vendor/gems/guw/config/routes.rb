@@ -31,6 +31,8 @@ Guw::Engine.routes.draw do
     get "up"
     get "down"
     post "duplicate"
+    post "add_correction"
+    post "accept_correction"
     post "load_name"
     post "load_comments"
     post "load_trackings"

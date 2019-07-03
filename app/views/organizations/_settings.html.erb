@@ -69,9 +69,9 @@
             </td>
             <td class="center">
               <% if can? :manage, Application %>
-                <%= link_to 'Editer', edit_organization_application_path(@organization, app), :class => 'icon-pencil' %> |
-                <%= link_to 'Supprimer', organization_application_path(@organization, app), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-              <% end %>
+                <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_application_path(@organization, app), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), organization_application_path(@organization, app), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+            <% end %>
             </td>
           </tr>
         <% end %>
@@ -113,8 +113,8 @@
             <td class="center"><%= b.start_date %></td>
             <td class="center"><%= b.end_date %></td>
             <td class="center">
-              <%= link_to 'Editer', edit_organization_budget_path(@organization, b), :class => 'icon-pencil' %>
-              <%= link_to 'Supprimer', organization_budget_path(@organization, b), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_budget_path(@organization, b), :class => 'icon-pencil', :title => I18n.t('edit') %>
+              <%= link_to raw("<i class='material-icons'>delete</i>"), organization_budget_path(@organization, b), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
             </td>
           </tr>
         <% end %>
@@ -159,13 +159,11 @@
     <% if can? :show_project_areas, ProjectArea %>
 
       <% if can? :manage, ProjectArea %>
-        <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_project_area_path(@organization), :class => 'btn btn-primary' %>
           <a href="#ImportProjectAreas" role="button" class="btn btn-primary" title="Import project areas from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
           <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn btn-primary'%>
-        </div>
 
         <div id="ImportProjectAreas" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_project_areas_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -203,13 +201,14 @@
             <td><%= pa.name %></td>
             <td><%= pa.description %></td>
             <td class="center">
-              <%= link_to 'Editer', edit_organization_project_area_path(@organization, pa), :class => 'icon-pencil' %> |
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_project_area_path(@organization, pa), :class => 'icon-pencil', :title => I18n.t('edit') %>
               <% if can? :manage, ProjectArea %>
-                <%= link_to 'Supprimer', organization_project_area_path(@organization, pa), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), organization_project_area_path(@organization, pa), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
         <% end %>
+
         </tbody>
       </table>
     <% else %>
@@ -220,13 +219,11 @@
     <% if can? :show_project_categories, ProjectCategory %>
 
       <% if can? :manage, ProjectCategory %>
-        <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_project_category_path(@organization), :class => 'btn btn-primary' %>
           <a href="#import_project_category" role="button" class="btn btn-primary" title="Import project category from Excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
           <%= link_to I18n.t('export'), organization_export_project_categories_path(@organization, :MYonglet => "ProjectCategory"), :class => 'btn btn-primary'%>
-        </div>
         <hr>
         <div id="import_project_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_project_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -264,9 +261,9 @@
             <td><%= i.name %></td>
             <td><%= i.description %></td>
             <td class="center">
-              <%= link_to 'Editer', edit_organization_project_category_path(@organization, i), :class => 'icon-pencil' %> |
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_project_category_path(@organization, i), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, ProjectCategory %>
-                <%= link_to 'Supprimer', organization_project_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), organization_project_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -281,13 +278,11 @@
     <% if can? :show_providers, Provider %>
 
       <% if can? :manage, Provider %>
-        <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_provider_path(@organization), :class => 'btn btn-primary' %>
           <a href="#ImportProviders" role="button" class="btn btn-primary" title="Import providers from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
           <%= link_to I18n.t('export'), organization_export_providers_path(@organization), :class => 'btn btn-primary'%>
-        </div>
         <hr>
         <div id="ImportProviders" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_providers_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -322,9 +317,9 @@
           <tr>
             <td><%= pr.name %></td>
             <td class="center">
-              <%= link_to 'Editer', edit_organization_provider_path(@organization, pr), :class => 'icon-pencil' %> |
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_provider_path(@organization, pr), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, Provider %>
-                <%= link_to 'Supprimer', organization_provider_path(@organization, pr), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), organization_provider_path(@organization, pr), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -338,13 +333,11 @@
     <div id="tabs-platform-categories" class="edition-page-group py-4"><span><%= I18n.t('platform_categories') %></span></div>
     <% if can? :show_platform_categories, PlatformCategory %>
       <% if can? :manage, PlatformCategory %>
-        <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_platform_category_path(@organization), :class => 'btn btn-primary' %>
           <a href="#import_platform_category" role="button" class="btn btn-primary" title="Import platform category from Excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
           <%= link_to I18n.t('export'), organization_export_platform_categories_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn btn-primary'%>
-        </div>
         <hr>
         <div id="import_platform_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_platform_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -381,9 +374,9 @@
             <td><%= i.name %></td>
             <td><%= i.description %></td>
             <td class="center">
-              <%= link_to 'Editer', edit_organization_platform_category_path(@organization, i), :class => 'icon-pencil' %> |
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_platform_category_path(@organization, i), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, PlatformCategory %>
-                <%= link_to 'Supprimer', organization_platform_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), organization_platform_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -397,13 +390,11 @@
     <div id="tabs-acquisition-categories" class="edition-page-group py-4"><span><%= I18n.t('acquisition_categories') %></span></div>
     <% if can? :show_acquisition_categories, AcquisitionCategory %>
       <% if can? :manage, AcquisitionCategory %>
-        <div class="group_button">
           <%= link_to I18n.t('create_button'), new_organization_acquisition_category_path(@organization), :class => 'btn btn-primary' %>
           <a href="#import_acquisition_category" role="button" class="btn btn-primary" title="Import acquisition category from Excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
           <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn btn-primary' %>
-        </div>
         <hr>
         <div id="import_acquisition_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
           <%= form_tag organization_import_acquisition_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -440,9 +431,9 @@
             <td><%= i.name %></td>
             <td><%= i.description %></td>
             <td class="center">
-              <%= link_to 'Editer', edit_organization_acquisition_category_path(@organization, i), :class => 'icon-pencil' %>
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_acquisition_category_path(@organization, i), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, AcquisitionCategory %>
-                <%= link_to 'Supprimer',  organization_acquisition_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), organization_acquisition_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -457,9 +448,7 @@
     <div id="tabs-fields" class="edition-page-group py-4"><span><%= I18n.t('fields') %></span></div>
     <% if can? :show_custom_fields, Field %>
       <% if can? :manage, Field %>
-        <div class="group_button">
           <%= link_to I18n.t(:create_button), new_organization_field_path(@organization), class: "btn btn-primary" %>
-        </div>
       <% end %>
       <hr>
       <table id="table_list_61" class="table table-list">
@@ -474,9 +463,9 @@
             <td><%= field.name %></td>
             <td><%= field.coefficient %></td>
             <td class="center span3">
-              <%= link_to 'Editer', edit_organization_field_path(@organization, field) %> |
+                <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_field_path(@organization, field), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, Field %>
-                <%= link_to 'Supprimer', field, method: :delete, data: { confirm: 'Are you sure?' }, :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), field, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -498,9 +487,7 @@
     <div style="min-height: 50px;">
       <% if can? :show_estimation_statuses, EstimationStatus %>
         <% if can? :manage, EstimationStatus %>
-          <div class="group_button">
             <%= link_to I18n.t('create_button'), new_estimation_status_path(:organization_id => @organization.id), :class => 'btn btn-primary' %>
-          </div>
         <% end %>
         <hr>
         <%= render "estimation_statuses/statuses_management", object: [@organization, @organization_group] %>

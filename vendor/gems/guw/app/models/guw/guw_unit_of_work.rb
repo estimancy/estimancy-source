@@ -34,6 +34,8 @@ module Guw
     belongs_to :module_project
     belongs_to :project
 
+    belongs_to :guw_unit_of_work
+
     has_many :guw_unit_of_work_attributes, dependent: :destroy
     has_many :guw_coefficient_element_unit_of_works, dependent: :destroy
 
