@@ -11,6 +11,8 @@
         <th><%= I18n.t(:create_new_version_when_status_changed) %></th>
         <th><%= I18n.t(:status_color) %></th>
         <th><%= I18n.t(:description) %></th>
+        <th>Change if correction</th>
+        <th>Email Notifications</th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
     </thead>
@@ -34,6 +36,7 @@
             <td style='width: 10%; background-color: <%= "##{estimation_status.status_color}" %>'></td>
             <td><%= estimation_status.description %></td>
             <td><%= estimation_status.allow_correction_before_change %></td>
+            <td><%= estimation_status.notification_emails %></td>
             <td class="center">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_estimation_status_path(estimation_status), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, EstimationStatus %>

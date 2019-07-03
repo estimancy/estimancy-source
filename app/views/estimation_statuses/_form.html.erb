@@ -1,5 +1,5 @@
 <section class="card card-content-bloc estimancy-form">
-  <div class="card-body">
+  <section class="card-body">
     <div class="edition-bloc-left">
       <div class="edition-bloc-title">
         <h1>
@@ -7,7 +7,6 @@
         </h1>
       </div>
     </div>
-
 
 
     <%= simple_form_for(@estimation_status) do |f| %>
@@ -20,43 +19,47 @@
               <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :status_number, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                <%= f.input :status_number, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
                 <label class="mdl-textfield__label" for="status_number"><%= I18n.t(:status_number) %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                <%= f.input :name, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
                 <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :status_alias, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                <%= f.input :status_alias, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
                 <label class="mdl-textfield__label" for="status_alias"><%= I18n.t(:alias) %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :allow_correction_before_change, label: I18n.t(:allow_correction_before_change) %>
+                <%= f.input :allow_correction_before_change, label: I18n.t(:allow_correction_before_change), input_html: {:class => 'form-control', :rows => 5}  %>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :is_archive_status, label: I18n.t(:is_archive_status), input_html: {:class => 'form-control', :rows => 5}  %>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
+                <%= f.input :is_new_status, label: I18n.t(:is_new_status), input_html: {:class => 'form-control', :rows => 5}  %>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :is_new_status, label: I18n.t(:is_new_status)  %>
+                <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed), input_html: {:class => 'form-control', :rows => 5}  %>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed) %>
+                <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color form-control'} %>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
-              </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :description, label: false, input_html: {:class => 'mdl-textfield__input', :rows => 5} %>
+                <%= f.input :description, label: false, input_html: {:class => 'form-control', :rows => 5} %>
                 <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, input_html: {:class => 'form-control', :rows => 5} %>
+                <label class="mdl-textfield__label" for="email"><%= I18n.t(:email) %></label>
               </div>
 
             </div>

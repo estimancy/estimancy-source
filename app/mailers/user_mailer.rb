@@ -23,6 +23,14 @@ class UserMailer < ActionMailer::Base
   default from: SETTINGS['FROM']
   OLD_LOCALE = I18n.locale
 
+  def send_notification(project, estimation_status)
+    @project = project
+    @estimation_status = estimation_status
+
+    mail(:to => estimation_status.notification_emails.split(", "), :subject => "[ESTIMANCY] - #{@project} - #{@estimation_status.name}")
+
+  end
+
   def crash_log(exception, user, orga, project)
     if Rails.env == "production"
       @exception = exception

@@ -4155,130 +4155,141 @@ public
     @project = Project.find(params[:project_id])
 
     new_status_id = params[:project][:estimation_status_id].to_i
+    new_status = EstimationStatus.find(new_status_id)
     new_status_name = EstimationStatus.find(new_status_id).name rescue nil
 
-    StatusHistory.create(organization: @project.organization.name,
-                         demand: @project.demand.nil? ? nil : @project.demand,
-                         project_id: @project.id,
-                         project: @project.title,
-                         version_number: nil,
-                         change_date: Time.now,
-                         action: "Changement de statut",
-                         comments: params["project"]["new_status_comment"].to_s,
-                         origin: @project.estimation_status.name,
-                         target: new_status_name,
-                         user: current_user.name,
-                         gap: nil)
+    if new_status.allow_correction_before_change == true || (new_status.allow_correction_before_change == false && @project.guw_unit_of_works.map(&:guw_unit_of_work_id).flatten.compact.empty?)
+      StatusHistory.create(organization: @project.organization.name,
+                           demand: @project.demand.nil? ? nil : @project.demand,
+                           project_id: @project.id,
+                           project: @project.title,
+                           version_number: nil,
+                           change_date: Time.now,
+                           action: "Changement de statut",
+                           comments: params["project"]["new_status_comment"].to_s,
+                           origin: @project.estimation_status.name,
+                           target: new_status_name,
+                           user: current_user.name,
+                           gap: nil)
 
-    unless @project.demand.nil?
-      @project.demand.service_demand_livrables.where(selected: true).each do |sdl|
-        sdl.actual_date = Time.now
-        sdl.save
-      end
-    end
-
-    new_comments = ""
-    auto_updated_comments = ""
-    # Add and update comments on estimation status change
-    if params["project"]["new_status_comment"] and !params["project"]["new_status_comment"].empty?
-      new_comments << show_status_change_comments(params["project"]["new_status_comment"])
-    end
-
-    # Before saving project, update the project comment when the status has changed
-    if params[:project][:estimation_status_id]
-      new_status_id = params[:project][:estimation_status_id].to_i
-      if @project.estimation_status_id != new_status_id
-
-        auto_updated_comments << auto_update_status_comment(params[:project_id], new_status_id)
-        new_comments = auto_updated_comments + new_comments
-        #update estimation status
-        ###@project.estimation_status_id = params["project"]["estimation_status_id"]
-
-        next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
-
-        if !next_status.nil? && next_status.create_new_version_when_changing_status == true
-
-          new_version_number = set_project_version(@project)
-          new_project = @project.create_new_version_when_changing_status(next_status, new_version_number)
-
-          if new_project
-            new_status_name = EstimationStatus.find(new_status_id).name rescue ""
-            archive_status_name = @project.organization.estimation_statuses.where(is_archive_status: true).first.name rescue ""
-            last_status_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: new_status_name, to_status: archive_status_name, current_user_name: "l'automatisme de changement de statut")}. \r\n"
-            last_status_comments << "___________________________________________________________________________\r\n"
-            new_comments = last_status_comments + new_comments
-
-            # ptitle = @project.title
-            # oname = @project.organization.name
-            # time_now = Time.now
-            #
-            # @project.status_histories.each do |sh|
-            #   StatusHistory.create(organization: sh.organization,
-            #                        project_id: sh.project_id,
-            #                        project: sh.project,
-            #                        version_number: sh.version_number,
-            #                        change_date: sh.change_date,
-            #                        action: sh.action,
-            #                        comments: sh.comments,
-            #                        origin: sh.origin,
-            #                        target: sh.target,
-            #                        user: sh.user,
-            #                        gap: sh.gap)
-            # end
-            #
-            # StatusHistory.create(organization: @project.organization.name,
-            #                      project_id: @project.id,
-            #                      project: @project.title,
-            #                      version_number: nil,
-            #                      change_date: Time.now,
-            #                      action: "Changement de statut",
-            #                      comments: params["project"]["new_status_comment"].to_s,
-            #                      origin: @project.estimation_status.name,
-            #                      target: new_status_name,
-            #                      user: current_user.name,
-            #                      gap: nil)
-          end
-
-        else
-          @project.estimation_status_id = params["project"]["estimation_status_id"]
+      unless @project.demand.nil?
+        @project.demand.service_demand_livrables.where(selected: true).each do |sdl|
+          sdl.actual_date = Time.now
+          sdl.save
         end
       end
-    end
 
-    #add the last comments to the new comments
-    new_comments << "#{@project.status_comment} \r\n"
+      new_comments = ""
+      auto_updated_comments = ""
+      # Add and update comments on estimation status change
+      if params["project"]["new_status_comment"] and !params["project"]["new_status_comment"].empty?
+        new_comments << show_status_change_comments(params["project"]["new_status_comment"])
+      end
 
-    #update project's comments
-    @project.status_comment = new_comments
+      # Before saving project, update the project comment when the status has changed
+      if params[:project][:estimation_status_id]
+        new_status_id = params[:project][:estimation_status_id].to_i
+        if @project.estimation_status_id != new_status_id
 
-    if @project.save
+          auto_updated_comments << auto_update_status_comment(params[:project_id], new_status_id)
+          new_comments = auto_updated_comments + new_comments
+          #update estimation status
+          ###@project.estimation_status_id = params["project"]["estimation_status_id"]
 
-      EstimationStatusesProject.create(estimation_status_id: @project.estimation_status_id,
-                                       project_id: @project.id,
-                                       transition_date: Time.now)
+          next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
 
-      model = Project.where(id: @project.original_model_id).first
-      if model.title == "IFPUG Sourcing"
-        from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
-        es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
-        Thread.new do
-          ActiveRecord::Base.connection_pool.with_connection do
-            sleep(30)
-            if @project.estimation_status_id == from_es.id
-              flash[:custom] = "Machine learning process in progress..."
-              flash[:notice] = "Machine learning process in progress..."
-              flash[:warning] = "Machine learning process in progress..."
-              @project.estimation_status_id = es.id
-              @project.save
+          if !next_status.nil? && next_status.create_new_version_when_changing_status == true
+
+            new_version_number = set_project_version(@project)
+            new_project = @project.create_new_version_when_changing_status(next_status, new_version_number)
+
+            if new_project
+              new_status_name = EstimationStatus.find(new_status_id).name rescue ""
+              archive_status_name = @project.organization.estimation_statuses.where(is_archive_status: true).first.name rescue ""
+              last_status_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: new_status_name, to_status: archive_status_name, current_user_name: "l'automatisme de changement de statut")}. \r\n"
+              last_status_comments << "___________________________________________________________________________\r\n"
+              new_comments = last_status_comments + new_comments
+
+              # ptitle = @project.title
+              # oname = @project.organization.name
+              # time_now = Time.now
+              #
+              # @project.status_histories.each do |sh|
+              #   StatusHistory.create(organization: sh.organization,
+              #                        project_id: sh.project_id,
+              #                        project: sh.project,
+              #                        version_number: sh.version_number,
+              #                        change_date: sh.change_date,
+              #                        action: sh.action,
+              #                        comments: sh.comments,
+              #                        origin: sh.origin,
+              #                        target: sh.target,
+              #                        user: sh.user,
+              #                        gap: sh.gap)
+              # end
+              #
+              # StatusHistory.create(organization: @project.organization.name,
+              #                      project_id: @project.id,
+              #                      project: @project.title,
+              #                      version_number: nil,
+              #                      change_date: Time.now,
+              #                      action: "Changement de statut",
+              #                      comments: params["project"]["new_status_comment"].to_s,
+              #                      origin: @project.estimation_status.name,
+              #                      target: new_status_name,
+              #                      user: current_user.name,
+              #                      gap: nil)
+            end
+
+          else
+            @project.estimation_status_id = params["project"]["estimation_status_id"]
+          end
+        end
+      end
+
+      #add the last comments to the new comments
+      new_comments << "#{@project.status_comment} \r\n"
+
+      #update project's comments
+      @project.status_comment = new_comments
+
+      if @project.save
+
+        EstimationStatusesProject.create(estimation_status_id: @project.estimation_status_id,
+                                         project_id: @project.id,
+                                         transition_date: Time.now)
+
+        unless @project.estimation_status.notification_emails.blank?
+          UserMailer.send_notification(@project, @project.estimation_status).deliver_now
+        end
+
+        model = Project.where(id: @project.original_model_id).first
+        unless model.nil?
+          if model.title == "IFPUG Sourcing"
+            from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
+            es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
+            Thread.new do
+              ActiveRecord::Base.connection_pool.with_connection do
+                sleep(30)
+                if @project.estimation_status_id == from_es.id
+                  flash[:custom] = "Machine learning process in progress..."
+                  flash[:notice] = "Machine learning process in progress..."
+                  flash[:warning] = "Machine learning process in progress..."
+                  @project.estimation_status_id = es.id
+                  @project.save
+                end
+              end
             end
           end
         end
-      end
 
-      # flash[:notice] = I18n.t(:notice_comment_status_successfully_updated)
+      else
+        flash[:error] = I18n.t('errors.messages.not_saved')
+      end
     else
-      flash[:error] = I18n.t('errors.messages.not_saved')
+      flash[:warning  ] = "You can not change pass this quotation to \"Controlled\" because there are pending corrections."
     end
+
 
     if request.env["HTTP_REFERER"].present?
       redirect_to :back

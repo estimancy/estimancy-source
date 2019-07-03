@@ -87,51 +87,53 @@
                 <h6 class="dropdown-header"><%= I18n.t :help %></h6> <%# Aide %>
                 <a class="dropdown-item account-item" href="<%= load_admin_setting('url_wiki') %>">Wiki</a>
                 <a class="dropdown-item account-item" href="/contactsupport">A propos</a>
-                <h6 class="dropdown-header"><%= I18n.t :settings %></h6> <%# Paramétrage %>
-                <a class="dropdown-item account-item" href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
-                  <%= I18n.t(:security_audit_utilities) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.all_organizations_path %>">
-                  <%= I18n.t(:organizations) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.users_path %>">
-                  <%= I18n.t(:users) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.profiles_path %>">
-                  <%= I18n.t(:profiles) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.currencies_path %>">
-                  <%= I18n.t(:currencies) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.admin_settings_path %>">
-                  <%= I18n.t(:tech_setting) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.auth_methods_path %>">
-                  <%= I18n.t(:auth_methods) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.maintenances_path %>">
-                  <%= I18n;t(:maintenance_message)%>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.audits_path %>">
-                  <%= I18n.t(:Audit) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.pe_attributes_path %>">
-                  <%= I18n.t(:pe_attributes) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.pemodules_path %>">
-                  <%= I18n.t(:projestimate_module) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.permissions_path %>">
-                  <%= I18n.t(:all_permissions) %>
-                </a>
-                <a class="dropdown-item account-item" href="<%= main_app.languages_path %>">
-                  <%= I18n.t(:languages) %>
-                </a>
-                <a class="dropdown-item account-item" href="#">
-                  <% if defined?(current_user)  %>
-                    <%= render 'layouts/send_feedback', :handlers => [:erb], :formats => [:html] %>
-                  <% end %>
-                </a>
+                <% if current_user.super_admin == true %>
+                  <h6 class="dropdown-header"><%= I18n.t :settings %></h6>
+                  <a class="dropdown-item account-item" href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
+                    <%= I18n.t(:security_audit_utilities) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.all_organizations_path %>">
+                    <%= I18n.t(:organizations) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.users_path %>">
+                    <%= I18n.t(:users) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.profiles_path %>">
+                    <%= I18n.t(:profiles) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.currencies_path %>">
+                    <%= I18n.t(:currencies) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.admin_settings_path %>">
+                    <%= I18n.t(:tech_setting) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.auth_methods_path %>">
+                    <%= I18n.t(:auth_methods) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.maintenances_path %>">
+                    <%= I18n;t(:maintenance_message)%>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.audits_path %>">
+                    <%= I18n.t(:Audit) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.pe_attributes_path %>">
+                    <%= I18n.t(:pe_attributes) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.pemodules_path %>">
+                    <%= I18n.t(:projestimate_module) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.permissions_path %>">
+                    <%= I18n.t(:all_permissions) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.languages_path %>">
+                    <%= I18n.t(:languages) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="#">
+                    <% if defined?(current_user)  %>
+                      <%= render 'layouts/send_feedback', :handlers => [:erb], :formats => [:html] %>
+                    <% end %>
+                  </a>
+                <% end %>
               </div>
             </div>
           </li>
