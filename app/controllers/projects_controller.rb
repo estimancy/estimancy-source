@@ -4259,25 +4259,30 @@ public
                                          project_id: @project.id,
                                          transition_date: Time.now)
 
+        unless @project.estimation_status.notification_emails.blank?
+          UserMailer.send_notification(@project, @project.estimation_status).deliver_now
+        end
+
         model = Project.where(id: @project.original_model_id).first
-        if model.title == "IFPUG Sourcing"
-          from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
-          es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
-          Thread.new do
-            ActiveRecord::Base.connection_pool.with_connection do
-              sleep(30)
-              if @project.estimation_status_id == from_es.id
-                flash[:custom] = "Machine learning process in progress..."
-                flash[:notice] = "Machine learning process in progress..."
-                flash[:warning] = "Machine learning process in progress..."
-                @project.estimation_status_id = es.id
-                @project.save
+        unless model.nil?
+          if model.title == "IFPUG Sourcing"
+            from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
+            es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
+            Thread.new do
+              ActiveRecord::Base.connection_pool.with_connection do
+                sleep(30)
+                if @project.estimation_status_id == from_es.id
+                  flash[:custom] = "Machine learning process in progress..."
+                  flash[:notice] = "Machine learning process in progress..."
+                  flash[:warning] = "Machine learning process in progress..."
+                  @project.estimation_status_id = es.id
+                  @project.save
+                end
               end
             end
           end
         end
 
-        # flash[:notice] = I18n.t(:notice_comment_status_successfully_updated)
       else
         flash[:error] = I18n.t('errors.messages.not_saved')
       end

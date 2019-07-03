@@ -21,7 +21,7 @@
 
 class EstimationStatus < ActiveRecord::Base
   attr_accessible :description, :status_alias, :name, :organization_id, :status_number, :status_color, :is_archive_status, :is_new_status,
-                  :transaction_id, :create_new_version_when_changing_status, :when_create_new_version, :allow_correction_before_change
+                  :transaction_id, :create_new_version_when_changing_status, :when_create_new_version, :allow_correction_before_change, :notification_emails
 
   belongs_to :organization
 
