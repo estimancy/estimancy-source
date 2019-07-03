@@ -36,9 +36,9 @@
             <td><%= estimation_status.description %></td>
             <td><%= estimation_status.allow_correction_before_change %></td>
             <td class="center">
-              <%= link_to 'Editer', edit_estimation_status_path(estimation_status), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_estimation_status_path(estimation_status), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, EstimationStatus %>
-                <%= link_to 'Supprimer', estimation_status, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), estimation_status, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
@@ -148,7 +148,7 @@
           </table>
           <% if can? :manage, EstimationStatus %>
               <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('cancel'),  :class => 'btn' %>
+              <%= submit_tag I18n.t('cancel'),  :class => 'btn btn-secondary' %>
           <% end %>
       <% end %>
     </div>

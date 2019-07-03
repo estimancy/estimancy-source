@@ -2,13 +2,11 @@
 <%= hidden_field_tag "organization_id", params[:id] %>
 
 <% if can? :manage, OrganizationProfile %>
-  <div class="group_button">
-      <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn btn-primary' %>
-      <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :class => 'btn btn-primary' %>
-      <a href="#ImportProjectProfile" role="button" class="btn btn-primary" title="Import project areas from excel" data-toggle="modal">
-      <%= I18n.t(:import) %>
-    </a>
-  </div>
+    <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn btn-primary' %>
+    <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :class => 'btn btn-primary' %>
+    <a href="#ImportProjectProfile" role="button" class="btn btn-primary" title="Import project areas from excel" data-toggle="modal">
+    <%= I18n.t(:import) %>
+  </a>
   <hr>
 
   <div id="ImportProjectProfile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -52,11 +50,14 @@
       <td><%= profile.cost_per_hour %></td>
 
       <td class="align-center">
-        <%= link_to 'Editer', edit_organization_profile_path(profile), :title => I18n.t('edit') %> |
+          <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_profile_path(profile), :class => 'material-icons', :title => I18n.t('edit') %>
         <% if can? :manage, OrganizationProfile %>
-          <%= link_to 'Supprimer', profile, confirm: I18n.t('are_you_sure'), method: :delete, :title => I18n.t('delete') %>
+          <%= link_to raw("<i class='material-icons'>delete</i>"), profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
         <% end %>
       </td>
+
+
+
     </tr>
   <% end %>
   </tbody>
