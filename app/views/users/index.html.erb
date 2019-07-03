@@ -12,9 +12,8 @@
         </div>
 
 
-        <div class="group_button">
-            <%= link_to I18n.t('create_button'), new_user_path, :class => 'btn btn-primary btn-estimancy' %>
-        </div>
+        <%= link_to I18n.t('create_button'), new_user_path, :class => 'btn btn-primary btn-estimancy' %>
+
 
         <div id="users" style="width:100%;overflow:auto;">
           <%= render :partial => 'users', :object => @users %>

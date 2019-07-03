@@ -1,25 +1,48 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:profiles) %> </a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1>
+      <%= I18n.t(:profiles) %>
+        </h1>
+      </div>
+    </div>
 
-  <div id="tabs-1">
+
     <%= simple_form_for(@organization_profile) do |f| %>
         <%= f.error_notification %>
 
-        <div class="form-inputs">
-          <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+            <div class="form-row">
+              <div class="col-5">
 
-          <div class="well input-xxlarge">
-             <span><%= I18n.t(:select_profile_or_fill_text_fields) %></span><br>
-             <%= select_tag 'profile_id_for_organization', options_for_select(Profile.all.map { |i| [i.name, i.id] }, :selected => nil), prompt: "#{I18n.t("helpers.select.prompt")} #{I18n.t(:profile)}", :class => 'input-xlarge btn btn-info' %>
+                <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
 
+                <div class="well input-xxlarge">
+                   <span><%= I18n.t(:select_profile_or_fill_text_fields) %></span><br>
+                   <%= select_tag 'profile_id_for_organization', options_for_select(Profile.all.map { |i| [i.name, i.id] }, :selected => nil), prompt: "#{I18n.t("helpers.select.prompt")} #{I18n.t(:profile)}", :class => 'input-xlarge btn btn-info' %>
+                </div>
+
+                  <%#= f.input :profile_id, label: I18n.t(:profiles), as: :select, collection: Profile.all, selected: @organization_profile.profile_id||nil, prompt: I18n.t("helpers.select.prompt"), input_html: { class: 'input-xxlarge'} %>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                  <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :description, :label => false, :input_html => {:class => 'mdl-textfield__input', :rows => 8 }  %>
+                  <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :cost_per_hour, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
+                  <label class="mdl-textfield__label" for="cost_per_hour"><%= "#{I18n.t(:cost_per_hour)} (#{@organization.currency})"  %></label>
+                </div>
+
+              </div>
+            </div>
           </div>
-
-          <%#= f.input :profile_id, label: I18n.t(:profiles), as: :select, collection: Profile.all, selected: @organization_profile.profile_id||nil, prompt: I18n.t("helpers.select.prompt"), input_html: { class: 'input-xxlarge'} %>
-          <%= f.input :name, :label => I18n.t(:name), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-          <%= f.input :description, :label => I18n.t(:description), :input_html => {:class => 'input-xxlarge', :rows => 8 }  %>
-          <%= f.input :cost_per_hour, label: "#{I18n.t(:cost_per_hour)} (#{@organization.currency})" %>
         </div>
 
         <div class="actions-tabs">
@@ -32,8 +55,8 @@
                   <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
               <% end %>
           <% end %>
-          <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-profile'), :class => 'btn' %>
+          <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-profile'), :class => 'btn btn-secondary' %>
         </div>
     <% end %>
   </div>
-</div>
+</section>

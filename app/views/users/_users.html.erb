@@ -12,7 +12,7 @@
       <th><%= I18n;t(:Confirmed_at)%></th>
       <th><%= I18n.t(:locked_at)%></th>
       <th><%= I18n.t(:subscription_end_date)%></th>
-      <th class="action" style="width: 110px"><%= I18n.t(:actions) %></th>
+      <th class="action" style="min-width: 135px"><%= I18n.t(:actions) %></th>
     </tr>
   </thead>
 
@@ -37,17 +37,17 @@
           <td style="min-width: 105px;" class="align-center">
             <% if current_user.super_admin == true %>
               <% if user.locked_at.nil? %>
-                <%= link_to('Lock', unlock_user_path(user), :class => 'icon-unlock', :title => I18n.t('lock')) %>
+                <%= link_to raw("<i class='material-icons'>lock_open</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Lock" %>
               <% else %>
-                <%= link_to('Unlock', unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
+                <%= link_to raw("<i class='material-icons'>lock</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Unlock" %>
               <% end %>
               <% if user.confirmed_at.nil? %>
-                <%= link_to('Confirm', confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
+                <%= link_to raw("<i class='material-icons'>check_circle_outline</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Confirm" %>
               <% else %>
-                <%= link_to('Unconfirm', confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
+                <%= link_to raw("<i class='material-icons'>check_circle</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Unconfirm" %>
               <% end %>
-              <%= link_to('Edit', edit_user_path(user, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit')) %>
-              <%= link_to('Delete', user, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete')) %>
+                <%= link_to raw("<i class='material-icons'>edit</i>"), edit_user_path(user, :anchor => 'tabs-1') , :class => 'material-icons', :title => I18n.t('edit') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), user, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
             <% end %>
           </td>
         </tr>

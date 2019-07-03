@@ -1,17 +1,37 @@
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1>
+      <%= I18n.t(:fields) %>
+        </h1>
+      </div>
+    </div>
 
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:fields) %> </a></li>
-  </ul>
-
-  <div id="tabs-1">
     <%= simple_form_for(@field) do |f| %>
       <%= f.error_notification %>
 
-      <div class="form-inputs">
-        <%= f.input :name, label: I18n.t(:name) %>
-        <%= f.input :coefficient, label: I18n.t(:Standard_unit_conversion_factor) %>
-        <%= f.input :organization_id, as: :hidden, input_html: { value: @current_organization.id } %>
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+
+              <%= f.input :organization_id, as: :hidden, input_html: { value: @current_organization.id } %>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :coefficient, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="coefficient"><%= I18n.t(:Standard_unit_conversion_factor) %></label>
+              </div>
+
+            </div>
+          </div>
+        </div>
       </div>
 
         <div class="actions-tabs">
@@ -20,7 +40,6 @@
           <% end %>
           <%= link_to I18n.t('back'), organization_setting_path(@current_organization, anchor: 'tabs-fields'), :class => 'btn btn-secondary btn-estimancy' %>
         </div>
-    <% end %>
-  </div>
-</div>
-
+      <% end %>
+    </div>
+</section>
