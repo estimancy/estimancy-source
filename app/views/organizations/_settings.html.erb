@@ -508,7 +508,7 @@
       <%= render partial: "views/views_and_widgets" %>
     <% end %>
 
-    <div id="tabs-select-columns-list" class="edition-page-group py-4"><span><%= I18n.t('custom_fields') %></span></div>
+    <div id="tabs-select-columns-list" class="edition-page-group py-4"><span><%= I18n.t('select_columns_list') %></span></div>
     <div style="min-height: 50px;">
       <% if can? :show_projects_selected_columns, Organization %>
         <%= render partial: "organizations/select_project_columns_to_display" %>

@@ -2415,3 +2415,6 @@ fr_bnp:
   edit_budget_type: "Editer le type de budget"
   planned_budget: "Budget prévu"
   global_budget: "Budget global"
+
+  allow_correction_before_change: "Autoriser la correction avant le changement"
+

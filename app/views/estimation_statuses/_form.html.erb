@@ -1,26 +1,69 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:estimations_statuses) %> </a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <section class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1>
+          <%= I18n.t(:estimations_statuses) %></a></li>
+        </h1>
+      </div>
+    </div>
 
-  <div id="tabs-1">
 
     <%= simple_form_for(@estimation_status) do |f| %>
       <%= f.error_notification %>
-      <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
 
-      <div class="form-inputs">
-        <div class="row-fluid">
-          <%= f.input :status_number, label: I18n.t(:status_number), input_html: {:class => 'form-control', :rows => 5}  %>
-          <%= f.input :name, label: I18n.t(:name), input_html: {:class => 'form-control', :rows => 5}  %>
-          <%= f.input :status_alias, label: I18n.t(:alias), input_html: {:class => 'form-control', :rows => 5}  %>
-          <%= f.input :allow_correction_before_change, label: I18n.t(:allow_correction_before_change), input_html: {:class => 'form-control', :rows => 5}  %>
-          <%= f.input :is_archive_status, label: I18n.t(:is_archive_status), input_html: {:class => 'form-control', :rows => 5}  %>
-          <%= f.input :is_new_status, label: I18n.t(:is_new_status), input_html: {:class => 'form-control', :rows => 5}  %>
-          <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed), input_html: {:class => 'form-control', :rows => 5}  %>
-          <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color form-control'} %>
-          <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'form-control', :rows => 5} %>
-          <%= f.input :notification_emails, label: I18n.t(:email), input_html: {:class => 'form-control', :rows => 5} %>
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+              <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_number, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
+                <label class="mdl-textfield__label" for="status_number"><%= I18n.t(:status_number) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_alias, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
+                <label class="mdl-textfield__label" for="status_alias"><%= I18n.t(:alias) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :allow_correction_before_change, label: I18n.t(:allow_correction_before_change), input_html: {:class => 'form-control', :rows => 5}  %>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :is_archive_status, label: I18n.t(:is_archive_status), input_html: {:class => 'form-control', :rows => 5}  %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :is_new_status, label: I18n.t(:is_new_status), input_html: {:class => 'form-control', :rows => 5}  %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed), input_html: {:class => 'form-control', :rows => 5}  %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color form-control'} %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, input_html: {:class => 'form-control', :rows => 5} %>
+                <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, input_html: {:class => 'form-control', :rows => 5} %>
+                <label class="mdl-textfield__label" for="email"><%= I18n.t(:email) %></label>
+              </div>
+
+            </div>
+          </div>
         </div>
       </div>
 
@@ -32,4 +75,4 @@
       </div>
     <% end %>
   </div>
-</div>
+</section>

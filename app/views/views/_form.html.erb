@@ -1,26 +1,53 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:label_view) %> </a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1>
+          <%= I18n.t(:label_view) %>
+        </h1>
+      </div>
+    </div>
 
-  <div id="tabs-1">
     <%= simple_form_for([@organization, @view]) do |f| %>
       <%= f.error_notification %>
 
-      <div class="form-inputs">
-        <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
-        <%= f.input :name %>
-        <%= f.association :pemodule, collection: [@view.pemodule] %>
-        <%= f.input :is_default_view, label: I18n.t(:define_as_default_view) %>
-        <%= f.input :description, :input_html => { rows: 10, class: 'input-xxlarge' } %>
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+              <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.association :pemodule, collection: [@view.pemodule], :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="pemodule"><%= "Pemodule" %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :is_default_view, label: I18n.t(:define_as_default_view) %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, :input_html => { rows: 10, class: 'mdl-textfield__input' }, :label => false %>
+                <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+
+            </div>
+          </div>
+        </div>
       </div>
 
       <div class="actions-tabs">
         <% if can? :manage, View %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
         <% end %>
         <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-views'), :class => 'btn btn-secondary btn-estimancy' %>
       </div>
+
     <% end %>
   </div>
-</div>
+</section>

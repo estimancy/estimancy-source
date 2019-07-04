@@ -2441,3 +2441,7 @@ frsncf:
   #guw/guw_models/guw_attributes
   Edit_attribute: "Editer"
   default: "Valeur par défaut"
+
+  edit_organization_profiles: "Editer Profils de l'organization"
+  allow_correction_before_change: "Autoriser la correction avant le changement"
+  edit_view_2: "Editer la vue"
