@@ -2045,4 +2045,5 @@ fr1:
   edit_budget_type: "Editer le type de budget"
   planned_budget: "Budget prévu"
   global_budget: "Budget global"
+  subscription_end_date_for_list: "Fin abonnement"
 
