@@ -10,8 +10,6 @@
                   <%= I18n.t(:user_list) %>
                 </h1>
               </div>
-
-
             </div>
 
             <div class="d-flex align-items-center mt-4 mb-1">
@@ -45,7 +43,8 @@
                 </div>
               <% end %>
 
-              <table class="table table-list">
+            <div id="organization_users" style="width:95%;overflow:auto; white-space:nowrap;">
+              <table class="table tablesorter table-list table-sm" style="width:95%;overflow:auto;">
                 <thead>
                   <tr>
                     <th><%= I18n.t(:first_name) %></th>
@@ -57,7 +56,6 @@
                     <% if current_user.super_admin? %>
                       <th><%= I18n.t(:Confirmed_at) %></th>
                     <% end %>
-
 
                     <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
                   </tr>
@@ -90,21 +88,21 @@
                     <td class="align-center">
                       <% if can? :manage, User, :organization_id => @organization.id %>
                         <% if user.locked_at.nil? %>
-                          <%= link_to('Lock', unlock_user_path(user), :title => I18n.t('lock')) %>
+                          <%= link_to(raw("<i class='material-icons'>lock_open</i>"), unlock_user_path(user), :title => I18n.t('lock')) %>
                         <% else %>
-                          <%= link_to('Unlock', unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
+                          <%= link_to(raw("<i class='material-icons'>lock</i>"), unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
                         <% end %>
 
                         <% if user.confirmed_at.nil? %>
-                          <%= link_to('Confirm', confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
+                          <%= link_to(raw("<i class='material-icons'>check_circle_outline</i>"), confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
                         <% else %>
-                          <%= link_to('Unconfirm', confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
+                          <%= link_to(raw("<i class='material-icons'>check_circle</i>"), confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
                         <% end %>
                       <% end %>
-                      <%= link_to 'Edit', edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
+                      <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
                       <% if can? :manage, User, :organization_id => @organization.id %>
                         <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-                        <%= link_to 'Delete', destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                        <%= link_to raw("<i class='material-icons'>delete</i>"), destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
                       <% end %>
                     </td>
                   </tr>
@@ -114,6 +112,8 @@
 
                 </tbody>
               </table>
+            </div>
+
             <% else %>
               <div class="red_color">
                 <%= I18n.t(:notice_cannot_view_organization_users) %>

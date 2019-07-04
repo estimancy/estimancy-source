@@ -1,4 +1,5 @@
-<table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+<!--<table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">-->
+<table class="table tablesorter table-list table-sm">
 
   <thead>
     <tr>
@@ -12,7 +13,7 @@
       <th><%= I18n;t(:Confirmed_at)%></th>
       <th><%= I18n.t(:locked_at)%></th>
       <th><%= I18n.t(:subscription_end_date)%></th>
-      <th class="action" style="min-width: 135px"><%= I18n.t(:actions) %></th>
+      <th class="action" style="min-width: 100px;"><%= I18n.t(:actions) %></th>
     </tr>
   </thead>
 
@@ -44,7 +45,7 @@
               <% if user.confirmed_at.nil? %>
                 <%= link_to raw("<i class='material-icons'>check_circle_outline</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Confirm" %>
               <% else %>
-                <%= link_to raw("<i class='material-icons'>check_circle</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Unconfirm" %>
+                <%= link_to raw("<i class='material-icons'>check_circle</i>"), unlock_user_path(user) , :class => 'material-icons', :title => I18n.t('unconfirm') %>
               <% end %>
                 <%= link_to raw("<i class='material-icons'>edit</i>"), edit_user_path(user, :anchor => 'tabs-1') , :class => 'material-icons', :title => I18n.t('edit') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), user, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
