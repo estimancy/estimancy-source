@@ -3284,27 +3284,44 @@ public
   def search
     @organization_projects = Project.where(organization_id: @current_organization.id, is_model: false)
 
-    @projects = []
+    @results = {}
 
-    user_ids = User.where("first_name LIKE '%#{params[:advanced_search]}%' OR last_name liKE '%#{params[:advanced_search]}%'").map(&:id)
-    @projects << @organization_projects.where(creator_id: user_ids).all
+    advanced_searches = params[:advanced_search].split(" ")
+    advanced_searches.each_with_index do |advanced_search, index|
 
-    app_ids = Application.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
-    @projects << @organization_projects.where(application_id: app_ids).all
+      @projects = []
 
-    acq_ids = AcquisitionCategory.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
-    @projects << @organization_projects.where(acquisition_category_id: acq_ids).all
+      user_ids = User.where("first_name LIKE '%#{ advanced_search }%' OR last_name liKE '%#{ advanced_search }%'").map(&:id)
+      @projects << @organization_projects.where(creator_id: user_ids).all
 
-    stt_ids = EstimationStatus.where("name LIKE '%#{params[:advanced_search]}%'").map(&:id)
-    @projects << @organization_projects.where(estimation_status_id: stt_ids).all
+      app_ids = Application.where("name LIKE '%#{ advanced_search }%'").map(&:id)
+      @projects << @organization_projects.where(application_id: app_ids).all
 
-    @projects << @organization_projects.where("title LIKE '%#{params[:advanced_search]}%'").all
-    @projects << @organization_projects.where("version_number LIKE '%#{params[:advanced_search]}%'").all
-    @projects << @organization_projects.where("description LIKE '%#{params[:advanced_search]}%'").all
+      acq_ids = AcquisitionCategory.where("name LIKE '%#{ advanced_search }%'").map(&:id)
+      @projects << @organization_projects.where(acquisition_category_id: acq_ids).all
 
-    @projects = @projects.flatten
+      stt_ids = EstimationStatus.where("name LIKE '%#{ advanced_search }%'").map(&:id)
+      @projects << @organization_projects.where(estimation_status_id: stt_ids).all
 
-    @projects = Project.where(id: @projects.map(&:id))
+      @projects << @organization_projects.where("title LIKE '%#{ advanced_search }%'").all
+      @projects << @organization_projects.where("version_number LIKE '%#{ advanced_search }%'").all
+      @projects << @organization_projects.where("description LIKE '%#{ advanced_search }%'").all
+
+      @results[index] = @projects.flatten.map(&:id)
+    end
+
+    @project_ids = []
+    if @results.values.size == 1
+      @project_ids = @results.values.flatten
+    else
+      @results.values.each_with_index do |r, i|
+        unless @results.values[i+1].nil?
+          @project_ids << (@results.values[i] & @results.values[i+1]).flatten
+        end
+      end
+    end
+
+    @projects = Project.where(id: @project_ids.uniq)
 
     @fields_coefficients = {}
     @pfs = {}
