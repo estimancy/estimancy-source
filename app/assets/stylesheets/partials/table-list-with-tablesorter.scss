@@ -12,3 +12,8 @@ table.tablesorter {
   border-right: none;
   border-left: none;
 }
+
+input.tablesorter-filter{
+  max-width: 160px;
+  width: 70%;
+}

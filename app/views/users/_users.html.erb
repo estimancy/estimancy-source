@@ -8,11 +8,11 @@
       <th><%= I18n.t(:login_name) %></th>
       <th><%= I18n.t(:organization) %></th>
       <th><%= I18n.t(:email) %></th>
-      <th><%= I18n.t(:last_login) %></th>
-      <th class="filter-select"><%= I18n.t(:authentication) %></th>
+      <!--<th><%#= I18n.t(:last_login) %></th>-->
+      <!--<th class="filter-select"><%#= I18n.t(:authentication) %></th>-->
       <th><%= I18n;t(:Confirmed_at)%></th>
       <th><%= I18n.t(:locked_at)%></th>
-      <th><%= I18n.t(:subscription_end_date)%></th>
+      <th><%= I18n.t(:subscription_end_date_for_list)%></th>
       <th class="action" style="min-width: 100px;"><%= I18n.t(:actions) %></th>
     </tr>
   </thead>
@@ -28,8 +28,8 @@
           <td><%= user.login_name %></td>
           <td><%= simple_format(user.organizations.join("\n")) %></td>
           <td><%= user.email %></td>
-          <td class="center"><%= I18n.l(user.last_sign_in_at.to_date) unless user.last_sign_in_at.nil? %></td>
-          <td><%= user.auth_method %></td>
+          <!--<td class="center"><%#= I18n.l(user.last_sign_in_at.to_date) unless user.last_sign_in_at.nil? %></td>-->
+          <!--<td><%#= user.auth_method %></td>-->
 
           <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed') : I18n.l(user.confirmed_at.to_date) %></td>
           <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : I18n.l(user.locked_at.to_date) %></td>
