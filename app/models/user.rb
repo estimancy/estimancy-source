@@ -60,7 +60,6 @@ class User < ActiveRecord::Base
   end
 
   has_and_belongs_to_many :projects
-  has_and_belongs_to_many :permissions
   ###has_and_belongs_to_many :organizations  ##to comment if not working
 
   belongs_to :language, :foreign_key => 'language_id', :touch => true

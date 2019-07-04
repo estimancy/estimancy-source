@@ -15,52 +15,52 @@ namespace :guw do
 
     puts "ModuleProject"
     # 1
-    ModuleProject.all.each do |mp|
-      unless mp.project.nil?
-        project = mp.project
-        mp.organization_id = project.organization_id
-        mp.save
-      end
-    end
+    # ModuleProject.all.each do |mp|
+    #   unless mp.project.nil?
+    #     project = mp.project
+    #     mp.organization_id = project.organization_id
+    #     mp.save
+    #   end
+    # end
 
     puts "EstimationValue"
     # 2
-    EstimationValue.all.each do |ev|
-      unless ev.module_project.nil?
-        ev.organization_id = ev.module_project.organization_id
-        ev.save
-      end
-    end
+    # EstimationValue.all.each do |ev|
+    #   unless ev.module_project.nil?
+    #     ev.organization_id = ev.module_project.organization_id
+    #     ev.save
+    #   end
+    # end
 
     puts "GuwCoefficientElementUnitOfWork"
     # 3 (attention c'est long)
-    Guw::GuwCoefficientElementUnitOfWork.all.each do |ceuow|
-      # ActiveRecord::Base.transaction do
-        guw_unit_of_work = ceuow.guw_unit_of_work
-        unless guw_unit_of_work.nil?
-          ceuow.organization_id = guw_unit_of_work.organization_id
-          ceuow.guw_model_id = guw_unit_of_work.guw_model_id
-          ceuow.project_id = guw_unit_of_work.project_id
-          ceuow.module_project_id = guw_unit_of_work.module_project_id
-          ceuow.save(validate: false)
-        end
-      # end
-    end
+    # Guw::GuwCoefficientElementUnitOfWork.all.each do |ceuow|
+    #   # ActiveRecord::Base.transaction do
+    #     guw_unit_of_work = ceuow.guw_unit_of_work
+    #     unless guw_unit_of_work.nil?
+    #       ceuow.organization_id = guw_unit_of_work.organization_id
+    #       ceuow.guw_model_id = guw_unit_of_work.guw_model_id
+    #       ceuow.project_id = guw_unit_of_work.project_id
+    #       ceuow.module_project_id = guw_unit_of_work.module_project_id
+    #       ceuow.save(validate: false)
+    #     end
+    #   # end
+    # end
 
     puts "GuwUnitOfWorkAttribute"
     # 4 (attention, c'est long)
-    Guw::GuwUnitOfWorkAttribute.all.each do |uow_attr|
-      # ActiveRecord::Base.transaction do
-        guw_unit_of_work = uow_attr.guw_unit_of_work
-        unless guw_unit_of_work.nil?
-          uow_attr.organization_id = guw_unit_of_work.organization_id
-          uow_attr.guw_model_id = guw_unit_of_work.guw_model_id
-          uow_attr.project_id = guw_unit_of_work.project_id
-          uow_attr.module_project_id = guw_unit_of_work.module_project_id
-          uow_attr.save(validate: false)
-        end
-      # end
-    end
+    # Guw::GuwUnitOfWorkAttribute.all.each do |uow_attr|
+    #   # ActiveRecord::Base.transaction do
+    #     guw_unit_of_work = uow_attr.guw_unit_of_work
+    #     unless guw_unit_of_work.nil?
+    #       uow_attr.organization_id = guw_unit_of_work.organization_id
+    #       uow_attr.guw_model_id = guw_unit_of_work.guw_model_id
+    #       uow_attr.project_id = guw_unit_of_work.project_id
+    #       uow_attr.module_project_id = guw_unit_of_work.module_project_id
+    #       uow_attr.save(validate: false)
+    #     end
+    #   # end
+    # end
 
 
     puts "GuwUnitOfWorkGroup"
