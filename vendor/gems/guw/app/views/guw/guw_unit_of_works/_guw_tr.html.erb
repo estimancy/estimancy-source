@@ -160,11 +160,8 @@
           %>
 
           <td class="span2">
-            <%# if has_element == true %>
             <% v = elmnts.flatten.compact.inject(&:*) %>
             <%= link_to v.nil? ? '...' : v.to_f.round(4), guw.deported_path(guw_unit_of_work_id: guow.id), remote: true, method: "POST" %>
-            <%# else %>
-            <%# end %>
           </td>
 
         <% end %>
@@ -192,7 +189,7 @@
       <% end %>
     <% elsif i[0] == "Coeff. de Complexité" %>
       <% unless @guw_type.nil? %>
-        <% @guw_complexities = @guw_type.guw_complexities.where(organization_id: organization_id, guw_model_id: guw_model_id).order("display_order ASC") %>
+        <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC").select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
       <% end %>
       <td class="span2">
         <span class="cotation_label_<%= guow.id %>">
@@ -290,14 +287,14 @@
 
       <% unless @guw_coefficient.nil? %>
 
-        <% @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements.where(organization_id: organization_id, guw_model_id: guw_model_id) %>
+        <% @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements.select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
 
         <% unless @guw_type.nil? %>
           <% results = @guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(organization_id: organization_id, guw_model_id: guw_model_id, guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
         <% else %>
           <% results = [] %>
         <% end %>
-        <% default = @guw_coefficient_guw_coefficient_elements.where(default: true).first %>
+        <% default = @guw_coefficient_guw_coefficient_elements.select{|i| i.default == true }.first %>
         <% if default.nil? %>
           <% default = results.first %>
         <% end %>
@@ -397,7 +394,7 @@
                 <% results = [] %>
               <% end %>
 
-              <% default = @guw_coefficient_guw_coefficient_elements.where(default: true).first %>
+              <% default = @guw_coefficient_guw_coefficient_elements.select{|i| i.default == true }.first %>
               <% if default.nil? %>
                 <% default = results.first %>
               <% end %>

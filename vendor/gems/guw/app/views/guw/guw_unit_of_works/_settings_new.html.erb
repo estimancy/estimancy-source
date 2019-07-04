@@ -15,17 +15,17 @@
   <% organization_id = @guw_model.organization_id %>
   <% project_id = @project.id %>
 
-  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(organization_id: organization_id,
-                                                          guw_model_id: @guw_model.id,
-                                                          project_id: project_id,
-                                                          module_project_id: current_mp.id,
-                                                          pbs_project_element_id: current_psb.id) %>
+  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
+                                                                                       guw_model_id: @guw_model.id,
+                                                                                       project_id: project_id,
+                                                                                       module_project_id: current_mp.id,
+                                                                                       pbs_project_element_id: current_psb.id) %>
 
   <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
                                                                   project_id: project_id,
                                                                   module_project_id: current_module_project.id,
                                                                   pbs_project_element_id: current_psb.id) %>
-  <% @guw_coefficients = Guw::GuwCoefficient.where(organization_id: organization_id, guw_model_id: @guw_model.id) #@guw_model.guw_coefficients %>
+  <% @guw_coefficients = Guw::GuwCoefficient.includes(:guw_coefficient_elements).where(organization_id: organization_id, guw_model_id: @guw_model.id) %>
 
   <div class="row-fluid">
     <div class="span12">
@@ -133,11 +133,9 @@
 
     <% @guw_model_guw_coefficients = @guw_coefficients %>
     <% @deported_guw_model_guw_coefficients = @guw_coefficients.where(deported: true) %>
-    <%# @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
     <% @deported_guw_coefficients = @guw_coefficients.where(deported: true) %>
 
     <% @hash_guw_coefficients = {} %>
-    <%# coeffs = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, name: @guw_model.orders.map(&:first)) %>
     <% coeffs = @guw_coefficients.where(name: @guw_model.orders.map(&:first)) %>
 
     <% coeffs.each do |guw_coef| %>
@@ -311,7 +309,7 @@
               <% end %>
             <% end %>
 
-            <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
+            <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity, :guw_complexity).each_with_index do |guow, i| %>
               <% @guw_type = guow.guw_type %>
               <% unless @guw_type.nil? %>
                 <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
@@ -346,7 +344,7 @@
 
   <script>
     var my_array = [];
-    $(document).on('ready turbolinks:load', function() {
+    $(document).ready( function() {
       $(".new_guw_button").on('click', function(e){
         $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
         $("#hidden_position").val($(this).data("display-order"));
@@ -440,7 +438,7 @@
     }
   }
 
-  $(document).ready(function () {
+  $(document).on('ready turbolinks:load', function() {
 
     $('.selected').change(function(){
       $.ajax({
@@ -507,29 +505,6 @@
     </div>
   </div>
 </div>
-
-<!--<div class="modal hide fade" tabindex="-1" role="dialog" id="stats_modal" aria-labelledby="myModalLabel">-->
-  <!--<div class="modal-dialog" role="document">-->
-    <!--<div class="modal-content">-->
-      <!--<div class="modal-header modal-drag">-->
-        <!--<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>-->
-        <!--<h4 class="modal-title">Statistiques détaillés</h4>-->
-      <!--</div>-->
-      <!--<div class="modal-body">-->
-        <%# begin %>
-          <%# render partial: "guw/guw_unit_of_works/details" %>
-        <%# rescue %>
-          <!--Une erreur est survenue lors de l'affichage des statistiques détaillées-->
-        <%# end %>
-      <!--</div>-->
-      <!--<div class="modal-footer">-->
-        <!--<button type="button" class="btn btn-default" data-dismiss="modal">Fermer</button>-->
-      <!--</div>-->
-    <!--</div>-->
-  <!--</div>-->
-<!--</div>-->
-
-<%#= raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
 
 <!-- Word Trees modal : Modèle de données -->
 <div class="modal hide fade" tabindex="-1" role="dialog" id="word_trees_modal" aria-labelledby="myModalLabel">
@@ -787,93 +762,6 @@
           </div>
 
       <% end %>
-
-
-      <script>
-          $(document).on('ready turbolinks:load', function() {
-
-//            $(".up,.down").click(function(){
-//              var row = $(this).parents("tr.movable:first");
-//              if ($(this).is(".up")) {
-//                row.insertBefore(row.prev());
-//              } else {
-//                row.insertAfter(row.next());
-//              }
-//            });
-
-            $(".up,.down").click(function() {
-              var row = $(this).parents("tr.movable:first");
-
-              var firstrow = $('table tr.movable:first');
-
-              if ($(this).is(".up") && row.prevAll().length > 1) {
-                row.insertBefore(row.prev());
-              }
-              else if ($(this).is(".down") && row.nextAll().length > 0) {
-                row.insertAfter(row.next());
-              }
-              else {
-                return false;
-              }
-            });
-
-            $("#from").on("change",function(){
-                if (this.value == "") {
-                    $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#groups-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
-
-                }
-
-                else if (this.value == "Excel") {
-                    $("#file-block").show().find('input, textarea, select').prop('disabled', false);
-                    $("#url-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
-                    $("#excel-type-block").show().find('input, textarea, select').prop('disabled', false);
-                    $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                    $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
-
-                  <% if !@guw_model.excel_ml_server.blank? %>
-                    $("#type-block").show().find('input, textarea, select').prop('disabled', false);
-                  <% else %>
-                    $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  <% end %>
-                } else if (this.value == "Jira") {
-                  $("#url-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#jira-type-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#redmine-type-block").hide().find('input, textarea, select').prop('disabled', true);
-
-
-                  <% if !@guw_model.jira_ml_server.blank? %>
-                    $("#type-block").show().find('input, textarea, select').prop('disabled', false);
-                  <% else %>
-                    $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  <% end %>
-                } else if (this.value == "Redmine") {
-
-                  $("#url-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#file-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#groups-block").show().find('input, textarea, select').prop('disabled', false);
-                  $("#excel-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#jira-type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  $("#redmine-type-block").show().find('input, textarea, select').prop('disabled', false);
-
-                  <% if !@guw_model.redmine_ml_server.blank? %>
-                    $("#type-block").show().find('input, textarea, select').prop('disabled', false);
-                  <% else %>
-                    $("#type-block").hide().find('input, textarea, select').prop('disabled', true);
-                  <% end %>
-                }
-            });
-          });
-      </script>
 
     </div>
   </div>
