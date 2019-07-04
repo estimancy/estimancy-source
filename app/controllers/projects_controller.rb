@@ -3286,7 +3286,7 @@ public
 
     @results = {}
 
-    advanced_searches = params[:advanced_search].split(" ")
+    advanced_searches = params[:advanced_search].to_s.split(" ")
     advanced_searches.each_with_index do |advanced_search, index|
 
       @projects = []
