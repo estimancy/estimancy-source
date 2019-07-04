@@ -166,7 +166,7 @@ class ApplicationController < ActionController::Base
           #sign_out current_user
           #reset_session
           subscription_end_date_message = %Q[La licence de votre compte a expiré. Veuillez contacter l'administrateur de votre compte <a href="mailto:contact@estimancy.com">par mail</a>]
-          flash[:error] = I18n.t("subscription_end_date_has_expired")
+          flash[:error] = I18n.t(:subscription_end_date_has_expired, :resource_name => current_user.name, :subscription_end_date => current_user.subscription_end_date.strftime("%-d %b %Y"))
           #redirect_to(sign_in_path, :flash => { :error => subscription_end_date_message, :warning => flash[:warning] }) and return
           unless params[:action].to_s.in?(["organizationals_params", "contactsupport", "about"]) || (params[:controller] == "sessions")
             redirect_to(organizationals_params_path, :flash => { :error => subscription_end_date_message, :warning => flash[:warning] }) and return
