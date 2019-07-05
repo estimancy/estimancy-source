@@ -1613,6 +1613,7 @@ frsncf_amoa_infra:
   field_column_names: "Colonnes"
   select_columns_list: "Liste des colonnes"
   label_date: "Date"
+  label_start_date: "Date début"
   text_confirm_organization_deletion: "Attention, confirmer la suppression de l'organisation \"%{organization_name}\" et son contenu. Aucune restauration ne sera possible"
   warning_need_organization_check_box_confirmation: "Vous devez confirmer la suppression de l'organisation avec la case à cocher"
   organization_copied_by: "copie effectuée par \"%{username}\" "
