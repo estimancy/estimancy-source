@@ -1588,7 +1588,7 @@ ActiveRecord::Schema.define(version: 20190703090206) do
     t.text     "description",             limit: 65535
     t.integer  "estimation_status_id",    limit: 4
     t.string   "state",                   limit: 255
-    t.datetime "start_date"
+    t.date     "start_date"
     t.integer  "organization_id",         limit: 4
     t.integer  "original_model_id",       limit: 4
     t.integer  "project_area_id",         limit: 4
@@ -1988,7 +1988,7 @@ ActiveRecord::Schema.define(version: 20190703090206) do
     t.text     "description",                    limit: 65535
     t.integer  "estimation_status_id",           limit: 4
     t.string   "state",                          limit: 255
-    t.datetime "start_date"
+    t.date     "start_date"
     t.integer  "organization_id",                limit: 4
     t.integer  "original_model_id",              limit: 4
     t.integer  "project_area_id",                limit: 4
