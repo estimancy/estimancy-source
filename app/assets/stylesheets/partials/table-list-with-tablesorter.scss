@@ -1,0 +1,19 @@
+table.tablesorter {
+  //max-width:100%;
+  //white-space:nowrap;
+  border: none;
+}
+
+.table-bordered th, .table-bordered td {
+  //  border: 0px solid #dee2e6;
+
+  border-top: 1px solid #dee2e6;
+  border-bottom: 1px solid #dee2e6;
+  border-right: none;
+  border-left: none;
+}
+
+input.tablesorter-filter{
+  max-width: 160px;
+  width: 70%;
+}

@@ -11,12 +11,15 @@
 //= require chartkick
 //= require jquery
 //= require jquery_ujs
+//= require pager.js
 //= require select_list_move
 //= require projects.js
 //= require poppers
 //= require main
 //= require jquery-number
 //= require jscolor
+
+
 
 //= require bootstrap-datepicker
 //= require bootstrap-datepicker/core

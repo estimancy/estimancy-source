@@ -1904,3 +1904,4 @@ it:
   global_budget: "Budget global"
 
   allow_correction_before_change: "Autoriser la correction avant le changement"
+  subscription_end_date_for_list: "Fin abonnement"
