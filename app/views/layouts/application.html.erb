@@ -7,7 +7,7 @@
   <%= stylesheet_link_tag 'application', media: 'screen' %>
   <%= stylesheet_link_tag 'print', media: 'print' %>
 
-  <%= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '' %>
+  <%= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '', 'data-turbolinks-track': 'reload' %>
 
   <% if @online_support == "1" %>
     <script type="text/javascript" src="http://www.spark-angels.com/panserver3/multiwidget/spk_multiwidget.js"></script>
