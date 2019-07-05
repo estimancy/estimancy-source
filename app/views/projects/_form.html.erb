@@ -78,7 +78,7 @@
                 <div class="col-12">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <%= f.input :start_date, as: :string, :label => false,
-                                :input_html => { :class => 'date-picker mdl-textfield__input', :value => @project.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@project.start_date, format: :date_month_year_concise) },
+                                :input_html => { :class => 'date-picker mdl-textfield__input', :value => @project.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@project.start_date) },
                                 #:value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime(I18n.t('date.formats.default')))) : start_date.strftime(I18n.t('date.formats.default')),
                                 :disabled => !(can?(:alter_request_number, @project) || can_alter_model) %>
                     <label class="mdl-textfield__label" ><%= I18n.t('start_date') %></label>

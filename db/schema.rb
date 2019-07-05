@@ -390,6 +390,22 @@ ActiveRecord::Schema.define(version: 20190703090206) do
     t.string   "reference_uuid",  limit: 255
   end
 
+  create_table "delayed_jobs", force: :cascade do |t|
+    t.integer  "priority",   limit: 4,     default: 0, null: false
+    t.integer  "attempts",   limit: 4,     default: 0, null: false
+    t.text     "handler",    limit: 65535,             null: false
+    t.text     "last_error", limit: 65535
+    t.datetime "run_at"
+    t.datetime "locked_at"
+    t.datetime "failed_at"
+    t.string   "locked_by",  limit: 255
+    t.string   "queue",      limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  add_index "delayed_jobs", ["priority", "run_at"], name: "delayed_jobs_priority", using: :btree
+
   create_table "demand_attachments", force: :cascade do |t|
     t.string   "name",       limit: 255
     t.string   "attachment", limit: 255
@@ -1585,7 +1601,7 @@ ActiveRecord::Schema.define(version: 20190703090206) do
     t.text     "description",                    limit: 65535
     t.integer  "estimation_status_id",           limit: 4
     t.string   "state",                          limit: 255
-    t.datetime "start_date"
+    t.date     "start_date"
     t.integer  "organization_id",                limit: 4
     t.integer  "original_model_id",              limit: 4
     t.integer  "project_area_id",                limit: 4
@@ -1655,18 +1671,6 @@ ActiveRecord::Schema.define(version: 20190703090206) do
 
   add_index "organization_profiles_wbs_activities", ["organization_profile_id", "wbs_activity_id"], name: "wbs_activity_profiles_index", unique: true, using: :btree
   add_index "organization_profiles_wbs_activities", ["wbs_activity_id", "organization_profile_id"], name: "wbs_activity_organization_profiles", using: :btree
-
-  create_table "organization_technologies", force: :cascade do |t|
-    t.integer  "organization_id",    limit: 4
-    t.string   "name",               limit: 255
-    t.string   "alias",              limit: 255
-    t.text     "description",        limit: 65535
-    t.float    "productivity_ratio", limit: 24
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.string   "state",              limit: 20
-    t.integer  "copy_id",            limit: 4
-  end
 
   create_table "organization_technologies_unit_of_works", id: false, force: :cascade do |t|
     t.integer  "organization_technology_id", limit: 4
@@ -2005,7 +2009,7 @@ ActiveRecord::Schema.define(version: 20190703090206) do
     t.text     "description",                    limit: 65535
     t.integer  "estimation_status_id",           limit: 4
     t.string   "state",                          limit: 255
-    t.datetime "start_date"
+    t.date     "start_date"
     t.integer  "organization_id",                limit: 4
     t.integer  "original_model_id",              limit: 4
     t.integer  "project_area_id",                limit: 4
