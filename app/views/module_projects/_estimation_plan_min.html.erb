@@ -25,7 +25,7 @@
                id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.id}" %>" data-module_project_id="<%= pmod.id %>"
                style="background-color: <%= "#{pmod.color}" %>; top: <%= top_position %>; left: <%= left_position %>" >
 
-            <%= link_to pmod, activate_module_project_path(pmod) %>
+            <%= link_to pmod, activate_module_project_path(pmod), "data-turbolinks": "false" %>
 
             <% if pmod.show_results_view %>
               <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-open a_white blue", :title => I18n.t(:title_hide_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
