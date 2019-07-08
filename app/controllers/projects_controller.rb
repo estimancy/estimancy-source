@@ -541,8 +541,6 @@ class ProjectsController < ApplicationController
     @results = nil
 
     check_module_project
-
-    redirect_to dashboard_path(@project)
   end
 
   def check_module_project
