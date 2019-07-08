@@ -4278,7 +4278,7 @@ public
         unless model.nil?
           if model.title == "IFPUG Sourcing"
             from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
-            es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Controled").first
+            es = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
             Thread.new do
               ActiveRecord::Base.connection_pool.with_connection do
                 sleep(30)
