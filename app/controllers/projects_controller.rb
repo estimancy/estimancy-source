@@ -542,7 +542,7 @@ class ProjectsController < ApplicationController
 
     check_module_project
 
-    redirect_to dashboard_path(@project)
+    # redirect_to dashboard_path(@project)
   end
 
   def check_module_project
