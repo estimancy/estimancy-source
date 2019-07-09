@@ -269,6 +269,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.tracking = params[:trackings].values.first
     @guw_unit_of_work.guw_unit_of_work_group_id = params[:guw_unit_of_work_group_id]
     @guw_unit_of_work.save
+
+    redirect_to :back
+
   end
 
   def add_correction
