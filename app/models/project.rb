@@ -65,6 +65,13 @@ class Project < ActiveRecord::Base
 
   has_many :guw_unit_of_works, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
 
+  has_many :guw_model, :through => :module_projects, class_name: "Guw::GuwModel"
+  has_many :guw_coefficients, :through => :guw_model, class_name: "Guw::GuwCoefficient"
+  has_many :guw_attributes, :through => :guw_model, class_name: "Guw::GuwAttribute"
+  has_many :guw_types, :through => :guw_unit_of_works, class_name: "Guw::GuwType"
+  has_many :guw_unit_of_work_attributes, :through => :guw_unit_of_works, class_name: "Guw::GuwUnitOfWorkAttribute"
+  has_many :guw_coefficient_element_unit_of_works, :through => :guw_unit_of_works, class_name: "Guw::GuwCoefficientElementUnitOfWork"
+
   default_scope { order('title ASC, version_number ASC') }
 
   serialize :included_wbs_activities, Array
