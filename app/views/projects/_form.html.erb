@@ -500,7 +500,7 @@
                                                           is_estimation_permission: false).first %>
                           <td>
                             <div class="custom-control custom-checkbox">
-                              <%= check_box_tag("group_securities_from_model[#{prj_level.id}][#{group.user.id}]", group.id, !ps.nil?, label: false) %>
+                              <%= check_box_tag("group_securities_from_model[#{prj_level.id}][#{group.id}]", group.id, !ps.nil?, label: false) %>
                             </div>
                           </td>
                         <% end %>
