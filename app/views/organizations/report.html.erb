@@ -3,42 +3,44 @@
     <li><a href="#tabs-report"><%= I18n.t(:filtered_excel_report)%></a></li>
     <li><a href="#tabs-report-all"><%= I18n.t(:detailed_excel_report)%></a></li>
     <li><a href="#tabs-pdf-all"><%= I18n.t(:detailed_pdf_report)%></a></li>
-    <li><a href="#extract-data"><%= I18n.t(:raw_data_extract)%></a></li>
+    <% unless "saas".in?(request.original_url) %>
+      <li><a href="#extract-data"><%= I18n.t(:raw_data_extract)%></a></li>
+    <% end %>
   </ul>
 
-  <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-    <p>
-      <%= I18n.t(:raw_data_range_dates) %>
-    </p>
+  <% unless "saas".in?(request.original_url) %>
+    <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+      <p>
+        <%= I18n.t(:raw_data_range_dates) %>
+      </p>
 
-    <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
-      <div class="row-fluid">
-        <div class="span12">
-          <%= label_tag 'Date min' %>
-          <%= text_field_tag 'date_min' %>
+      <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
+        <div class="row-fluid">
+          <div class="span12">
+            <%= label_tag 'Date min' %>
+            <%= text_field_tag 'date_min' %>
+          </div>
         </div>
-      </div>
 
-      <br>
+        <br>
 
-      <div class="row-fluid">
-        <div class="span12">
-          <%= label_tag 'Date max' %>
-          <%= text_field_tag 'date_max' %>
+        <div class="row-fluid">
+          <div class="span12">
+            <%= label_tag 'Date max' %>
+            <%= text_field_tag 'date_max' %>
+          </div>
         </div>
-      </div>
 
-      <br>
+        <br>
 
-      <div class="row-fluid">
-        <div class="span12">
-          <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary" %>
+        <div class="row-fluid">
+          <div class="span12">
+            <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary" %>
+          </div>
         </div>
-      </div>
-    <% end %>
-
-  </div>
-
+      <% end %>
+    </div>
+  <% end %>
 
   <div id="tabs-report-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
    <%= form_tag "generate_report_excel_detail", method: "post" do %>
