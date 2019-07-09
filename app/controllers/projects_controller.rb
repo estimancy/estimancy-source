@@ -3280,7 +3280,7 @@ public
 
     @results = {}
 
-    if params[:advanced_search].nil?
+    if params[:advanced_search].blank?
       @projects = @organization_projects
     else
       advanced_searches = params[:advanced_search].to_s.split(" ")
