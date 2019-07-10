@@ -7,9 +7,9 @@ namespace :guw do
   task update_guw_tables_for_indexes: :environment do
 
     # Re-executer la migration de guw
-    # rake db:migrate RAILS_ENV=production
     # rake db:migrate:down VERSION=20171027100650 RAILS_ENV=production
     # rake db:migrate:up VERSION=20171027100650 RAILS_ENV=production
+    # rake db:migrate RAILS_ENV=production
 
     puts "Update_guw_tables_for_indexes en cours"
 
@@ -93,11 +93,17 @@ namespace :guw do
     #7
     Guw::GuwCoefficientElement.all.each do |coef_elt|
       # ActiveRecord::Base.transaction do
-        guw_model = coef_elt.guw_model
+      guw_coefficient = coef_elt.guw_coefficient
+      unless guw_coefficient.nil?
+
+        guw_model = coef_elt.guw_coefficient.guw_model
+
         unless guw_model.nil?
           coef_elt.organization_id = guw_model.organization_id
+          coef_elt.guw_model_id = guw_model.id
           coef_elt.save(validate: false)
         end
+      end
       # end
     end
 

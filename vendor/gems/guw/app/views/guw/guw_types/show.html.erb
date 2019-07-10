@@ -4,7 +4,7 @@
   </strong>
 </h5>
 
-<% @guw_outputs = @guw_model.guw_outputs.where(organization_id: @organization.id).order("display_order ASC") %>
+<% @guw_outputs = @guw_model.guw_outputs.where(organization_id: @organization.id, guw_model_id: @guw_model.id).order("display_order ASC") %>
 <% guw_type_guw_complexities = @guw_type.guw_complexities.where(organization_id: @organization.id, guw_model_id: @guw_model.id) %>
 <% guw_type_guw_type_complexities = @guw_type.guw_type_complexities.where(organization_id: @organization.id, guw_model_id: @guw_model.id) %>
 <% guw_model_guw_attributes = @guw_model.guw_attributes.where(organization_id: @organization.id) %>
@@ -183,7 +183,7 @@
               <% @guw_outputs.each do |guw_output| %>
                 <td class="align-center">
                   <%= text_field_tag "coefficient_elements_value[#{guw_cplx.id}][#{guw_coefficient_element.id}][#{guw_output.id}]", guw_complexity_coefficient_elements["#{guw_cplx.id}_#{guw_coefficient_element.id}_#{guw_output.id}"], class: "input-mini" %>
-                </td>
+                  </td>
               <% end %>
             <% end %>
           </tr>
