@@ -37,7 +37,10 @@
         <!--</a>-->
 
         <h5><%= I18n.t(:estimation_plan) %>
-          - <%= link_to I18n.t(:deselect_all_modules), activate_module_project_path(@initialization_module_project), :style => 'color: #FFFFFF', "data-turbolinks": "false" %>
+          - <%= link_to I18n.t(:deselect_all_modules), activate_module_project_path(@initialization_module_project),
+                        style: 'color: #FFFFFF',
+                        "data-turbolinks": "false",
+                        remote: true %>
         </h5>
 
         <div class="buttons">
