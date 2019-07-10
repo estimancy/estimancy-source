@@ -2025,7 +2025,7 @@ class Guw::GuwModelsController < ApplicationController
                                                                 guw_coefficient_id: guw_coefficient.id,
                                                                 project_id: project_id,
                                                                 module_project_id: guow.module_project_id,
-                                                                guw_unit_of_work_id: guow.id).first
+                                                                guw_unit_of_work_id: guow.id).last
 
               if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
 
@@ -2212,3 +2212,10 @@ class Guw::GuwModelsController < ApplicationController
     @word_trees_data_model
   end
 end
+
+
+  # Guw::GuwCoefficientElementUnitOfWork.all.each do |gceuow|
+  #   if gceuow.guw_unit_of_work_id
+  #
+  #   end
+  # end

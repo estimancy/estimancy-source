@@ -1513,10 +1513,18 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                                     guw_model_id: @guw_model.id,
                                                                     guw_coefficient_id: guw_coefficient.id,
-                                                                    guw_coefficient_element_id: nil,
                                                                     project_id: @project.id,
                                                                     module_project_id: @module_project.id,
-                                                                    guw_unit_of_work_id: guw_unit_of_work.id).first_or_create
+                                                                    guw_unit_of_work_id: guw_unit_of_work.id).first
+                  if ceuw.nil?
+                    ceuw = Guw::GuwCoefficientElementUnitOfWork.create(organization_id: @organization.id,
+                                                                       guw_model_id: @guw_model.id,
+                                                                       guw_coefficient_id: guw_coefficient.id,
+                                                                       project_id: @project.id,
+                                                                       module_project_id: @module_project.id,
+                                                                       guw_unit_of_work_id: guw_unit_of_work.id)
+
+                  end
                 end
 
                 # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_coefficient_id: guw_coefficient,
@@ -1917,15 +1925,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                               guw_model_id: @guw_model.id,
-                                                              guw_coefficient_id: guw_coefficient,
+                                                              guw_coefficient_id: guw_coefficient.id,
                                                               project_id: @project.id,
                                                               module_project_id: @module_project.id,
-                                                              guw_unit_of_work_id: @guw_unit_of_work).first_or_create(organization_id: @organization.id,
-                                                                                                                      guw_model_id: @guw_model.id,
-                                                                                                                      guw_coefficient_id: guw_coefficient,
-                                                                                                                      project_id: @project.id,
-                                                                                                                      module_project_id: @module_project.id,
-                                                                                                                      guw_unit_of_work_id: @guw_unit_of_work)
+                                                              guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create(organization_id: @organization.id,
+                                                                                                                         guw_model_id: @guw_model.id,
+                                                                                                                         guw_coefficient_id: guw_coefficient.id,
+                                                                                                                         project_id: @project.id,
+                                                                                                                         module_project_id: @module_project.id,
+                                                                                                                         guw_unit_of_work_id: @guw_unit_of_work.id)
           end
 
           unless ceuw.nil?
