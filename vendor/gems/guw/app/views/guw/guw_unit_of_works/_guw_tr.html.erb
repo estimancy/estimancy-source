@@ -197,28 +197,28 @@
             <% if @guw_type.display_threshold == true %>
               <% if guow.off_line == true %>
                 <% @default_complexity = @guw_complexities.where(default_value: true).first %>
-                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: nil),
                                guw: guow.id,
                                class: "guw_complexity",
                                prompt: "HSAT",
                                disabled: !@guw_type.allow_complexity,
                                style: "width: 80%;" %>
               <% elsif guow.off_line_uo == true %>
-                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil),
+                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: nil),
                                guw: guow.id,
                                class: "guw_complexity",
                                prompt: "HSUO",
                                disabled: !@guw_type.allow_complexity,
                                style: "width: 80%;" %>
               <% elsif guow.guw_complexity.nil? %>
-                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: @default_complexity.nil? ? guow.guw_complexity_id : @default_complexity.id),
+                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: @default_complexity.nil? ? guow.guw_complexity_id : @default_complexity.id),
                                guw: guow.id,
                                class: "guw_complexity",
                                include_blank: false,
                                disabled: !@guw_type.allow_complexity,
                                style: "width: 80%;" %>
               <% else %>
-                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
+                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
                                class: "guw_complexity",
                                include_blank: false,
                                disabled: !@guw_type.allow_complexity,
