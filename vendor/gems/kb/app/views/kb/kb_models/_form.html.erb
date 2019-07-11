@@ -78,7 +78,7 @@
                     <div class="col-6">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <label class="mdl-textfield__label" for="date_min"><%= I18n.t(:start_date) %></label>
-                        <%= f.input :date_min, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                        <%= f.input :date_min, :label => false, :input_html => { :class => 'date-picker mdl-textfield__input form-control' } %>
                           <% if @kb_model.date_min.nil? %>
                             <%= text_field_tag "kb_model[date_min]", "", :input_html => {:class => 'date-picker form-control'}%>
                           <% else %>
@@ -92,7 +92,7 @@
                     <div class="col-6">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <label class="mdl-textfield__label" for="date_max"><%= I18n.t(:end_date) %></label>
-                        <%= f.input :date_max, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                        <%= f.input :date_max, :label => false, :input_html => { :class => 'date-picker mdl-textfield__input form-control' } %>
                         <% if @kb_model.date_min.nil? %>
                           <%= text_field_tag "kb_model[date_max]", "", :input_html => {:class => 'date-picker form-control'}%>
                         <% else %>
@@ -247,14 +247,48 @@
 
 </section>
 
+<!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>-->
+<!--<script>-->
+<!--    $(document).ready(function() {-->
+
+<!--        $(".date-picker").datepicker({-->
+<!--            language: '<%= set_user_language_for_datepicker %>',-->
+<!--            orientation: 'auto top',-->
+<!--            autoclose: true,-->
+<!--            todayHighlight: true,-->
+<!--            todayBtn: true,-->
+<!--            icons: {-->
+<!--                rightIcon: '<i class="material-icons">event</i>'-->
+<!--            }-->
+<!--        });-->
+
+<!--    });-->
+<!--</script>-->
+
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
-    $(document).ready(function () {
+    $(document).ready(function() {
+        $(document).on('scroll', function(){
+            if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+                $("#edition-sidebar").css({position: "fixed", top: -5});
+            }
+            if ($(document).scrollTop() < 200){
+                $("#edition-sidebar").css({position: "static", top: 0});
+            }
+        });
+
         $(".date-picker").datepicker({
             language: '<%= set_user_language_for_datepicker %>',
+            //uiLibrary: 'bootstrap4',
+            //locale: 'fr-fr',
+            orientation: 'auto top',
             autoclose: true,
             todayHighlight: true,
-            todayBtn: true
+            todayBtn: true,
+            icons: {
+                rightIcon: '<i class="material-icons">event</i>'
+            }
         });
+
     });
 </script>

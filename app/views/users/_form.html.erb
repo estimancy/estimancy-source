@@ -15,19 +15,19 @@
           </a>
         </li>
         <% if params[:organization_id].present? %>
-            <li class="nav-item">
-              <a class="nav-link"  data-toggle="pill" id="tab-groups" href="#tabs-groups" role="tab" aria-selected="false">
-                <%= I18n.t(:groups) %>
-              </a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link"  data-toggle="pill" id="tab-groups" href="#tabs-groups" role="tab" aria-selected="false">
+              <%= I18n.t(:groups) %>
+            </a>
+          </li>
         <% end %>
 
         <% if current_user.super_admin == true and !params[:organization_id].present? %>
-            <li class="nav-item">
-              <a class="nav-link"  data-toggle="pill" id="tab-organizations" href="#tabs-organizations" role="tab" aria-selected="false">
-                <%= I18n.t(:organizations) %>
-              </a>
-            </li>
+          <li class="nav-item">
+            <a class="nav-link"  data-toggle="pill" id="tab-organizations" href="#tabs-organizations" role="tab" aria-selected="false">
+              <%= I18n.t(:organizations) %>
+            </a>
+          </li>
         <% end %>
       </ul>
 
@@ -53,7 +53,7 @@
               <div class="edition-bloc-content">
                 <div class="edition-bloc-form">
                   <h5>
-                      <%= I18n.t 'identity' %>
+                    <%= I18n.t 'identity' %>
                   </h5>
                   <%= hidden_field_tag 'organization_id', params[:organization_id] %>
 
@@ -84,9 +84,9 @@
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <% if can? :manage, User %>
-                            <%= f.input :login_name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                          <%= f.input :login_name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
                         <% else %>
-                            <%= f.input :login_name, :label => false, :disabled => true,  :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                          <%= f.input :login_name, :label => false, :disabled => true,  :input_html => {:class => 'mdl-textfield__input form-control'} %>
                         <% end %>
                         <label class="mdl-textfield__label" for="login_name"><%= I18n.t(:login_name) %></label>
                       </div>
@@ -113,9 +113,9 @@
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <% if current_user.super_admin? %>
-                            <%= f.input :subscription_end_date, :as => :string, :label => false,
-                                        :input_html => { :class => 'date-picker mdl-textfield__input form-control',
-                                                         :value => @user.subscription_end_date.nil? ? I18n.l((Time.now + 1.year).to_date) : I18n.l(@user.subscription_end_date.to_date) } %>
+                          <%= f.input :subscription_end_date, :as => :string, :label => false,
+                                      :input_html => { :class => 'date-picker mdl-textfield__input form-control',
+                                                       :value => @user.subscription_end_date.nil? ? I18n.l((Time.now + 1.year).to_date) : I18n.l(@user.subscription_end_date.to_date) } %>
                         <% end %>
                         <label class="mdl-textfield__label" for="subscription_end_date"><%= I18n.t(:subscription_end_date) %></label>
                       </div>
@@ -124,9 +124,9 @@
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <% if @user.locked_at.nil? %>
-                            <%= I18n.t(:unlocked) %>
+                          <%= I18n.t(:unlocked) %>
                         <% else %>
-                            <%= "#{I18n.t(:locked_at)} #{@user.locked_at}" %>
+                          <%= "#{I18n.t(:locked_at)} #{@user.locked_at}" %>
                         <% end %>
                       </div>
                     </div>
@@ -137,7 +137,7 @@
                       <%#= f.input :super_admin, :label => I18n.t(:is_super_admin), as: :boolean, hint: I18n.t(:text_help_super_admin), :input_html => {:class => ''} %>
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <% if current_user.super_admin? %>
-                            <%= f.input :super_admin, :label => false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                          <%= f.input :super_admin, :label => false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'} %>
                         <% end %>
                         <label class="mdl-textfield__label" for="super_admin" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:is_super_admin) %></label>
                         <label class="mdc-floating-label" for="my-text-field-id"><%= I18n.t(:text_help_super_admin) %></label>
@@ -165,9 +165,9 @@
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <% if can? :manage, User %>
-                            <%= f.input :auth_type, :label => false, :as => :select, :collection => AuthMethod.all, :include_blank => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                          <%= f.input :auth_type, :label => false, :as => :select, :collection => AuthMethod.all, :include_blank => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
                         <% else %>
-                            <%= f.input :auth_type, :label => false, :as => :select, :collection => AuthMethod.all, :disabled => true, :include_blank => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                          <%= f.input :auth_type, :label => false, :as => :select, :collection => AuthMethod.all, :disabled => true, :include_blank => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
                         <% end %>
                         <label class="mdl-textfield__label" for="auth_type"><%= I18n.t(:auth_type) %></label>
                       </div>
@@ -175,50 +175,50 @@
                   </div>
 
 
-                    <% if @user.new_record? %>
-                      <div class="form-row">
-                        <div class="col-3">
-                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <%= f.input :password, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@generated_password if @generated_password), :class => 'mdl-textfield__input form-control' }, :required => false %>
-                            <label class="mdl-textfield__label" for="password"><%= I18n.t(:password) %></label>
-                          </div>
-                        </div>
-
-                        <div class="col-3">
-                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <%= f.input :password_confirmation, :as => :password, :label => false, :input_html => {:value => (@generated_password if @generated_password), :class => 'mdl-textfield__input form-control' } %>
-                            <label class="mdl-textfield__label" for="password_confirmation"><%= I18n.t(:password_confirmation) %></label>
-                          </div>
+                  <% if @user.new_record? %>
+                    <div class="form-row">
+                      <div class="col-3">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :password, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@generated_password if @generated_password), :class => 'mdl-textfield__input form-control' }, :required => false %>
+                          <label class="mdl-textfield__label" for="password"><%= I18n.t(:password) %></label>
                         </div>
                       </div>
 
-                    <% else %>
+                      <div class="col-3">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :password_confirmation, :as => :password, :label => false, :input_html => {:value => (@generated_password if @generated_password), :class => 'mdl-textfield__input form-control' } %>
+                          <label class="mdl-textfield__label" for="password_confirmation"><%= I18n.t(:password_confirmation) %></label>
+                        </div>
+                      </div>
+                    </div>
 
-                      <div class="form-row">
-                        <div class="col-3">
-                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <%= f.input :current_password, :label => false, required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
-                            <label class="mdl-textfield__label" for="current_password"><%= I18n.t(:current_password) %></label>
-                          </div>
+                  <% else %>
+
+                    <div class="form-row">
+                      <div class="col-3">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :current_password, :label => false, required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                          <label class="mdl-textfield__label" for="current_password"><%= I18n.t(:current_password) %></label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="col-3">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :password, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@user_password if @user_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                          <label class="mdl-textfield__label" for="password"><%= I18n.t(:new_password) %></label>
                         </div>
                       </div>
 
-                      <div class="form-row">
-                        <div class="col-3">
-                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <%= f.input :password, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@user_password if @user_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
-                            <label class="mdl-textfield__label" for="password"><%= I18n.t(:new_password) %></label>
-                          </div>
-                        </div>
-
-                        <div class="col-3">
-                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <%= f.input :password_confirmation, :as => :password, :label => false, :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
-                            <label class="mdl-textfield__label" for="password_confirmation"><%= I18n.t(:confirm_new_password) %></label>
-                          </div>
+                      <div class="col-3">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :password_confirmation, :as => :password, :label => false, :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                          <label class="mdl-textfield__label" for="password_confirmation"><%= I18n.t(:confirm_new_password) %></label>
                         </div>
                       </div>
-                    <% end %>
+                    </div>
+                  <% end %>
 
 
                   <div class="form-row">
@@ -226,7 +226,7 @@
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :created_at, :label => false do %>
                           <%= f.text_field :created_at, :value => (I18n.l(@user.created_at) unless @user.created_at.nil?), :disabled => true, :input_html => {:class => 'mdl-textfield__input form-control'} %>
-                            <label class="mdl-textfield__label" for="created_at" style="margin-top: -30px;"><%= I18n.t(:created_at) %></label>
+                          <label class="mdl-textfield__label" for="created_at" style="margin-top: -30px;"><%= I18n.t(:created_at) %></label>
                         <% end %>
 
                       </div>
@@ -254,8 +254,8 @@
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :last_login, :label => false do %>
-                            <%= f.text_field :last_login, :value => (I18n.l(@user.last_login) unless @user.last_login.nil?), :disabled => true %>
-                            <label class="mdl-textfield__label" for="last_login" style="margin-top: -30px;"><%= I18n.t(:last_login) %></label>
+                          <%= f.text_field :last_login, :value => (I18n.l(@user.last_login) unless @user.last_login.nil?), :disabled => true %>
+                          <label class="mdl-textfield__label" for="last_login" style="margin-top: -30px;"><%= I18n.t(:last_login) %></label>
                         <% end %>
 
                       </div>
@@ -301,7 +301,7 @@
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :language_id, :label => false, :as => :select, :collection => Language.where('locale != ?', 'de').all.map { |i| [i.name, i.id] }.sort, include_blank: '(auto)', :selected => @user.language_id, :input_html => {:class => 'mdl-textfield__input form-control'} %>
                         <label class="mdl-textfield__label" for="language_id"><%= I18n.t(:label_language) %></label>
-                       </div>
+                      </div>
                     </div>
 
                     <div class="col-3">
@@ -333,16 +333,16 @@
 
               <div class="actions-tabs">
                 <% if (can? :manage, User) || current_user == @user %>
-                    <% if action_name.in?(%w(new create)) %>
-                        <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-                    <% end %>
-                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                    <%= submit_tag I18n.t('apply'), name: 'tabs-5', :class => 'btn btn-primary' %>
+                  <% if action_name.in?(%w(new create)) %>
+                    <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                  <% end %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), name: 'tabs-5', :class => 'btn btn-primary' %>
                 <% end %>
                 <% if @organization.nil? %>
-                    <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary' %>
+                  <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary' %>
                 <% else %>
-                    <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
+                  <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
                 <% end %>
               </div>
             </div>
@@ -350,143 +350,143 @@
 
           <!-- Groupes -->
           <% if params[:organization_id].present? %>
-              <div class="tab-pane fade" id="tabs-groups" role="tabpanel" aria-labelledby="tab-groups">
-                <div class="card-body">
+            <div class="tab-pane fade" id="tabs-groups" role="tabpanel" aria-labelledby="tab-groups">
+              <div class="card-body">
 
-                  <div class="edition-bloc-left">
-                    <div class="edition-bloc-title">
-                      <h1>
-                        <%= I18n.t(:groups) %>
-                      </h1>
-                    </div>
+                <div class="edition-bloc-left">
+                  <div class="edition-bloc-title">
+                    <h1>
+                      <%= I18n.t(:groups) %>
+                    </h1>
                   </div>
-
-                  <% if params[:organization_id].present? %>
-                    <table class="table table-striped table-bordered table-condensed">
-                      <thead>
-                        <tr>
-                          <th><%= I18n.t(:name) %></th>
-                          <th><%= I18n.t(:description) %></th>
-                          <th><%= I18n.t(:selected) %></th>
-                          <th><%= I18n.t(:actions) %></th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <% @organization.groups.each do |group| %>
-                          <tr>
-                            <td><%= group.name %></td>
-                            <td><%= group.description %></td>
-                            <% if @user.new_record? %>
-                                <% gu = nil %>
-                            <% else %>
-                                <% gu = GroupsUsers.where(group_id: group.id, user_id: @user.id).first %>
-                            <% end %>
-
-                            <td class="center">
-
-                              <% if can?(:manage, User) && can?(:manage, Group) &&
-                                      ( group.is_protected_group != true ||
-                                      ( group.is_protected_group == true && (@current_user.super_admin || @current_user.groups.include?(group)) )) %>
-
-                                <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil? %>
-
-                              <% else %>
-                                <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil?, :style => 'visibility: hidden' %>
-                                <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true, :style => 'margin-left: -15px;' %>
-                              <% end %>
-                            </td>
-
-                            <td class="center">
-                              <% if can?(:manage, User) && can?(:manage, Group) %>
-                                <%= link_to '', edit_group_path(group, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
-                                <%= link_to '', group, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-                              <% end %>
-                            </td>
-                            </td>
-                          </tr>
-                        <% end %>
-                        <%= render :partial => 'layouts/footer_table' %>
-                        </tbody>
-                      </table>
-
-                    <div class="actions-tabs">
-                      <% if can?(:manage, User) && can?(:manage, Group) %>
-                        <% if action_name.in?(%w(new create)) %>
-                          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
-                        <% end %>
-                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-                        <%= submit_tag I18n.t('apply'), name: 'tabs-groups', :class => 'btn btn-primary btn-estimancy' %>
-                      <% end %>
-                      <% if @organization.nil? %>
-                        <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
-                      <% else %>
-                        <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
-                      <% end %>
-                    </div>
-                  <% end %>
                 </div>
+
+                <% if params[:organization_id].present? %>
+                  <table class="table table-striped table-bordered table-condensed">
+                    <thead>
+                    <tr>
+                      <th><%= I18n.t(:name) %></th>
+                      <th><%= I18n.t(:description) %></th>
+                      <th><%= I18n.t(:selected) %></th>
+                      <th><%= I18n.t(:actions) %></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <% @organization.groups.each do |group| %>
+                      <tr>
+                        <td><%= group.name %></td>
+                        <td><%= group.description %></td>
+                        <% if @user.new_record? %>
+                          <% gu = nil %>
+                        <% else %>
+                          <% gu = GroupsUsers.where(group_id: group.id, user_id: @user.id).first %>
+                        <% end %>
+
+                        <td class="center">
+
+                          <% if can?(:manage, User) && can?(:manage, Group) &&
+                              ( group.is_protected_group != true ||
+                                  ( group.is_protected_group == true && (@current_user.super_admin || @current_user.groups.include?(group)) )) %>
+
+                            <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil? %>
+
+                          <% else %>
+                            <%= check_box_tag "groups[#{group.id}]", "accepted", !gu.nil?, :style => 'visibility: hidden' %>
+                            <%= check_box_tag "show_readonly_groups[#{group.id}]", "accepted", !gu.nil?, disabled: true, :style => 'margin-left: -15px;' %>
+                          <% end %>
+                        </td>
+
+                        <td class="center">
+                          <% if can?(:manage, User) && can?(:manage, Group) %>
+                            <%= link_to '', edit_group_path(group, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                            <%= link_to '', group, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                          <% end %>
+                        </td>
+                        </td>
+                      </tr>
+                    <% end %>
+                    <%= render :partial => 'layouts/footer_table' %>
+                    </tbody>
+                  </table>
+
+                  <div class="actions-tabs">
+                    <% if can?(:manage, User) && can?(:manage, Group) %>
+                      <% if action_name.in?(%w(new create)) %>
+                        <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
+                      <% end %>
+                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+                      <%= submit_tag I18n.t('apply'), name: 'tabs-groups', :class => 'btn btn-primary btn-estimancy' %>
+                    <% end %>
+                    <% if @organization.nil? %>
+                      <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
+                    <% else %>
+                      <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
+                    <% end %>
+                  </div>
+                <% end %>
               </div>
+            </div>
           <% end %>
 
           <!-- Organizations -->
           <% if current_user.super_admin == true and !params[:organization_id].present? %>
-              <div class="tab-pane fade" id="tabs-organizations" role="tabpanel" aria-labelledby="tab-organizations">
-                <div class="card-body">
+            <div class="tab-pane fade" id="tabs-organizations" role="tabpanel" aria-labelledby="tab-organizations">
+              <div class="card-body">
 
-                  <div class="edition-bloc-left">
-                    <div class="edition-bloc-title">
-                      <h1>
-                        <%= I18n.t(:organizations) %>
-                      </h1>
-                    </div>
+                <div class="edition-bloc-left">
+                  <div class="edition-bloc-title">
+                    <h1>
+                      <%= I18n.t(:organizations) %>
+                    </h1>
                   </div>
-
-                  <% if current_user.super_admin == true and !params[:organization_id].present? %>
-                    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-                      <thead>
-                        <tr>
-                          <th><%= I18n.t(:name) %></th>
-                          <th><%= I18n.t(:selected) %></th>
-                        </tr>
-                      </thead>
-
-                      <tbody>
-                        <% Organization.all.each do |organization| %>
-                          <tr>
-                            <td><%= organization.name %></td>
-                            <% go = OrganizationsUsers.where(organization_id: organization.id, user_id: @user.id).first %>
-                            <td class="center">
-                              <%= check_box_tag "organizations[#{organization.id}]", "accepted", !go.nil? %>
-                            </td>
-                          </tr>
-                        <% end %>
-                        <%= render :partial => 'layouts/footer_table' %>
-                      </tbody>
-                    </table>
-
-                    <div class="actions-tabs">
-                      <% if (can? :manage, User) || current_user == @user %>
-                        <% if action_name.in?(%w(new create)) %>
-                          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
-                        <% end %>
-                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-                        <%= submit_tag I18n.t('apply'), name: 'tabs-organizations', :class => 'btn btn-primary btn-estimancy' %>
-                      <% end %>
-                      <% if @organization.nil? %>
-                        <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
-                      <% else %>
-                        <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
-                      <% end %>
-                    </div>
-                  <% end %>
                 </div>
-              </div>
-          <% end %>
-        <% end %>
 
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-        <script type="text/javascript">
+                <% if current_user.super_admin == true and !params[:organization_id].present? %>
+                  <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+                    <thead>
+                    <tr>
+                      <th><%= I18n.t(:name) %></th>
+                      <th><%= I18n.t(:selected) %></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <% Organization.all.each do |organization| %>
+                      <tr>
+                        <td><%= organization.name %></td>
+                        <% go = OrganizationsUsers.where(organization_id: organization.id, user_id: @user.id).first %>
+                        <td class="center">
+                          <%= check_box_tag "organizations[#{organization.id}]", "accepted", !go.nil? %>
+                        </td>
+                      </tr>
+                    <% end %>
+                    <%= render :partial => 'layouts/footer_table' %>
+                    </tbody>
+                  </table>
+
+                  <div class="actions-tabs">
+                    <% if (can? :manage, User) || current_user == @user %>
+                      <% if action_name.in?(%w(new create)) %>
+                        <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
+                      <% end %>
+                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+                      <%= submit_tag I18n.t('apply'), name: 'tabs-organizations', :class => 'btn btn-primary btn-estimancy' %>
+                    <% end %>
+                    <% if @organization.nil? %>
+                      <%= link_to I18n.t('back'), users_path, :class => 'btn btn-secondary btn-estimancy' %>
+                    <% else %>
+                      <%= link_to I18n.t('back'), organization_users_path(organization_id: @organization.id), :class => 'btn btn-secondary btn-estimancy' %>
+                    <% end %>
+                  </div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+      <% end %>
+
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+      <script type="text/javascript">
           $(document).ready(function () {
               $(".date-picker").datepicker({
                   language: '<%= set_user_language_for_datepicker %>',
@@ -498,7 +498,7 @@
                   }
               });
           });
-        </script>
+      </script>
 
       </div>
     </div>

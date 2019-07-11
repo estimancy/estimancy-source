@@ -4,9 +4,9 @@
       <%= I18n.t :demands_list %>
     </h1>
   </div>
-  <%= link_to I18n.t :create_a_demand, new_organization_demand_path(@organization), class: "btn btn-primary btn-estimancy" %>
-  <%= link_to I18n.t :export_billing, organization_export_billing_path(@organization), class: "btn btn-primary btn-estimancy" %>
-  <%= link_to I18n.t :SLA_synthesis, organization_demand_dashboard_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to I18n.t('create_a_demand'), new_organization_demand_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to I18n.t('export_billing'), organization_export_billing_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to I18n.t('SLA_synthesis'), organization_demand_dashboard_path(@organization), class: "btn btn-primary btn-estimancy" %>
 </div>
 
 
@@ -32,6 +32,9 @@
       <th>
         Date
       </th>
+      <th>
+        Action
+      </th>
     </tr>
   </thead>
 
@@ -44,6 +47,11 @@
         <td><%= demand.demand_status.nil? ? @organization.demand_statuses.first : demand.demand_status %></td>
         <td><%= demand.business_need %></td>
         <td><%= demand.created_at.strftime("%d/%m/%Y") %></td>
+        <td class="center">
+          <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_demand_path(@organization,demand), :class => 'material-icons', :title => I18n.t('edit')  %>
+          <%= link_to raw("<i class='material-icons'>delete</i>"), organization_demand_path(@organization, demand), confirm: I18n.t('are_you_sure'),
+                      method: :delete, :class => 'material-icons', :title => I18n.t('delete')  %>
+        </td>
       </tr>
     <% end %>
   </tbody>
@@ -51,5 +59,5 @@
   <%= render :partial => 'layouts/footer_table' %>
 </table>
 
-</div>
+  </div>
 </div>
