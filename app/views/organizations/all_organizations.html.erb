@@ -3,7 +3,7 @@
     <div style="flex: 1">
       <h1><%= I18n.t :select_an_organization %></h1>
     </div>
-    <% if can? :manage, Organization %>
+    <% if can?(:manage, Organization) && !(!current_user.super_admin? && current_user.subscription_end_date <= Time.now) %>
       <a href="<%= new_organization_path %>">
         <button type="button" class="btn btn-primary">
           <%= I18n.t :create_new_organization %>
@@ -22,23 +22,37 @@
       <li>
         <div class="card card-cliquable organisation-widget">
           <div class="card-body">
-            <a href="<%= main_app.organization_estimations_path(organization) %>">
-              <div class="organisation-widget-title"><%= organization.name %></div>
-              <div class="organisation-widget-subtitle"><%= organization.headband_title %></div>
-              <p class="organisation-widget-text mt-3 mb-4">
-                <%= organization.description.truncate(110) %>
-              </p>
-            </a>
-            <div class="organisation-widget-buttons">
-              <a href="#"></a>
-              <% if can? :manage, Organization %>
-                <a href="<%= edit_organization_path(organization) %>" title="<%= I18n.t :edit %>">
-                  <i class="material-icons">
-                    edit
-                  </i>
+            <% if !current_user.super_admin? && current_user.subscription_end_date <= Time.now %>
+                <span>
+                  <div class="organisation-widget-title"><%= organization.name %></div>
+                  <div class="organisation-widget-subtitle"><%= organization.headband_title %></div>
+                  <p class="organisation-widget-text mt-3 mb-4">
+                    <%= organization.description.truncate(110) %>
+                  </p>
+                </span>
+
+            <% else %>
+
+                <a href="<%= main_app.organization_estimations_path(organization) %>">
+                  <div class="organisation-widget-title"><%= organization.name %></div>
+                  <div class="organisation-widget-subtitle"><%= organization.headband_title %></div>
+                  <p class="organisation-widget-text mt-3 mb-4">
+                    <%= organization.description.truncate(110) %>
+                  </p>
                 </a>
-              <% end %>
-            </div>
+                <div class="organisation-widget-buttons">
+                  <a href="#"></a>
+                  <% if can? :manage, Organization %>
+                    <a href="<%= edit_organization_path(organization) %>" title="<%= I18n.t :edit %>">
+                      <i class="material-icons">
+                        edit
+                      </i>
+                    </a>
+                  <% end %>
+                </div>
+
+            <% end %>
+
           </div>
         </div>
       </li>

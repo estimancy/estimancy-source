@@ -405,6 +405,7 @@ class ProjectsController < ApplicationController
   # Function to activate the current/selected module_project
   def activate_module_project
     session[:module_project_id] = params[:module_project_id]
+
     @module_project = ModuleProject.find(session[:module_project_id])
     @project = @module_project.project
     @project_organization = @project.organization
@@ -417,6 +418,11 @@ class ProjectsController < ApplicationController
     #Get the initialization module_project
     @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
 
+    if @module_project.id == @initialization_module_project.id
+      session[:active_nav_link] = "activate_init_module_project"
+    else
+      session[:active_nav_link] = "activate_module_project"
+    end
     # Get the max X and Y positions of modules
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
@@ -1033,6 +1039,7 @@ class ProjectsController < ApplicationController
 
     @project = Project.find(params[:id])
     @organization = @project.organization
+    session[:active_nav_link] = "edit"
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories

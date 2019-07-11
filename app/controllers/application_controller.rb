@@ -176,13 +176,15 @@ class ApplicationController < ActionController::Base
     if user_signed_in?
       unless current_user.super_admin == true || current_user.subscription_end_date.nil?
         if current_user.subscription_end_date < Time.now
-          flash[:error] = "La licence de votre compte est expirée."
-          sign_out current_user
-          reset_session
+          #flash[:error] = "La licence de votre compte est expirée."
+          #sign_out current_user
+          #reset_session
           subscription_end_date_message = %Q[La licence de votre compte a expiré. Veuillez contacter l'administrateur de votre compte <a href="mailto:contact@estimancy.com">par mail</a>]
-
-          redirect_to(sign_in_path, :flash => { :error => subscription_end_date_message, :warning => flash[:warning] }) and return
-          #redirect_to(root_path, :flash => { :error => "La licence de votre compte est expirée." }) and return false
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired, :resource_name => current_user.name, :subscription_end_date => current_user.subscription_end_date.strftime("%-d %b %Y"))
+          #redirect_to(sign_in_path, :flash => { :error => subscription_end_date_message, :warning => flash[:warning] }) and return
+          unless params[:action].to_s.in?(["all_organizations", "organizationals_params", "contactsupport", "about"]) || (params[:controller] == "sessions")
+            redirect_to(all_organizations_path, :flash => { :error => subscription_end_date_message, :warning => flash[:warning] }) and return
+          end
         elsif @disable_access == "1"
           sign_out current_user
           reset_session
