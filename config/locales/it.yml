@@ -256,6 +256,7 @@ it:
   home_estimancy: "Accueil Estimancy"
   model: "Modèle"
   property: "Propriété"
+  properties: "Propriétés"
   demands: "Demandes"
   values: "Valeurs"
   return: "Retour"
@@ -1462,6 +1463,7 @@ it:
   field_column_names: "Columns"
   select_columns_list: "Select columns for list"
   label_date: "Date"
+  label_start_date: "Date début"
   text_confirm_organization_deletion: "Attention, confirm the deletion of the organization%{organization_name}\" and its contents. No recovery will be possible"
   warning_need_organization_check_box_confirmation: "You need to confirm organization deletion with check-box"
   organization_copied_by: "copy made by%{username}\" "
@@ -1905,3 +1907,4 @@ it:
 
   allow_correction_before_change: "Autoriser la correction avant le changement"
   subscription_end_date_for_list: "Fin abonnement"
+  calculation_modules: "Modules de calcul"

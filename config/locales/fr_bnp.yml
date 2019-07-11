@@ -285,6 +285,7 @@ fr_bnp:
   home_estimancy: "Accueil Estimancy"
   model: "Modèle"
   property: "Propriété"
+  properties: "Propriétés"
   demands: "Demandes"
   values: "Valeurs"
   return: "Retour"
@@ -1636,6 +1637,7 @@ fr_bnp:
   field_column_names: "Colonnes"
   select_columns_list: "Liste des colonnes"
   label_date: "Date"
+  label_start_date: "Date début"
   text_confirm_organization_deletion: "Attention, confirmer la suppression de l'organisation \"%{organization_name}\" et son contenu. Aucune restauration ne sera possible"
   warning_need_organization_check_box_confirmation: "Vous devez confirmer la suppression de l'organisation avec la case à cocher"
   organization_copied_by: "copie effectuée par \"%{username}\" "
@@ -2417,4 +2419,5 @@ fr_bnp:
   global_budget: "Budget global"
   allow_correction_before_change: "Autoriser la correction avant le changement"
   subscription_end_date_for_list: "Fin abonnement"
+  calculation_modules: "Modules de calcul"
 

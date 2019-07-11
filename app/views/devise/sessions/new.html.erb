@@ -4,29 +4,29 @@
   </div>
   <section class="login-form text-left">
     <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :method => :post, :class => 'simple_form') do |f| %>
-      <h1>Connexion</h1>
+      <h1><%= I18n.t('connect') %></h1>
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
       <div class="input-group-prepend">
         <div class="input-group-text"><i class="material-icons-outlined">account_circle</i></div>
       </div>
-      <input placeholder="Votre identifiant" class="mdl-textfield__input" type="text" id="user_id_connexion" name="user[id_connexion]" style="width: 360px;">
+      <input placeholder="<%= I18n.t('login_name') %>" class="mdl-textfield__input" type="text" id="user_id_connexion" name="user[id_connexion]" style="width: 360px;">
     </div>
 
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
         <div class="input-group-prepend">
           <div class="input-group-text"><i class="material-icons-outlined">vpn_key</i></div>
         </div>
-        <input placeholder="Votre mot de passe" class="mdl-textfield__input" type="password" id="password" name="user[password]" style="width: 360px;">
-        <span class="mdl-textfield__error">Mot de passe inconnu. Réessayez ou cliquez sur “Mot de passe oublié”.</span>
+        <input placeholder="<%= I18n.t('password') %>" class="mdl-textfield__input" type="password" id="password" name="user[password]" style="width: 360px;">
+        <span class="mdl-textfield__error"><%= I18n.t('incorrect_password') %></span>
       </div>
 
       <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mt-3" for="checkbox-1">
         <input type="checkbox" id="checkbox-1" class="mdl-checkbox__input">
-        <span class="mdl-checkbox__label">Se souvenir de moi</span>
+        <span class="mdl-checkbox__label"><%= I18n.t('remember_me') %></span>
       </label>
 
       <button type="submit" class="btn btn-primary btn-login mt-5 mb-4"><img class="brand-icon" src="/assets/logo_arrows_white_small.svg">
-        Se connecter</button>
+        <%= I18n.t('connect_me') %></button>
       <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
         <%= link_to I18n.t('button_forgotten_password'), new_password_path(resource_name), class: "login-form-link" %><br />
       <% end -%>
