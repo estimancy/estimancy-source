@@ -1,40 +1,53 @@
+
+<div class="edition-bloc-left">
+  <div class="edition-bloc-title">
+    <h4>
+      <%= params[:action_to_do].eql?("update_password_first_connexion") ? I18n.t(:update_password_first_connexion) : I18n.t(:update_email_login_password) %></h2>
+    </h4>
+  </div>
+</div>
+
+
 <section class="card card-content-bloc estimancy-form">
-
   <div class="mb-5">
-    <div class="effort-bloc">
-      <h2><%= params[:action_to_do].eql?("update_password_first_connexion") ? I18n.t(:update_password_first_connexion) : I18n.t(:update_email_login_password) %></h2>
-      <hr>
 
-      <div class="edition-bloc-content">
-        <div class="edition-bloc-form">
-          <%= simple_form_for(resource, as: resource_name, url: update_user_registration_path, html: { method: :put }) do |f| %>
-            <%= f.error_notification %>
+  <%= simple_form_for(resource, as: resource_name, url: update_user_registration_path, html: { method: :put }) do |f| %>
+    <%= f.error_notification %>
 
+      <div class="card-body">
+        <div class="edition-bloc-left">
+          <div class="edition-bloc-title">
+          </div>
+        </div>
+
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :email, required: true, autofocus: true, label: I18n.t(:email) %>
+                  <%= f.input :email, required: true, autofocus: true, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
                   <label class="mdl-textfield__label" for="email"><%= I18n.t(:email) %></label>
                 </div>
+              </div>
             </div>
 
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :login_name, required: true, label: false %>
+                  <%= f.input :login_name, required: true, label: false, :input_html => { :class => 'mdl-textfield__input form-control' }  %>
                   <label class="mdl-textfield__label" for="email"><%= I18n.t(:login_name) %></label>
                 </div>
               </div>
             </div>
 
-              <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+            <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
                 <p>Currently waiting confirmation for: <%= resource.unconfirmed_email %></p>
-              <% end %>
+            <% end %>
 
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :current_password, hint: I18n.t(:text_need_current_password_to_confirm_change), required: true, label: false %>
+                  <%= f.input :current_password, hint: I18n.t(:text_need_current_password_to_confirm_change), required: true, label: false, :input_html => { :class => 'mdl-textfield__input form-control' }  %>
                   <label class="mdl-textfield__label" for="current_password"><%=  I18n.t(:current_password) %></label>
                 </div>
               </div>
@@ -43,8 +56,8 @@
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :password, autocomplete: "off", required: false, label: false %>
-                <label class="mdl-textfield__label" for="password"><%=  I18n.t("password") %></label>
+                  <%= f.input :password, autocomplete: "off", required: false, label: false, :input_html => { :class => 'mdl-textfield__input form-control' }  %>
+                  <label class="mdl-textfield__label" for="password"><%=  I18n.t("password") %></label>
                 </div>
               </div>
             </div>
@@ -52,7 +65,7 @@
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :password_confirmation, required: false, label: I18n.t(:password_confirmation) %>
+                  <%= f.input :password_confirmation, required: false, label: false, :input_html => { :class => 'mdl-textfield__input form-control' }  %>
                   <label class="mdl-textfield__label" for="password_confirmation"><%=  I18n.t("password_confirmation") %></label>
                 </div>
               </div>
@@ -61,15 +74,14 @@
             <div>
               <%= f.button :submit, I18n.t('update'), :class => 'btn btn-primary btn-estimancy' %>
             </div>
-           <% end %>
+            <!--<p>Unhappy? <%#= link_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>-->
+            <!--<p><%#= link_to I18n.t(:label_cancel_my_account), registration_path(resource_name), data: { confirm: I18n.t(:are_you_sure) }, method: :delete %></p>-->
 
-      <!--<p>Unhappy? <%#= link_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>-->
-      <p><%#= link_to I18n.t(:label_cancel_my_account), registration_path(resource_name), data: { confirm: I18n.t(:are_you_sure) }, method: :delete %></p>
-
-          <%= link_to I18n.t(:back), :back, :class => 'btn btn-secondary btn-estimancy'  %>
+            <%#= link_to I18n.t(:back), :back, :class => 'btn btn-secondary btn-estimancy'  %>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+  <% end %>
+</div>
 </section>
+
