@@ -117,7 +117,7 @@
              size_attr = module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size")
 
              begin
-                size_current_ev = EstimationValue.where(pe_attribute_id: size_attr.id, in_out: "input").first
+                size_current_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => module_project.id, :pe_attribute_id => size_attr.id, :in_out => "input").first
              rescue
                 size_current_ev = nil
              end
@@ -135,14 +135,13 @@
 
                       mpsize = module_project.previous.select{ |i| i.pemodule.alias == "guw" }.first
                       begin
-                        size_previous_ev = EstimationValue.where(pe_attribute_id: size_attr.id, in_out: "output").first
+                        size_previous_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => mpsize.id,
+                                                                 :pe_attribute_id => size_attr.id, :in_out => "output").first
                       rescue
                         begin
                          mpsize = module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
-                         size_previous_ev = EstimationValue.where(:organization_id => organization_id,
-                                                                  :module_project_id => mpsize.id,
-                                                                  :pe_attribute_id => size_attr.id,
-                                                                  :in_out => "output").first
+                         size_previous_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => mpsize.id,
+                                                                  :pe_attribute_id => size_attr.id, :in_out => "output").first
                         rescue
                          size_previous_ev = nil
                         end
@@ -158,7 +157,10 @@
              effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first
 
              begin
-              effort_current_ev = EstimationValue.where(pe_attribute_id: effort_attr.id, in_out: "input").first
+              effort_current_ev = EstimationValue.where(:organization_id => organization_id,
+                                                        :module_project_id => module_project.id,
+                                                        :pe_attribute_id => effort_attr.id,
+                                                        :in_out => "input").first
              rescue
                effort_current_ev = nil
              end
@@ -171,7 +173,10 @@
                  ev = EstimationValue.find(effort_current_ev.estimation_value_id)
                else
                  begin
-                  ev = EstimationValue.where(pe_attribute_id: effort_attr.id, in_out: "output").first
+                    ev = EstimationValue.where(:organization_id => organization_id,
+                                               module_project_id: module_project.previous.last.id,
+                                               pe_attribute_id: effort_attr.id,
+                                               in_out: "output").first
                  rescue
                   ev = nil
                  end
@@ -208,7 +213,10 @@
             <% effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
 
             <% begin
-                output_effort_current_ev = EstimationValue.where(pe_attribute_id: effort_attr.id, in_out: "output").first
+                output_effort_current_ev = EstimationValue.where(:organization_id => organization_id,
+                                                                 :module_project_id => module_project.id,
+                                                                 :pe_attribute_id => effort_attr.id,
+                                                                 :in_out => "output").first
                rescue
                  output_effort_current_ev = nil
                end
