@@ -142,7 +142,13 @@
         <% @organization.budget_types.each do |budget_type| %>
             <tr>
               <td><%= budget_type.name %></td>
-              <td><%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %></td>
+              <td>
+                <% begin %>
+                  <%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %>
+                <% rescue %>
+                  -
+                <% end %>
+              </td>
               <td><%= budget_type.color %></td>
               <td class="center">
                 <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_budget_type_path(@organization, budget_type), :class => 'material-icons', :title => I18n.t('edit') %>

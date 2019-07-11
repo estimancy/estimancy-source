@@ -48,7 +48,7 @@ module ApplicationHelper
     begin
       model = Project.where(id: uo.project.original_model_id).first
       if model.title == "IFPUG Sourcing"
-        if uo.project.estimation_status.name == "AI Controled"
+        if uo.project.estimation_status.name == "Controled"
           if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
             if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
               false

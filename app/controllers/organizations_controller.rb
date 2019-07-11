@@ -2100,7 +2100,6 @@ class OrganizationsController < ApplicationController
       if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
         res << p
       end
-
     end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]

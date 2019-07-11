@@ -347,7 +347,7 @@
                   <%= @project.is_model ? I18n.t(:label_model_group_security_resume) : I18n.t(:label_group_security_resume) %>
                 </h3>
 
-                <table class="table access-table">
+                <table class="table table-list">
                   <thead>
                   <tr>
                     <th><%= I18n.t(:group_name)%></th>
@@ -372,8 +372,7 @@
                           %>
                         <td>
                           <div class="custom-control custom-checkbox">
-                            <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?, label: false, class: "custom-control-input") %>
-                            <label class="custom-control-label" for="group_securities_<%= prj_level.id %>_<%= group.id %>"></label>
+                            <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?, label: false) %>
                           </div>
                         </td>
                       <% end %>
@@ -399,7 +398,7 @@
                   <%= @project.is_model ? I18n.t(:label_from_model_user_security_resume) : I18n.t(:label_user_security_resume) %>
                 </h3>
 
-                <table class="table access-table">
+                <table class="table table-list">
                   <thead>
                   <tr>
                     <th><%= I18n.t(:name)%></th>
@@ -429,8 +428,7 @@
                         <% unless owner.nil? %>
                           <td>
                             <div class="custom-control custom-checkbox">
-                              <%= check_box_tag("user_securities_from_model[#{prj_level.id}][#{owner.id}]", owner.name, ps.nil? ? false : true, label: false, class: "custom-control-input") %>
-                              <label class="custom-control-label" for="user_securities_<%= prj_level.id %>_<%= owner.id %>"></label>
+                              <%= check_box_tag("user_securities_from_model[#{prj_level.id}][#{owner.id}]", owner.name, ps.nil? ? false : true, label: false) %>
                             </div>
                           </td>
                         <% end %>
@@ -452,8 +450,7 @@
                           %>
                           <td>
                             <div class="custom-control custom-checkbox">
-                              <%= check_box_tag("user_securities[#{prj_level.id}][#{user.id}]", user.id, ps.nil? ? false : true, class: "custom-control-input") %>
-                              <label class="custom-control-label" for="user_securities_<%= prj_level.id %>_<%= user.id %>"></label>
+                              <%= check_box_tag("user_securities[#{prj_level.id}][#{user.id}]", user.id, ps.nil? ? false : true) %>
                             </div>
                           </td>
                         <% end %>
@@ -503,8 +500,7 @@
                                                           is_estimation_permission: false).first %>
                           <td>
                             <div class="custom-control custom-checkbox">
-                              <%= check_box_tag("group_securities_from_model[#{prj_level.id}][groupuser.id}]", group.id, !ps.nil?, class: "custom-control-input") %>
-                              <label class="custom-control-label" for="group_securities_from_model_<%= prj_level.id %>_<%= group.id %>"></label>
+                              <%= check_box_tag("group_securities_from_model[#{prj_level.id}][#{group.id}]", group.id, !ps.nil?, label: false) %>
                             </div>
                           </td>
                         <% end %>
