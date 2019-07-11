@@ -202,18 +202,21 @@
         <div class="page-header page-edition-header row">
           <!--<div class="container text-center" style="justify-content: flex-start;">-->
             <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
-            <div class="col-10">
-              <div>
-                  <h2>
-                    <%= @project.to_s %>
-                    <small style="color: <%= @project.status_background_color %>">
-                      <b>
-                        <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
-                      </b>
-                    </small>
-                  </h2>
-                  <p><%= @project.description %></p>
-              </div>
+            <div class="col-8">
+              <h2>
+                <%= @project.to_s %>
+                <small style="color: <%= @project.status_background_color %>">
+                  <b>
+                    <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
+                  </b>
+                </small>
+              </h2>
+
+              <% unless @project.description.blank? %>
+                <small>
+                  <%= @project.description %>
+                </small>
+              <% end %>
 
               <div class="page-header-buttons">
                 <% if controller.action_name == "dashboard" %>
@@ -233,16 +236,15 @@
                     <%# end %>
                 <% end %>
               </div>
-
-              <div style="margin-right: 15px;">
-                <small class="tools float-right">
-                  <% if current_module_project.show_results_view %>
-                      <%= link_to I18n.t(:hide_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
-                  <% else %>
-                      <%= link_to I18n.t(:show_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
-                  <% end %>
-                </small>
-              </div>
+            </div>
+            <div class="col-2" style="margin-right: 15px;">
+              <small class="tools float-right">
+                <% if current_module_project.show_results_view %>
+                  <%= link_to I18n.t(:hide_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+                <% else %>
+                  <%= link_to I18n.t(:show_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+                <% end %>
+              </small>
             </div>
         </div>
 
