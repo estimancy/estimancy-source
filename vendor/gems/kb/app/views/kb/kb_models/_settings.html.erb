@@ -6,7 +6,7 @@
 </h3>
 
 <% module_project = current_module_project %>
-<% organization_id =  module_project.id %>
+<% organization_id = @current_organization.id %>
 
 <%= form_tag kb.kb_model_save_efforts_path(@kb_model), method: "post" do %>
   <div class="row-fluid">
@@ -117,7 +117,7 @@
              size_attr = module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size")
 
              begin
-                size_current_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => module_project.id, :pe_attribute_id => size_attr.id, :in_out => "input").first
+                size_current_ev = EstimationValue.where(pe_attribute_id: size_attr.id, in_out: "input").first
              rescue
                 size_current_ev = nil
              end
@@ -126,28 +126,25 @@
                ev_size_value = size_current_ev.string_data_probable[current_component.id]
 
                begin
-                 if ev_size_value.blank? || !@kb_model.enabled_input
+                if ev_size_value.blank? || !@kb_model.enabled_input
 
                    if !size_current_ev.estimation_value_id.nil?
                      size_previous_ev = EstimationValue.find(size_current_ev.estimation_value_id)
                    else
                       size_possible_module_projects = module_project.possible_previous_mp_for_attribute(size_attr)
 
-                      mpsize = module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
+                      mpsize = module_project.previous.select{ |i| i.pemodule.alias == "guw" }.first
                       begin
-                        size_previous_ev = EstimationValue.where(:organization_id => organization_id,
-                                                                 :module_project_id => mpsize.id,
-                                                                 :pe_attribute_id => size_attr.id,
-                                                                 :in_out => "output").first
+                        size_previous_ev = EstimationValue.where(pe_attribute_id: size_attr.id, in_out: "output").first
                       rescue
                         begin
-                          mpsize = module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
-                          size_previous_ev = EstimationValue.where(:organization_id => organization_id,
-                                                                   :module_project_id => mpsize.id,
-                                                                   :pe_attribute_id => size_attr.id,
-                                                                    :in_out => "output").first
+                         mpsize = module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
+                         size_previous_ev = EstimationValue.where(:organization_id => organization_id,
+                                                                  :module_project_id => mpsize.id,
+                                                                  :pe_attribute_id => size_attr.id,
+                                                                  :in_out => "output").first
                         rescue
-                          size_previous_ev = nil
+                         size_previous_ev = nil
                         end
                       end
                    end
@@ -158,13 +155,10 @@
              @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id, @kb_model)
 
 
-             effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort")
+             effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first
 
              begin
-              effort_current_ev = EstimationValue.where(:organization_id => organization_id,
-                                                        :module_project_id => module_project.id,
-                                                        :pe_attribute_id => effort_attr.id,
-                                                        :in_out => "input").first
+              effort_current_ev = EstimationValue.where(pe_attribute_id: effort_attr.id, in_out: "input").first
              rescue
                effort_current_ev = nil
              end
@@ -177,12 +171,9 @@
                  ev = EstimationValue.find(effort_current_ev.estimation_value_id)
                else
                  begin
-                    ev = EstimationValue.where(:organization_id => organization_id,
-                                               module_project_id: module_project.previous.last.id,
-                                               pe_attribute_id: effort_attr.id,
-                                               in_out: "output").first
+                  ev = EstimationValue.where(pe_attribute_id: effort_attr.id, in_out: "output").first
                  rescue
-                    ev = nil
+                  ev = nil
                  end
                end
 
@@ -217,10 +208,7 @@
             <% effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
 
             <% begin
-                output_effort_current_ev = EstimationValue.where(:organization_id => organization_id,
-                                                                 :module_project_id => module_project.id,
-                                                                 :pe_attribute_id => effort_attr.id,
-                                                                 :in_out => "output").first
+                output_effort_current_ev = EstimationValue.where(pe_attribute_id: effort_attr.id, in_out: "output").first
                rescue
                  output_effort_current_ev = nil
                end
@@ -274,12 +262,11 @@
               <%#= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%#= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
               <% ecart_pe_attribute = module_project.pemodule.pe_attributes.where(alias: "percent").first %>
               <% begin
-                  ecart_ev = EstimationValue.where(:organization_id => organization_id, module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
+                  ecart_ev = EstimationValue.where(organization_id: organization_id, module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
                   ecart_percent = ecart_ev.send("string_data_probable")[current_component.id]
                  rescue
                    ecart_percent = nil
-                 end
-              %>
+                 end %>
               <%= ecart_percent.to_f.round(2) %> <%= '%' %>
             <% end %>
         <% end %>
@@ -304,7 +291,7 @@
 <% end %>
 
 <script>
-  $(document).on('ready turbolinks:load', function() {
+  $(document).on('ready', function() {
     $(function() {
       chart = $('#scatter_chart').highcharts({
         chart: {
