@@ -1,7 +1,5 @@
 <section class="estimation-modules-edition ge-model-estimation">
 
-  <%= render partial: 'projects/dashboard_project_title', locals: { module_project: current_module_project } %>
-
   <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
 
     <% if @ge_model.ge_factors.size > 0 %>

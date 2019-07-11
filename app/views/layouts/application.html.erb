@@ -174,73 +174,86 @@
     </header>
 
     <% unless @current_organization.nil? %>
+      <% module_project = current_module_project %>
+
       <% if (controller_name == "projects" && controller.action_name.in?(["edit", "new", "update", "create"])) %>
-      <% @imp = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first %>
-        <div class="page-header page-edition-header">
-          <div class="container text-center">
-            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
-            <ul class="progressbar">
-              <li class=""><%= I18n.t :property %><div class="losange"></div></li>
-              <li class="">Modules<div class="losange"></div></li>
-              <li class="">Dashboard<div class="losange"></div></li>
-            </ul>
-            <div class="page-header-buttons">
-              <% unless @project.nil? || @project.new_record? %>
-                <a class="estimancy" href="<%= dashboard_path(@project) %>">
-                  <button type="button" class="btn btn-secondary" style="margin-left: 137px;">
-                    <%= I18n.t :results %>
-                  </button>
-                </a>
-              <% end %>
+        <% @imp = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first %>
+
+        <div class="page-header page-edition-header row">
+          <!--<div class="container text-center" style="justify-content: flex-start;">-->
+            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
+            <div class="col-10">
+              <h2>
+                <%= @project.to_s %>
+                <small style="color: <%= @project.status_background_color %>">
+                  <b>
+                    <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
+                  </b>
+                </small>
+              </h2>
+              <p><%= @project.description %></p>
             </div>
-          </div>
+          <!--</div>-->
         </div>
+
       <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard"])) %>
         <% @imp = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first %>
 
-        <div class="page-header page-edition-header">
-          <div class="container text-center">
-            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
-            <ul class="progressbar">
-              <li class="complete"><%= I18n.t :property %><div class="losange"></div></li>
-              <li class="<%= current_module_project.id == @imp.id ? "complete" : "" %>">Modules<div class="losange"></div></li>
-              <li class="">Dashboard<div class="losange"></div></li>
-            </ul>
-            <div class="page-header-buttons">
-              <% if controller.action_name == "dashboard" %>
-                  <a class="estimancy" href="<%= edit_project_path(@project) %>">
-                    <button type="button" class="btn btn-secondary" style="margin-left: 137px;">
-                      <%= I18n.t :edit %>
-                    </button>
-                  </a>
-              <% else %>
-                <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
-                  <button type="button" class="btn btn-secondary">
-                    <%= I18n.t :model %>
-                  </button>
-                </a>
-                <% unless @project.nil? || @project.new_record? %>
-                  <a class="estimancy" href="<%= dashboard_path(@project) %>">
-                    <button type="button" href="<%= projects_from_path %>" class="btn btn-secondary">
-                      <%= I18n.t :results %>
-                    </button>
-                  </a>
+        <div class="page-header page-edition-header row">
+          <!--<div class="container text-center" style="justify-content: flex-start;">-->
+            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
+            <div class="col-10">
+              <div>
+                  <h2>
+                    <%= @project.to_s %>
+                    <small style="color: <%= @project.status_background_color %>">
+                      <b>
+                        <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
+                      </b>
+                    </small>
+                  </h2>
+                  <p><%= @project.description %></p>
+              </div>
+
+              <div class="page-header-buttons">
+                <% if controller.action_name == "dashboard" %>
+                    <!-- Nothing to do -->
+                <% else %>
+                    <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
+                      <button type="button" class="btn btn-secondary">
+                        <%= I18n.t :model %>
+                      </button>
+                    </a>
+                    <%# unless @project.nil? || @project.new_record? %>
+                        <!--<a class="estimancy" href="<%#= dashboard_path(@project) %>">-->
+                          <!--<button type="button" href="<%#= projects_from_path %>" class="btn btn-secondary">-->
+                            <!--<%#= I18n.t :results %>-->
+                          <!--</button>-->
+                        <!--</a>-->
+                    <%# end %>
                 <% end %>
-              <% end %>
+              </div>
+
+              <div style="margin-right: 15px;">
+                <small class="tools float-right">
+                  <% if current_module_project.show_results_view %>
+                      <%= link_to I18n.t(:hide_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+                  <% else %>
+                      <%= link_to I18n.t(:show_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+                  <% end %>
+                </small>
+              </div>
             </div>
-          </div>
         </div>
+
+      <!--</div>-->
 
       <% elsif controller.action_name == "projects_from" %>
 
         <div class="page-header page-edition-header">
           <div class="container text-center">
-            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline"><i class="material-icons">arrow_back</i><%= I18n.t(:back) %><br> <%=I18n.t(:alaliste) %></a>
-            <ul class="progressbar">
-              <li class="<%= controller.action_name == "edit" ? "complete" : "" %>"><%= I18n.t :global_properties %><div class="losange"></div></li>
-              <li class="">Modules<div class="losange"></div></li>
-              <li class="">Dashboard<div class="losange"></div></li>
-            </ul>
+            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 1rem;"><i class="material-icons">arrow_back</i><%= I18n.t(:back) %><br> <%=I18n.t(:alaliste) %></a>
+
             <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
           </div>
         </div>
@@ -257,7 +270,8 @@
       <% end %>
     <% end %>
 
-    <% if controller.action_name == "dashboard" %>
+
+    <% if controller.action_name == "dashboard" || (controller_name == "projects" && controller.action_name == "edit") %>
       <div class="page-edition-content row justify-content-start">
         <%= render 'module_projects/new_estimation_plan_min' %>
         <%= yield %>
@@ -265,6 +279,7 @@
           <%= render 'module_projects/dashboard_right_panel' %>
         <% end %>
       </div>
+
     <% else %>
       <% if current_user.allow_full_screen_dashboard %>
         <div class="container-fluid">

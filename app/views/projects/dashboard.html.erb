@@ -12,30 +12,12 @@
       <div class="mb-4">
         <div class="widgets-list">
 
-          <div class="row">
-            <div class="col-10">
-              <h2>
-                <%= @project.to_s %>
-                <small style="color: <%= @project.status_background_color %>">
-                  <b>
-                    <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
-                  </b>
-                </small>
-              </h2>
-              <p><%= @project.description %></p>
-            </div>
-
-            <div class="col-2">
-              <div class="tools float-right">
-                <% mp = @project.module_projects.where(pemodule_id: @initialization_module.id).first %>
-                <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >add_box</i></a>
-                <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
-                <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >dashboard</i></a>
-              </div>
-            </div>
+          <div class="tools float-right">
+            <% mp = @project.module_projects.where(pemodule_id: @initialization_module.id).first %>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >add_box</i></a>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >dashboard</i></a>
           </div>
-
-          <hr>
 
         <% @widgets = {} %>
         <% @project_module_projects = @project.module_projects %>
@@ -68,7 +50,7 @@
           <% end %>
         <%# end %>
 
-        <div class="widget-list-content">
+        <div id="estimation_link_container" class="widget-list-content">
           <div class="widget-group">
             <ul class="widget-group-list">
               <% @widgets.keys.each do |k| %>
@@ -214,6 +196,7 @@
               <!--</div>-->
             <!--</div>-->
           <!--</div>-->
+
           <script>
 //              var myCanvas = document.getElementById("pieCanvas");
 //              var myLegend = document.getElementById("pieLegend");

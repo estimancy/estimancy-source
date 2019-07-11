@@ -287,6 +287,7 @@ fr1:
   home_estimancy: "Accueil Estimancy"
   model: "Modèle"
   property: "Propriété"
+  properties: "Propriétés"
   demands: "Demandes"
   values: "Valeurs"
   return: "Retour"
@@ -2047,4 +2048,5 @@ fr1:
   planned_budget: "Budget prévu"
   global_budget: "Budget global"
   subscription_end_date_for_list: "Fin abonnement"
+  calculation_modules: "Modules de calcul"
 

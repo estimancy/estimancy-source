@@ -285,6 +285,7 @@ fr_bnp:
   home_estimancy: "Accueil Estimancy"
   model: "Modèle"
   property: "Propriété"
+  properties: "Propriétés"
   demands: "Demandes"
   values: "Valeurs"
   return: "Retour"
@@ -2418,4 +2419,5 @@ fr_bnp:
   global_budget: "Budget global"
   allow_correction_before_change: "Autoriser la correction avant le changement"
   subscription_end_date_for_list: "Fin abonnement"
+  calculation_modules: "Modules de calcul"
 

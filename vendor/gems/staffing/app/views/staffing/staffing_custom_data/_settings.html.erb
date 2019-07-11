@@ -61,8 +61,6 @@
 
 %>
 
-  <%= render partial: 'projects/dashboard_project_title', locals: { module_project: current_module_project } %>
-
   <%= simple_form_for @staffing_custom_data, url: staffing.save_data_path(custom_data: @staffing_custom_data.id), method: :post do |f| %>
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
       <%= @module_project %>
