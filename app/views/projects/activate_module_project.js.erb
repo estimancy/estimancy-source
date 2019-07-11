@@ -2,6 +2,8 @@ $("#estimation_graph_box").html("");
 $("#estimation_graph_box").html("<%=raw j(render(partial: 'projects/setting_module')) %>");
 $(".estimation_plan_min").html("<%=raw j render 'module_projects/estimation_plan_min', :locals => {:module_projects => @module_projects} %>");
 
+$("#widget-title").html("<%= raw("<h5>#{I18n.t(:label_input_data)} - #{current_component} - #{current_module_project}</h5>") %>");
+
 var my_array = [];
 $(document).on('ready turbolinks:load', function() {
   $(".new_guw_button").on('click', function(e){
