@@ -44,6 +44,31 @@ class SessionsController < Devise::SessionsController
   def create
     self.resource = warden.authenticate!(auth_options)
 
+    unless resource.subscription_end_date.nil?
+      d = Date.parse(resource.subscription_end_date.to_s) - Date.parse(Time.now.to_s)
+      case d.to_i
+        when 90
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => I18n.t('3_months'), :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+        when 30
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => I18n.t('1_month'), :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+        when 15
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => I18n.t('15_days'), :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+        when 7
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => I18n.t('1_week'), :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+        when 3
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => I18n.t('3_days'), :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+        when 2
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => I18n.t('3_days'), :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+        when 1
+          flash[:warning] = I18n.t(:subscription_end_date_has_expired_in, :resource_name => resource.name, :duration => I18n.t('1_day'), :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+        else
+          if d.to_i <= 0
+            flash[:warning] = I18n.t(:subscription_end_date_has_expired, :resource_name => resource.name, :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
+            redirect_to all_organizations_path and return
+          end
+      end
+    end
+
     if resource.auth_method.name == "Application"
       set_flash_message(:notice, :signed_in) if is_flashing_format?
       sign_in(resource_name, resource)

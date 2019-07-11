@@ -1,14 +1,14 @@
 <% if flash[:warning] %>
   <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
     &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
-    <%= flash[:warning] %>
+    <%= flash[:warning].html_safe %>
   </div>
 <% end -%>
 
 <% if flash[:notice] %>
   <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
     &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
-    <%= flash[:notice] %>
+    <%= flash[:notice].html_safe %>
   </div>
 <% end %>
 
