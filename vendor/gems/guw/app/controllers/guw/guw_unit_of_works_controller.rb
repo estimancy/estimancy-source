@@ -3064,9 +3064,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_uow.size = tmp_hash_res
                 guw_uow.ajusted_size = tmp_hash_ares
 
-                unless guw_uow.changed?
+                # unless guw_uow.changed?
                   guw_uow.save
-                end
+                # end
 
                 @guw_attributes.all.each do |gac|
                   unless @guw_type.nil?
