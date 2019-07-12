@@ -92,7 +92,7 @@ class Project < ActiveRecord::Base
       new_project.copy_id = original_project.id
       new_project.title = "#{original_project.title}(#{new_copy_number})" ###"Copy_#{ original_project.copy_number.to_i+1} of #{original_project.title}"
       new_project.alias = "#{original_project.alias}(#{new_copy_number})" ###"Copy_#{ original_project.copy_number.to_i+1} of #{original_project.alias}"
-      new_project.description = " #{original_project.description} \n \n This project is a duplication of project \"#{original_project.title} (#{original_project.alias}) - #{original_project.version_number}\" "
+      new_project.description = " #{original_project.description} \n \n  #{I18n.t(:text_project_duplication_of)} \"#{original_project.title} (#{original_project.alias}) - #{original_project.version_number}\" "
       new_project.copy_number = 0
       original_project.copy_number = new_copy_number
     })
@@ -317,7 +317,7 @@ class Project < ActiveRecord::Base
     new_estimation_status_name = next_status.nil? ? "" : next_status.name
 
     # Puis on lui change de statut
-    new_comments_for_version = "#{I18n.l(Time.now)} : Version créée automatiquement par l'automatisme de changement de version. \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + self.status_comment
+    new_comments_for_version = "#{I18n.l(Time.now)} : #{I18n.t(:text_automatic_created_version)}  \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + self.status_comment
     new_project_version.update_attributes(estimation_status_id: next_status.id, status_comment: new_comments_for_version)
     new_project_version
   end
@@ -738,7 +738,7 @@ class Project < ActiveRecord::Base
                 old_version = old_prj.version_number
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
-                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name rescue nil}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
+                  ancestor.status_comment = "#{I18n.l(Time.now)} - #{I18n.t(:text_automatic_changed_status)}  #{old_version} #{I18n.t(:to)} #{new_prj.version_number} #{I18n.t(:by)} #{current_user.name rescue nil}. #{I18n.t(:text_new_status)} : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
                   ancestor.save
                 end
               end
@@ -753,7 +753,7 @@ class Project < ActiveRecord::Base
             if new_status
               old_version = old_prj.version_number
               new_prj.update_attribute(:estimation_status_id, new_status.id)
-              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name rescue nil}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
+              new_prj.status_comment = "#{I18n.l(Time.now)} - #{I18n.t(:text_automatic_changed_status)}  #{old_version} #{I18n.t(:to)} #{new_prj.version_number} #{I18n.t(:by)} #{current_user.name rescue nil}. #{I18n.t(:text_new_status)} : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
               new_prj.save
             end
           end
