@@ -556,7 +556,13 @@ class Kb::KbModelsController < ApplicationController
     worksheet.sheet_data[my_helper + 3][1].change_border(:right, 'thin')
 
     worksheet.add_cell(my_helper + 4, 0, "#{I18n.t(:effort_import)} #{my_kb_model.effort_unit.blank? ? 'h.h' : my_kb_model.effort_unit}")
-    worksheet.add_cell(my_helper + 4, 1, effort_current_ev.send("string_data_most_likely")[current_component.id].to_f / (my_kb_model.standard_unit_coefficient.nil? ? 1 : my_kb_model.standard_unit_coefficient))
+
+    if effort_current_ev.nil?
+      worksheet.add_cell(my_helper + 4, 1, effort_current_ev.send("string_data_most_likely")[current_component.id].to_f / (my_kb_model.standard_unit_coefficient.nil? ? 1 : my_kb_model.standard_unit_coefficient))
+    else
+      worksheet.add_cell(my_helper + 4, 1, '')
+    end
+
     worksheet.sheet_data[my_helper + 4][0].change_font_bold(true)
     worksheet.sheet_data[my_helper + 4][0].change_border(:left, 'thin')
     worksheet.sheet_data[my_helper + 4][0].change_border(:bottom, 'thin')
