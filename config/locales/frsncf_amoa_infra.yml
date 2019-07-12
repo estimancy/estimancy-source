@@ -280,7 +280,7 @@ frsncf_amoa_infra:
 
   # header
   advanced_research: "RECHERCHE AVANCÉE"
-  advanced_research_estimates: "RECHERCHE AVANCÉE DEVIS"
+  advanced_research_estimates: "RECHERCHE DE DEVIS"
   estimation_name, version_number, author: "Nom de l'estimation, numéro de la version, auteur"
   home_estimancy: "Accueil Estimancy"
   model: "Modèle"
