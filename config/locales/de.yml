@@ -1699,5 +1699,16 @@ de:
 
   please_wait: "Veuillez patienter..."
 
+  text_automatic_created_version: "Version automatically created by the version change automation."
+  text_automatic_changed_status: "Automatic change of status of old versions when versioning"
+  error_generating_auto_estimation_number: "Error when automatically generating the estimate number"
+  from: "from"
+  to: "to"
+  by: "by"
+  text_new_status: "New status"
+  text_project_duplication_of: "This project is a duplication of project"
+  status_change_automation: "The status change automation"
+
+
 
 

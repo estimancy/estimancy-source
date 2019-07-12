@@ -1757,3 +1757,13 @@ en-gb:
   can_not_access_the_estimates_of_an_image_organization: "You can not access the estimates of an image organization"
   not_authorized_to_access_this_organization: "You are not authorized to access this organization"
   account_associated_with_external_authentication: "This account is associated with external authentication"
+
+  text_automatic_created_version: "Version automatically created by the version change automation."
+  text_automatic_changed_status: "Automatic change of status of old versions when versioning"
+  error_generating_auto_estimation_number: "Error when automatically generating the estimate number"
+  from: "from"
+  to: "to"
+  by: "by"
+  text_new_status: "New status"
+  text_project_duplication_of: "This project is a duplication of project"
+  status_change_automation: "the status change automation"
