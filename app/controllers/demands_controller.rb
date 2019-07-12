@@ -165,7 +165,7 @@ class DemandsController < ApplicationController
 
   def delete
     @demand = Demand.find(params[:demand_id])
-    @demand.remove_attachment!
+    #@demand.remove_attachment!
     @demand.save
 
     redirect_to :back
@@ -173,7 +173,7 @@ class DemandsController < ApplicationController
 
   def destroy
     @demand = Demand.find(params[:id])
-    @demand.remove_attachment!
+    #@demand.remove_attachment!
     @demand.save
 
     @demand.delete
