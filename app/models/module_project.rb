@@ -271,100 +271,102 @@ class ModuleProject < ActiveRecord::Base
   def get_module_project_ratio_elements(wbs_activity_ratio, pbs_project_element, sort_result=true)
     # Module_project Ratio elements
     current_mp = self
-    wbs_activity = wbs_activity_ratio.wbs_activity
-    organization = wbs_activity.nil? ? nil : wbs_activity.organization
+    unless wbs_activity_ratio.nil?
+      wbs_activity = wbs_activity_ratio.wbs_activity
+      organization = wbs_activity.nil? ? nil : wbs_activity.organization
 
-    ####if  mp_ratio_elements.nil? || mp_ratio_elements.all.empty?
-    #create module_project ratio elements
-    wbs_activity_ratio.wbs_activity_ratio_elements.where(organization_id: organization.id, wbs_activity_id: wbs_activity.id).each do |ratio_element|
-      #mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
-      mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
-                                                     pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                                     module_project_id: current_mp.id,
-                                                     wbs_activity_id: wbs_activity.id,
-                                                     wbs_activity_ratio_id: wbs_activity_ratio.id,
-                                                     wbs_activity_element_id: ratio_element.wbs_activity_element_id,
-                                                     wbs_activity_ratio_element_id: ratio_element.id).first
-
-
-      if mp_ratio_elt.nil?
+      ####if  mp_ratio_elements.nil? || mp_ratio_elements.all.empty?
+      #create module_project ratio elements
+      wbs_activity_ratio.wbs_activity_ratio_elements.where(organization_id: organization.id, wbs_activity_id: wbs_activity.id).each do |ratio_element|
+        #mp_ratio_elt = ModuleProjectRatioElement.where(pbs_project_element_id: pbs_project_element.id, module_project_id: self.id, wbs_activity_ratio_id: wbs_activity_ratio.id, wbs_activity_ratio_element_id: ratio_element.id).first
         mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
                                                        pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
                                                        module_project_id: current_mp.id,
+                                                       wbs_activity_id: wbs_activity.id,
                                                        wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                                       wbs_activity_element_id: ratio_element.wbs_activity_element_id,
                                                        wbs_activity_ratio_element_id: ratio_element.id).first
 
-        if !mp_ratio_elt.nil?
-          mp_ratio_elt.update_attributes(organization_id: organization.id,
-                                         pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                         module_project_id: current_mp.id,
-                                         wbs_activity_id: wbs_activity.id,
-                                         wbs_activity_ratio_id: wbs_activity_ratio.id,
-                                         wbs_activity_ratio_element_id: ratio_element.id,
-                                         is_optional: ratio_element.is_optional,
-                                         multiple_references: ratio_element.multiple_references,
-                                         wbs_activity_element_id: ratio_element.wbs_activity_element_id,
-                                         name: ratio_element.wbs_activity_element.name,
-                                         description: ratio_element.wbs_activity_element.description,
-                                         ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: mp_ratio_elt.selected)
-        else
-          mp_ratio_elt = ModuleProjectRatioElement.create(organization_id: organization.id,
-                                                          pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                                          module_project_id: current_mp.id,
-                                                          wbs_activity_ratio_id: wbs_activity_ratio.id,
-                                                          wbs_activity_id: wbs_activity.id,
-                                                          wbs_activity_ratio_element_id: ratio_element.id,
-                                                          is_optional: ratio_element.is_optional,
-                                                          multiple_references: ratio_element.multiple_references,
-                                                          wbs_activity_element_id: ratio_element.wbs_activity_element_id,
-                                                          name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
-                                                          ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
-        end
-      end
 
-      #current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
-      current_ratio_mp_ratio_elements = ModuleProjectRatioElement.where(organization_id: organization.id,
-                                                                        pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
-                                                                        module_project_id: current_mp.id,
-                                                                        wbs_activity_id: wbs_activity.id,
-                                                                        wbs_activity_ratio_id: wbs_activity_ratio.id)
+        if mp_ratio_elt.nil?
+          mp_ratio_elt = ModuleProjectRatioElement.where(organization_id: organization.id,
+                                                         pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
+                                                         module_project_id: current_mp.id,
+                                                         wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                                         wbs_activity_ratio_element_id: ratio_element.id).first
 
-      activity_elt = mp_ratio_elt.wbs_activity_element
-      activity_elt_ancestor_ids = activity_elt.ancestor_ids
-      new_ancestor_ids_list = []
-      unless activity_elt.is_root?
-        activity_elt_ancestor_ids.each do |ancestor_id|
-          ancestor = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
-          unless ancestor.nil?
-            new_ancestor_ids_list.push(ancestor.id)
+          if !mp_ratio_elt.nil?
+            mp_ratio_elt.update_attributes(organization_id: organization.id,
+                                           pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
+                                           module_project_id: current_mp.id,
+                                           wbs_activity_id: wbs_activity.id,
+                                           wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                           wbs_activity_ratio_element_id: ratio_element.id,
+                                           is_optional: ratio_element.is_optional,
+                                           multiple_references: ratio_element.multiple_references,
+                                           wbs_activity_element_id: ratio_element.wbs_activity_element_id,
+                                           name: ratio_element.wbs_activity_element.name,
+                                           description: ratio_element.wbs_activity_element.description,
+                                           ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: mp_ratio_elt.selected)
+          else
+            mp_ratio_elt = ModuleProjectRatioElement.create(organization_id: organization.id,
+                                                            pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
+                                                            module_project_id: current_mp.id,
+                                                            wbs_activity_ratio_id: wbs_activity_ratio.id,
+                                                            wbs_activity_id: wbs_activity.id,
+                                                            wbs_activity_ratio_element_id: ratio_element.id,
+                                                            is_optional: ratio_element.is_optional,
+                                                            multiple_references: ratio_element.multiple_references,
+                                                            wbs_activity_element_id: ratio_element.wbs_activity_element_id,
+                                                            name: ratio_element.wbs_activity_element.name, description: ratio_element.wbs_activity_element.description,
+                                                            ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position, selected: true)
           end
         end
-        new_ancestry = new_ancestor_ids_list.join('/')
-        mp_ratio_elt.ancestry = new_ancestry
-        mp_ratio_elt.save
+
+        #current_ratio_mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id, wbs_activity_ratio_id: wbs_activity_ratio.id)
+        current_ratio_mp_ratio_elements = ModuleProjectRatioElement.where(organization_id: organization.id,
+                                                                          pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id,
+                                                                          module_project_id: current_mp.id,
+                                                                          wbs_activity_id: wbs_activity.id,
+                                                                          wbs_activity_ratio_id: wbs_activity_ratio.id)
+
+        activity_elt = mp_ratio_elt.wbs_activity_element
+        activity_elt_ancestor_ids = activity_elt.ancestor_ids
+        new_ancestor_ids_list = []
+        unless activity_elt.is_root?
+          activity_elt_ancestor_ids.each do |ancestor_id|
+            ancestor = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
+            unless ancestor.nil?
+              new_ancestor_ids_list.push(ancestor.id)
+            end
+          end
+          new_ancestry = new_ancestor_ids_list.join('/')
+          mp_ratio_elt.ancestry = new_ancestry
+          mp_ratio_elt.save
+        end
+
+        #end
       end
 
-      #end
+      # il faut supprimer les mp_ratio_elements dont les wsb_activity_element n'existent plus.
+      wbs_activity_element_ids = wbs_activity_ratio.wbs_activity.wbs_activity_element_ids
+
+      #mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id)
+      mp_ratio_elements = ModuleProjectRatioElement.where(organization_id: organization.id,
+                                                          pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id,
+                                                          module_project_id: current_mp.id,
+                                                          wbs_activity_id: wbs_activity.id,
+                                                          wbs_activity_ratio_id: wbs_activity_ratio.id)
+      ####end
+
+      if sort_result
+        module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(mp_ratio_elements.arrange(order: 'position'))
+      else
+        module_project_ratio_elements = mp_ratio_elements
+      end
+
+      module_project_ratio_elements
     end
-
-    # il faut supprimer les mp_ratio_elements dont les wsb_activity_element n'existent plus.
-    wbs_activity_element_ids = wbs_activity_ratio.wbs_activity.wbs_activity_element_ids
-
-    #mp_ratio_elements = self.module_project_ratio_elements.where(organization_id: organization.id, wbs_activity_ratio_id: wbs_activity_ratio.id, pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id)
-    mp_ratio_elements = ModuleProjectRatioElement.where(organization_id: organization.id,
-                                                        pbs_project_element_id: pbs_project_element.nil? ? nil: pbs_project_element.id,
-                                                        module_project_id: current_mp.id,
-                                                        wbs_activity_id: wbs_activity.id,
-                                                        wbs_activity_ratio_id: wbs_activity_ratio.id)
-    ####end
-
-    if sort_result
-      module_project_ratio_elements = ModuleProjectRatioElement.sort_by_ancestry(mp_ratio_elements.arrange(order: 'position'))
-    else
-      module_project_ratio_elements = mp_ratio_elements
-    end
-
-    module_project_ratio_elements
   end
 
 
