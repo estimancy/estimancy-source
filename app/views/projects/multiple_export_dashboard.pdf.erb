@@ -377,11 +377,11 @@
         <% elsif module_project.pemodule.alias == "guw" %>
 
           <% @guw_model = module_project.guw_model %>
-          <% @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where( organization_id: current_organization.id,
-                                                                           guw_model_id: @guw_model.id,
-                                                                           project_id: project.id,
-                                                                           module_project_id: module_project.id,
-                                                                           pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id).all %>
+          <% @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where( organization_id: current_organization.id,
+                                                                   guw_model_id: @guw_model.id,
+                                                                   project_id: project.id,
+                                                                   module_project_id: module_project.id,
+                                                                   pbs_project_element_id: pbs_project_element.nil? ? nil : pbs_project_element.id).all %>
 
           <h3>
             Financier Détails - <%= @guw_model.name %>
