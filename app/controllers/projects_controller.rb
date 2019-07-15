@@ -4306,9 +4306,18 @@ public
 
     @projects = {}
     tmp = Hash.new {|h,k| h[k] = [] }
-    Project.where(conditions).where(start_date: (Time.parse(params[:date_min])..Time.parse(params[:date_max]))).each do |project|
-      tmp[project.request_number.to_s] << project
-      @projects[project.business_need.to_s] = tmp
+
+    unless params[:date_max].blank? || params[:date_min].blank?
+      str = Time.parse(params[:date_min])..Time.parse(params[:date_max])
+      Project.where(conditions).where(start_date: str).each do |project|
+        tmp[project.request_number.to_s] << project
+        @projects[project.business_need.to_s] = tmp
+      end
+    else
+      Project.where(conditions).each do |project|
+        tmp[project.request_number.to_s] << project
+        @projects[project.business_need.to_s] = tmp
+      end
     end
 
     @user = current_user
