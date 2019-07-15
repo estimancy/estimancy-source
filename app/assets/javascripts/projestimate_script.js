@@ -17,6 +17,25 @@
  #
  #############################################################################**/
 
+$(document).ready(function() {
+    $("#ratio").change(function() {
+        if ($(this).val() !== "") {
+            return $.ajax({
+                url: "/refresh_dashboard_module_project_ratio_elements",
+                method: "GET",
+                data: "wbs_activity_ratio_id=" + $(this).val(),
+                success: function(data) {
+                    $("#dashboard_selected_ratio_id").val($(this).val());
+                    return $(".total-ratio").html(data);
+                },
+                error: function(XMLHttpRequest, testStatus, errorThrown) {
+                    return alert("Error! :" +  errorThrown);
+                }
+            });
+        }
+    });
+});
+
 $(document).on('ready turbolinks:load', function() {
     //====================================================
 
@@ -640,23 +659,6 @@ $(document).on('ready turbolinks:load', function() {
                 return alert("Error!");
             }
         });
-    });
-
-    $("#ratio").change(function() {
-        if ($(this).val() !== "") {
-            return $.ajax({
-                url: "/refresh_dashboard_module_project_ratio_elements",
-                method: "GET",
-                data: "wbs_activity_ratio_id=" + $(this).val(),
-                success: function(data) {
-                    $("#dashboard_selected_ratio_id").val($(this).val());
-                    return $(".total-ratio").html(data);
-                },
-                error: function(XMLHttpRequest, testStatus, errorThrown) {
-                    return alert("Error! :" +  errorThrown);
-                }
-            });
-        }
     });
 
     // ON DASHBOARD: UPdate the Effort-Breakdown Cost retained value when effort has changed
