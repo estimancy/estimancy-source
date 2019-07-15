@@ -558,9 +558,9 @@ class Kb::KbModelsController < ApplicationController
     worksheet.add_cell(my_helper + 4, 0, "#{I18n.t(:effort_import)} #{my_kb_model.effort_unit.blank? ? 'h.h' : my_kb_model.effort_unit}")
 
     if effort_current_ev.nil?
-      worksheet.add_cell(my_helper + 4, 1, effort_current_ev.send("string_data_most_likely")[current_component.id].to_f / (my_kb_model.standard_unit_coefficient.nil? ? 1 : my_kb_model.standard_unit_coefficient))
-    else
       worksheet.add_cell(my_helper + 4, 1, '')
+    else
+      worksheet.add_cell(my_helper + 4, 1, effort_current_ev.send("string_data_most_likely")[current_component.id].to_f / (my_kb_model.standard_unit_coefficient.nil? ? 1 : my_kb_model.standard_unit_coefficient))
     end
 
     worksheet.sheet_data[my_helper + 4][0].change_font_bold(true)
@@ -592,10 +592,6 @@ class Kb::KbModelsController < ApplicationController
     worksheet.sheet_data[my_helper][4].change_border(:bottom, 'thin')
     worksheet.sheet_data[my_helper][3].change_border(:bottom, 'thin')
     send_data(workbook.stream.string, filename: "#{@project.organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{my_kb_model.name.gsub(" ", "_")}-(#{("A".."B").to_a[current_module_project.position_x - 1]},#{current_module_project.position_x})-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
-  end
-
-  def import_kb
-
   end
 
 end
