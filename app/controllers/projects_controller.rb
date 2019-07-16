@@ -1688,7 +1688,7 @@ class ProjectsController < ApplicationController
       #if @project.has_children? || @project.rejected? || @project.released? || @project.checkpoint?
       if @project.has_children?
         if @from_tree_history_view
-          redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
+          redirect_to edit_project_path(:id => params['current_showed_project_id'], tabs_name: 'tabs_history', anchor: 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
         else
           flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
           redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models') : organization_estimations_path(@current_organization))
@@ -2961,7 +2961,7 @@ public
     project.commit_status
 
     if params[:from_tree_history_view]
-      redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history') and return
+      redirect_to edit_project_path(:id => params['current_showed_project_id'], tabs_name: 'tabs_history', anchor: 'tabs-history') and return
     else
       redirect_to organization_estimations_path(@current_organization) and return
     end
@@ -3617,7 +3617,7 @@ public
       #new_prj.transaction do
         if new_prj.save
           flash[:success] = I18n.t(:notice_project_successful_checkout)
-          redirect_to (edit_project_path(new_prj, :anchor => "tabs-history")), :notice => I18n.t(:notice_project_successful_checkout) and return
+          redirect_to (edit_project_path(new_prj, tabs_name: 'tabs_history', anchor: 'tabs-history')), :notice => I18n.t(:notice_project_successful_checkout) and return
 
         else
           flash[:error] = I18n.t(:error_project_checkout_failed)

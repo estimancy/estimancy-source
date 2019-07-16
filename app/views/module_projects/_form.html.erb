@@ -137,7 +137,7 @@
 
           <br>
           <%= submit_tag I18n.t('save'), class: "btn btn-primary" %>
-          <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, anchor: 'tabs-4'), class: 'btn' %>
+          <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan'), class: 'btn' %>
         <% end %>
       <% end %>
     </div>

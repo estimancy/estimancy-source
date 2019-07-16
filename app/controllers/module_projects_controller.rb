@@ -173,7 +173,7 @@ class ModuleProjectsController < ApplicationController
     @module_projects.each do |mp|
       mp.update_attribute('associated_module_project_ids', params[:module_projects][mp.id.to_s])
     end
-    redirect_to edit_project_path(@project.id, :anchor => 'tabs-4')
+    redirect_to edit_project_path(@project.id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan')
   end
 
   #Update the module_project dynamic connexion (add or delete)
@@ -250,7 +250,7 @@ class ModuleProjectsController < ApplicationController
     expire_fragment "guw"
 
     session[:module_project_id] = nil
-    redirect_to edit_project_path(@project.id, :anchor => 'tabs-4')
+    redirect_to edit_project_path(@project.id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan')
   end
 
   def associate_module_project_to_ratios
@@ -270,7 +270,7 @@ class ModuleProjectsController < ApplicationController
       flash[:notice] = I18n.t (:notice_module_project_successful_updated)
       redirect_to redirect(edit_module_project_path(@module_project.id, :anchor => 'tabs-3'))
     else
-      redirect_to redirect(edit_project_path(@project.id, :anchor => 'tabs-4')), notice: "#{I18n.t (:notice_module_project_successful_updated)}"
+      redirect_to redirect(edit_project_path(@project.id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan')), notice: "#{I18n.t (:notice_module_project_successful_updated)}"
     end
   end
 
