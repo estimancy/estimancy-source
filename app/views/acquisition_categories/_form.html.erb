@@ -43,7 +43,7 @@
             <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
           <% end %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-acquisition-categories'), :class => 'btn btn-secondary' %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-acquisition-categories', partial_name: 'tabs_acquisition_categories'), :class => 'btn btn-secondary' %>
       </div>
     <% end %>
   </div>

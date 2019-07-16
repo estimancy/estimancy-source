@@ -11,7 +11,7 @@ class BudgetTypesController < ApplicationController
     authorize! :manage, BudgetType
 
     set_page_title I18n.t(:budget_type)
-    set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type"), I18n.t('budget_type') => ""
+    set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type", partial_name: 'tabs_budgets_and_budget_types'), I18n.t('budget_type') => ""
     @budget_type = BudgetType.new
     @organization = Organization.find(params[:organization_id])
   end
@@ -24,14 +24,14 @@ class BudgetTypesController < ApplicationController
     @budget_type = BudgetType.find(params[:id])
 
     set_page_title I18n.t(:budget_type)
-    set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type"), I18n.t('budget_type') => ""
+    set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type", partial_name: 'tabs_budgets_and_budget_types'), I18n.t('budget_type') => ""
   end
 
   def create
     authorize! :manage, BudgetType
 
     set_page_title I18n.t(:budget_type)
-    set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type"), I18n.t('budget_type') => ""
+    set_breadcrumbs I18n.t(:budget_type) => organization_setting_path(@current_organization, anchor: "tabs-budget-type", partial_name: 'tabs_budgets_and_budget_types'), I18n.t('budget_type') => ""
 
     @organization = Organization.find(params[:organization_id])
 
@@ -92,7 +92,7 @@ class BudgetTypesController < ApplicationController
     @budget_type.destroy
 
     flash[:notice] = I18n.t (:notice_budget_type_successful_deleted)
-    #redirect_to organization_setting_path(organization_id, :anchor => 'tabs-budget-type')
+    #redirect_to organization_setting_path(organization_id, :anchor => 'tabs-budget-type', partial_name: 'tabs_budgets_and_budget_types')
     #redirect_to edit_organization_budget_path(@organization, @budget)
     redirect_to :back
   end

@@ -28,7 +28,7 @@ class FieldsController < ApplicationController
 
     @field = Field.new
     set_page_title I18n.t(:fields)
-    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@current_organization, anchor: "tabs-fields"), I18n.t('new_field') => ""
+    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@current_organization, anchor: "tabs-fields", partial_name: 'tabs_fields'), I18n.t('new_field') => ""
 
     respond_to do |format|
       format.html # new.html.erb
@@ -41,7 +41,7 @@ class FieldsController < ApplicationController
     set_page_title I18n.t(:fields)
     authorize! :show_custom_fields, Field
     @field = Field.find(params[:id])
-    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@current_organization, anchor: "tabs-fields"), I18n.t('field_edition') => ""
+    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@current_organization, anchor: "tabs-fields", partial_name: 'tabs_fields'), I18n.t('field_edition') => ""
   end
 
   # POST /fields
@@ -53,11 +53,11 @@ class FieldsController < ApplicationController
     @organization = @field.organization
 
     set_page_title I18n.t(:fields)
-    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@organization, anchor: "tabs-fields"), I18n.t('new_field') => ""
+    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@organization, anchor: "tabs-fields", partial_name: 'tabs_fields'), I18n.t('new_field') => ""
 
     respond_to do |format|
       if @field.save
-        format.html { redirect_to organization_setting_path(@field.organization_id, anchor: "tabs-fields"), notice: 'Field was successfully created.' }
+        format.html { redirect_to organization_setting_path(@field.organization_id, anchor: "tabs-fields", partial_name: 'tabs_fields'), notice: 'Field was successfully created.' }
         format.json { render json: @field, status: :created, location: @field }
       else
         format.html { render action: "new" }
@@ -75,11 +75,11 @@ class FieldsController < ApplicationController
     @organization = @field.organization
 
     set_page_title I18n.t(:fields)
-    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@organization, anchor: "tabs-fields"), I18n.t('field_edition') => ""
+    set_breadcrumbs I18n.t(:fields) => organization_setting_path(@organization, anchor: "tabs-fields", partial_name: 'tabs_fields'), I18n.t('field_edition') => ""
 
     respond_to do |format|
       if @field.update_attributes(params[:field])
-        format.html { redirect_to organization_setting_path(@organization, anchor: "tabs-fields"), notice: 'Field was successfully updated.' }
+        format.html { redirect_to organization_setting_path(@organization, anchor: "tabs-fields", partial_name: 'tabs_fields'), notice: 'Field was successfully updated.' }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }
@@ -98,7 +98,7 @@ class FieldsController < ApplicationController
     @field.destroy
 
     respond_to do |format|
-      format.html { redirect_to organization_setting_path(organization_id, anchor: "tabs-fields") }
+      format.html { redirect_to organization_setting_path(organization_id, anchor: "tabs-fields", partial_name: 'tabs_fields') }
       format.json { head :no_content }
     end
   end

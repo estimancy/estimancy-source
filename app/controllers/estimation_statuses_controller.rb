@@ -37,7 +37,7 @@ class EstimationStatusesController < ApplicationController
           status.update_attribute('to_transition_status_ids', params[:status_workflow][status.id.to_s])
         end
       end
-      redirect_to organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :notice => "#{I18n.t (:notice_estimation_status_successful_updated)}"
+      redirect_to organization_setting_path(@organization, anchor: 'tabs-estimations-statuses', partial_name: 'tabs_estimation_statuses'), :notice => "#{I18n.t (:notice_estimation_status_successful_updated)}"
     end
   end
 
@@ -99,7 +99,7 @@ class EstimationStatusesController < ApplicationController
     # Fin TEST
 
 
-    redirect_to organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :notice => "#{I18n.t (:notice_estimation_status_successful_updated)}"
+    redirect_to organization_setting_path(@organization, anchor: 'tabs-estimations-statuses', partial_name: 'tabs_estimation_statuses'), :notice => "#{I18n.t (:notice_estimation_status_successful_updated)}"
   end
 
   def new
@@ -107,7 +107,7 @@ class EstimationStatusesController < ApplicationController
     @estimation_status = EstimationStatus.new
     @organization = Organization.find_by_id(params[:organization_id])
     set_page_title I18n.t(:new_estimation_status)
-    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('new_estimation_status') => ""
+    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses", partial_name: 'tabs_estimation_statuses'), I18n.t('new_estimation_status') => ""
   end
 
   def edit
@@ -117,7 +117,7 @@ class EstimationStatusesController < ApplicationController
     @estimation_status = EstimationStatus.find(params[:id])
     @organization = @estimation_status.organization
     set_page_title I18n.t(:edit_estimation_status, value: @estimation_status.name)
-    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('estimation_status_edition') => ""
+    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses", partial_name: 'tabs_estimation_statuses'), I18n.t('estimation_status_edition') => ""
   end
 
   def create
@@ -127,7 +127,7 @@ class EstimationStatusesController < ApplicationController
     @organization = Organization.find_by_id(params['estimation_status']['organization_id'])
 
     set_page_title I18n.t(:new_estimation_status)
-    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('new_estimation_status') => ""
+    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses", partial_name: 'tabs_estimation_statuses'), I18n.t('new_estimation_status') => ""
 
     if @estimation_status.save
       @estimation_status.update_attribute(:transaction_id, "#{@estimation_status.id}_1")
@@ -135,7 +135,7 @@ class EstimationStatusesController < ApplicationController
       # Create the status self transition
       StatusTransition.create(from_transition_status_id: @estimation_status.id, to_transition_status_id: @estimation_status.id)
       flash[:notice] = I18n.t (:notice_estimation_status_successful_created)
-      redirect_to redirect_apply(nil, new_estimation_status_path(params[:estimation_status]), organization_setting_path(@organization, :anchor => 'tabs-estimations-statuses'))
+      redirect_to redirect_apply(nil, new_estimation_status_path(params[:estimation_status]), organization_setting_path(@organization, :anchor => 'tabs-estimations-statuses', partial_name: 'tabs_estimation_statuses'))
     else
       render action: 'new', :organization_id => @organization.id
     end
@@ -149,14 +149,14 @@ class EstimationStatusesController < ApplicationController
     @organization = @estimation_status.organization
 
     set_page_title I18n.t(:edit_estimation_status, value: @estimation_status.name)
-    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses"), I18n.t('estimation_status_edition') => ""
+    set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses", partial_name: 'tabs_estimation_statuses'), I18n.t('estimation_status_edition') => ""
 
     if @estimation_status.update_attributes(params[:estimation_status])
       @estimation_status.transaction_id = @estimation_status.transaction_id.nil? ? "#{@estimation_status.id}_1" : @estimation_status.transaction_id.next rescue "#{@estimation_status.id}_1"
       @estimation_status.save
 
       flash[:notice] = I18n.t (:notice_estimation_status_successful_updated)
-      redirect_to redirect_apply(edit_estimation_status_path(params[:estimation_status]), nil, organization_setting_path(@organization, :anchor => 'tabs-estimations-statuses'))
+      redirect_to redirect_apply(edit_estimation_status_path(params[:estimation_status]), nil, organization_setting_path(@organization, :anchor => 'tabs-estimations-statuses', partial_name: 'tabs_estimation_statuses'))
     else
       render action: 'edit', :organization_id => @organization.id
     end
@@ -177,7 +177,7 @@ class EstimationStatusesController < ApplicationController
     end
 
     respond_to do |format|
-      format.html { redirect_to organization_setting_path(organization_id, :anchor => 'tabs-estimations-statuses') }
+      format.html { redirect_to organization_setting_path(organization_id, :anchor => 'tabs-estimations-statuses', partial_name: 'tabs_estimation_statuses') }
     end
   end
 

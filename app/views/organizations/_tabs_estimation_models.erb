@@ -1,0 +1,6 @@
+<!--<div id="tabs-estimation-models" class="edition-page-group"><span><%#= I18n.t('estimation_models') %></span></div>-->
+<% if can? :manage_estimation_models, Project %>
+    <%= render partial: "projects/estimation_models", object: @estimation_models %>
+<% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_estimation_models) %></div>
+<% end %>

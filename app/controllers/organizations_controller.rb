@@ -1036,7 +1036,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_areas")
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_areas", partial_name: 'tabs_project_areas')
   end
 
   def import_project_categories
@@ -1063,7 +1063,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_categories")
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_categories", partial_name: 'tabs_project_categories')
   end
 
   def import_platform_categories
@@ -1090,7 +1090,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-platform_categories")
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-platform_categories", partial_name: 'tabs_platform_categories')
   end
 
   def import_acquisition_categories
@@ -1117,7 +1117,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-acquisition_categories")
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-acquisition_categories", partial_name: 'tabs_acquisition_categories')
   end
 
   def import_project_profile
@@ -1152,7 +1152,7 @@ class OrganizationsController < ApplicationController
       flash[:error] = "Une erreur est survenue durant l'import"
     end
     flash[:warning] = tab_warning_messages
-    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_profile")
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-project_profile", partial_name: 'tabs_profiles')
   end
 
 
@@ -1181,7 +1181,7 @@ class OrganizationsController < ApplicationController
     unless tab_error.empty?
       flash[:error] = "Une erreur est survenue durant l'import"
     end
-    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-providers")
+    redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-providers", partial_name: 'tabs_providers')
   end
 
   def export_project_areas
@@ -1964,6 +1964,8 @@ class OrganizationsController < ApplicationController
   def setting
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
 
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:Parameter, parameter: @organization)
@@ -3835,7 +3837,7 @@ class OrganizationsController < ApplicationController
   # Update the organization's projects available inline columns
   def set_available_inline_columns
     authorize! :manage_projects_selected_columns, Organization
-    redirect_to organization_setting_path(@current_organization, :anchor => 'tabs-select-columns-list')
+    redirect_to organization_setting_path(@current_organization, :anchor => 'tabs-select-columns-list', partial_name: 'tabs_select_columns_list')
   end
 
   def update_available_inline_columns
@@ -3932,6 +3934,41 @@ class OrganizationsController < ApplicationController
   def show_original_image
     @image_name = params[:image_name]
   end
+
+  #########   Organization settings pages      ###################
+
+  def estimation_settings
+    @organization = Organization.find(params[:organization_id])
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
+
+    @fields = @organization.fields
+    @work_element_types = @organization.work_element_types
+    @organization_profiles = @organization.organization_profiles
+    @organization_group = @organization.groups
+    @estimation_models = Project.where(organization_id: @organization.id, :is_model => true) #@organization.projects.where(:is_model => true)
+
+    ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|
+      begin
+        if pf.field_id.in?(@fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id != pf.views_widget.module_project.project_id
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+        else
+          pf.delete
+        end
+      rescue
+        #puts "erreur"
+      end
+    end
+  end
+
+  #########   END Organization settings pages  ###################
+
 
   private
   def check_if_organization_is_image(organization)

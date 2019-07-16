@@ -1,0 +1,56 @@
+<!--<div id="tabs-platform-categories" class="edition-page-group py-4"><span><%#= I18n.t('platform_categories') %></span></div>-->
+<% if can? :show_platform_categories, PlatformCategory %>
+    <% if can? :manage, PlatformCategory %>
+        <%= link_to I18n.t('create_button'), new_organization_platform_category_path(@organization), :class => 'btn btn-primary' %>
+        <a href="#import_platform_category" role="button" class="btn btn-primary" title="Import platform category from Excel" data-toggle="modal">
+          <%= I18n.t(:import) %>
+        </a>
+        <%= link_to I18n.t('export'), organization_export_platform_categories_path(@organization, :MYonglet => "PlatformCategory"), :class => 'btn btn-primary'%>
+        <hr>
+        <div id="import_platform_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <%= form_tag organization_import_platform_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
+              <div class="modal-header modal-drag">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+              </div>
+              <div class="modal-body">
+                <%= file_field_tag :file %>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+              </div>
+              <div class="loading span11 hide">
+                <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+              </div>
+          <% end %>
+        </div>
+
+    <% end %>
+
+    <table id="table_list_3" class="table table-list">
+      <thead>
+      <tr>
+        <th><%= I18n.t('name') %></th>
+        <th><%= I18n.t('description') %></th>
+        <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% @organization.platform_categories.each do |i| %>
+          <tr>
+            <td><%= i.name %></td>
+            <td><%= i.description %></td>
+            <td class="center">
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_platform_category_path(@organization, i), :class => 'material-icons', :title => I18n.t('edit') %>
+              <% if can? :manage, PlatformCategory %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), organization_platform_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_platform_categories) %></div>
+<% end %>

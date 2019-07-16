@@ -27,7 +27,7 @@ class BudgetsController < ApplicationController
     authorize! :manage, Budget
 
     set_page_title I18n.t(:budget)
-    set_breadcrumbs I18n.t(:budget) => organization_setting_path(@current_organization, anchor: "tabs-budgets"), I18n.t('budget') => ""
+    set_breadcrumbs I18n.t(:budget) => organization_setting_path(@current_organization, anchor: "tabs-budgets", partial_name: 'tabs_budgets_and_budget_types'), I18n.t('budget') => ""
     @budget = Budget.new
     @organization = Organization.find(params[:organization_id])
   end
@@ -101,7 +101,7 @@ class BudgetsController < ApplicationController
 
     #puts @data
     set_page_title I18n.t(:budget)
-    set_breadcrumbs I18n.t(:budget) => organization_setting_path(@current_organization, anchor: "tabs-budgets"), I18n.t('budget') => ""
+    set_breadcrumbs I18n.t(:budget) => organization_setting_path(@current_organization, anchor: "tabs-budgets", partial_name: 'tabs_budgets_and_budget_types'), I18n.t('budget') => ""
 
   end
 
@@ -109,7 +109,7 @@ class BudgetsController < ApplicationController
     authorize! :manage, Budget
 
     set_page_title I18n.t(:budget)
-    set_breadcrumbs I18n.t(:budget) => organization_setting_path(@current_organization, anchor: "tabs-budgets"), I18n.t('budget') => ""
+    set_breadcrumbs I18n.t(:budget) => organization_setting_path(@current_organization, anchor: "tabs-budgets", partial_name: 'tabs_budgets_and_budget_types'), I18n.t('budget') => ""
 
     @budget = Budget.new(params[:budget])
     @organization = Organization.find(params[:organization_id])
@@ -184,7 +184,7 @@ class BudgetsController < ApplicationController
         # end
 
         flash[:notice] = I18n.t (:notice_budget_successful_updated)
-        #redirect_to organization_setting_path(@organization, :anchor => 'tabs-budgets')
+        #redirect_to organization_setting_path(@organization, :anchor => 'tabs-budgets', partial_name: 'tabs_budgets_and_budget_types')
         redirect_to edit_organization_budget_path(@organization, @budget)
       else
         render action: 'edit'
@@ -200,7 +200,7 @@ class BudgetsController < ApplicationController
     @budget.destroy
 
     flash[:notice] = I18n.t (:notice_budget_successful_deleted)
-    redirect_to organization_setting_path(organization_id, :anchor => 'tabs-budgets')
+    redirect_to organization_setting_path(organization_id, :anchor => 'tabs-budgets', partial_name: 'tabs_budgets_and_budget_types')
   end
 
   def destroy_budget_budget_type

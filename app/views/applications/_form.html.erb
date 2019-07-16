@@ -83,7 +83,7 @@
           <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
           <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-applications'), :class => 'btn btn-secondary' %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-applications', partial_name: 'tabs_applications'), :class => 'btn btn-secondary' %>
       </div>
 
     </div>

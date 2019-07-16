@@ -1,0 +1,30 @@
+
+<!--<div id="tabs-fields" class="edition-page-group py-4"><span><%#= I18n.t('fields') %></span></div>-->
+<% if can? :show_custom_fields, Field %>
+    <% if can? :manage, Field %>
+        <%= link_to I18n.t(:create_button), new_organization_field_path(@organization), class: "btn btn-primary" %>
+    <% end %>
+    <hr>
+    <table id="table_list_61" class="table table-list">
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:coefficient) %></th>
+        <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+      </tr>
+
+      <% @fields.each do |field| %>
+          <tr>
+            <td><%= field.name %></td>
+            <td><%= field.coefficient %></td>
+            <td class="center span3">
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_field_path(@organization, field), :class => 'material-icons', :title => I18n.t('edit') %>
+              <% if can? :manage, Field %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), field, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+    </table>
+<% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_organization_fields) %></div>
+<% end %>

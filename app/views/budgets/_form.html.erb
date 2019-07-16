@@ -193,7 +193,7 @@
                         <%= submit_tag I18n.t('apply'), name: "update", :class => 'btn btn-primary' %>
                     <% end %>
                 <% end %>
-                <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budgets'), :class => 'btn btn-secondary' %>
+                <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budgets', partial_name: 'tabs_budgets_and_budget_types'), :class => 'btn btn-secondary' %>
               </div>
           </div>
         </div>
