@@ -1,0 +1,41 @@
+<%= simple_form_for(@project) do |f| %>
+
+
+    <%= hidden_field_tag :project_id, @project.id %>
+    <%= hidden_field_tag :organization_id, @organization.id %>
+
+    <% can_alter_model = can?(:manage_estimation_models, Project) %>
+
+  <% if controller.action_name == "edit" || controller.action_name == "update" %>
+    <div id="plan" class="edition-page-group py-4"><span><%= I18n.t("estimation_plan") %></span></div>
+    <div class="card card-content-bloc estimation-edition">
+      <div class="card-body">
+        <div class="edition-bloc-title">
+          <%= I18n.t("estimation_plan") %>
+        </div>
+        <div class="edition-bloc-content">
+          <div class="p-3" style="background-color: #F8F9FA">
+            <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
+                                                                        "Base de connaissance de taille" => @skb_models,
+                                                                        "Modules d'opération" => @operation_models,
+                                                                        "Modules de Jugement d'Expert" => @ej_modules,
+                                                                        "Modules Activités / Profils" => @wbs_instances,
+                                                                        "Module d'Équipes : durée et taille des équipes" => @staffing_modules,
+                                                                        "Module d'Unité d'Oeuvres Génériques" => @guw_modules,
+                                                                        "Module d'Effort Génériques (ax^b)" => @ge_models}),
+                           :prompt => 'Add a new module', class: 'form-control',
+                           :disabled => !( (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && (can?(:alter_estimation_plan, @project) || can_modify_estimation?(@project))) ) %>
+          </div>
+
+          <div class="p-3" style="background-color: #F8F9FA">
+            <%= render 'module_projects/new_estimation_plan' %>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <br>
+  <% end %>
+<% end %>

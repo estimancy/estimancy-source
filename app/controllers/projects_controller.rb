@@ -390,6 +390,10 @@ class ProjectsController < ApplicationController
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
+    if @module_project.id == @initialization_module_project.id
+      session[:active_nav_link] = "activate_init_module_project"
+    end
+
     check_module_project
 
     rp = current_user.recent_projects
@@ -810,7 +814,7 @@ class ProjectsController < ApplicationController
     if @is_model
       authorize! :manage_estimation_models, Project
       #set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models"), I18n.t('new_project_from') => ""
-      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models"), I18n.t('create_new_estimation_model') => ""
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), I18n.t('create_new_estimation_model') => ""
       set_page_title I18n.t(:new_estimation_model)
     else
       authorize! :create_project_from_scratch, Project
@@ -833,7 +837,7 @@ class ProjectsController < ApplicationController
     if @is_model == "true"
       authorize! :manage_estimation_models, Project
       set_page_title I18n.t(:new_estimation_model)
-      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models")
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@current_organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models')
     else
       authorize! :create_project_from_scratch, Project
       set_page_title I18n.t(:new_project)
@@ -1027,7 +1031,7 @@ class ProjectsController < ApplicationController
         #raise ActiveRecord::Rollback
       rescue ActiveRecord::UnknownAttributeError, ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid => error
         flash[:error] = "#{I18n.t (:error_project_creation_failed)} #{@project.errors.full_messages.to_sentence}"
-        redirect_to (@project.is_model ? organization_setting_path(@organization, anchor: "tabs-estimation-models") : organization_estimations_path(@organization))
+        redirect_to (@project.is_model ? organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models') : organization_estimations_path(@organization))
       end
     end
   end
@@ -1040,6 +1044,7 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
     @organization = @project.organization
     session[:active_nav_link] = "edit"
+    @partial_name = params[:tabs_name]
 
     @project_areas = @organization.project_areas
     @platform_categories = @organization.platform_categories
@@ -1052,13 +1057,13 @@ class ProjectsController < ApplicationController
 
     #set_breadcrumbs  I18n.t(:estimate) => projects_path, @project => edit_project_path(@project)
     if @project.is_model
-      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), @project => edit_project_path(@project), "<span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), @project => edit_project_path(@project), "<span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
       if cannot?(:manage_estimation_models, Project)    # No write access to project
         unless can_show_estimation?(@project)
         #   redirect_to(:action => 'show') and return
         # else
-          #redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models"), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
+          #redirect_to(organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
           redirect_to :back, flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)} and return
         end
       end
@@ -1123,6 +1128,7 @@ class ProjectsController < ApplicationController
     set_page_title I18n.t(:edit_estimation)
     @project = Project.find(params[:id])
     @organization = @project.organization
+    @partial_name = params[:tabs_name]
     @project.transaction_id = @project.transaction_id.nil? ? "#{@project.id}_1" : @project.transaction_id.next rescue "#{@project.id}_1"
     estimation_status_has_changed = false
     project_old_estimation_status = @project.estimation_status
@@ -1463,9 +1469,9 @@ class ProjectsController < ApplicationController
 
         flash[:notice] = I18n.t(:notice_project_successful_updated)
         if @project.is_model
-          redirect_to redirect_apply(edit_project_path(@project, :anchor => session[:anchor]), nil, organization_setting_path(@project.organization, anchor: "tabs-estimation-models")) and return
+          redirect_to redirect_apply(edit_project_path(@project, :anchor => session[:anchor], tabs_name: @partial_name), nil, organization_setting_path(@project.organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models')) and return
         else
-          redirect_to redirect_apply(edit_project_path(@project, :anchor => session[:anchor]), nil, organization_estimations_path(@project.organization, :anchor => 'tabs-5')) and return
+          redirect_to redirect_apply(edit_project_path(@project, :anchor => session[:anchor], tabs_name: @partial_name), nil, organization_estimations_path(@project.organization, :anchor => 'tabs-5')) and return
         end
       else
         @guw_module = Pemodule.where(alias: "guw").first
@@ -1535,7 +1541,7 @@ class ProjectsController < ApplicationController
 
     #set_breadcrumbs  I18n.t(:estimate) => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
     if @project.is_model
-      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models"), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
+      set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
     else
       set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), "#{@project} <span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
     end
@@ -1611,7 +1617,7 @@ class ProjectsController < ApplicationController
           render :template => 'projects/confirm_deletion'
         end
       when I18n.t('cancel')
-        redirect_to (is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
+        redirect_to (is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models') : organization_estimations_path(@current_organization))
       else
         render :template => 'projects/confirm_deletion'
     end
@@ -1685,7 +1691,7 @@ class ProjectsController < ApplicationController
           redirect_to edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'), :flash => {:warning => I18n.t(:warning_project_cannot_be_deleted)}
         else
           flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
-          redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models") : organization_estimations_path(@current_organization))
+          redirect_to (@project.is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models') : organization_estimations_path(@current_organization))
         end
       end
     else
