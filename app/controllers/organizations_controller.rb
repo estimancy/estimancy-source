@@ -3414,7 +3414,7 @@ class OrganizationsController < ApplicationController
       estimation_statuses.each do |i|
         status = EstimationStatus.create(organization_id: @organization.id, status_number: i[0], status_alias: i[1], name: i[2], status_color: i[3], description: i[4])
       end
-      redirect_to redirect_apply(edit_organization_path(@organization)), notice: "#{I18n.t(:notice_organization_successful_created)}"
+      redirect_to(edit_organization_path(@organization), notice: I18n.t(:notice_organization_successful_created)) and return
     else
       render action: 'new'
     end
@@ -3443,6 +3443,8 @@ class OrganizationsController < ApplicationController
       @projects = @organization.projects
       @fields = @organization.fields
       @guw_models = @organization.guw_models
+      # get organization estimations per year
+      @projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] }
 
       render action: 'edit'
     end
@@ -3972,11 +3974,13 @@ class OrganizationsController < ApplicationController
 
   private
   def check_if_organization_is_image(organization)
-    if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)
-      redirect_to("/all_organizations",
-                  flash: {
-                      error: "Vous ne pouvez pas accéder aux estimations d'une organization image"
-                  }) and return
+    unless organization.new_record?
+      if organization.is_image_organization == true || (current_user.super_admin != true && !current_user.organization_ids.include?(organization.id))
+        redirect_to("/all_organizations",
+                    flash: {
+                        error: "Vous ne pouvez pas accéder aux estimations d'une organization image"
+                    }) and return
+      end
     end
   end
 
