@@ -1081,10 +1081,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   #/!\ NEW METHODS WITH MULTIPLES ATTRIBUTES /!\
   def save_guw_unit_of_works_with_multiple_outputs
+
     @module_project = ModuleProject.find_by_id(params[:module_project_id])
 
     @guw_model = @module_project.guw_model
     @project = @module_project.project
+
+    authorize! :execute_estimation_plan, @project
 
     @organization = @guw_model.organization
     @component = current_component
@@ -1666,6 +1669,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @module_project = @guw_unit_of_work.module_project
     @guw_model = @guw_unit_of_work.guw_model
     @project = @module_project.project
+
+    authorize! :execute_estimation_plan, @project
+
     @component = current_component
 
     @guw_unit_of_work.ajusted_size = {}
