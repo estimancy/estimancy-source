@@ -547,8 +547,8 @@
             <a class="dropdown-item" href="<%= guw.guw_unit_of_work_duplicate_path(guow) %>" method="POST"><i class="material-icons">file_copy</i>Add to Knowledge DB</a>
             <%= link_to raw("<i class='material-icons'>file_copy</i> Suggest a correction"), guw.guw_unit_of_work_add_correction_path(guow), method: "post", class: "dropdown-item" %>
             <%= link_to raw("<i class='material-icons'>file_copy</i> Duplicate"), guw.guw_unit_of_work_duplicate_path(guow), method: "post", remote: true, class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), "#", method: "post", remote: true, class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), "#", method: "post", remote: true, class: "dropdown-item" %>
+            <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", remote: true, class: "dropdown-item" %>
+            <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", remote: true, class: "dropdown-item" %>
           <% else %>
             <%= link_to raw("<i class='material-icons'>check</i> Accept"), guw.guw_unit_of_work_accept_correction_path(guow), method: "post", class: "dropdown-item" %>
           <% end %>
