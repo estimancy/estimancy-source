@@ -1,558 +1,599 @@
-<%= simple_form_for(@project) do |f| %>
-  <div class="tabs-project">
-    <ul>
-      <li><a href="#tabs-1"><%= I18n.t(:global_properties) %></a></li>
-      <% if action_name.in? %w(edit update) %>
-        <!--<li><a href="#tabs-2"><%# I18n.t(:wbs_product) %></a></li>-->
-        <li class="tabs_4_with_estimation_plan"><a href="#tabs-4"><%= I18n.t(:estimation_plan) %></a></li>
-        <li><a href="#tabs-5"><%= I18n.t(:securities) %></a></li>
-        <li><a href="#tabs-history"><%= I18n.t(:label_project_history) %> </a></li>
-      <% end %>
-    </ul>
-
-    <div id="tabs-1">
+<div class="col-10" style="margin-top: 20px">
+  <%= simple_form_for(@project) do |f| %>
 
       <%= hidden_field_tag :project_id, @project.id %>
+      <%= hidden_field_tag :organization_id, @organization.id %>
 
       <% can_alter_model = can?(:manage_estimation_models, Project) %>
 
-      <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
-      <%= f.input :business_need, :label => "#{I18n.t 'business_need'}", :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
-      <%= f.input :request_number, :label => "#{I18n.t 'request_number'}", :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
+      <div class="row pb-5">
+        <div class="col-10">
+          <div id="global1" class="edition-page-group py-4"><span><%= I18n.t('global_properties') %></span></div>
+          <div class="card card-content-bloc estimation-edition">
+            <div class="card-body">
 
-      <% if @project.new_record? %>
-        <%= f.input :is_model, :as => :hidden, input_html: { value: @is_model } %>
-      <% end %>
-
-        <% if @project.is_model || @is_model %>
-          <%= f.input :use_automatic_quotation_number, :label => "#{I18n.t 'use_automatic_quotation_number'}", :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge' } %>
-          <%= f.input :allow_export_pdf, :label => I18n.t("Autoriser l'export PDF"), :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge' } %>
-        <% end %>
-        <%= f.input :version_number, :input_html => {:class => 'input-large'}, :disabled => true %>
-        <%= f.input :private, :label => I18n.t(:private_estimation), disabled: !(can?(:alter_private_estimation_setup, @project) || can_alter_model) %>
-
-        <%= f.input :demand_id, as: :hidden, :input_html => { :value => params[:demand_id] } %>
-
-        <br/>
-
-        <table>
-          <tr>
-            <td>
-              <% if @project.is_model == true %>
-                <% apps = @project.applications %>
-                <% if @current_organization.applications.empty? and apps.empty? %>
-                  <%= f.input :application_name,
-                              :label => I18n.t(:label_product_name),
-                              :disabled => !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) ,
-                              :input_html => { :class => 'input-large' } %>
-                <% else %>
-                  <%= f.association :applications,
-                                    as: :select,
-                                    collection: @current_organization.applications.active,
-                                    :label => I18n.t(:label_product_name),
-                                    :input_html => { :class => 'input-large' },
-                                    include_blank: true,
-                                    :disabled => !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) %>
-                <% end %>
-              <% else %>
-                <% begin %>
-                  <% apps = Project.find(@project.original_model_id).applications.active.all %>
-                <% rescue %>
-                  <% apps = [] %>
-                <% end %>
-
-                <% if @current_organization.applications.empty? and apps.empty? %>
-                  <%= f.input :application_name,
-                              input_html: { :class => 'input-large' },
-                              label: I18n.t(:label_product_name),
-                              readonly: !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) %>
-                <% else %>
-                  <% if (!((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) || @project.private) %>
-                    <%= f.input :application_name,
-                              input_html: { :class => 'input-large', value: @project.application },
-                              label: I18n.t(:application),
-                              disabled: true %>
-                    <br/>
-                  <% else %>
-                      <% @current_organization_apps = @current_organization.applications.active.all %>
-                      <% ignored_apps = @current_organization.applications.ignored.map(&:id) %>
-
-                      <% if @project.application_id != nil && @project.application_id.in?(ignored_apps)%>
-                          <% project_application =  Application.find(@project.application_id) %>
-                          <% @current_organization_apps << project_application %>
-                          <% unless apps.empty? %>
-                            <% apps << project_application %>
-                          <% end %>
-                      <% end %>
-
-                      <%#= f.input :application_id,
-                                as: :select,
-                                collection: apps.empty? ? @current_organization.applications.map{|i| [i.name, i.id]} : apps.map{|i| [i.name, i.id]},
-                                label: I18n.t(:label_product_name),
-                                input_html: {:class => 'input-large'},
-                                selected: @project.application_id %>
-
-                      <%= f.input :application_id,
-                                  as: :select,
-                                  collection: apps.empty? ? @current_organization_apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]} : apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]},
-                                  label: I18n.t(:label_product_name),
-                                  input_html: {:class => 'input-large'},
-                                  selected: @project.application_id %>
-
-                  <% end %>
-                <% end %>
-              <% end %>
-            </td>
-          </tr>
-
-          <tr>
-            <td>
-              <label>
-                <%= I18n.t(:original_model) %>
-              </label>
-            </td>
-          </tr>
-          <% if !@project.original_model_id.nil? %>
-            <tr>
-              <td>
-                <% if can_show_estimation?(@project.original_model) %>
-                  <% unless @project.original_model.nil? %>
-                  <span>
-                    <%= link_to(@project.original_model, dashboard_path(@project.original_model)) %>  <br>
-                  </span>
-                  <% end %>
-                <% else %>
-                <span>
-                  <%= @project.original_model %>
-                  <br>
-                </span>
-                <% end %>
-              </td>
-            </tr>
-          <% else %>
-            <tr>
-              <td>
-                -
-              </td>
-            </tr>
-          <% end %>
-        </table>
-
-      <br>
-
-
-      <label>
-         <%= I18n.t(:description) %>
-       </label>
-
-       <%= simple_format(@project.description) %>
-       <%= f.input :description, :label => false, :input_html => {:class => 'span6 form-control', :rows => 6 } %>
-
-      <table>
-        <tr>
-          <td><%= f.input :start_date,
-                          :as => :string,
-                          :label => I18n.t(:start_date),
-                          :input_html => { :class => 'date-picker',
-                                           :value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime("%d/%m/%Y"))) : I18n.l(@project.start_date) } %></td>
-
-          <script>
-            $(document).ready(function () {
-                $(".date-picker").datepicker({
-                    language: '<%= set_user_language %>',
-                    autoclose: true,
-                    todayHighlight: true,
-                    todayBtn: true
-                });
-            });
-          </script>
-        </tr>
-
-        <tr>
-          <td>
-            <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
-            <%= f.input :creator_id,
-                        as: :select,
-                        collection: @organization.users.where(locked_at: nil).reject{|i| i.initials == (owner_key.nil? ? '' : owner_key.value) }.map{ |i| [i.name, i.id] },
-                        label: I18n.t('creator'),
-                        selected: @project.creator_id.nil? ? current_user.id : @project.creator_id,
-                        input_html: { selected: current_user.id,:class => 'input-large', disabled: !(can?(:alter_creator, @project) || can_alter_model) } %>
-          </td>
-        </tr>
-
-        <tr>
-
-          <td>
-            <%= f.input :organization_id, :label => "#{I18n.t 'organizations'}", :as => :select, :collection => [[@organization.name, @organization.id]], selected: @organization.id, :input_html => {:class => 'input-large'}, disabled: true %>
-            <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
-          </td>
-
-          <td>
-            <%= f.input :estimation_status_id,
-                        label: I18n.t(:estimation_status),
-                        as: :select,
-                        collection: @project.project_estimation_statuses(@organization),
-                        disabled: !((can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || can_alter_model) || @project.private,
-                        input_html: { :class => 'input-xlarge' },
-                        include_blank: false %>
-          </td>
-
-          <% unless @project.new_record? %>
-            <td>
-              <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => @project.id), :class => "icon-comment", :title => "#{I18n.t(:label_add_status_change_comment)}", :remote => true) %>
-            </td>
-          <% end %>
-        </tr>
-      </table>
-
-      <%= f.association :project_area, :label => "#{I18n.t 'project_area'}", :as => :select, :collection => @project_areas, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_areas, @project)) || can_alter_model) %>
-      <%= f.association :acquisition_category, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project)) || can_alter_model) %>
-      <%= f.association :platform_category, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_platform_categories, @project)) || can_alter_model) %>
-      <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_categories, @project))  || can_alter_model) %>
-      <%= f.association :provider, :label => "#{I18n.t 'provider'}", :as => :select, :collection => @providers, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_providers, @project))  || can_alter_model) %>
-      <%= f.input :urgent_project, :label => I18n.t(:urgent_project) %>
-
-
-      <div class="actions-tabs">
-        <% if action_name.in?(['edit', 'update']) %>
-          <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) ||
-                ( can?(:alter_project_areas, @project) || can?(:alter_acquisition_categories, @project) || can?(:alter_platform_categories, @project) ||
-                  can?(:alter_project_categories, @project) || can?(:alter_providers, @project) || can?(:alter_request_number, @project)
-                )
-          %>
-              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary submit_project' %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary submit_project' %>
-          <% end %>
-
-          <% elsif action_name.in?(['new', 'create']) %>
-            <% if (@is_model.in?(["true", true]) && can?(:manage_estimation_models, Project)) || (!@is_model.in?(["true", true]) && can?(:create_project_from_scratch, Project)) %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary submit_project' %>
-            <% end %>
-          <% end %>
-
-        <% if @project.is_model %>
-            <%#= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
-            <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-        <% else %>
-            <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
-        <% end %>
-      </div>
-    </div>
-
-
-
-    <% if action_name.in?(%w(edit update)) %>
-      <div id="tabs-2" class="hide">
-        <div class="component_tree" id="project_wbs_product_section">
-          <div class="tab-pane active">
-            <% unless @project.nil? || @pe_wbs_project_product.nil? %>
-              <%= raw generate_wbs_product(@project.root_component, @project, '', 5) unless @pe_wbs_project_product.pbs_project_elements.last.nil? %>
-            <% end %>
-          </div>
-        </div>
-
-      </div>
-
-      <div id="tabs-4" class="tabs_4_with_estimation_plan2">
-        <% if controller.controller_name == 'projects' %>
-          <div class="row-fluid">
-            <div class="span12">
-              <%= I18n.t(:label_add_a_module_to_project) %>
-              <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
-                                                                          "Base de connaissance de taille" => @skb_models,
-                                                                          "Modules d'opération" => @operation_models,
-                                                                          "Modules de Jugement d'Expert" => @ej_modules,
-                                                                          "Modules Activités / Profils" => @wbs_instances,
-                                                                          "Module d'Équipes : durée et taille des équipes" => @staffing_modules,
-                                                                          "Module d'Unité d'Oeuvres Génériques" => @guw_modules,
-                                                                          "Module d'Effort Génériques (ax^b)" => @ge_models}),
-                                                                          :prompt => '',
-                                                                          :disabled => !( (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && (can?(:alter_estimation_plan, @project) || can_modify_estimation?(@project))) ) %>
-              <script>
-                $(document).ready(function(){
-                  $("#select_module").on('change', function() {
-                    if ($("#select_module").val() !== "") {
-                      return $.ajax({
-                        url: "/append_pemodule",
-                        method: "get",
-                        data: {
-                          module_selected: $(this).val(),
-                          project_id: $("#project_id").val(),
-                          pbs_project_element_id: $("#select_pbs_project_elements").val()
-                        }
-                        ,
-                        success: function(data) {
-                          //return alert("success");
-                          //jsPlumb.repaintEverything();
-                          //jsPlumb.recalculateOffsets($(ui.item).parents(".draggable"));
-                        },
-                        error: function(XMLHttpRequest, textStatus, errorThrown) {
-                          return alert("Error! :" + textStatus + ";" + errorThrown );
-                        }
-                      });
-                    }
-                  });
-                });
-              </script>
-            </div>
-          </div>
-
-            <!--<br>-->
-          <!--<div class="row-fluid">-->
-            <!--<div class="span12">-->
-              <%= hidden_field_tag 'project_id', @project.id %>
-              <!--<%#= link_to I18n.t(:button_build_estimation_path), module_projects_matrix_path(@project.id), :class => 'btn' %>-->
-            <!--</div>-->
-          <!--</div>-->
-        <% end %>
-        <br>
-        <div class="module_box" style="width: auto; overflow-x:auto;">
-          <%= render :partial => 'module_projects/estimation_plan_with_go', :locals => {:module_projects => @project.module_projects } %>
-        </div>
-      </div>
-
-      <div id="tabs-5">
-        <% if @project.is_model == true && current_user.super_admin == true %>
-          <div class="row">
-            <%= link_to I18n.t("Copier les sécurités"), copy_security_path(@project), class: "btn btn-mini pull-right", method: "post" %>
-          </div>
-        <% end %>
-
-        <div id="accordion-security">
-          <div id="accordion_model" class="accordion">
-            <div class="accordion-group accordion-caret well-rounded">
-              <div class="accordion-heading">
-                <h5>
-                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_model" href="#collapseModel">
-                    <i class="fa fa-caret-down"></i>
-                    <b><%= @project.is_model ? I18n.t(:label_model_group_security_resume) : I18n.t(:label_group_security_resume) %></b>
-                  </a>
-                </h5>
+              <div class="edition-bloc-title">
+                Estimation
               </div>
-              <div id="collapseModel" class="accordion-body in collapse">
-                <div class="accordion-inner">
-                  <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-                    <thead>
-                      <tr>
-                        <th><%= I18n.t(:group_name)%></th>
-                        <% @organization.project_security_levels.each do |prj_level| %>
-                            <th><span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span></th>
-                        <% end %>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      <% @organization.groups.each do |group| %>
-                        <tr>
-                          <td>
-                            <%= group.name %>
-                            <% @organization.project_security_levels.each do |prj_level| %>
-                              <%
-                                 ps = ProjectSecurity.where(group_id: group.id,
-                                                            project_id: @project.id,
-                                                            project_security_level_id: prj_level.id,
-                                                            is_model_permission: false,
-                                                            is_estimation_permission: true).first
-                              %>
-                              <td style="text-align: center">
-                                <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?) %>
-                              </td>
-                          <% end %>
-                        </tr>
-                      <% end %>
-                    </tbody>
-                    <%= render :partial => 'layouts/footer_table' %>
-                  </table>
 
-                  <div class="actions-tabs">
-                    <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-                      <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn btn-primary' %>
-                      <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
-                    <% end %>
+              <div class="edition-bloc-form" style="width: 900px;">
+                <div class="form-row">
+                  <div class="col-6">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :title,
+                                  :label => false,
+                                  :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model),
+                                  :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new') } %>
 
-                    <% if @project.is_model %>
-                        <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+                      <label class="mdl-textfield__label" for="name"><%= I18n.t('name') %></label>
+                    </div>
+                  </div>
+                  <div class="col-2">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :version_number, :input_html => { :class => 'mdl-textfield__input' }, :disabled => true, label: false %>
+                      <label class="mdl-textfield__label" for="version">Version</label>
+                      <span class="mdl-textfield__error">Input is not a number!</span>
+                    </div>
+                  </div>
+                  <div class="col-4">
+                    <% unless @project.is_model == true %>
+                        <%= f.input :estimation_status_id,
+                                    label: I18n.t(:estimation_status),
+                                    as: :select,
+                                    collection: @project.project_estimation_statuses(@organization),
+                                    disabled: !((can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || can_alter_model) || @project.private,
+                                    input_html: { :class => 'form-control' },
+                                    include_blank: false %>
                     <% else %>
-                        <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                        <%= f.input :estimation_status_id,
+                                    label: I18n.t(:estimation_status),
+                                    as: :select,
+                                    collection: @current_organization.estimation_statuses,
+                                    disabled: !((can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || can_alter_model) || @project.private,
+                                    input_html: { :class => 'form-control' },
+                                    include_blank: false %>
                     <% end %>
-
                   </div>
                 </div>
-              </div>
-            </div>
-          </div>
-          <br>
 
-          <h3><%= @project.is_model ? I18n.t(:securities_for_generated_project) : "" %></h3>
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :business_need, :label => false, :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input' } %>
+                      <label class="mdl-textfield__label"><%= I18n.t('business_need') %></label>
+                    </div>
+                  </div>
+                </div>
 
-          <div class="accordion" id="accordion1">
-            <div class="accordion-group accordion-caret well-rounded">
-              <div class="accordion-heading">
-                <h5>
-                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-                    <i class="fa fa-caret-down"></i>
-                    <b><%= @project.is_model ? I18n.t(:label_from_model_user_security_resume) : I18n.t(:label_user_security_resume) %></b>
-                  </a>
-                </h5>
-              </div>
-            <div id="collapseOne" class="accordion-body in collapse">
-              <div class="accordion-inner">
-                <table  id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-                  <thead>
-                    <tr>
-                      <th><%= I18n.t(:name)%></th>
-                      <% @organization.project_security_levels.each do |prj_level| %>
-                        <th class="filter-select">
-                          <span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span>
-                        </th>
-                      <% end %>
-                    </tr>
-                  </thead>
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :request_number, :label => false, :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input' } %>
+                      <label class="mdl-textfield__label" ><%= I18n.t('request_number') %></label>
+                    </div>
+                  </div>
+                </div>
 
-                  <tbody>
-                    <!--If project is an estimation model, the user permission will be affected to the creator of the created estimation from this model-->
-                    <% if @project.is_model %>
-                      <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
-                      <% owner = User.where(initials: owner_key.value).first %>
-                      <%= hidden_field_tag "user_securities_#{owner.id}" %>
-                      <tr>
-                        <td>
-                          <%# I18n.t(:estimation_creator_from_model) %>
-                          <%= owner_key.value %>
-                          <% @organization.project_security_levels.each do |prj_level| %>
-                            <%
-                               ps = ProjectSecurity.where(user_id: owner.nil? ? nil : owner.id,
-                                                          project_id: @project.id,
-                                                          project_security_level_id: prj_level.id,
-                                                          is_model_permission: true,
-                                                          is_estimation_permission: false).first
-                            %>
-                            <% unless owner.nil? %>
-                              <td style="text-align: center">
-                                <%= check_box_tag("user_securities_from_model[#{prj_level.id}][#{owner.id}]", owner.id, ps.nil? ? false : true) %>
-                              </td>
-                            <% end %>
-                          <% end %>
-                      </tr>
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :start_date, as: :string, :label => false,
+                                  :input_html => { :class => 'date-picker mdl-textfield__input', :value => @project.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@project.start_date) },
+                                  #:value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime(I18n.t('date.formats.default')))) : start_date.strftime(I18n.t('date.formats.default')),
+                                  :disabled => !(can?(:alter_request_number, @project) || can_alter_model) %>
+                      <label class="mdl-textfield__label" ><%= I18n.t('start_date') %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-12">
+
+                    <% if @project.is_model == true %>
+                        <% apps = @project.applications %>
+                        <% if @current_organization.applications.empty? and apps.empty? %>
+                            <%= f.input :application_name,
+                                        :label => I18n.t(:label_product_name),
+                                        :disabled => !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) ,
+                                        :input_html => { :class => 'form-control' } %>
+                        <% else %>
+                            <%= f.association :applications,
+                                              as: :select,
+                                              collection: @current_organization.applications.active,
+                                              :label => I18n.t(:label_product_name),
+                                              :input_html => { :class => 'form-control' },
+                                              include_blank: true,
+                                              :disabled => !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) %>
+                        <% end %>
                     <% else %>
-                      <% @organization.users.each do |user| %>
-                        <tr>
-                          <td>
-                            <%= user %>
-                            <% @organization.project_security_levels.each do |prj_level| %>
-                              <%
-                                 ps = ProjectSecurity.where(user_id: user.id,
-                                                            project_id: @project.id,
-                                                            project_security_level_id: prj_level.id,
-                                                            is_model_permission: false,
-                                                            is_estimation_permission: true).first
-                              %>
-                            <td style="text-align: center">
-                              <%= check_box_tag("user_securities[#{prj_level.id}][#{user.id}]", user.id, ps.nil? ? false : true) %>
-                            </td>
-                          <% end %>
-                        </tr>
-                      <% end %>
-                    </tbody>
-                  <% end %>
-                </table>
+                        <% begin %>
+                            <% apps = Project.find(@project.original_model_id).applications.active.all %>
+                        <% rescue %>
+                            <% apps = [] %>
+                        <% end %>
 
-                <div class="actions-tabs">
-                  <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-                    <%= submit_tag I18n.t('save'), :name => "user_security_levels", :class => 'btn btn-primary' %>
-                    <%= submit_tag I18n.t('apply'), :name => "user_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                        <% if @current_organization.applications.empty? and apps.empty? %>
+                            <%= f.input :application_name,
+                                        input_html: { :class => 'form-control' },
+                                        label: I18n.t(:label_product_name),
+                                        readonly: !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) %>
+                        <% else %>
+                            <% if (!((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) || @project.private) %>
+                                <%= f.input :application_name,
+                                            input_html: { :class => 'form-control', value: @project.application },
+                                            label: I18n.t(:application),
+                                            disabled: true %>
+                                <br/>
+                            <% else %>
+                                <% @current_organization_apps = @current_organization.applications.active.all %>
+                                <% ignored_apps = @current_organization.applications.ignored.map(&:id) %>
+
+                                <% if @project.application_id != nil && @project.application_id.in?(ignored_apps)%>
+                                    <% project_application =  Application.find(@project.application_id) %>
+                                    <% @current_organization_apps << project_application %>
+                                    <% unless apps.empty? %>
+                                        <% apps << project_application %>
+                                    <% end %>
+                                <% end %>
+
+                                <%= f.input :application_id,
+                                            as: :select,
+                                            collection: apps.empty? ? @current_organization_apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]} : apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]},
+                                            label: I18n.t(:label_product_name),
+                                            input_html: {:class => 'form-control'},
+                                            selected: @project.application_id %>
+
+                            <% end %>
+                        <% end %>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-12">
+                    <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :creator_id,
+                                  as: :select,
+                                  collection: @organization.users.where(locked_at: nil).reject{|i| i.initials == (owner_key.nil? ? '' : owner_key.value) }.map{ |i| [i.name, i.id] },
+                                  label: I18n.t('creator'),
+                                  selected: @project.creator_id.nil? ? current_user.id : @project.creator_id,
+                                  input_html: { selected: current_user.id,:class => 'form-control', disabled: !(can?(:alter_creator, @project) || can_alter_model) } %>
+
+                    </div>
+                  </div>
+                </div>
+
+                <% if @project.new_record? %>
+                    <%= f.input :is_model, :as => :hidden, input_html: { value: @is_model } %>
+                <% end %>
+
+                <% if @project.is_model || @is_model %>
+                    <%= f.input :use_automatic_quotation_number, :label => "#{I18n.t 'use_automatic_quotation_number'}", :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge' } %>
+                    <%= f.input :allow_export_pdf, :label => I18n.t("Autoriser l'export PDF"), :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'input-xxlarge' } %>
+                <% end %>
+
+                <%= f.input :demand_id, as: :hidden, :input_html => { :value => params[:demand_id] } %>
+
+                <div class="form-row">
+                  <div class="col-8">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty">
+                      <a href="#" class="" id="template">
+                        <% if !@project.original_model_id.nil? %>
+                            <% if can_show_estimation?(@project.original_model) %>
+                                <% unless @project.original_model.nil? %>
+                                    <%= link_to(@project.original_model, dashboard_path(@project.original_model)) %>
+                                <% end %>
+                            <% else %>
+                                <%= @project.original_model %>
+                            <% end %>
+                        <% else %>
+                            -
+                        <% end %>
+                      </a>
+                      <label for="template" class="mdl-textfield__label active"><%= I18n.t("original_model") %></label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-8">
+                    <%= f.input :private, disabled: !(can?(:alter_private_estimation_setup, @project) || can_alter_model), label: raw("&nbsp; #{I18n.t("private")}"), class: "custom-control-input" %>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <textarea class="mdl-textfield__input" type="text" rows="3" id="description" name="project[description]"><%= @project.description %></textarea>
+                      <label class="mdl-textfield__label" for="description">Description</label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="select-estimancy">
+                      <label for="platformCategory" class="label-estimancy"><%= I18n.t 'project_area' %></label>
+                      <%= f.association :project_area,
+                                        :label => false,
+                                        :as => :select,
+                                        :collection => @project_areas,
+                                        :input_html => { :class => 'form-control' },
+                                        :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_areas, @project)) || can_alter_model) %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="select-estimancy">
+                      <label for="platformCategory" class="label-estimancy"><%= I18n.t 'acquisition_category' %></label>
+                      <%= f.association :acquisition_category,
+                                        :label => false,
+                                        :as => :select,
+                                        :collection => @acquisition_categories,
+                                        :input_html => {:class => 'form-control'},
+                                        :disabled => !((can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project)) || can_alter_model) %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="select-estimancy">
+                      <label for="platformCategory" class="label-estimancy"><%= I18n.t 'platform_category' %></label>
+                      <%= f.association :platform_category,
+                                        :label => false,
+                                        :as => :select,
+                                        :collection => @platform_categories,
+                                        :input_html => {:class => 'form-control'},
+                                        :disabled => !((can_alter_estimation?(@project) && can?(:alter_platform_categories, @project)) || can_alter_model) %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="select-estimancy">
+                      <label for="platformCategory" class="label-estimancy"><%= I18n.t 'project_category' %></label>
+                      <%= f.association :project_category,
+                                        :label => false,
+                                        :as => :select,
+                                        :collection => @project_categories,
+                                        :input_html => {:class => 'form-control'},
+                                        :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_categories, @project)) || can_alter_model) %>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-12">
+                    <div class="select-estimancy">
+                      <label for="platformCategory" class="label-estimancy"><%= I18n.t 'provider' %></label>
+                      <%= f.association :provider,
+                                        :label => false,
+                                        :as => :select,
+                                        :collection => @providers,
+                                        :input_html => {:class => 'form-control'},
+                                        :disabled => !((can_alter_estimation?(@project) && can?(:alter_providers, @project))  || can_alter_model) %>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="actions">
+                  <% if action_name.in?(['edit', 'update', 'duplicate']) %>
+                      <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) ||
+                              ( can?(:alter_project_areas, @project) || can?(:alter_acquisition_categories, @project) || can?(:alter_platform_categories, @project) ||
+                                      can?(:alter_project_categories, @project) || can?(:alter_providers, @project) || can?(:alter_request_number, @project)
+                              )
+                      %>
+                          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% end %>
+
+                  <% elsif action_name.in?(['new', 'create']) %>
+                      <% if (@is_model.in?(["true", true]) && can?(:manage_estimation_models, Project)) || (!@is_model.in?(["true", true]) && can?(:create_project_from_scratch, Project)) %>
+                          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% end %>
                   <% end %>
 
                   <% if @project.is_model %>
-                      <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+                      <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
                   <% else %>
-                      <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                      <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
                   <% end %>
-
                 </div>
+
               </div>
             </div>
           </div>
-        </div>
 
-        </div>
+          <br>
+          <br>
 
-        <% if @project.is_model == true %>
-          <div id="accordion2" class="accordion">
-            <div class="accordion-group accordion-caret well-rounded">
-              <div class="accordion-heading">
-                <h5>
-                  <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapseTwo">
-                    <i class="fa fa-caret-down"></i>
-                    <b><%= @project.is_model ? I18n.t(:label_from_model_group_security_resume) : I18n.t(:label_group_security_resume) %></b>
-                  </a>
-                </h5>
+          <% if controller.action_name == "edit" || controller.action_name == "update" %>
+              <div id="plan" class="edition-page-group py-4"><span><%= I18n.t("estimation_plan") %></span></div>
+              <div class="card card-content-bloc estimation-edition">
+                <div class="card-body">
+                  <div class="edition-bloc-title">
+                    <%= I18n.t("estimation_plan") %>
+                  </div>
+                  <div class="edition-bloc-content">
+                    <div class="p-3" style="background-color: #F8F9FA">
+                      <%= select_tag 'select_module', grouped_options_for_select({"Base de connaissance" => @kb_models,
+                                                                                  "Base de connaissance de taille" => @skb_models,
+                                                                                  "Modules d'opération" => @operation_models,
+                                                                                  "Modules de Jugement d'Expert" => @ej_modules,
+                                                                                  "Modules Activités / Profils" => @wbs_instances,
+                                                                                  "Module d'Équipes : durée et taille des équipes" => @staffing_modules,
+                                                                                  "Module d'Unité d'Oeuvres Génériques" => @guw_modules,
+                                                                                  "Module d'Effort Génériques (ax^b)" => @ge_models}),
+                                     :prompt => 'Add a new module', class: 'form-control',
+                                     :disabled => !( (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && (can?(:alter_estimation_plan, @project) || can_modify_estimation?(@project))) ) %>
+                    </div>
+
+                    <div class="p-3" style="background-color: #F8F9FA">
+                      <%= render 'module_projects/new_estimation_plan' %>
+                    </div>
+
+                  </div>
+                </div>
               </div>
-              <div id="collapseTwo" class="accordion-body in collapse">
-                <div class="accordion-inner">
-                  <table  class="table table-list">
-                    <thead>
+
+              <br>
+              <br>
+
+              <div id="security" class="edition-page-group py-4"><span><%= I18n.t("securities") %></span></div>
+              <div class="card card-content-bloc estimation-edition">
+                <div class="card-body">
+                  <div class="edition-bloc-content">
+
+                    <h3>
+                      <%= @project.is_model ? I18n.t(:label_model_group_security_resume) : I18n.t(:label_group_security_resume) %>
+                    </h3>
+
+                    <table class="table table-list">
+                      <thead>
                       <tr>
                         <th><%= I18n.t(:group_name)%></th>
                         <% @organization.project_security_levels.each do |prj_level| %>
-
                             <th><span class="attribute_tooltip" title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span></th>
                         <% end %>
                       </tr>
-                    </thead>
-                    <tbody>
+                      </thead>
+
+                      <tbody>
                       <% @organization.groups.each do |group| %>
-                        <tr>
-                          <td>
-                            <%= group.name %>
-                            <% @organization.project_security_levels.each do |prj_level| %>
-                              <% ps = ProjectSecurity.where(group_id: group.id,
-                                                            project_id: @project.id,
-                                                            project_security_level_id: prj_level.id,
-                                                            is_model_permission: true,
-                                                            is_estimation_permission: false).first %>
-                            <td style="text-align: center">
-                              <%= check_box_tag("group_securities_from_model[#{prj_level.id}][#{group.id}]", group.id, !ps.nil?) %>
-                            </td>
-                          <% end %>
-                        </tr>
+                          <tr>
+                            <td>
+                              <%= group.name %>
+                              <% @organization.project_security_levels.each do |prj_level| %>
+                                  <%
+                                     ps = ProjectSecurity.where(group_id: group.id,
+                                                                project_id: @project.id,
+                                                                project_security_level_id: prj_level.id,
+                                                                is_model_permission: false,
+                                                                is_estimation_permission: true).first
+                                  %>
+                                <td>
+                                  <div class="custom-control custom-checkbox">
+                                    <%= check_box_tag("group_securities[#{prj_level.id}][#{group.id}]", group.name, !ps.nil?, label: false) %>
+                                  </div>
+                                </td>
+                            <% end %>
+                          </tr>
                       <% end %>
-                  </table>
+                      </tbody>
+                    </table>
 
-                  <div class="actions-tabs">
-                    <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-                      <%= submit_tag I18n.t('save'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary' %>
-                      <%= submit_tag I18n.t('apply'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
-                    <% end %>
+                    <div class="pull-right">
+                      <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+                          <%= submit_tag I18n.t('save'), :name => "model_group_security_levels", :class => 'btn btn-primary' %>
+                          <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                      <% end %>
 
-                    <% if @project.is_model %>
-                        <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
-                    <% else %>
-                        <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                      <% if @project.is_model %>
+                          <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
+                      <% else %>
+                          <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
+                      <% end %>
+                    </div>
+
+                    <h3>
+                      <%= @project.is_model ? I18n.t(:label_from_model_user_security_resume) : I18n.t(:label_user_security_resume) %>
+                    </h3>
+
+                    <table class="table table-list">
+                      <thead>
+                      <tr>
+                        <th><%= I18n.t(:name)%></th>
+                        <% @organization.project_security_levels.each do |prj_level| %>
+                            <th class="filter-select">
+                              <span title='<%= display_security_level_description(prj_level) %>'><%= prj_level.name %></span>
+                            </th>
+                        <% end %>
+                      </tr>
+                      </thead>
+
+                      <tbody>
+                      <% if @project.is_model %>
+                          <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
+                          <% owner = User.where(initials: owner_key.value).first %>
+                          <%= hidden_field_tag "user_securities_#{owner.id}" %>
+                          <tr>
+                            <%= owner_key.value %>
+                            <% @organization.project_security_levels.each do |prj_level| %>
+                                <%
+                                   ps = ProjectSecurity.where(user_id: owner.nil? ? nil : owner.id,
+                                                              project_id: @project.id,
+                                                              project_security_level_id: prj_level.id,
+                                                              is_model_permission: true,
+                                                              is_estimation_permission: false).first
+                                %>
+                                <% unless owner.nil? %>
+                                    <td>
+                                      <div class="custom-control custom-checkbox">
+                                        <%= check_box_tag("user_securities_from_model[#{prj_level.id}][#{owner.id}]", owner.name, ps.nil? ? false : true, label: false) %>
+                                      </div>
+                                    </td>
+                                <% end %>
+                            <% end %>
+                          </tr>
+                      <% else %>
+                          <% @organization.users.each do |user| %>
+                              <tr>
+                                <td>
+                                  <%= user %>
+                                </td>
+                                <% @organization.project_security_levels.each do |prj_level| %>
+                                    <%
+                                       ps = ProjectSecurity.where(user_id: user.id,
+                                                                  project_id: @project.id,
+                                                                  project_security_level_id: prj_level.id,
+                                                                  is_model_permission: false,
+                                                                  is_estimation_permission: true).first
+                                    %>
+                                    <td>
+                                      <div class="custom-control custom-checkbox">
+                                        <%= check_box_tag("user_securities[#{prj_level.id}][#{user.id}]", user.id, ps.nil? ? false : true) %>
+                                      </div>
+                                    </td>
+                                <% end %>
+                              </tr>
+                          <% end %>
+                          </tbody>
+                      <% end %>
+                      </table>
+
+                    <div class="pull-right">
+                      <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+                          <%= submit_tag I18n.t('save'), :name => "user_security_levels", :class => 'btn btn-primary' %>
+                          <%= submit_tag I18n.t('apply'), :name => "user_security_levels", :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                      <% end %>
+
+                      <% if @project.is_model %>
+                          <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
+                      <% else %>
+                          <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
+                      <% end %>
+                    </div>
+
+
+                    <% if @project.is_model == true %>
+                        <h3>
+                          <%= @project.is_model ? I18n.t(:label_from_model_group_security_resume) : I18n.t(:label_group_security_resume) %>
+                        </h3>
+
+                        <table class="table table-list">
+                          <thead>
+                          <tr>
+                            <th><%= I18n.t(:group_name)%></th>
+                            <% @organization.project_security_levels.each do |prj_level| %>
+                                <th><span title="<%= display_security_level_description(prj_level) %>"><%= prj_level.name %></span></th>
+                            <% end %>
+                          </tr>
+                          </thead>
+                          <% @organization.groups.each do |group| %>
+                              <tr>
+                                <td>
+                                  <%= group.name %>
+                                  <% @organization.project_security_levels.each do |prj_level| %>
+                                      <% ps = ProjectSecurity.where(group_id: group.id,
+                                                                    project_id: @project.id,
+                                                                    project_security_level_id: prj_level.id,
+                                                                    is_model_permission: true,
+                                                                    is_estimation_permission: false).first %>
+                                    <td>
+                                      <div class="custom-control custom-checkbox">
+                                        <%= check_box_tag("group_securities_from_model[#{prj_level.id}][#{group.id}]", group.id, !ps.nil?, label: false) %>
+                                      </div>
+                                    </td>
+                                <% end %>
+                              </tr>
+                          <% end %>
+                        </table>
+
+                        <div class="pull-right">
+                          <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+                              <%= submit_tag I18n.t('save'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary' %>
+                              <%= submit_tag I18n.t('apply'), name: 'model_created_from_group_security_levels', :class => 'btn btn-primary', :anchor_value => params[:anchor_value] %>
+                          <% end %>
+                        </div>
+
+                        <% if @project.is_model %>
+                            <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+                        <% else %>
+                            <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                        <% end %>
+
                     <% end %>
 
                   </div>
                 </div>
               </div>
-            </div>
+
+              <div id="history" class="edition-page-group py-4"><span><%= I18n.t("label_project_history") %></span></div>
+              <div class="card card-content-bloc estimation-edition">
+                <div class="card-body">
+                  <div class="edition-bloc-content">
+                    <%= hidden_field_tag "current_showed_project_id", @project.id %>
+                    <div id="project_tree_id" data-project_tree="<%= @projects_json_tree %>"></div>
+                    <%= render :partial => "show_project_tree_history", :object => [@projects_json_tree] %>
+                  </div>
+                </div>
+              </div>
+          <% end %>
+        </div>
+
+        <div class="col-2">
+          <div id="edition-sidebar">
+            <h4 class="mb-0">Navigation</h4>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <a class="nav-link group" href="#global1"><span><%= I18n.t("global_properties") %></span></a>
+              </li>
+              <% if controller.action_name == "edit" || controller.action_name == "update" %>
+                  <li class="nav-item">
+                    <a class="nav-link group" href="#plan"><span><%= I18n.t("estimation_plan") %></span></a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link group" href="#security"><span><%= I18n.t("securities") %></span></a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link group" href="#history"><span><%= I18n.t("label_project_history") %></span></a>
+                  </li>
+              <% end %>
+            </ul>
           </div>
-        <% end %>
-      </div>
-
-
-      <div id="tabs-history">
-        <%= hidden_field_tag "current_showed_project_id", @project.id %>
-        <div id="project_tree_id" data-project_tree="<%= @projects_json_tree %>"></div>
-        <%= render :partial => "show_project_tree_history", :object => [@projects_json_tree] %>
-      </div>
-
-      <div id="tabs-6">
-        <div id="main">
-          <%# render 'dashboard_inner' %>
         </div>
       </div>
-    <% end %>
 
+      <br>
+      <br>
 
-  </div>
-<% end %>
+  <% end %>
 
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+      $(document).ready(function() {
+          $(document).on('scroll', function(){
+              if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+                  $("#edition-sidebar").css({position: "fixed", top: -5});
+              }
+              if ($(document).scrollTop() < 200){
+                  $("#edition-sidebar").css({position: "static", top: 0});
+              }
+          });
+
+          $(".date-picker").datepicker({
+              language: '<%= set_user_language_for_datepicker %>',
+              //uiLibrary: 'bootstrap4',
+              //locale: 'fr-fr',
+              orientation: 'auto top',
+              autoclose: true,
+              todayHighlight: true,
+              todayBtn: true,
+              icons: {
+                  rightIcon: '<i class="material-icons">event</i>'
+              }
+          });
+
+      });
+  </script>
+
+</div>

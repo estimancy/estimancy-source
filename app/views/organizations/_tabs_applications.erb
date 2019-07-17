@@ -1,0 +1,79 @@
+<% if can? :show_applications, Application %>
+
+    <% if can? :manage, Application %>
+
+        <!--<div id="tabs-applications" class="edition-page-group py-4"><span><%#= I18n.t('applications') %></span></div>-->
+        <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn btn-primary' %>
+        <a href="#myWBSModal" role="button" class="btn btn-primary" title="Import applications from excel" data-toggle="modal">
+          <%= I18n.t(:import) %>
+        </a>
+        <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn btn-primary'%>
+        <hr>
+
+        <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+          <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
+              <div class="modal-header modal-drag">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
+              </div>
+              <div class="modal-body">
+                <%= file_field_tag :file %>
+              </div>
+              <div class="modal-footer">
+                <button class="btn btn-primary" data-dismiss="modal" aria-hidden="true">Close</button>
+                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+              </div>
+              <div class="loading span11 hide">
+                <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+              </div>
+          <% end %>
+        </div>
+    <% end %>
+
+    <table id="table_list_applications" class="table table-list">
+      <thead>
+      <tr>
+        <th><%= I18n.t('name') %></th>
+        <th><%= "Forfait MCO" %></th>
+        <th><%= "Budget Projet/Evo" %></th>
+        <th><%= I18n.t :entry_date %></th>
+        <th><%= I18n.t :release_date %></th> <%# date de sortie %>
+        <th class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @organization.applications.each do |app| %>
+          <tr>
+            <td><%= app.name %></td>
+            <td>
+            <span class="pull-right">
+              <% unless app.forfait_mco.blank? %>
+                <%= number_with_delimiter(app.forfait_mco.to_i, delimiter: ",") %> €
+              <% end %>
+            </span>
+            </td>
+            <td></td>
+            <td>
+              <% unless app.start_date.nil? %>
+                  <%= app.start_date.strftime("%d-%m-%Y %H:%M") %>
+              <% end %>
+            </td>
+            <td>
+              <% unless app.end_date.nil? %>
+                  <%= app.end_date.strftime("%d-%m-%Y %H:%M") %>
+              <% end %>
+            </td>
+            <td class="center">
+              <% if can? :manage, Application %>
+                  <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_application_path(@organization, app), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), organization_application_path(@organization, app), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_applications) %></div>
+<% end %>

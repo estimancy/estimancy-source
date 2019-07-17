@@ -48,7 +48,7 @@
               <% end %>
 
               <% if can_modify_estimation?(project) && can?(:show_project, project) %>
-                <%= link_to('', edit_project_path(project, :anchor => 'tabs-1'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
+                <%= link_to('', edit_project_path(project, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
               <% end %>
 
               <% if (can? :create_project_from_template, Project) || (can? :manage, project )%>

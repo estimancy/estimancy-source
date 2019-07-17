@@ -51,7 +51,7 @@
             <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
           <% end %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-area'), :class => 'btn' %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-budget-types', partial_name: 'tabs_budgets_and_budget_types'), :class => 'btn' %>
       </div>
     <% end %>
   </div>

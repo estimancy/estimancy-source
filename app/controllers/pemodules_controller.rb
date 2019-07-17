@@ -230,7 +230,7 @@ class PemodulesController < ApplicationController
       #Update column module_projects link with initialization module
       update_link_between_modules(@project, @project_module)
     end
-    redirect_to edit_project_path(@project.id, :anchor => 'tabs-4')
+    redirect_to edit_project_path(@project.id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan')
   end
 
 
@@ -254,7 +254,7 @@ class PemodulesController < ApplicationController
 
     #Update column module_projects link with initialization module
     update_link_between_modules(@project, @project_module)
-    redirect_to edit_project_path(@project.id, :anchor => 'tabs-4')
+    redirect_to edit_project_path(@project.id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan')
   end
 
 
@@ -278,7 +278,7 @@ class PemodulesController < ApplicationController
 
     #Update Current module_project links
     update_link_between_modules(@project, @project_module, last_position_x)
-    redirect_to edit_project_path(@project.id, :anchor => 'tabs-4')
+    redirect_to edit_project_path(@project.id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan')
   end
 
 
@@ -298,7 +298,7 @@ class PemodulesController < ApplicationController
     @project_module.update_attribute('position_x', @project_module.position_x.to_i + 1 )
     update_link_between_modules(@project, @project_module, last_position_x)
 
-    redirect_to edit_project_path(@project.id, :anchor => 'tabs-4')
+    redirect_to edit_project_path(@project.id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan')
   end
 
 

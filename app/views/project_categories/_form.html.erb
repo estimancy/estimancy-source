@@ -22,7 +22,7 @@
               <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
           <% end %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-project-categories'), :class => 'btn' %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-project-categories', partial_name: 'tabs_project_categories'), :class => 'btn' %>
       </div>
     <% end %>
   </div>

@@ -209,7 +209,7 @@
             <% if params[:action] == "show" %>
                 <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id, anchor: "tabs-1"), :class => 'btn' %>
             <% else %>
-                <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), :class => 'btn' %>
             <% end %>
         <% else %>
             <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
@@ -314,12 +314,12 @@
                   <%= submit_tag I18n.t('apply'), :name => "model_group_security_levels", :class => 'btn', :anchor_value => params[:anchor_value] %>
                 <% end %>
 
-                <%#= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                <%#= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), :class => 'btn' %>
                 <% if @project.is_model %>
                     <% if params[:action] == "show" %>
                         <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id, anchor: "tabs-1"), :class => 'btn' %>
                     <% else %>
-                        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), :class => 'btn' %>
                     <% end %>
                 <% else %>
                     <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
@@ -410,7 +410,7 @@
                     <% if params[:action] == "show" %>
                         <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id, anchor: "tabs-1"), :class => 'btn' %>
                     <% else %>
-                        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), :class => 'btn' %>
                     <% end %>
                 <% else %>
                     <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
@@ -472,7 +472,7 @@
                       <% if params[:action] == "show" %>
                           <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id, anchor: "tabs-1"), :class => 'btn' %>
                       <% else %>
-                          <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models"), :class => 'btn' %>
+                          <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), :class => 'btn' %>
                       <% end %>
                   <% else %>
                       <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>

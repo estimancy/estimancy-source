@@ -1,5 +1,12 @@
-$("#estimation_graph_box").html("");
+//$("#estimation_graph_box").html("");
 //$("#estimation_graph_box").html("<%#=raw j(render(partial: 'projects/form')) %>");
 //$("div#modules-sidebar.py-6").html("<%#=raw j render 'module_projects/new_estimation_plan_min', :locals => {:module_projects => @module_projects} %>");
-$("#estimation_link_container").html("<%=raw j(render(partial: 'projects/form')) %>");
+//$("#estimation_link_container").html("<%#=raw j(render(partial: 'projects/form')) %>");
 
+$("#estimation_content").html('<%= raw j(render(:partial => "projects/#{@partial_name}", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand])) %>');
+
+//On met à jour l'url pour ajouter le parametre du tabs
+if (history.pushState) {
+    var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname + '?tabs_name=<%= @partial_name %>';
+    window.history.pushState({path:newurl},'',newurl);
+}

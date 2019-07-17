@@ -252,7 +252,7 @@ it:
 
   # header
   advanced_research: "RECHERCHE AVANCÉE"
-  advanced_research_estimates: "RECHERCHE AVANCÉE ESTIMATIONS"
+  advanced_research_estimates: "RECHERCHE D'ESTIMATIONS"
   estimation_name, version_number, author: "Nom de l'estimation, numéro de la version, auteur"
   home_estimancy: "Accueil Estimancy"
   model: "Modèle"

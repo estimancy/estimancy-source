@@ -72,7 +72,7 @@
         <% if can? :manage, EstimationStatus %>
           <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :class => 'btn btn-secondary btn-estimancy' %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses', partial_name: 'tabs_estimation_statuses'), :class => 'btn btn-secondary btn-estimancy' %>
       </div>
     <% end %>
   </div>

@@ -49,7 +49,7 @@ class ViewsController < ApplicationController
     @organization = Organization.find_by_id(params[:organization_id])
 
     set_page_title I18n.t(:views)
-    set_breadcrumbs I18n.t(:views) => organization_setting_path(@current_organization, anchor: "tabs-views"), I18n.t('new_view') => ""
+    set_breadcrumbs I18n.t(:views) => organization_setting_path(@current_organization, anchor: "tabs-views", partial_name: 'tabs_views'), I18n.t('new_view') => ""
 
     respond_to do |format|
       format.html # new.html.erb
@@ -62,7 +62,7 @@ class ViewsController < ApplicationController
     @view = View.find(params[:id])
     @organization = @view.organization
     set_page_title I18n.t(:edit_view_2)
-    set_breadcrumbs I18n.t(:views) => organization_setting_path(@organization, anchor: "tabs-views"), I18n.t('edit_view_2') => ""
+    set_breadcrumbs I18n.t(:views) => organization_setting_path(@organization, anchor: "tabs-views", partial_name: 'tabs_views'), I18n.t('edit_view_2') => ""
   end
 
   # POST /views
@@ -79,7 +79,7 @@ class ViewsController < ApplicationController
       end
 
       flash[:notice] = I18n.t(:view_successfully_created)
-      redirect_to redirect_apply(nil, new_view_path(params[:view]), organization_setting_path(@organization, :anchor => 'tabs-views'))
+      redirect_to redirect_apply(nil, new_view_path(params[:view]), organization_setting_path(@organization, :anchor => 'tabs-views', partial_name: 'tabs_views'))
     else
       render action: "new", :organization_id => @organization.id
     end
@@ -99,7 +99,7 @@ class ViewsController < ApplicationController
       end
 
       flash[:notice] = I18n.t(:view_successfully_updated)
-      redirect_to redirect_apply(edit_organization_view_path(params[:view]), nil, organization_setting_path(@organization, :anchor => 'tabs-views'))
+      redirect_to redirect_apply(edit_organization_view_path(params[:view]), nil, organization_setting_path(@organization, :anchor => 'tabs-views', partial_name: 'tabs_views'))
     else
       render action: "edit", :organization_id => @organization.id
     end
@@ -114,6 +114,6 @@ class ViewsController < ApplicationController
 
     @view.destroy
 
-    redirect_to organization_setting_path(@organization, :anchor => 'tabs-views')
+    redirect_to organization_setting_path(@organization, :anchor => 'tabs-views', partial_name: 'tabs_views')
   end
 end

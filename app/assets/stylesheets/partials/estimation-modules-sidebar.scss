@@ -30,7 +30,7 @@
         text-transform: uppercase;
         color: $grey-extradark;
         white-space: normal;
-        padding: 2rem 0;
+        padding: 1.5rem 0; //padding: 2rem 0;
         position: relative;
 
         &:active, &:focus, &.active {
@@ -87,7 +87,7 @@
         text-transform: uppercase;
         color: $grey-extradark;
         white-space: normal;
-        padding: 2rem 0;
+        padding: 1.5rem 0; //padding: 2rem 0;
         position: relative;
 
         &:active, &:focus, &.active {

@@ -28,7 +28,7 @@ class AcquisitionCategoriesController < ApplicationController
     authorize! :manage, AcquisitionCategory
 
     set_page_title I18n.t (:acquisition_categories)
-    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@current_organization, anchor: "tabs-acquisition-categories"), I18n.t('new_acquisition_category') => ""
+    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@current_organization, anchor: "tabs-acquisition-categories", partial_name: 'tabs_acquisition_categories'), I18n.t('new_acquisition_category') => ""
 
     @acquisition_category = AcquisitionCategory.new
     @organization = Organization.find(params[:organization_id])
@@ -41,7 +41,7 @@ class AcquisitionCategoriesController < ApplicationController
     @organization = Organization.find(params[:organization_id])
 
     set_page_title I18n.t(:acquisition_categories)
-    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@organization, anchor: "tabs-acquisition-categories"), I18n.t(:acquisition_category_edition) => ""
+    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@organization, anchor: "tabs-acquisition-categories", partial_name: 'tabs_acquisition_categories'), I18n.t(:acquisition_category_edition) => ""
   end
 
   def create
@@ -51,11 +51,11 @@ class AcquisitionCategoriesController < ApplicationController
     @organization = Organization.find(params[:organization_id])
 
     set_page_title I18n.t (:acquisition_categories)
-    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@current_organization, anchor: "tabs-acquisition-categories"), I18n.t('new_acquisition_category') => ""
+    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@current_organization, anchor: "tabs-acquisition-categories", partial_name: 'tabs_acquisition_categories'), I18n.t('new_acquisition_category') => ""
 
     if @acquisition_category.save
       flash[:notice] = I18n.t (:notice_acquisition_category_successful_created)
-      redirect_to redirect_apply(nil, new_organization_acquisition_category_path(@organization), organization_setting_path(@organization, anchor: "tabs-acquisition-categories"))
+      redirect_to redirect_apply(nil, new_organization_acquisition_category_path(@organization), organization_setting_path(@organization, anchor: "tabs-acquisition-categories", partial_name: 'tabs_acquisition_categories'))
     else
       render action: "edit"
     end
@@ -68,11 +68,11 @@ class AcquisitionCategoriesController < ApplicationController
     @acquisition_category = AcquisitionCategory.find(params[:id])
 
     set_page_title I18n.t(:acquisition_categories)
-    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@organization, anchor: "tabs-acquisition-categories"), I18n.t(:acquisition_category_edition) => ""
+    set_breadcrumbs I18n.t(:acquisition_categories) => organization_setting_path(@organization, anchor: "tabs-acquisition-categories", partial_name: 'tabs_acquisition_categories'), I18n.t(:acquisition_category_edition) => ""
 
     if @acquisition_category.update_attributes(params[:acquisition_category])
       flash[:notice] = I18n.t (:notice_acquisition_category_successful_updated)
-      redirect_to redirect_apply(edit_organization_acquisition_category_path(@organization, @acquisition_category), nil, organization_setting_path(@organization, anchor: "tabs-acquisition-categories"))
+      redirect_to redirect_apply(edit_organization_acquisition_category_path(@organization, @acquisition_category), nil, organization_setting_path(@organization, anchor: "tabs-acquisition-categories", partial_name: 'tabs_acquisition_categories'))
     else
       render action: "edit"
     end
@@ -86,6 +86,6 @@ class AcquisitionCategoriesController < ApplicationController
     @acquisition_category.destroy
 
     flash[:notice] = I18n.t (:notice_acquisition_category_successful_destroyed)
-    redirect_to organization_setting_path(organization_id, :anchor => "tabs-acquisition-categories")
+    redirect_to organization_setting_path(organization_id, :anchor => "tabs-acquisition-categories", partial_name: 'tabs_acquisition_categories')
   end
 end

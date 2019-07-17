@@ -29,7 +29,7 @@ class OrganizationProfilesController < ApplicationController
     set_page_title I18n.t(:new_organization_profiles)
     @organization = Organization.find_by_id(params[:organization_id])
     @organization_profile = OrganizationProfile.new
-    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile"), I18n.t('new_profile') => ""
+    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile", partial_name: 'tabs_profiles'), I18n.t('new_profile') => ""
   end
 
   # GET /organization_profiles/1/edit
@@ -40,7 +40,7 @@ class OrganizationProfilesController < ApplicationController
 
     @organization = @organization_profile.organization
 
-    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile"), I18n.t('organization_profiles_edition') => ""
+    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile", partial_name: 'tabs_profiles'), I18n.t('organization_profiles_edition') => ""
   end
 
   # POST /organization_profiles
@@ -52,11 +52,11 @@ class OrganizationProfilesController < ApplicationController
     @organization_profile = OrganizationProfile.new(params[:organization_profile])
     @organization = Organization.find_by_id(params['organization_profile']['organization_id'])
 
-    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile"), I18n.t('new_profile') => ""
+    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile", partial_name: 'tabs_profiles'), I18n.t('new_profile') => ""
 
     if @organization_profile.save
       flash[:notice] = I18n.t(:notice_profile_successful_created)
-     redirect_to redirect_apply(nil, new_organization_organization_profile_path(@organization), organization_setting_path(@organization, :anchor => 'tabs-profile'))
+     redirect_to redirect_apply(nil, new_organization_organization_profile_path(@organization), organization_setting_path(@organization, :anchor => 'tabs-profile', partial_name: 'tabs_profiles'))
     else
       flash[:error] = I18n.t(:error_profile_failed_created)
       render action: "new"
@@ -71,11 +71,11 @@ class OrganizationProfilesController < ApplicationController
 
     @organization_profile = OrganizationProfile.find(params[:id])
     @organization = @organization_profile.organization
-    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile"), I18n.t('organization_profiles_edition') => ""
+    set_breadcrumbs I18n.t(:profiles) => organization_setting_path(@organization, anchor: "tabs-profile", partial_name: 'tabs_profiles'), I18n.t('organization_profiles_edition') => ""
 
     respond_to do |format|
       if @organization_profile.update_attributes(params[:organization_profile])
-        format.html { redirect_to redirect_apply(edit_organization_organization_profile_path(@organization, @organization_profile), nil, organization_setting_path(@organization, :anchor => 'tabs-profile') ), notice: I18n.t(:notice_profile_successful_updated) }
+        format.html { redirect_to redirect_apply(edit_organization_organization_profile_path(@organization, @organization_profile), nil, organization_setting_path(@organization, :anchor => 'tabs-profile', partial_name: 'tabs_profiles') ), notice: I18n.t(:notice_profile_successful_updated) }
         format.json { head :no_content }
       else
         format.html { render action: "edit" }
@@ -95,7 +95,7 @@ class OrganizationProfilesController < ApplicationController
     @organization_profile.destroy
 
     respond_to do |format|
-      format.html { redirect_to organization_setting_path(@organization, anchor: 'tabs-profile') }
+      format.html { redirect_to organization_setting_path(@organization, anchor: 'tabs-profile', partial_name: 'tabs_profiles') }
       format.json { head :no_content }
     end
   end

@@ -39,7 +39,7 @@ class ProjectAreasController < ApplicationController
     authorize! :manage, ProjectArea
 
     set_page_title I18n.t(:project_areas)
-    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@current_organization, anchor: "tabs-project-areas"), I18n.t('new_project_area') => ""
+    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@current_organization, anchor: "tabs-project-areas", partial_name: 'tabs_project_areas'), I18n.t('new_project_area') => ""
     @project_area = ProjectArea.new
     @organization = Organization.find(params[:organization_id])
   end
@@ -51,14 +51,14 @@ class ProjectAreasController < ApplicationController
     @organization = Organization.find(params[:organization_id])
 
     set_page_title I18n.t(:project_areas)
-    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@organization, anchor: "tabs-project-areas"), I18n.t(:project_area_edition) => ""
+    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@organization, anchor: "tabs-project-areas", partial_name: 'tabs_project_areas'), I18n.t(:project_area_edition) => ""
   end
 
   def create
     authorize! :manage, ProjectArea
 
     set_page_title I18n.t(:project_areas)
-    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@current_organization, anchor: "tabs-project-areas"), I18n.t('new_project_area') => ""
+    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@current_organization, anchor: "tabs-project-areas", partial_name: 'tabs_project_areas'), I18n.t('new_project_area') => ""
 
     @project_area = ProjectArea.new(params[:project_area])
     @project_area.owner_id = current_user.id
@@ -66,7 +66,7 @@ class ProjectAreasController < ApplicationController
 
     if @project_area.save
       flash[:notice] = I18n.t (:notice_project_area_successful_created)
-      redirect_to redirect_apply(nil, new_organization_project_area_path(@organization), organization_setting_path(@organization, :anchor => 'tabs-project-areas') )
+      redirect_to redirect_apply(nil, new_organization_project_area_path(@organization), organization_setting_path(@organization, :anchor => 'tabs-project-areas', partial_name: 'tabs_project_areas') )
     else
        render action: 'new'
     end
@@ -78,11 +78,11 @@ class ProjectAreasController < ApplicationController
     @project_area = ProjectArea.find(params[:id])
 
     set_page_title I18n.t(:project_areas)
-    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@organization, anchor: "tabs-project-areas"), I18n.t(:project_area_edition) => ""
+    set_breadcrumbs I18n.t(:project_areas) => organization_setting_path(@organization, anchor: "tabs-project-areas", partial_name: 'tabs_project_areas'), I18n.t(:project_area_edition) => ""
 
     if @project_area.update_attributes(params[:project_area])
       flash[:notice] = I18n.t (:notice_project_area_successful_updated)
-      redirect_to redirect_apply(edit_organization_project_area_path(@organization, @project_area), nil, organization_setting_path(@organization, :anchor => 'tabs-project-areas') )
+      redirect_to redirect_apply(edit_organization_project_area_path(@organization, @project_area), nil, organization_setting_path(@organization, :anchor => 'tabs-project-areas', partial_name: 'tabs_project_areas') )
     else
       render action: 'edit'
     end
@@ -96,6 +96,6 @@ class ProjectAreasController < ApplicationController
     @project_area.destroy
 
     flash[:notice] = I18n.t (:notice_project_area_successful_deleted)
-    redirect_to organization_setting_path(organization_id, :anchor => 'tabs-project-areas')
+    redirect_to organization_setting_path(organization_id, :anchor => 'tabs-project-areas', partial_name: 'tabs_project_areas')
   end
 end

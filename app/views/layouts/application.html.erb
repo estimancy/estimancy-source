@@ -181,7 +181,7 @@
 
         <div class="page-header page-edition-header row">
           <!--<div class="container text-center" style="justify-content: flex-start;">-->
-            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
+            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem; top: 0em;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
             <div class="col-10">
               <h2>
                 <%= @project.to_s %>
@@ -191,7 +191,13 @@
                   </b>
                 </small>
               </h2>
-              <p><%= @project.description %></p>
+
+              <% unless @project.description.blank? %>
+                  <small>
+                    <%= @project.description %>
+                  </small>
+              <% end %>
+
             </div>
           <!--</div>-->
         </div>
@@ -201,7 +207,7 @@
 
         <div class="page-header page-edition-header row">
           <!--<div class="container text-center" style="justify-content: flex-start;">-->
-            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
+            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem; top: 0em;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
             <div class="col-8">
               <h2>
                 <%= @project.to_s %>
@@ -237,7 +243,7 @@
                 <% end %>
               </div>
             </div>
-            <div class="col-2" style="margin-right: 15px;">
+            <div class="col-2" style="white-space: nowrap; top: 2em; right: 1.2em;">
               <small class="tools float-right">
                 <% if current_module_project.show_results_view %>
                   <%= link_to I18n.t(:hide_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
@@ -255,7 +261,6 @@
         <div class="page-header page-edition-header">
           <div class="container text-center">
             <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 1rem;"><i class="material-icons">arrow_back</i><%= I18n.t(:back) %><br> <%=I18n.t(:alaliste) %></a>
-
             <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
           </div>
         </div>
@@ -265,9 +270,11 @@
           <li class="nav-item">
             <a class="nav-link <%= (controller_name == "demands") ? nil : "active" %>" href="<%= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>
           </li>
-          <li class="nav-item">
-            <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>"><%= I18n.t :demands %></a>
-          </li>
+          <% if @current_organization.allow_demand %>
+              <li class="nav-item">
+                <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>"><%= I18n.t :demands %></a>
+              </li>
+          <% end %>
         </ul>
       <% end %>
     <% end %>

@@ -1,0 +1,8 @@
+<!--<div id="tabs-select-columns-list" class="edition-page-group py-4"><span><%#= I18n.t('select_columns_list') %></span></div>-->
+<div style="min-height: 50px;">
+  <% if can? :show_projects_selected_columns, Organization %>
+      <%= render partial: "organizations/select_project_columns_to_display" %>
+  <% else %>
+      <div class="red_color"><%= I18n.t(:notice_cannot_view_selected_columns_list) %></div>
+  <% end %>
+</div>

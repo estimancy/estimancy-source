@@ -1,0 +1,94 @@
+<div id="tabs-budgets" class="edition-page-group py-4" style="color: #0099C9"><span style="background-color: #0099C9; color: white"><%= I18n.t('budget') %></span></div>
+<div>
+  <!--<div class="edition-bloc-left">-->
+    <!--<div class="edition-bloc-title row" style="flex: 1">-->
+      <!--<div class="col-6">-->
+        <!--<h1>-->
+          <!--<%#= I18n.t(:budget) %>-->
+        <!--</h1>-->
+      <!--</div>-->
+  <!--</div>-->
+
+  <% if can? :manage, Application %>
+      <%= link_to I18n.t('create_button'), new_organization_budget_path(@organization), :class => 'btn btn-primary' %>
+  <% end %>
+
+  <hr>
+
+  <table id="table_list_2" class="table table-list">
+    <thead>
+    <tr>
+      <th><%= I18n.t('name') %></th>
+      <th><%= "Montant" %></th>
+      <th><%= "Date début" %></th>
+      <th><%= "Date fin" %></th>
+      <th class="action"><%= I18n.t(:actions) %></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @organization.budgets.each do |b| %>
+        <% sum = 0.0 %>
+        <tr>
+          <td class="center"><%= b.name %></td>
+          <% unless b.sum.nil? %>
+              <td class="center"><%= b.sum %><%= " €" %></td>
+          <% else %>
+              <td> </td>
+          <% end %>
+          <td class="center"><%= b.start_date %></td>
+          <td class="center"><%= b.end_date %></td>
+          <td class="center">
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_budget_path(@organization, b), :class => 'icon-pencil', :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), organization_budget_path(@organization, b), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+          </td>
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+</div>
+
+<br><br><br>
+
+<div><h3><%= I18n.t('budget_type_management') %></h3></div>
+<!--<div id="tabs-budget-types" class="edition-page-group py-4" style="color: #0099C9"><span style="background-color: #0099C9; color: white"><%#= I18n.t('budget_types') %></span></div>-->
+
+
+<div>
+  <!--<div class="group_button">-->
+    <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn btn-primary' %>
+  <!--</div>-->
+
+  <hr>
+  <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+    <thead>
+    <tr>
+      <th><%= I18n.t(:name) %></th>
+      <th><%= I18n.t(:state) %></th>
+      <th><%= I18n.t(:color) %></th>
+      <th  class="action"><%= I18n.t(:actions) %></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @organization.budget_types.each do |budget_type| %>
+        <tr>
+          <td><%= budget_type.name %></td>
+          <td>
+            <% begin %>
+                <%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %>
+            <% rescue %>
+                -
+            <% end %>
+          </td>
+          <td><%= budget_type.color %></td>
+          <td class="center">
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_budget_type_path(@organization, budget_type), :class => 'material-icons', :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), organization_budget_type_path(@organization, budget_type), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+          </td>
+        </tr>
+    <% end %>
+    <%= render :partial => 'layouts/footer_table' %>
+    </tbody>
+  </table>
+</div>

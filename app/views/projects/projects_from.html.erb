@@ -49,7 +49,7 @@
                               remote: true) %>
                 <% else %>
                   <% if can_show_estimation?(project) %>
-                    <%= link_to(project.title, edit_project_path(project, :anchor => 'tabs-1'), :title => I18n.t('edit')) %>
+                    <%= link_to(project.title, edit_project_path(project, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties'), :title => I18n.t('edit')) %>
                   <% else %>
                     <%= project.title %>
                   <% end %>

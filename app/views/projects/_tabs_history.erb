@@ -1,0 +1,22 @@
+<%= simple_form_for(@project) do |f| %>
+
+
+    <%= hidden_field_tag :project_id, @project.id %>
+    <%= hidden_field_tag :organization_id, @organization.id %>
+
+    <% can_alter_model = can?(:manage_estimation_models, Project) %>
+
+  <% if controller.action_name == "edit" || controller.action_name == "update" %>
+
+    <div id="history" class="edition-page-group py-4"><span><%= I18n.t("label_project_history") %></span></div>
+    <div class="card card-content-bloc estimation-edition">
+      <div class="card-body">
+        <div class="edition-bloc-content">
+          <%= hidden_field_tag "current_showed_project_id", @project.id %>
+          <div id="project_tree_id" data-project_tree="<%= @projects_json_tree %>"></div>
+          <%= render :partial => "show_project_tree_history", :object => [@projects_json_tree] %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

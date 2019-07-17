@@ -250,6 +250,7 @@ Projestimate::Application.routes.draw do
 
     post 'generate_budget_report' => 'budgets#generate_budget_report', :as => 'generate_budget_report'
 
+    get 'estimation_settings' => 'organizations#estimation_settings', as: 'estimation_settings'
 
     get 'demand_dashboard' => 'demands#demand_dashboard'
     get 'budget_dashboard' => "organizations#budget_dashboard"

@@ -293,7 +293,7 @@ en:
 
   # header
   advanced_research: "ADVANCED RESEARCH"
-  advanced_research_estimates: "ADVANCED RESEARCH ON ESTIMATES"
+  advanced_research_estimates: "FIND QUOTATIONS"
   estimation_name, version_number, author : "Estimate name, version number, author"
   home_estimancy: "Home Estimancy"
   model: "Model"
