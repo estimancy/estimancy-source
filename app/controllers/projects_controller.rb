@@ -173,13 +173,13 @@ class ProjectsController < ApplicationController
             project_application = project.application.nil? ? nil : project.application.name
             project_project_area = project.project_area.nil? ? nil : project.project_area.name
             project_acquisition_category = project.acquisition_category.nil? ? nil : project.acquisition_category.name
-            project_platform_category = project.platform_category.nil? ? nil : project.platform_category.name
+            project_project_category = project.project_category.nil? ? nil : project.project_category.name
             project_provider = project.provider.nil? ? nil : project.provider.name
             project_estimation_status = project.estimation_status.nil? ? nil : project.estimation_status.name
 
             @guow_guw_types = Hash.new
 
-              project.guw_unit_of_works.each do |guow|
+            project.guw_unit_of_works.each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application.to_s)
@@ -193,9 +193,9 @@ class ProjectsController < ApplicationController
                 worksheet_cf.add_cell(i, 6, value)
               end
 
-              worksheet_cf.add_cell(i, 7, project_platform_category.to_s)
+              worksheet_cf.add_cell(i, 7, project_project_category.to_s)
               worksheet_cf.add_cell(i, 8, project_provider.to_s)
-              worksheet_cf.add_cell(i, 9, project.start_date)
+              worksheet_cf.add_cell(i, 9, project.start_date.to_s)
               worksheet_cf.add_cell(i, 10, project_estimation_status.to_s)
               worksheet_cf.add_cell(i, 11, guow.name)
 
@@ -287,7 +287,7 @@ class ProjectsController < ApplicationController
           project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
           project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
           project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
-          project_platform_category = mpre_project.platform_category.nil? ? nil : mpre_project.platform_category.name
+          project_project_category = mpre_project.project_category.nil? ? nil : mpre_project.project_category.name
           project_provider = mpre_project.provider.nil? ? nil : mpre_project.provider.name
           project_estimation_status = mpre_project.estimation_status.nil? ? nil : mpre_project.estimation_status.name
 
@@ -307,7 +307,7 @@ class ProjectsController < ApplicationController
               worksheet_wbs.add_cell(iii+1, 6, value)
             end
 
-            worksheet_wbs.add_cell(iii+1, 7, project_platform_category.nil? ? '' : project_platform_category)
+            worksheet_wbs.add_cell(iii+1, 7, project_project_category.nil? ? '' : project_project_category)
             worksheet_wbs.add_cell(iii+1, 8, project_provider.nil? ? '' : project_provider)
             worksheet_wbs.add_cell(iii+1, 9, mpre_project.start_date.to_s)
             worksheet_wbs.add_cell(iii+1, 10, @statuses_hash[mpre_project.id])
@@ -369,7 +369,7 @@ class ProjectsController < ApplicationController
             project_application = project.application.nil? ? nil : project.application.name
             project_project_area = project.project_area.nil? ? nil : project.project_area.name
             project_acquisition_category = project.acquisition_category.nil? ? nil : project.acquisition_category.name
-            project_platform_category = project.platform_category.nil? ? nil : project.platform_category.name
+            project_project_category = project.project_category.nil? ? nil : mpre_project.project_category.name
             project_provider = project.provider.nil? ? nil : project.provider.name
             project_estimation_status = project.estimation_status.nil? ? nil : project.estimation_status.name
 
@@ -387,9 +387,9 @@ class ProjectsController < ApplicationController
               worksheet_synt.add_cell(pi, 6, value)
             end
 
-            worksheet_synt.add_cell(pi, 7, project_platform_category)
+            worksheet_synt.add_cell(pi, 7, project_project_category)
             worksheet_synt.add_cell(pi, 8, project_provider)
-            worksheet_synt.add_cell(pi, 9, project.start_date)
+            worksheet_synt.add_cell(pi, 9, project.start_date.to_s)
             worksheet_synt.add_cell(pi, 10, project_estimation_status)
 
             worksheet_synt.add_cell(pi, 11, @total_effort[project.id].sum.to_f.round(2))
