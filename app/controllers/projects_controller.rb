@@ -310,7 +310,7 @@ class ProjectsController < ApplicationController
             worksheet_wbs.add_cell(iii+1, 7, project_project_category.to_s)
             worksheet_wbs.add_cell(iii+1, 8, project_provider.nil? ? '' : project_provider)
             worksheet_wbs.add_cell(iii+1, 9, mpre_project.start_date.to_s)
-            worksheet_wbs.add_cell(iii+1, 10, @statuses_hash[mpre_project.id])
+            worksheet_wbs.add_cell(iii+1, 10, project_estimation_status.to_s)
             worksheet_wbs.add_cell(iii+1, 11, mpre.wbs_activity_ratio.nil? ? nil : mpre.wbs_activity_ratio.name)
             worksheet_wbs.add_cell(iii+1, 12, mpre.name)
             worksheet_wbs.add_cell(iii+1, 13, mpre.tjm)
