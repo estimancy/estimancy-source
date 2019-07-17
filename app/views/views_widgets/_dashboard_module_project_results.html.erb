@@ -2,9 +2,9 @@
   <div class="d-flex align-items-center mt-4">
     <div class="tools">
       <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
-          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >add_box</i></a>
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
-          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >dashboard</i></a>
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >exposure</i></a><!-- add_box -->
       <% end %>
     </div>
   </div>

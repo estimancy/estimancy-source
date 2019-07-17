@@ -1,5 +1,8 @@
 <div class="col-2 pr-0">
   <% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
+  <% sorted_module_projects =  module_projects.sort_by { |i| i.display_order } %>
+  <% first_module_project =  sorted_module_projects.first %>
+
   <div id="modules-sidebar" class="py-6">
 
     <ul class="nav navbar-nav flex-column">
@@ -17,18 +20,19 @@
       <li class="nav-item">
         <div style="padding: inherit;">
           <div class="navbar-header">
-            <!--<a class="nav-link navbar-toggle blue_nav-link calculate_module <%#= (session[:active_nav_link] == "activate_module_project") ? 'active' : '' %>" href="#" data-toggle="collapse" data-target="#module_execution" aria-expanded="<%#= (session[:active_nav_link] == "activate_module_project") ? 'true' : 'false' %>" >-->
-            <a class="nav-link navbar-toggle blue_nav-link calculate_module <%= (session[:active_nav_link] == "activate_module_project") ? 'active' : '' %>" href="#" data-toggle="collapse" data-target="#module_execution" aria-expanded="true">
-                <span><%= I18n.t(:calculation_modules) %></span>
+            <!--<a class="nav-link navbar-toggle blue_nav-link calculate_module <%#= (session[:active_nav_link] == "activate_module_project") ? 'active' : '' %>" href="<%#= activate_module_project_path(first_module_project) %>" data-toggle="collapse" data-target="#module_execution" aria-expanded="true">-->
+            <a class="nav-link navbar-toggle blue_nav-link calculate_module <%= (session[:active_nav_link] == "activate_module_project") ? 'active' : '' %>" href="<%= activate_module_project_path(first_module_project) %>" data-toggle="<%= activate_module_project_path(first_module_project) %>" data-target="#module_execution" aria-expanded="true">
+              <span><%= I18n.t(:calculation_modules) %></span>
                 <i class="material-icons">arrow_left</i>
             </a>
           </div>
 
           <div class="container">
-            <div id="module_execution" class="collapse navbar-collapse">
+            <!--<div id="module_execution" class="collapse show navbar-collapse">-->
+            <div id="module_execution">
               <ul class="nav nav-pills flex-column">
-                <% module_projects.sort_by { |i| i.display_order }.each do |pmod| %>
-                    <li class="nav-item">
+                <% sorted_module_projects.each do |pmod| %>
+                    <li class="nav-item" title="<%= pmod.to_s %>">
                       <!--<a class="nav-link <%#= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%#= activate_module_project_path(pmod) %>">-->
                       <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">
                         <span><%= pmod.to_s.truncate(22) %></span>
@@ -52,7 +56,6 @@
 
 
     <!-- Original -->
-
     <!--<div class="title">-->
       <!--<a class="estimancy" href="<%#= activate_module_project_path(@project.module_projects.first) %>">-->
         <!--<b><%#= I18n.t(:dashboard) %></b>-->
@@ -91,6 +94,37 @@
             $('.calculate_module').addClass('active');
             //$(this).parent().addClass("active");
         }
+
+//        //On active le 1er module de la liste
+//        if($(this).hasClass("calculate_module")){
+//            $('.calculate_module').addClass('active');
+//
+//            alert ("test");
+//            //activate the first module_project
+//            $.ajax({
+//                url:"<%#= activate_module_project_path(first_module_project) %>",
+//                method: 'GET',
+//                data: {
+//                    module_project_id: "<%#= first_module_project.id %>"
+//                }
+//            })
+//        }
     })
+
+    // Show-Hide password
+//    $("a.calculate_module").on('click', function(event) {
+//        //event.preventDefault();
+//
+//        //alert ("test");
+//        //activate the first module_project
+//        $.ajax({
+//            //url:"<%#= activate_module_project_path(first_module_project) %>",
+//            url:"/activate_module_project",
+//            method: 'GET',
+//            data: {
+//                module_project_id: "<%#= first_module_project.id %>"
+//            }
+//        })
+//    });
 
 </script>
