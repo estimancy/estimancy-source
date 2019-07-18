@@ -119,6 +119,19 @@
           }
         }
 
+        &.no-before-after{
+          background-color: white;
+          color: $grey-extradark;
+
+          &:before{
+            display:none;
+          }
+          &:after{
+            display:none;
+          }
+        }
+
+
         span {
           display: block;
           position: relative;
@@ -157,4 +170,5 @@
       padding: 0.3rem;
     }
   }
+
 }

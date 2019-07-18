@@ -1,7 +1,7 @@
 <div class="col-2 pr-0">
   <% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
   <% sorted_module_projects =  module_projects.sort_by { |i| i.display_order } %>
-  <% first_module_project =  sorted_module_projects.first %>
+  <%# first_module_project =  sorted_module_projects.first %>
 
   <div id="modules-sidebar" class="py-6">
 
@@ -20,22 +20,20 @@
       <li class="nav-item">
         <div style="padding: inherit;">
           <div class="navbar-header">
-            <!--<a class="nav-link navbar-toggle blue_nav-link calculate_module <%#= (session[:active_nav_link] == "activate_module_project") ? 'active' : '' %>" href="<%#= activate_module_project_path(first_module_project) %>" data-toggle="collapse" data-target="#module_execution" aria-expanded="true">-->
-            <a class="nav-link navbar-toggle blue_nav-link calculate_module <%= (session[:active_nav_link] == "activate_module_project") ? 'active' : '' %>" href="<%= activate_module_project_path(first_module_project) %>" data-toggle="<%= activate_module_project_path(first_module_project) %>" data-target="#module_execution" aria-expanded="true">
-              <span><%= I18n.t(:calculation_modules) %></span>
+            <a class="nav-link navbar-toggle blue_nav-link calculate_module <%= (session[:active_nav_link] == "activate_module_project") ? 'active' : '' %>" href="#" data-toggle="collapse" data-target="#module_execution" aria-expanded="true">
+                <span><%= I18n.t(:calculation_modules) %></span>
                 <i class="material-icons">arrow_left</i>
             </a>
           </div>
 
           <div class="container">
-            <!--<div id="module_execution" class="collapse show navbar-collapse">-->
-            <div id="module_execution">
+            <div id="module_execution" class="collapse navbar-collapse">
               <ul class="nav nav-pills flex-column">
                 <% sorted_module_projects.each do |pmod| %>
                     <li class="nav-item" title="<%= pmod.to_s %>">
                       <!--<a class="nav-link <%#= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%#= activate_module_project_path(pmod) %>">-->
                       <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">
-                        <span><%= pmod.to_s.truncate(22) %></span>
+                        <span style="text-transform: none;"><%= pmod.to_s.truncate(22) %></span>
                         <i class="material-icons">arrow_left</i></a>
                     </li>
                 <% end %>
@@ -78,53 +76,36 @@
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
-    $('.nav .nav-link').each(function(){
-        if($(this).hasClass("active")){
-            if($(this).hasClass("calculate_module")) {
-                $('#module_execution').addClass('show');
+    $(document).ready(function(){
+
+        $('.nav .nav-link').each(function(){
+            if($(this).hasClass("active")){
+                if($(this).hasClass("calculate_module")) {
+                    $('#module_execution').addClass('show');
+                }
             }
-        }
-    })
+        })
 
-    $('.nav .nav-link').click(function(){
-        $('.nav .nav-link').removeClass('active');
-        $(this).addClass('active');
+        //$('.nav .nav-link').click(function(){
+        $('.nav .nav-link').on('click', function() {
 
-        if($(this).hasClass("module_project")){
-            $('.calculate_module').addClass('active');
-            //$(this).parent().addClass("active");
-        }
+            if ($(this).hasClass('calculate_module')) {
+                if ($(this).hasClass('active')){
+                    $(this).addClass('active');
+                }
+                else{
+                    $(this).removeClass('active');
+                    $(this).addClass('no-before-after');
+                }
+            }
+            else{
+                $('.nav .nav-link').removeClass('active');
+                $(this).addClass('active');
+            }
 
-//        //On active le 1er module de la liste
-//        if($(this).hasClass("calculate_module")){
-//            $('.calculate_module').addClass('active');
-//
-//            alert ("test");
-//            //activate the first module_project
-//            $.ajax({
-//                url:"<%#= activate_module_project_path(first_module_project) %>",
-//                method: 'GET',
-//                data: {
-//                    module_project_id: "<%#= first_module_project.id %>"
-//                }
-//            })
-//        }
-    })
-
-    // Show-Hide password
-//    $("a.calculate_module").on('click', function(event) {
-//        //event.preventDefault();
-//
-//        //alert ("test");
-//        //activate the first module_project
-//        $.ajax({
-//            //url:"<%#= activate_module_project_path(first_module_project) %>",
-//            url:"/activate_module_project",
-//            method: 'GET',
-//            data: {
-//                module_project_id: "<%#= first_module_project.id %>"
-//            }
-//        })
-//    });
-
+            if($(this).hasClass("module_project")){
+                $('.calculate_module').addClass('active');
+            }
+        })
+    });
 </script>
