@@ -243,15 +243,17 @@
                 <% end %>
               </div>
             </div>
-            <div class="col-2" style="white-space: nowrap; top: 2em; right: 1.2em;">
-              <small class="tools float-right">
-                <% if current_module_project.show_results_view %>
-                  <%= link_to I18n.t(:hide_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
-                <% else %>
-                  <%= link_to I18n.t(:show_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
-                <% end %>
-              </small>
-            </div>
+            <% if module_project.id != @initialization_module_project.id %>
+                <div class="col-2" style="white-space: nowrap; top: 2em; right: 1.2em;">
+                  <small class="tools float-right">
+                    <% if module_project.show_results_view %>
+                      <%= link_to I18n.t(:hide_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+                    <% else %>
+                      <%= link_to I18n.t(:show_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+                    <% end %>
+                  </small>
+                </div>
+            <% end %>
         </div>
 
       <!--</div>-->
