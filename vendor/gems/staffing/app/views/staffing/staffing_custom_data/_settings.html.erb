@@ -63,7 +63,7 @@
 
   <%= simple_form_for @staffing_custom_data, url: staffing.save_data_path(custom_data: @staffing_custom_data.id), method: :post do |f| %>
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
-      <%= @module_project %>
+      <span class="no_uppercase"><%= @module_project %></span>
       <div class="edition-bloc-tools">
         <% if can? :execute_estimation_plan, @project %>
           <button id="submit_staffing" name="actuals_based_on[custom]" type="submit" class="btn btn-estimancy btn-secondary float-right">

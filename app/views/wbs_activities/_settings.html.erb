@@ -168,7 +168,7 @@
   <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
-      <%= @wbs_activity.name %>
+      <span class="no_uppercase"><%= @wbs_activity.name %></span>
       <div class="edition-bloc-tools">
         <% if can?(:execute_estimation_plan, @project) %>
           <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "btn btn-primary" %>

@@ -7,8 +7,11 @@
 <div class="<%= (current_module_project.pemodule.alias == "initialization") ? 'col-10' : "#{current_module_project.show_results_view ? 'col-8' : 'col-10'}" %> pt-5 pr-0 d-flex flex-column" data-spy="scroll" data-target="#properties-sidebar" data-offset="0">
 
   <% if current_module_project.pemodule.alias != "initialization" %>
+    <div id="bashboard" class="edition-page-group py-4"><span><%= I18n.t(:calculation_modules) %></span></div>
     <%= render(:partial => 'projects/setting_module') %>
   <% else %>
+
+      <div id="bashboard" class="edition-page-group py-4"><span><%= I18n.t(:dashboard) %></span></div>
       <div class="mb-4">
         <div class="widgets-list">
 

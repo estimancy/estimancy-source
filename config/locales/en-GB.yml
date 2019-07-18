@@ -1912,3 +1912,4 @@ en-gb:
   can_not_access_the_estimates_of_an_image_organization: "You can not access the estimates of an image organization"
   not_authorized_to_access_this_organization: "You are not authorized to access this organization"
   account_associated_with_external_authentication: "This account is associated with external authentication"
+  allowed_statuses: "Allowed statuses"
