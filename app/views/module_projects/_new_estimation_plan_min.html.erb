@@ -77,7 +77,7 @@
 <script>
     $(document).ready(function(){
 
-        $('.nav .nav-link').each(function(){
+        $('#modules-sidebar .nav .nav-link').each(function(){
             if($(this).hasClass("active")){
                 if($(this).hasClass("calculate_module")) {
                     $('#module_execution').addClass('show');
@@ -86,7 +86,7 @@
         })
 
         //$('.nav .nav-link').click(function(){
-        $('.nav .nav-link').on('click', function() {
+        $('#modules-sidebar .nav .nav-link').on('click', function() {
 
             if ($(this).hasClass('calculate_module')) {
                 if ($(this).hasClass('active')){
@@ -98,7 +98,7 @@
                 }
             }
             else{
-                $('.nav .nav-link').removeClass('active');
+                $('#modules-sidebar .nav .nav-link').removeClass('active');
                 $(this).addClass('active');
             }
 
