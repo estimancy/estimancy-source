@@ -30,8 +30,9 @@
         text-transform: uppercase;
         color: $grey-extradark;
         white-space: normal;
-        padding: 1.5rem 0; //padding: 2rem 0;
+        padding: 1rem 0.8rem; //padding: 2rem 0;
         position: relative;
+        z-index: 100;
 
         &:active, &:focus, &.active {
           background-color: $brand-fifth-color;
@@ -87,8 +88,9 @@
         text-transform: uppercase;
         color: $grey-extradark;
         white-space: normal;
-        padding: 1.5rem 0; //padding: 2rem 0;
+        padding: 1rem 0.8rem; //padding: 2rem 0;
         position: relative;
+        z-index: 100;
 
         &:active, &:focus, &.active {
           background-color:  #0099C9; //$brand-fifth-color;
