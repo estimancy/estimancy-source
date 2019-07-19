@@ -1,96 +1,172 @@
-<%= simple_form_for(@views_widget, is_label_widget: true) do |f| %>
-  <%= f.error_notification %>
-  <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
-  <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
-  <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
-  <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
-  <%= f.input :is_kpi_widget, as: :hidden, :input_html => { value: true } %>
-  <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
 
-  <%= f.input :name %>
-  <%= f.input :show_name, label: I18n.t(:show_name) %>
-  <%= f.input :position, label: I18n.t(:display_order), class: "form-control" %>
-  <%= f.input :estimation_status_id, as: :select, label: "Allowed Statuses", collection: @current_organization.estimation_statuses %>
+    <%= simple_form_for(@views_widget, is_label_widget: true) do |f| %>
 
-  <table>
-    <% ["A", "B", "C", "D", "E"].each do |letter| %>
-        <tr>
-          <td>
-            <p style="margin: 3px;">
-              Variable <%= letter.upcase %>
-            </p>
-          </td>
-        </tr>
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
 
-        <tr>
-          <td>
-            <%
-               unless @views_widget.equation[letter].nil?
-                 mp_id = @views_widget.equation[letter].last
-                 unless mp_id.nil?
-                   mpl = ModuleProject.find(mp_id)
-                 end
-               end
-            %>
-            <%= select_tag "module_project[#{letter}]", options_for_select(@project.module_projects.map{|i| [i, i.id]}, selected: mp_id),  ### selected: mpl.nil? ? '' : mpl.id),
-                           view_widget_id: @views_widget.id, letter: letter, class: " module_project_variables form-control" %>
-          </td>
-          <td>
-            <%= select_tag "#{letter}", options_for_select(mpl.nil? ? [] : mpl.get_module_project_estimation_values.map{|i| ["#{i} (#{i.in_out.capitalize})", i.id]},
-                                                           selected: @views_widget.equation[letter].nil? ? '' : @views_widget.equation[letter].first), class: " form-control" %>
-          </td>
-        </tr>
-    <% end %>
-  </table>
+            <%= f.error_notification %>
+            <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
+            <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+            <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+            <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
+            <%= f.input :is_kpi_widget, as: :hidden, :input_html => { value: true } %>
+            <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
 
-      <table>
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                  <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                </div>
+              </div>
+            </div>
 
-        <tr>
-          <td> <h5>Formule</h5></td>
-          <td> <h5><%= I18n.t(:kpi_unit) %></h5></td>
-          <td> <h5><%= I18n.t :fields %></h5></td>
-        </tr>
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                  <label class="mdl-textfield__label" for="position"><%= I18n.t(:position) %></label>
+                </div>
+              </div>
 
-        <tr>
-          <td><%= text_field_tag "formula", @views_widget.nil? ? '' : @views_widget.equation["formula"], class: "formula_margin_top" %></td>
-          <td><%= f.input :kpi_unit, label: false, input_html: { class: "kpi_margin_top"} %> <%#= text_field_tag "kpi_unit", "" %></td>
-          <td>
-            <% selected = @views_widget.project_fields.first %>
-            <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None",
-                                        disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?),
-                           class: "field_margin_top"%>
-          </td>
-        </tr>
+              <div class="col-6" style="margin-top: 1.5em;">
+                <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
+                <label class="mdl-textfield__label" for="show_name" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:show_name) %></label>
+              </div>
+            </div>
 
-      </table>
+            <!--<div class="form-row">-->
+                <!--<div class="col-6">-->
+                  <!--<div class="mdl-textfield mdl-js-textfield mdl-textfield&#45;&#45;floating-label">-->
+                    <!--<%#= f.input :estimation_status_id, as: :select, label: false, collection: @current_organization.estimation_statuses, :input_html => { :class => 'mdl-textfield__input form-control' } %>-->
+                    <!--<label class="mdl-textfield__label" for="estimation_value_id"><%#= I18n.t(:allowed_statuses) %></label>-->
+                  <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
 
-      <table>
-        <tr>
-          <td>
-            <% if @views_widget.new_record? %>
-                <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
-            <% else %>
-                <%= f.input :color, label: I18n.t(:status_color) %>
+            <% ["A", "B", "C", "D", "E"].each do |letter| %>
+
+                <div class="form-row">
+                  <div class="col-3">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <p> Variable <%= letter.upcase %></p>
+                    </div>
+                  </div>
+
+                  <div class="col-4">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <% unless @views_widget.equation[letter].nil?
+                           mp_id = @views_widget.equation[letter].last
+                           unless mp_id.nil?
+                             mpl = ModuleProject.find(mp_id)
+                           end
+                      end %>
+                      <%= select_tag "module_project[#{letter}]", options_for_select(@project.module_projects.map{|i| [i, i.id]}, selected: mp_id),  ### selected: mpl.nil? ? '' : mpl.id),
+                                     view_widget_id: @views_widget.id, letter: letter, class: " module_project_variables form-control" %>
+                    </div>
+                  </div>
+
+                  <div class="col-4">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= select_tag "#{letter}", options_for_select(mpl.nil? ? [] : mpl.get_module_project_estimation_values.map{|i| ["#{i} (#{i.in_out.capitalize})", i.id]},
+                                                 selected: @views_widget.equation[letter].nil? ? '' : @views_widget.equation[letter].first), class: " form-control" %>
+                    </div>
+                  </div>
+                </div>
             <% end %>
-          </td>
-          <td>
-            <!-- Color is using the JS Spectrum library -->
-            <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
-          </td>
-          <td> <div id="view_icon_class_image" class="span1"></div></td>
-        </tr>
-      </table>
 
-    <div class="row-fluid">
-      <div class="col-5">
-        <% if can?(:alter_estimation_plan, @project)%>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-        <% end %>
-        <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
-      </div>
-    </div>
+            <br>
+            <hr>
+
+            <div class="form-row">
+              <div class="col-4">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <h6><b>Formule</b></h6>
+                </div>
+              </div>
+
+              <div class="col-4">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <h6><b><%= I18n.t(:kpi_unit) %></b></h6>
+                </div>
+              </div>
+
+              <div class="col-4">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <h6><b><%= I18n.t(:fields) %></b></h6>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="form-row">
+              <div class="col-4">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= text_field_tag "formula", @views_widget.nil? ? '' : @views_widget.equation["formula"], class: "formula_margin_top" %>
+                </div>
+              </div>
+
+              <div class="col-4">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :kpi_unit, label: false, input_html: { class: "kpi_margin_top"} %> <%#= text_field_tag "kpi_unit", "" %>
+                </div>
+              </div>
+
+              <div class="col-4">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <% selected = @views_widget.project_fields.first %>
+                  <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None",
+                                 disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?), class: "field_margin_top"%>
+                </div>
+              </div>
+            </div>
+
+            <br>
+            </hr>
+
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
+                  <% if @views_widget.new_record? %>
+                      <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "mdl-textfield__input form-control"} %>
+                  <% else %>
+                      <%= f.input :color, label: false, input_html: { class: "mdl-textfield__input form-control"} %>
+                  <% end %>
+
+                </div>
+              </div>
+
+              <div class="col-4">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <!-- Color is using the JS Spectrum library -->
+                  <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort(), label: I18n.t(:icon), input_html: { class: 'views_widget_color'} %>
+                </div>
+              </div>
+
+              <div class="col-2">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <i id="view_icon_class_image" class='material-icons'> </i>
+                </div>
+              </div>
+            </div>
+
+
+            <div class="row-fluid">
+              <div class="col-6">
+                <% if can?(:alter_estimation_plan, @project)%>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                <% end %>
+                <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+              </div>
+            </div>
+          </div>
+        </div>
+    <% end %>
   </div>
-<% end %>
+</section>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
 <script>

@@ -116,9 +116,9 @@
               <span class="text-center criteria_label_<%= guow.id %>">
                 <% counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
                 <% if counting.empty? %>
-                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                  <%= link_to raw("<i class='material-icons'>settings</i>"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
                 <% else %>
-                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                  <%= link_to raw("<i class='material-icons'>settings</i>"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
                 <% end %>
               </span>
             <% else %>

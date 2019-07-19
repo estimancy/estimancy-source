@@ -1,107 +1,167 @@
-<%= simple_form_for(@views_widget, :remote => true) do |f| %>
-  <%= f.error_notification %>
-  <div class="form-inputs">
-    <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
-    <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
-    <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+<section class="card card-content-bloc estimancy-form">
 
-    <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
+    <%= simple_form_for(@views_widget, :remote => true) do |f| %>
+      <%= f.error_notification %>
 
-    <div class="well well-rounded" style="border-width: 1px; margin-bottom: 10px; padding-bottom: 10px;">
-        <table>
-          <tr>
-            <td><%= f.input :name, label: I18n.t(:name) %></td>
-            <td>
-              <label class="checkbox"></label>
-              <%= f.input :show_name, label: I18n.t(:show_name) %>
-              <%= f.input :position, label: I18n.t(:position) %>
-            </td>
-          </tr>
-          <tr>
-            <!--<td><%#= f.association :pbs_project_element, label: I18n.t(:associate_pbs_element), collection: @project_pbs_project_elements, selected: @views_widget.pbs_project_element.nil? ? '' : @views_widget.pbs_project_element.id, include_blank: false, input_html:{class: "inline_attr"}  %></td>-->
-            <td>
-              <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                <%= f.association :module_project, label: "Modules", collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", input_html:{class: "inline_attr"} %>
-              <% else %>
-                <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr"} %>
+      <div class="card-body">
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+
+              <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
+              <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+              <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+              <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                    <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                    <label class="mdl-textfield__label" for="position"><%= I18n.t(:position) %></label>
+                  </div>
+                </div>
+
+                <div class="col-6" style="margin-top: 1.5em;">
+                  <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
+                  <label class="mdl-textfield__label" for="show_name" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:show_name) %></label>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                          <%= f.association :module_project, label: false, collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
+                      <% else %>
+                          <%= f.association :module_project, label: false, collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
+                      <% end %>
+                      <label class="mdl-textfield__label" for="module_project"><%= I18n.t(:module) %></label>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: false, input_html: {class: "inline_attr mdl-textfield__input form-control"}, include_blank: false %>
+                    <label class="mdl-textfield__label" for="estimation_value_id"><%= I18n.t(:associated_attribute) %></label>
+                  </div>
+                </div>
+              </div>
+
+              <br>
+              <!--<hr>-->
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => false, include_blank: false, input_html:{class: "inline_attr mdl-textfield__input form-control"} %></td>
+                    <label class="mdl-textfield__label" for="widget_type"><%= I18n.t(:widget_type) %></label>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
+                    <% if @views_widget.new_record? %>
+                        <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "color mdl-textfield__input form-control"} %>
+                    <% else %>
+                        <%= f.input :color, label: false, input_html: { class: "color mdl-textfield__input form-control"}  %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                  <div class="col-6">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <label><%= I18n.t :fields %></label>
+                      <% selected = @views_widget.project_fields.first %>
+                      <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?), input_html:{class: "mdl-textfield__input form-control"} %>
+                    </div>
+                  </div>
+
+                <div class="col-4">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <!--<label class="checkbox" style="margin-top: -9px;"></label>-->
+                    <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon), input_html:{class: "mdl-textfield__input form-control"} %>
+                  </div>
+                </div>
+                <div class="col2"><i id="view_icon_class_image" class='material-icons'> </i></div>
+              </div>
+
+              <br>
+              <hr>
+
+              <div class="form-row">
+                <div class="col-12">
+                  <h7><%= I18n.t(:min_value_message) %></h7>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :min_value, as: :integer, label: false, :input_html => { value: @min_value, placeholder: I18n.t(:min_value_message_placeholder), class: "mdl-textfield__input form-control" } %>
+                    <label class="mdl-textfield__label" for="min_value"><%= I18n.t(:val_min) %></label>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :max_value, as: :integer, label: false, :input_html => { value: @max_value, placeholder: I18n.t(:max_value_message_placeholder), class: "mdl-textfield__input form-control" } %>
+                    <label class="mdl-textfield__label" for="max_value"><%= I18n.t(:val_max) %></label>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :validation_text, as: :string, label: false, :input_html => { value: @views_widget.validation_text }, input_html:{class: "mdl-textfield__input form-control"}  %>
+                    <label class="mdl-textfield__label" for="validation_text"><%= I18n.t(:validation_text) %></label>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :estimation_status_id, as: :select, collection: @current_organization.estimation_statuses, label: false, input_html:{class: "mdl-textfield__input form-control"}  %>
+                    <label class="mdl-textfield__label" for="estimation_status_id"><%= I18n.t(:associated_status) %></label>
+                  </div>
+                </div>
+              </div>
+
+              <br>
+
+              <div class="form-row">
+                <div class="col-12">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :show_tjm, as: :boolean, label: I18n.t(:show_tjm), input_html: {class: 'inline_attr'} %>
+                    <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
+                    <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio), disabled: !@module_project.wbs_activity %>
+                    <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="actions-tabs">
+              <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? && (@views_widget.min_value < @views_widget.max_value)) %>
+                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
               <% end %>
-            </td>
-            <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html:{class: "inline_attr input-xxl"}, include_blank: false %></td>
-          </tr>
-        </table>
-    </div>
-    <div class="well well-rounded" style="border-width: 1px; margin-bottom: 10px; padding-bottom: 10px;">
-      <table>
-        <tr>
-          <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
-          <td>
-            <% if @views_widget.new_record? %>
-              <%= f.input :color, label: I18n.t(:status_color), input_html: { value: "blanchedalmond" } %>
-            <% else %>
-              <%= f.input :color, label: I18n.t(:status_color) %>
-            <% end %>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label><%= I18n.t :fields %></label>
-            <% selected = @views_widget.project_fields.first %>
-            <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
-          </td>
-
-          <td>
-            <label class="checkbox" style="margin-top: -9px;"></label>
-            <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
-          </td>
-          <td><div id="view_icon_class_image"></div></td>
-        </tr>
-
-        <tr>
-          <td colspan="2">
-            <b>
-              <%= I18n.t(:min_value_message) %>
-            </b>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <%= f.input :min_value, as: :integer, label: I18n.t(:val_min), :input_html => { value: @min_value, placeholder: I18n.t(:min_value_message_placeholder) } %>
-          </td>
-          <td>
-            <%= f.input :max_value, as: :integer, label: I18n.t(:val_max), :input_html => { value: @max_value, placeholder: I18n.t(:max_value_message_placeholder) } %>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <%= f.input :validation_text, as: :string, label: I18n.t(:validation_text), :input_html => { value: @views_widget.validation_text } %>
-          </td>
-        </tr>
-        <tr>
-          <td colspan="2">
-            <%= f.input :estimation_status_id, as: :select, collection: @current_organization.estimation_statuses, label: "Associated Status" %>
-          </td>
-        </tr>
-        <tr>
-          <td>
-            <label class="checkbox"></label>
-            <%= f.input :show_tjm, as: :boolean, label: I18n.t(:show_tjm), input_html: {class: 'inline_attr'} %>
-            <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
-            <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio), disabled: !@module_project.wbs_activity %>
-          </td>
-        </tr>
-      </table>
-      <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
-    </div>
-  </div>
-  
-  <div class="actions-tabs">
-    <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? && (@views_widget.min_value < @views_widget.max_value)) %>
-        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+            </div>
+          </div>
+      </div>
     <% end %>
-    <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
-  </div>
-<% end %>
-
+</section>
 <script>
 
     // Update the view_widget show_min_max attribute according to the selected widget_type
