@@ -134,13 +134,11 @@
 
                   <div class="form-row">
                     <div class="col-8">
-                      <%#= f.input :super_admin, :label => I18n.t(:is_super_admin), as: :boolean, hint: I18n.t(:text_help_super_admin), :input_html => {:class => ''} %>
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <% if current_user.super_admin? %>
-                          <%= f.input :super_admin, :label => false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'} %>
-                        <% end %>
+                        <%= f.input :super_admin, :label => false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs', disabled: !current_user.super_admin? } %>
                         <label class="mdl-textfield__label" for="super_admin" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:is_super_admin) %></label>
-                        <p class="mdc-floating-label"><%= I18n.t(:text_help_super_admin) %></p>
+                        <br>
+                        <label class="mdc-floating-label"><%= I18n.t(:text_help_super_admin) %></label>
                       </div>
                     </div>
                   </div>
