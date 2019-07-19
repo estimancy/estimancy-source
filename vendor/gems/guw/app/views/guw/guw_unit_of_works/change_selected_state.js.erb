@@ -1,23 +1,40 @@
 <%
-  @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: @organization.id,
-                                                       project_id: @project.id,
-                                                       module_project_id: @module_project.id,
-                                                       pbs_project_element_id: @component.id)
-
-  @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-  @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+  organization_id = @guw_model.organization_id
+  current_mp = current_module_project
+  @module_positions = ModuleProject.where(organization_id: organization_id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+  @module_positions_x = @project.module_projects.where(organization_id: organization_id).order(:position_x).all.map(&:position_x).max
+  @guw_types = @guw_model.guw_types.where(organization_id: organization_id)
+  @guw_type = @guw_unit_of_work.guw_type
 %>
 
-$(".selected_of_unit_of_work").html("<%= @selected_of_unit_of_works %>");
-$(".<%= @group.id %>_selected").html("<%= @group_selected_of_unit_of_works %>");
+<% @hash_guw_outputs = {} %>
+<% Guw::GuwOutput.where(organization_id: organization_id, guw_model_id: @guw_model.id,
+                        name: @guw_model.orders.map(&:first)).each do |guw_output| %>
+<% @hash_guw_outputs[guw_output.name] = guw_output %>
+<% end %>
 
+<% @hash_guw_coefficients = {} %>
+<% Guw::GuwCoefficient.where(organization_id: organization_id, guw_model_id: @guw_model.id,
+                             name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
+<% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
+<% end %>
+
+<% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
+<% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                              guw_model_id: @guw_model.id,
+                                              project_id: current_mp.project_id,
+                                              module_project_id: current_mp.id).each do |gceuw| %>
+<% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
+<% end %>
+
+$("tr#<%= @guw_unit_of_work.id %>").remove();
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
-<% @guw_outputs = @guw_model.guw_outputs.where(organization_id: @current_organization.id) %>
+<% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
 <% @guw_outputs_with_subtotal = @guw_outputs.where(allow_subtotal: true) %>
 
-<% current_module_project.guw_unit_of_work_groups.each do |uowg| %>
-  $(".header_guw").html("<%= j(render("guw/guw_unit_of_works/header_guw", { uowg: uowg } )) %>");
+<% current_mp.guw_unit_of_work_groups.each do |uowg| %>
+$(".header_guw_<%= uowg.id %>").html("<%= j(render("guw/guw_unit_of_works/header_guw", { uowg: uowg } )) %>");
 <% end %>
 
 var gridster = [];
