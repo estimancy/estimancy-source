@@ -14,9 +14,8 @@ $(".<%= @group.id %>_selected").html("<%= @group_selected_of_unit_of_works %>");
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
 <% @guw_outputs = @guw_model.guw_outputs.where(organization_id: @current_organization.id) %>
-<% @uowg_guw_unit_of_works = guw_unit_of_work_group.guw_unit_of_work_groups %>
 <% @guw_outputs_with_subtotal = @guw_outputs.where(allow_subtotal: true) %>
-<% @selected_uowg_guw_unit_of_works = guw_unit_of_work_group.guw_unit_of_works.where(selected: true) %>
+
 <% current_module_project.guw_unit_of_work_groups.each do |uowg| %>
   $(".header_guw").html("<%= j(render("guw/guw_unit_of_works/header_guw", { uowg: uowg } )) %>");
 <% end %>

@@ -1,4 +1,7 @@
 <% uowg = local_assigns[:uowg] %>
+<% @uowg_guw_unit_of_works = uowg.guw_unit_of_works %>
+<% @selected_uowg_guw_unit_of_works = uowg.guw_unit_of_works.where(selected: true) %>
+
 <div class="row-fluid">
   <div class="span3">
     <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse<%=uowg.id%>" id="accordion<%=uowg.id%>">
