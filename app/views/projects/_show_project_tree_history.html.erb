@@ -27,9 +27,8 @@
     </div>
 
     <br>
-    <br>
     <div>
-      <%= @project.status_comment %>
+      <%= simple_format(@project.status_comment.to_s) %>
     </div>
   </div>
   <div id="log">
