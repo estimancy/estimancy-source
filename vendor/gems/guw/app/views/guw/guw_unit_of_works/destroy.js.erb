@@ -34,7 +34,7 @@ $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widget
 <% @guw_outputs_with_subtotal = @guw_outputs.where(allow_subtotal: true) %>
 
 <% current_mp.guw_unit_of_work_groups.each do |uowg| %>
-  $(".header_guw").html("<%= j(render("guw/guw_unit_of_works/header_guw", { uowg: uowg } )) %>");
+  $(".header_guw_<%= uowg.id %>").html("<%= j(render("guw/guw_unit_of_works/header_guw", { uowg: uowg } )) %>");
 <% end %>
 
 var gridster = [];

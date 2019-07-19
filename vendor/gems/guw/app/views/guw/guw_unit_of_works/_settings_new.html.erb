@@ -185,7 +185,7 @@
       <%# @uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
       <%# @uowg_guw_unit_of_works = uowg.guw_unit_of_work_lines %>
 
-      <div class="accordion-heading header_guw" style="padding:5px;">
+      <div class="accordion-heading header_guw_<%= uowg.id %>" style="padding:5px;">
         <%= render "guw/guw_unit_of_works/header_guw", { :uowg => uowg } %>
       </div>
 
