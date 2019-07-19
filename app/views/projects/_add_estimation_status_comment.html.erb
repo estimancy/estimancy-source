@@ -47,31 +47,36 @@
   </p>
 
   <span>
-      <% unless @project.nil? %>
-    <% @project_id = @project.id %>
-      <% StatusHistory.where(project_id: @project.id).each do |history| %>
-      <%= history.change_date.strftime("%d/%m/%Y à %H:%M") %> :
-        <%= history.action %>
-        <% if "à partir".in?(history.action) %>
-        <% @model_id = @project.original_model_id %>
-          <% @model = Project.find(@model_id) %>
-          "<%= @model %>"
-          <%= history.comments %> par <%= history.user %>
-      <% elsif "Changement de statut".in?(history.action)%>
-          de
-          "<%= history.origin %>"
-          à
-          "<%= history.target %>"
-          <%= history.comments %> par <%= history.user %>
-      <% elsif "Version changée".in?(history.action)%>
-        de
-        "<%= history.old_version_number %>"
-        à
-          <%= history.new_version_number %>
-          <%= history.comments %> par <%= history.user %>
-      <% end %>
-        <br>
-      <% end %>
-    <% end %>
+     <%= simple_format(@text_comments.to_s) %>
   </span>
+
+  <!--<span>-->
+    <!--<%# unless @project.nil? %>-->
+      <!--<%# @project_id = @project.id %>-->
+      <!--<%# StatusHistory.where(project_id: @project.id).each do |history| %>-->
+      <%#= history.change_date.strftime("%d/%m/%Y à %H:%M") %> :
+        <!--<%#= history.action %>-->
+        <!--<%# if "à partir".in?(history.action) %>-->
+        <!--<%# @model_id = @project.original_model_id %>-->
+          <!--<%# @model = Project.find(@model_id) %>-->
+          <!--"<%#= @model %>"-->
+          <!--<%#= history.comments %> par <%#= history.user %>-->
+      <!--<%# elsif "Changement de statut".in?(history.action)%>-->
+          <!--de-->
+          <!--"<%#= history.origin %>"-->
+          <!--à-->
+          <!--"<%#= history.target %>"-->
+          <!--<%#= history.comments %> par <%#= history.user %>-->
+      <!--<%# elsif "Version changée".in?(history.action)%>-->
+        <!--de-->
+        <!--"<%#= history.old_version_number %>"-->
+        <!--à-->
+          <!--<%#= history.new_version_number %>-->
+          <!--<%#= history.comments %> par <%#= history.user %>-->
+      <!--<%# end %>-->
+        <!--<br>-->
+      <!--<%# end %>-->
+    <!--<%# end %>-->
+  <!--</span>-->
+
 <% end %>
