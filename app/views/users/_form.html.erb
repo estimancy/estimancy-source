@@ -110,29 +110,6 @@
                   </div>
 
                   <div class="form-row">
-                    <div class="col-3">
-                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <% if current_user.super_admin? %>
-                          <%= f.input :subscription_end_date, :as => :string, :label => false,
-                                      :input_html => { :class => 'date-picker mdl-textfield__input form-control',
-                                                       :value => @user.subscription_end_date.nil? ? I18n.l((Time.now + 1.year).to_date) : I18n.l(@user.subscription_end_date.to_date) } %>
-                        <% end %>
-                        <label class="mdl-textfield__label" for="subscription_end_date"><%= I18n.t(:subscription_end_date) %></label>
-                      </div>
-                    </div>
-
-                    <div class="col-3">
-                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <% if @user.locked_at.nil? %>
-                          <%= I18n.t(:unlocked) %>
-                        <% else %>
-                          <%= "#{I18n.t(:locked_at)} #{@user.locked_at}" %>
-                        <% end %>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div class="form-row">
                     <div class="col-8">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :super_admin, :label => false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs', disabled: !current_user.super_admin? } %>
@@ -223,17 +200,16 @@
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :created_at, :label => false do %>
-                          <%= f.text_field :created_at, :value => (I18n.l(@user.created_at) unless @user.created_at.nil?), :disabled => true, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                          <%= f.text_field :created_at, :value => (I18n.l(@user.created_at) unless @user.created_at.nil?), :disabled => true, :class => 'form-control' %>
                           <label class="mdl-textfield__label" for="created_at" style="margin-top: -30px;"><%= I18n.t(:created_at) %></label>
                         <% end %>
-
                       </div>
                     </div>
 
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :updated_at, :label => false do %>
-                          <%= f.text_field :updated_at, :value => (I18n.l(@user.updated_at) unless @user.updated_at.nil?), :disabled => true, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                          <%= f.text_field :updated_at, :value => (I18n.l(@user.updated_at) unless @user.updated_at.nil?), :disabled => true, :class => 'form-control' %>
                           <label class="mdl-textfield__label" for="updated_at" style="margin-top: -30px;"><%= I18n.t(:updated_at) %></label>
                         <% end %>
                       </div>
@@ -243,8 +219,7 @@
                   <div class="form-row">
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <%#= I18n.t('subscription_end_date') %>
-                        <%= text_field_tag "user_subs_end_date", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date.to_date), :disabled => true, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                        <%= text_field_tag "user[subscription_end_date]", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date.to_date), :disabled => !current_user.super_admin, :class => 'form-control date-picker' %>
                         <label class="mdl-textfield__label" for="user_subs_end_date" style="margin-top: -30px;"><%= I18n.t(:subscription_end_date) %></label>
                       </div>
                     </div>
@@ -252,10 +227,9 @@
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :last_login, :label => false do %>
-                          <%= f.text_field :last_login, :value => (I18n.l(@user.last_login) unless @user.last_login.nil?), :disabled => true %>
+                          <%= f.text_field :last_login, :value => (I18n.l(@user.last_login) unless @user.last_login.nil?), :disabled => true, :class => 'form-control' %>
                           <label class="mdl-textfield__label" for="last_login" style="margin-top: -30px;"><%= I18n.t(:last_login) %></label>
                         <% end %>
-
                       </div>
                     </div>
                   </div>
