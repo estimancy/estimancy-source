@@ -219,7 +219,7 @@
                   <div class="form-row">
                     <div class="col-3">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <%= text_field_tag "user_subs_end_date", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date.to_date), :disabled => !current_user.super_admin, :class => 'form-control date-picker' %>
+                        <%= text_field_tag "user[subscription_end_date]", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date.to_date), :disabled => !current_user.super_admin, :class => 'form-control date-picker' %>
                         <label class="mdl-textfield__label" for="user_subs_end_date" style="margin-top: -30px;"><%= I18n.t(:subscription_end_date) %></label>
                       </div>
                     </div>
