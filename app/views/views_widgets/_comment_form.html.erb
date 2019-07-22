@@ -1,13 +1,12 @@
-<div class="tabs">
+<section class="card card-content-bloc estimancy-form">
   <!--<ul>-->
   <!--<li><a href="#tabs-1"><%#= I18n.t(:views_widgets) %> </a></li>-->
   <!--</ul>-->
-
-  <div id="tabs-1">
-
     <%= simple_form_for(@views_widget, is_label_widget: true, :remote => true) do |f| %>
         <%= f.error_notification %>
-        <div class="form-inputs">
+
+        <div class="card-body">
+
           <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
           <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
           <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
@@ -15,73 +14,112 @@
           <%= f.input :is_label_widget, as: :hidden, :input_html => { value: true } %>
           <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
 
-          <div class="well well-rounded" style="border-width: 1px;">
-            <table>
-              <tr>
-                <td><%= f.input :name, label: I18n.t(:name) %></td>
-                <td>
-                  <label class="checkbox"></label>
-                  <%= f.input :show_name, label: I18n.t(:show_name) %>
-                </td>
-              </tr>
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
 
-              <tr>
-                <td>
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                    <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                  </div>
+                </div>
+
+                <!--<div class="col-6">-->
+                  <!--<label class="checkbox"></label>-->
+                  <!--<%#= f.input :show_name, label: I18n.t(:show_name) %>-->
+                <!--</div>-->
+                <!-- -->
+              </div>
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                    <label class="mdl-textfield__label" for="position"><%= I18n.t(:position) %></label>
+                  </div>
+                </div>
+
+
+                <div class="col-6" style="margin-top: 1.5em;">
+                  <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
+                  <label class="mdl-textfield__label" for="show_name" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:show_name) %></label>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-6">
                   <!-- Color is using the JS Spectrum library -->
-                  <% if @views_widget.new_record? %>
-                      <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic", type: 'color', value: '#99ccff'} %>
-                      <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
-                  <% else %>
-                      <%= f.input :color, label: I18n.t(:status_color) %>
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                     <label class="mdl-textfield__label" for="status_color"><%= I18n.t(:status_color) %></label>
+                      <% if @views_widget.new_record? %>
+                        <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic", type: 'color', value: '#99ccff'} %>
+                        <%= f.input :color, label: false,  input_html: { value: "blanchedalmond", :class => 'mdl-textfield__input form-control' } %>
+                      <% else %>
+                        <%= f.input :color, label: false, :input_html => { :class => 'mdl-textfield__input form-control'} %>
+                      <% end %>
+
+                  </div>
+                </div>
+
+                <div class="col-4">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: false, :input_html => { :class => 'mdl-textfield__input form-control'} %>
+                    <label class="mdl-textfield__label" for="icon_class"><%= I18n.t(:icon) %></label>
+                  </div>
+                </div>
+
+                <div class="col-2">
+                  <i id="view_icon_class_image" class='material-icons'> </i>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-10">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :comment, label: false, input_html: { class: "mdl-textfield__input form-control", rows: 5 } %>
+                    <label class="mdl-textfield__label" for="comment"><%= I18n.t(:widget_comment) %></label>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+                  <div class="col-12">
+                  <% if can?(:alter_estimation_plan, @project)%>
+                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
                   <% end %>
-                </td>
-                <td>
-                  <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
-                </td>
-                <td>
-                    <div id="view_icon_class_image" class="span1"></div>
-                </td>
-              </tr>
+                  <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+              </div>
+            </div>
 
-            </table>
           </div>
-
-
-          <%= f.input :comment, label: I18n.t(:widget_comment), input_html: { class: "input-xxlarge tinymce", rows: 5} %>
-
         </div>
 
-        <div class="actions-tabs">
-          <% if can?(:alter_estimation_plan, @project)%>
-              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <% end %>
-          <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
-        </div>
     <% end %>
-  </div>
-</div>
+</section>
 
 <script>
 
-    $("#views_widget_color").spectrum({
-        showPaletteOnly: true,
-        showPalette:true,
-        hideAfterPaletteSelect:true,
-        showInitial: true,
-        preferredFormat: "hex",
-        replacerClassName: 'mycolorpicker',
-        //color: 'blanchedalmond',
-        <% if @views_widget.new_record? %>
-        color: 'blanchedalmond',
-        <% end %>
+//    $("#views_widget_color").spectrum({
+//        showPaletteOnly: true,
+//        showPalette:true,
+//        hideAfterPaletteSelect:true,
+//        showInitial: true,
+//        preferredFormat: "hex",
+//        replacerClassName: 'mycolorpicker',
+//        //color: 'blanchedalmond',
+        <!--<%# if @views_widget.new_record? %>-->
+//        color: 'blanchedalmond',
+        <!--<%# end %>-->
 
-        palette: [
-            ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
-            ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
-            ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
-            ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
-        ]
-    });
+//        palette: [
+//            ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
+//            ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
+//            ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
+//            ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
+//        ]
+//    });
 
     // Update the view_widget show_min_max attribute according to the selected widget_type
     var delete_min_max_on_widget_type = [ "line_chart", "bar_chart", "area_chart", "pie_chart", "timeline", "stacked_bar_chart", "histogram_effort_per_phase", "pie_chart_effort_per_phase", "histogram_cost_per_phase",

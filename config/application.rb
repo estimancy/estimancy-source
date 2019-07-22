@@ -148,6 +148,13 @@ module Projestimate
                     ["Arrow-up", "fa-arrow-up"], ["Arrow-down", "fa-arrow-down"], ["Arrow-left", "fa-arrow-left"], ["Share", "fa-share-alt"], ["Comment", "fa-comment"], ["Dashboard", "fa-dashboard"], ["Wrench", "fa-wrench"], ["Cog", "fa-cog"], ["Cogs", "fa-cogs"],
                     ["Database", "fa-database"], ["Home", "fa-home"], ["Info", "fa-info"], ["Line chart", "fa-line-chart"], ["Pie chart", "fa-pie-chart"], ["Area chart", "fa-area-chart"], ["Bar chart", "fa-bar-chart"], ["Flag", "fa-flag"]
                     ]
+
+    NEW_ICON_CLASSES = [["Euro", "fa-euro"], ["US-Dollar", "fa-usd"], ["GB-Pound", "fa-gbp"], ["User", "fa-user"], ["Users", "fa-users"], ["Clock", "fa-clock-o"], ["Tachometer", "fa-tachometer"], ["Bell", "fa-bell"], ["Calendar", "fa-calendar"], ["Eye-open", "fa-eye"], ["Eye-close", "fa-eye-slash"],
+                    ["Bug", "fa-bug"], ["Bomb", "fa-bomb"], ["Warning", "fa-warning"], ["Exclamation mark", "fa-exclamation"], ["Exclamation mark circle", "fa-exclamation-circle"], ["Question mark", "fa-question"], ["Question mark circle", "fa-question-circle"], ["Fire", "fa-fire"], ["Minus circle", "fa-minus-circle"], ["Arrow-right", "fa-arrow-right"],
+                    ["Arrow-up", "fa-arrow-up"], ["Arrow-down", "fa-arrow-down"], ["Arrow-left", "fa-arrow-left"], ["Share", "fa-share-alt"], ["Comment", "fa-comment"], ["Dashboard", "fa-dashboard"], ["Wrench", "fa-wrench"], ["Cog", "fa-cog"], ["Cogs", "fa-cogs"],
+                    ["Database", "fa-database"], ["Home", "fa-home"], ["Info", "fa-info"], ["Line chart", "fa-line-chart"], ["Pie chart", "fa-pie-chart"], ["Area chart", "fa-area-chart"], ["Bar chart", "fa-bar-chart"], ["Flag", "fa-flag"]
+    ]
+
     WIDGETS_TYPE = [["Simple text", "text"], ["Line chart", "line_chart"], ["Bar chart", "bar_chart"], ["Area chart", "area_chart"], ["Pie chart","pie_chart"], ["Timeline", "timeline"], ["Stacked bar chart", "stacked_bar_chart"],
                            ["Effort per phase : table", "table_effort_per_phase"], ["Effort per phase : histogram", "histogram_effort_per_phase"], ["Effort per phase : pie chart", "pie_chart_effort_per_phase"],
                            ["Cost per phase : table", "table_cost_per_phase"], ["Cost per phase : histogram", "histogram_cost_per_phase"], ["Cost per phase : pie chart", "pie_chart_cost_per_phase"],

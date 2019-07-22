@@ -2493,6 +2493,7 @@ fr:
   account_associated_with_external_authentication: "Ce compte est associé à une authentification externe"
   allowed_statuses: "Statuts autorisés"
   associated_status: "Statuts associés"
+  validation_text: "Texte de validation"
 
   add_to_kb: "Ajouter à la base de connaissance"
 

@@ -17,6 +17,7 @@
 //= require poppers
 //= require main
 //= require jquery-number
+//= require spectrum.js
 //= require jscolor
 
 

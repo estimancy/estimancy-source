@@ -2044,5 +2044,6 @@ es:
   calculation_modules: "Calculation modules"
   allowed_statuses: "Allowed statuses"
   associated_status: "Associated Status"
+  validation_text: "Validation text"
 
 

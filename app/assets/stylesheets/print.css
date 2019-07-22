@@ -15,7 +15,7 @@
     *= require jquery.tablesorter.pager.css
     *= require jquery-ui-1.8.17.custom.css
     *= require default/_normalize.scss
-    *= require spectrum.css
+    *= require spectrum.scss
     *= require spk_multiwidget.css
     *= require table-sorter.css
 */
