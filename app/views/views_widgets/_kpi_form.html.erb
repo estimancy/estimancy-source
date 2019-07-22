@@ -20,13 +20,6 @@
                 </div>
               </div>
 
-              <div class="col-6" style="margin-top: 3rem;">
-                <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
-                <label class="mdl-textfield__label" for="show_name" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:show_name) %></label>
-              </div>
-            </div>
-
-            <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
@@ -35,21 +28,12 @@
               </div>
             </div>
 
-            <!--<div class="form-row">-->
-                <!--<div class="col-6">-->
-                  <!--<div class="mdl-textfield mdl-js-textfield mdl-textfield&#45;&#45;floating-label">-->
-                    <!--<%#= f.input :estimation_status_id, as: :select, label: false, collection: @current_organization.estimation_statuses, :input_html => { :class => 'mdl-textfield__input form-control' } %>-->
-                    <!--<label class="mdl-textfield__label" for="estimation_value_id"><%#= I18n.t(:allowed_statuses) %></label>-->
-                  <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
-
             <% ["A", "B", "C", "D", "E"].each do |letter| %>
 
                 <div class="form-row">
                   <div class="col-3">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <p> Variable <%= letter.upcase %></p>
+                      <p style="margin-top: 2rem;"> Variable <%= letter.upcase %></p>
                     </div>
                   </div>
 
@@ -98,7 +82,6 @@
               </div>
             </div>
 
-
             <div class="form-row">
               <div class="col-4">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -108,7 +91,7 @@
 
               <div class="col-4">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :kpi_unit, label: false, input_html: { class: "kpi_margin_top"} %> <%#= text_field_tag "kpi_unit", "" %>
+                  <%= f.input :kpi_unit, label: false, input_html: { class: "kpi_margin_top"} %>
                 </div>
               </div>
 
@@ -120,37 +103,6 @@
                 </div>
               </div>
             </div>
-
-            <br>
-            </hr>
-
-            <div class="form-row">
-              <div class="col-6">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label><br>
-                  <% if @views_widget.new_record? %>
-                      <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "mdl-textfield__input form-control"} %>
-                  <% else %>
-                      <%= f.input :color, label: false, input_html: { class: "mdl-textfield__input form-control"} %>
-                  <% end %>
-
-                </div>
-              </div>
-
-              <div class="col-4">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <!-- Color is using the JS Spectrum library -->
-                  <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort(), label: I18n.t(:icon), input_html: { class: 'views_widget_color'} %>
-                </div>
-              </div>
-
-              <div class="col-2">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <i id="view_icon_class_image" class='material-icons'> </i>
-                </div>
-              </div>
-            </div>
-
 
             <div class="row-fluid">
               <div class="col-6">

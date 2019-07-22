@@ -1,7 +1,4 @@
 <section class="card card-content-bloc estimancy-form">
-  <!--<ul>-->
-  <!--<li><a href="#tabs-1"><%#= I18n.t(:views_widgets) %> </a></li>-->
-  <!--</ul>-->
     <%= simple_form_for(@views_widget, is_label_widget: true, :remote => true) do |f| %>
         <%= f.error_notification %>
 
@@ -25,52 +22,11 @@
                   </div>
                 </div>
 
-                <!--<div class="col-6">-->
-                  <!--<label class="checkbox"></label>-->
-                  <!--<%#= f.input :show_name, label: I18n.t(:show_name) %>-->
-                <!--</div>-->
-                <!-- -->
-
-                <div class="col-6" style="margin-top: 3rem;">
-                  <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
-                  <label class="mdl-textfield__label" for="show_name" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:show_name) %></label>
-                </div>
-              </div>
-
-              <div class="form-row">
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
                     <label class="mdl-textfield__label" for="position"><%= I18n.t(:position) %></label>
                   </div>
-                </div>
-
-              </div>
-
-              <div class="form-row">
-                <div class="col-6">
-                  <!-- Color is using the JS Spectrum library -->
-                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                     <label class="mdl-textfield__label" for="status_color"><%= I18n.t(:status_color) %></label><br>
-                      <% if @views_widget.new_record? %>
-                        <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic", type: 'color', value: '#99ccff'} %>
-                        <%= f.input :color, label: false,  input_html: { value: "blanchedalmond", :class => 'mdl-textfield__input form-control' } %>
-                      <% else %>
-                        <%= f.input :color, label: false, :input_html => { :class => 'mdl-textfield__input form-control'} %>
-                      <% end %>
-
-                  </div>
-                </div>
-
-                <div class="col-4">
-                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: false, :input_html => { :class => 'mdl-textfield__input form-control'} %>
-                    <label class="mdl-textfield__label" for="icon_class"><%= I18n.t(:icon) %></label>
-                  </div>
-                </div>
-
-                <div class="col-2">
-                  <i id="view_icon_class_image" class='material-icons'> </i>
                 </div>
               </div>
 
@@ -101,26 +57,6 @@
 
 <script>
 
-//    $("#views_widget_color").spectrum({
-//        showPaletteOnly: true,
-//        showPalette:true,
-//        hideAfterPaletteSelect:true,
-//        showInitial: true,
-//        preferredFormat: "hex",
-//        replacerClassName: 'mycolorpicker',
-//        //color: 'blanchedalmond',
-        <!--<%# if @views_widget.new_record? %>-->
-//        color: 'blanchedalmond',
-        <!--<%# end %>-->
-
-//        palette: [
-//            ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
-//            ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
-//            ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
-//            ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
-//        ]
-//    });
-
     // Update the view_widget show_min_max attribute according to the selected widget_type
     var delete_min_max_on_widget_type = [ "line_chart", "bar_chart", "area_chart", "pie_chart", "timeline", "stacked_bar_chart", "histogram_effort_per_phase", "pie_chart_effort_per_phase", "histogram_cost_per_phase",
         "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
@@ -134,7 +70,6 @@
         $('#views_widget_show_min_max').attr('disabled','disabled');
         $("#views_widget_widget_type").value = 0;
     }
-
 
     // Update the view_widget attribute according to the selected module
     $("#views_widget_module_project_id").change(function() {

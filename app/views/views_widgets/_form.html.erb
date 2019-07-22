@@ -20,13 +20,6 @@
                   </div>
                 </div>
 
-                <div class="col-6" style="margin-top: 3rem;">
-                  <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
-                  <label class="mdl-textfield__label" for="show_name" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:show_name) %></label>
-                </div>
-              </div>
-
-              <div class="form-row">
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
@@ -34,6 +27,7 @@
                   </div>
                 </div>
               </div>
+
 
               <div class="form-row">
                 <div class="col-6">
@@ -68,56 +62,10 @@
 
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label><br>
-                    <% if @views_widget.new_record? %>
-                        <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "color mdl-textfield__input form-control"} %>
-                    <% else %>
-                        <%= f.input :color, label: false, input_html: { class: "color mdl-textfield__input form-control"}  %>
-                    <% end %>
-                  </div>
-                </div>
-              </div>
-
-              <div class="form-row">
-                  <div class="col-6">
-                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <!--<label><%#= I18n.t :fields %></label>-->
-                      <% selected = @views_widget.project_fields.first %>
-                      <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?), input_html:{class: "mdl-textfield__input form-control"} %>
-                      <label class="mdl-textfield__label" for="field"><%= I18n.t(:fields) %></label>
-                    </div>
-                  </div>
-
-                <div class="col-4">
-                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: false, input_html:{class: "mdl-textfield__input form-control"} %>
-                    <label class="mdl-textfield__label" for="icon_class"><%= I18n.t(:icon) %></label>
-                  </div>
-                </div>
-                <div class="col2"><i id="view_icon_class_image" class='material-icons'> </i></div>
-              </div>
-
-              <br>
-              <hr>
-
-              <div class="form-row">
-                <div class="col-12">
-                  <h7><%= I18n.t(:min_value_message) %></h7>
-                </div>
-              </div>
-
-              <div class="form-row">
-                <div class="col-6">
-                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <%= f.input :min_value, as: :integer, label: false, :input_html => { value: @min_value, placeholder: I18n.t(:min_value_message_placeholder), class: "mdl-textfield__input form-control" } %>
-                    <label class="mdl-textfield__label" for="min_value"><%= I18n.t(:val_min) %></label>
-                  </div>
-                </div>
-
-                <div class="col-6">
-                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <%= f.input :max_value, as: :integer, label: false, :input_html => { value: @max_value, placeholder: I18n.t(:max_value_message_placeholder), class: "mdl-textfield__input form-control" } %>
-                    <label class="mdl-textfield__label" for="max_value"><%= I18n.t(:val_max) %></label>
+                    <!--<label><%#= I18n.t :fields %></label>-->
+                    <% selected = @views_widget.project_fields.first %>
+                    <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?), input_html:{class: "mdl-textfield__input form-control"} %>
+                    <label class="mdl-textfield__label" for="field"><%= I18n.t(:fields) %></label>
                   </div>
                 </div>
               </div>
@@ -139,18 +87,29 @@
                 </div>
               </div>
 
+              <div class="form-row">
+                <div class="col-6">
+                  <%= f.input :show_tjm, as: :boolean, label: false, input_html: {class: 'mdl-checkbox__input' } %>
+                  <label class="mdl-textfield__label" for="show_tjm" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:show_tjm) %></label>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-6">
+                  <%= f.input :show_wbs_activity_ratio, as: :boolean, label: false, disabled: !@module_project.wbs_activity, input_html: {class: 'mdl-checkbox__input' } %>
+                  <label class="mdl-textfield__label" for="show_wbs_activity_ratio" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:show_wbs_activity_ratio) %></label>
+                </div>
+              </div>
 
               <div class="form-row">
                 <div class="col-12">
-                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <%= f.input :show_tjm, as: :boolean, label: I18n.t(:show_tjm), input_html: {class: 'inline_attr'} %>
-                    <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
-                    <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio), disabled: !@module_project.wbs_activity %>
-                    <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
-                  </div>
+                  <%= f.input :use_organization_effort_unit, label: false, input_html: {class: 'mdl-checkbox__input' } %>
+                  <label class="mdl-textfield__label" for="organization_effort_unit" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:organization_effort_unit, value: @current_organization) %></label>
                 </div>
               </div>
             </div>
+
+            <br>
 
             <div class="actions-tabs">
               <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? && (@views_widget.min_value < @views_widget.max_value)) %>
