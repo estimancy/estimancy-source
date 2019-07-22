@@ -1,3 +1,4 @@
+$('head').append('<link rel="stylesheet" href="../assets/stylesheets/partials/forms.scss" type="text/scss" />');
 
 $("#notifications").html("");
 
@@ -71,3 +72,22 @@ $("#views_widget_color").spectrum({
         ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
     ]
 });
+
+$('input, textarea, select').each(function () {
+    if($(this).attr('type') != "submit")
+        $(this).addClass('custom_margin');
+})
+
+
+//$('input, textarea, select [value!=""]').addClass('custom_margin');
+//
+//
+//$('input, textarea, select').focus(function () {
+//    $(this).addClass('custom_margin');
+//    //$(this).parent().addClass('is-focused');
+//})
+//
+//$('input, textarea, select').blur(function () {
+//    $(this).removeClass('custom_margin');
+//    //$(this).parent().removeClass('is-focused');
+//});

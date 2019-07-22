@@ -1915,3 +1915,4 @@ en-gb:
   allowed_statuses: "Allowed statuses"
   associated_status: "Associated Status"
   validation_text: "Validation text"
+  label_modules: "Modules"

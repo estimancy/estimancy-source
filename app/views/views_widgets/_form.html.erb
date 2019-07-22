@@ -19,6 +19,11 @@
                     <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
                   </div>
                 </div>
+
+                <div class="col-6" style="margin-top: 3rem;">
+                  <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
+                  <label class="mdl-textfield__label" for="show_name" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:show_name) %></label>
+                </div>
               </div>
 
               <div class="form-row">
@@ -27,11 +32,6 @@
                     <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
                     <label class="mdl-textfield__label" for="position"><%= I18n.t(:position) %></label>
                   </div>
-                </div>
-
-                <div class="col-6" style="margin-top: 1.5em;">
-                  <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
-                  <label class="mdl-textfield__label" for="show_name" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:show_name) %></label>
                 </div>
               </div>
 
@@ -43,7 +43,7 @@
                       <% else %>
                           <%= f.association :module_project, label: false, collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
                       <% end %>
-                      <label class="mdl-textfield__label" for="module_project"><%= I18n.t(:module) %></label>
+                      <label class="mdl-textfield__label" for="module_project"><%= I18n.t(:label_modules) %></label>
                   </div>
                 </div>
 
@@ -68,7 +68,7 @@
 
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
+                    <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label><br>
                     <% if @views_widget.new_record? %>
                         <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "color mdl-textfield__input form-control"} %>
                     <% else %>
@@ -81,16 +81,17 @@
               <div class="form-row">
                   <div class="col-6">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <label><%= I18n.t :fields %></label>
+                      <!--<label><%#= I18n.t :fields %></label>-->
                       <% selected = @views_widget.project_fields.first %>
                       <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?), input_html:{class: "mdl-textfield__input form-control"} %>
+                      <label class="mdl-textfield__label" for="field"><%= I18n.t(:fields) %></label>
                     </div>
                   </div>
 
                 <div class="col-4">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <!--<label class="checkbox" style="margin-top: -9px;"></label>-->
-                    <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon), input_html:{class: "mdl-textfield__input form-control"} %>
+                    <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: false, input_html:{class: "mdl-textfield__input form-control"} %>
+                    <label class="mdl-textfield__label" for="icon_class"><%= I18n.t(:icon) %></label>
                   </div>
                 </div>
                 <div class="col2"><i id="view_icon_class_image" class='material-icons'> </i></div>
@@ -138,7 +139,6 @@
                 </div>
               </div>
 
-              <br>
 
               <div class="form-row">
                 <div class="col-12">

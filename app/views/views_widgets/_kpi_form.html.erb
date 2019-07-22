@@ -21,6 +21,11 @@
                   <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
                 </div>
               </div>
+
+              <div class="col-6" style="margin-top: 3rem;">
+                <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
+                <label class="mdl-textfield__label" for="show_name" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:show_name) %></label>
+              </div>
             </div>
 
             <div class="form-row">
@@ -29,11 +34,6 @@
                   <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
                   <label class="mdl-textfield__label" for="position"><%= I18n.t(:position) %></label>
                 </div>
-              </div>
-
-              <div class="col-6" style="margin-top: 1.5em;">
-                <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
-                <label class="mdl-textfield__label" for="show_name" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:show_name) %></label>
               </div>
             </div>
 
@@ -129,7 +129,7 @@
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
+                  <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label><br>
                   <% if @views_widget.new_record? %>
                       <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "mdl-textfield__input form-control"} %>
                   <% else %>
