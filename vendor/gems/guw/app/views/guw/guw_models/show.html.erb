@@ -31,7 +31,10 @@
             <% end %>
           </div>
 
-          <%= form_tag guw_complexity_work_units_save_complexity_work_units_path do %>
+          <br>
+          <br>
+
+          <%= form_tag guw_complexity_work_units_save_complexity_work_units_path, style: "width: 100%;" do %>
             <%= hidden_field_tag :guw_type_id, guw_type.id %>
             <table class="table table-list">
               <tr>
