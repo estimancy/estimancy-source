@@ -36,7 +36,7 @@
                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton">
                   <a class="dropdown-item" href="<%= export_dashboard_path(format: "pdf", project_id: project.id) %>"><i class="material-icons">picture_as_pdf</i><%= I18n.t(:export_pdf) %></a>
                   <% if can? :copy_project, project %>
-                    <a class="dropdown-item" href="<%= main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication", method: "POST") %>" method="GET"><i class="material-icons">file_copy</i><%= I18n.t(:duplicate_estimation) %></a>
+                    <a class="dropdown-item" href="<%= main_app.duplicate_path(project, organization_id: @current_organization, action_name: "duplication", method: "POST") %>" method="GET"><i class="material-icons">file_copy</i><%= I18n.t(:duplicate_estimation) %></a>
                   <% end %>
                   <% if can?(:commit_project, project) %>
                     <a class="dropdown-item" data-remote="true" href="<%= set_checkout_version_path(:project_id => project.id) %>" data-remote="true" method="GET"><i class="material-icons">call_split</i><%= I18n.t(:create_new_version) %></a>
@@ -247,8 +247,8 @@
               <%= link_to "<<", sort_path(f: sort_column, s: sort_order, min: 0, max: @object_per_page, previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-primary" %>
               <%= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-primary" %>
             <% else %>
-              <%= link_to "<<", organization_estimations_path(@organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
-              <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-primary" %>
+              <%= link_to "<<", organization_estimations_path(@current_organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+              <%= link_to I18n.t(:previous), organization_estimations_path(@current_organization.id, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-primary" %>
             <% end %>
           <% end %>
 
