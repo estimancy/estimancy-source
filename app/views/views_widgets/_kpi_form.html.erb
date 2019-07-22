@@ -1,8 +1,6 @@
 <section class="card card-content-bloc estimancy-form">
-  <div class="card-body">
-
     <%= simple_form_for(@views_widget, is_label_widget: true) do |f| %>
-
+      <div class="card-body">
         <div class="edition-bloc-content">
           <div class="edition-bloc-form">
 
@@ -21,37 +19,21 @@
                   <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
                 </div>
               </div>
-            </div>
 
-            <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :position, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
                   <label class="mdl-textfield__label" for="position"><%= I18n.t(:position) %></label>
                 </div>
               </div>
-
-              <div class="col-6" style="margin-top: 1.5em;">
-                <%= f.input :show_name, as: :boolean, label: false, :input_html => { :class => 'mdl-checkbox__input'} %>
-                <label class="mdl-textfield__label" for="show_name" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:show_name) %></label>
-              </div>
             </div>
-
-            <!--<div class="form-row">-->
-                <!--<div class="col-6">-->
-                  <!--<div class="mdl-textfield mdl-js-textfield mdl-textfield&#45;&#45;floating-label">-->
-                    <!--<%#= f.input :estimation_status_id, as: :select, label: false, collection: @current_organization.estimation_statuses, :input_html => { :class => 'mdl-textfield__input form-control' } %>-->
-                    <!--<label class="mdl-textfield__label" for="estimation_value_id"><%#= I18n.t(:allowed_statuses) %></label>-->
-                  <!--</div>-->
-                <!--</div>-->
-            <!--</div>-->
 
             <% ["A", "B", "C", "D", "E"].each do |letter| %>
 
                 <div class="form-row">
                   <div class="col-3">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <p> Variable <%= letter.upcase %></p>
+                      <p style="margin-top: 2rem;"> Variable <%= letter.upcase %></p>
                     </div>
                   </div>
 
@@ -100,7 +82,6 @@
               </div>
             </div>
 
-
             <div class="form-row">
               <div class="col-4">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -110,7 +91,7 @@
 
               <div class="col-4">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :kpi_unit, label: false, input_html: { class: "kpi_margin_top"} %> <%#= text_field_tag "kpi_unit", "" %>
+                  <%= f.input :kpi_unit, label: false, input_html: { class: "kpi_margin_top"} %>
                 </div>
               </div>
 
@@ -123,37 +104,6 @@
               </div>
             </div>
 
-            <br>
-            </hr>
-
-            <div class="form-row">
-              <div class="col-6">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
-                  <% if @views_widget.new_record? %>
-                      <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "mdl-textfield__input form-control"} %>
-                  <% else %>
-                      <%= f.input :color, label: false, input_html: { class: "mdl-textfield__input form-control"} %>
-                  <% end %>
-
-                </div>
-              </div>
-
-              <div class="col-4">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <!-- Color is using the JS Spectrum library -->
-                  <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort(), label: I18n.t(:icon), input_html: { class: 'views_widget_color'} %>
-                </div>
-              </div>
-
-              <div class="col-2">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <i id="view_icon_class_image" class='material-icons'> </i>
-                </div>
-              </div>
-            </div>
-
-
             <div class="row-fluid">
               <div class="col-6">
                 <% if can?(:alter_estimation_plan, @project)%>
@@ -164,17 +114,17 @@
             </div>
           </div>
         </div>
+      </div>
     <% end %>
-  </div>
 </section>
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
 <script>
 
-$(".modal").css("width", "auto");
-$(".modal .modal-body").css("height", "auto");
-$(".modal .modal-body").css("width", "auto");
-$(".modal .modal-body").css("max-height", "900px");
+//$(".modal").css("width", "auto");
+//$(".modal .modal-body").css("height", "auto");
+//$(".modal .modal-body").css("width", "auto");
+//$(".modal .modal-body").css("max-height", "900px");
 
     // Update the view_widget show_min_max attribute according to the selected widget_type
     var delete_min_max_on_widget_type = [ "line_chart", "bar_chart", "area_chart", "pie_chart", "timeline", "stacked_bar_chart", "histogram_effort_per_phase", "pie_chart_effort_per_phase", "histogram_cost_per_phase",

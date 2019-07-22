@@ -1,3 +1,4 @@
+$('head').append('<link rel="stylesheet" href="../assets/stylesheets/partials/forms.scss" type="text/scss" />');
 
 $("#notifications").html("");
 
@@ -50,24 +51,8 @@ $("#views_widget_module_project_id").change(function() {
 
 $("#notifications").html("<%= j(render "layouts/notifications") %>");
 
-//$("#views_widget_color").colorpicker();
+$('input, textarea, select').each(function () {
+    if($(this).attr('type') != "submit")
+        $(this).addClass('custom_margin');
+})
 
-$("#views_widget_color").spectrum({
-    showPaletteOnly: true,
-    showPalette:true,
-    hideAfterPaletteSelect:true,
-    showInitial: true,
-    preferredFormat: "hex",
-    replacerClassName: 'mycolorpicker',
-    //color: 'blanchedalmond',
-    <% if @views_widget.new_record? %>
-        color: 'blanchedalmond',
-    <% end %>
-
-    palette: [
-        ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
-        ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
-        ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
-        ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
-    ]
-});

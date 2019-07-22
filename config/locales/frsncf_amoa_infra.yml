@@ -2404,3 +2404,4 @@ frsncf_amoa_infra:
   allowed_statuses: "Statuts autorisés"
   associated_status: "Statuts associés"
   validation_text: "Texte de validation"
+  label_modules: "Modules"
