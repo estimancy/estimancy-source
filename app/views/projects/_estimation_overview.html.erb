@@ -256,8 +256,8 @@
             <%= link_to I18n.t(:next), sort_path(f: sort_column, s: sort_order, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), previous_next_action: true, is_last_page: is_last_page, filter_version: @filter_version), remote: true, class: "btn btn-primary" %>
             <%= link_to ">>", sort_path(f: sort_column, s: sort_order, min: @last_page_min, max: @last_page_max, previous_next_action: true, is_last_page: true, filter_version: @filter_version), remote: true, class: "btn btn-primary" %>
           <% else %>
-            <%= link_to I18n.t(:next), organization_estimations_path(@organization.id, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-primary" %>
-            <%= link_to ">>", organization_estimations_path(@organization.id, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-primary" %>
+            <%= link_to I18n.t(:next), organization_estimations_path(@current_organization.id, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-primary" %>
+            <%= link_to ">>", organization_estimations_path(@current_organization.id, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-primary" %>
           <% end %>
         </th>
       </tr>

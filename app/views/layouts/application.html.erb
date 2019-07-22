@@ -287,7 +287,11 @@
         <%= render 'module_projects/new_estimation_plan_min' %>
         <%= yield %>
         <% unless current_module_project.pemodule.alias == "initialization" %>
-          <%= render 'module_projects/dashboard_right_panel' %>
+          <% if current_module_project.show_results_view && controller.action_name == "dashboard" %>
+            <div class="col-2 pl-4" id="dashboard_right_panel">
+              <%= render 'module_projects/dashboard_right_panel' %>
+            </div>
+          <% end %>
         <% end %>
       </div>
 
