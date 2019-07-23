@@ -28,8 +28,8 @@ Guw::Engine.routes.draw do
   resources :guw_attributes
   resources :guw_unit_of_works
   resources :guw_unit_of_works do
-    get "up"
-    get "down"
+    post "up"
+    post "down"
     post "duplicate"
     post "add_correction"
     post "accept_correction"
