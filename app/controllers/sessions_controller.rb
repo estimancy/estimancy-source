@@ -40,7 +40,7 @@ class SessionsController < Devise::SessionsController
     if resource.auth_method.name == "Application"
       set_flash_message(:notice, :signed_in) if is_flashing_format?
       sign_in(resource_name, resource)
-      Monitoring.create(user: current_user.id, action: "Se Connecter", action_at: Time.now+3600)
+      Monitoring.create(user: current_user.id, action: "Se Connecter", action_at: Time.now + 3600)
       yield resource if block_given?
       if session[:user_return_to].blank?
         location = after_sign_in_path_for(resource)
