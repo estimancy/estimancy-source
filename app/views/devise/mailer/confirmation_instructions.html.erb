@@ -8,14 +8,11 @@
     Bonjour <%= @resource.first_name %> <%= @resource.last_name %>,
   </p>
 
-  <br>
   <% unless @resource.password.nil? %>
     <p>
       <%= I18n.t(:text_your_password_message, password: @resource.password, account: @resource.login_name) %>
     </p>
   <% end %>
-
-  <br>
 
   <p>
     <%= I18n.t(:mail_confirm_account_through_link_below) %>
