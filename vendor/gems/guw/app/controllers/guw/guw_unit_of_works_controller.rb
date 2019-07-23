@@ -146,6 +146,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @module_project.guw_model
     @component = current_component
     @organization = @guw_model.organization
+
+    redirect_to :back
   end
 
   def down
@@ -161,6 +163,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @module_project.guw_model
     @component = current_component
     @organization = @guw_model.organization
+
+    redirect_to :back
   end
 
   def load_cplx_comments
