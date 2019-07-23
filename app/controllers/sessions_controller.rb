@@ -6,25 +6,16 @@ class SessionsController < Devise::SessionsController
 
       response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
 
-      #if response.is_valid?
-      #  logger.info "Réponse valide"
-      #end
-      #logger.info response.inspect
-
-      #session[:userid] = response.nameid
-      #session[:attributes] = response.attributes
-
       @user = User.find_for_saml_oauth(response.attributes)
       if @user.nil?
         flash[:warning] = I18n.t("error_access_denied")
         redirect_to root_url
       else
         sign_in_and_redirect @user, :event => :authentication
-        #set_flash_message(:notice, :success, :kind => "SNCF SAML") if is_navigational_format?
       end
     else
       if params['user']
-        user = User.where(login_name: params['user']['id_connexion']).first
+        user = User.where(login_name: params['user']['login_name']).first
 
         if user
           if devise_mapping.confirmable? && !user.confirmed?
