@@ -441,12 +441,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-    @module_project = @guw_unit_of_work.module_project
-
-    @organization = @module_project.organization
-    @guw_model = @module_project.guw_model
-    @component = current_component
-    @group = @guw_unit_of_work.guw_unit_of_work_group
+    # @module_project = @guw_unit_of_work.module_project
+    #
+    # @organization = @module_project.organization
+    # @guw_model = @module_project.guw_model
+    # @component = current_component
+    # @group = @guw_unit_of_work.guw_unit_of_work_group
 
     if @guw_unit_of_work.selected == false
       @guw_unit_of_work.selected = true
@@ -456,14 +456,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_unit_of_work.save
 
-    current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
-    @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
-
-    @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
-                                                                                         selected: true).size} / #{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id).size}"
-
-    update_estimation_values
-    update_view_widgets_and_project_fields
+    # current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
+    # @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
+    #
+    # @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
+    #                                                                                      selected: true).size} / #{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id).size}"
+    #
+    # update_estimation_values
+    # update_view_widgets_and_project_fields
   end
 
   def calculate_guowa(guowa, guw_unit_of_work, guw_type, guw_type_attributes_complexities=nil)
