@@ -78,19 +78,21 @@
                             <li id="<%= "dashboard_widget_#{view_widget.id}" %>" data-row="<%= view_widget.position_y %>" data-col="<%= view_widget.position_x %>" data-sizex="<%=view_widget.width%>" data-sizey=<%="#{view_widget.height}"%> data-view_widget_id="<%= view_widget.id %>" data-container_id="<%="view_widgets_container_#{module_project.id}"%>" class="view_widget <%= "#{effort_per_phase_class}" %>" style="background-color: <%= view_widget.color %>; max-width: 100%;" title="<%= view_widget_title(view_widget) %>">
                                 <span class="row-fluid">
                                   <span class="span9">
-                                    <% if view_widget.icon_class.empty? %>
-                                      <span class="fa">
-                                        <% if view_widget.show_name? %>
-                                          <span id="<%= "widget_name_#{view_widget.id}" %>" style="font-size: 13px; margin-left: 10px;" class="widget_name"><%= view_widget.name %></span>
-                                        <% end %>
-                                      </span>
-                                    <% else %>
-                                      <!--<span id="<%# "icon_size_#{view_widget.id}" %>" class="fa <%# view_widget.icon_class %> icon_size" style="font-size: <%#view_widget_font_size%>em">-->
-                                      <span id="<%= "icon_size_#{view_widget.id}" %>" class="fa <%= view_widget.icon_class %> icon_size" style="font-size: 13px">
-                                        <% if view_widget.show_name? %>
-                                          <span id="<%= "widget_name_#{view_widget.id}" %>" class="widget_name"><%= view_widget.name %></span>
-                                        <% end %>
-                                      </span>
+                                    <% unless view_widget.icon_class.nil? %>
+                                      <% if view_widget.icon_class.empty? %>
+                                        <span class="fa">
+                                          <% if view_widget.show_name? %>
+                                            <span id="<%= "widget_name_#{view_widget.id}" %>" style="font-size: 13px; margin-left: 10px;" class="widget_name"><%= view_widget.name %></span>
+                                          <% end %>
+                                        </span>
+                                      <% else %>
+                                        <!--<span id="<%# "icon_size_#{view_widget.id}" %>" class="fa <%# view_widget.icon_class %> icon_size" style="font-size: <%#view_widget_font_size%>em">-->
+                                        <span id="<%= "icon_size_#{view_widget.id}" %>" class="fa <%= view_widget.icon_class %> icon_size" style="font-size: 13px">
+                                          <% if view_widget.show_name? %>
+                                            <span id="<%= "widget_name_#{view_widget.id}" %>" class="widget_name"><%= view_widget.name %></span>
+                                          <% end %>
+                                        </span>
+                                      <% end %>
                                     <% end %>
 
                                     <!-- Show the selected Ratio name -->
