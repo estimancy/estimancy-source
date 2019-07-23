@@ -62,7 +62,7 @@ class SessionsController < Devise::SessionsController
       sign_out resource
       redirect_to(root_url, :flash => { :error => flash[:error], :warning => flash[:warning] })
     end
-  end
+  endduplicate
 
   def destroy
     session[:user_return_to] = nil
