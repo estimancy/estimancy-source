@@ -1,4 +1,6 @@
-<%= render "devise/shared/error_messages", resource: resource %>
+<% unless user_signed_in? %>
+  <%= render "devise/shared/error_messages", resource: resource %>
+<% end %>
 
 <% if flash[:warning] %>
   <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
