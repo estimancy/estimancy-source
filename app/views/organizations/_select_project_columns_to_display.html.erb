@@ -37,13 +37,13 @@
     <div>
       <label><%= I18n.t(:default_estimations_sort_column) %></label>
       <%= select_tag 'default_estimations_sort_column', options_for_select(query_selected_inline_columns_options(Project),
-                                                                           selected: @current_organization.default_estimations_sort_column) %>
+                                                       selected: @current_organization.default_estimations_sort_column), prompt: "" %>
     </div>
 
     <div>
       <label><%= I18n.t(:default_estimations_sort_order) %></label>
       <%= select_tag 'default_estimations_sort_order', options_for_select([[I18n.t(:asc_order), "asc"], [I18n.t(:desc_order), "desc"]],
-                                                                           selected: @current_organization.default_estimations_sort_order) %>
+                                                       selected: @current_organization.default_estimations_sort_order), prompt: "" %>
     </div>
 
     <br>
