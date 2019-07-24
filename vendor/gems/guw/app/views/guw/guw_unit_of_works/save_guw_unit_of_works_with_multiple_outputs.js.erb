@@ -37,9 +37,10 @@
       <% end %>
 
       <% @hash_guw_output_types = {} %>
-      <%Guw::GuwOutputType.where(organization_id: organization_id, guw_model_id: @guw_model.id).each do |guw_output_type| %>
+      <% Guw::GuwOutputType.where(organization_id: organization_id, guw_model_id: @guw_model.id).each do |guw_output_type| %>
         <% @hash_guw_output_types["#{guw_output_type.guw_type_id}_#{guw_output_type.guw_output_id}"] = guw_output_type %>
       <% end %>
+      <% @guw_outputs_with_subtotal = @guw_model.guw_outputs.where(allow_subtotal: true) %>
 
       <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
       <% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
@@ -47,7 +48,7 @@
                                                     project_id: @project.id,
                                                     module_project_id: @module_project.id).order("updated_at ASC").each do |gceuw| %>
         <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
-        <% end %>
+      <% end %>
 
       <% @guw_unit_of_works.each do |guw_unit_of_work| %>
         <% @guw_type = guw_unit_of_work.guw_type %>
@@ -56,6 +57,17 @@
         <% end %>
 
         $("tr#<%= guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => guw_unit_of_work, "uowg" => guw_unit_of_work.guw_unit_of_work_group})) %>");
+
+        <% uowg = guw_unit_of_work.guw_unit_of_work_group %>
+
+        <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.where(organization_id: organization_id,
+                                                          guw_model_id: @guw_model.id,
+                                                          project_id: guw_unit_of_work.project_id,
+                                                          module_project_id: current_module_project.id).order("display_order ASC") %>
+
+        <% @selected_uowg_guw_unit_of_works = @uowg_guw_unit_of_works.where(selected: true) %>
+
+        $(".header_guw").html("<%= j(render("guw/guw_unit_of_works/header_guw", { uowg: uowg } )) %>");
       <% end %>
 
       $("#modified_guw_line_ids").val("");
@@ -66,12 +78,6 @@
 <% end %>
 
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
-
-//Mettre à jour l'url sans recharger la page
-//if (history.pushState) {
-//  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
-//  window.history.pushState({path:newurl},'',newurl);
-//}
 
 var my_array = [];
 $(document).on('ready turbolinks:load', function() {

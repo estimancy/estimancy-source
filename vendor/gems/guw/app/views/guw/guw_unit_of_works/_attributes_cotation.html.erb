@@ -107,7 +107,7 @@
                       </div>
 
                       <div class="modal-footer">
-                        <%= link_to "OK", "#!", id: "validate_comments_#{uowa.id}", :class => 'btn btn-primary validate_comments', disabled: true %>
+                        <%= link_to "OK", "#!", id: "validate_comments_#{uowa.id}", :class => 'btn btn-primary validate_comments', disabled: true, :'data-turbolinks' => 'false' %>
                       </div>
                     </div>
                   </div>
@@ -128,7 +128,6 @@
 
                   $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
                     if (!$.trim($(this).val())) {
-//                    if ($(this).val().length === 0) {
                       if(valu == dv) {
                         $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                       } else {
@@ -228,14 +227,6 @@
                     });
                   }
                 });
-
-//                $('.uo_form').on('keyup keypress', function(e) {
-//                  var keyCode = e.keyCode || e.which;
-//                  if (keyCode === 13) {
-//                    e.preventDefault();
-//                    return false;
-//                  }
-//                });
 
               </script>
 

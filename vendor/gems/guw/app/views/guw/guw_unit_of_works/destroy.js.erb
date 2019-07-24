@@ -30,6 +30,13 @@
 $("tr#<%= @guw_unit_of_work.id %>").remove();
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
+<% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
+<% @guw_outputs_with_subtotal = @guw_outputs.where(allow_subtotal: true) %>
+
+<% current_mp.guw_unit_of_work_groups.each do |uowg| %>
+  $(".header_guw_<%= uowg.id %>").html("<%= j(render("guw/guw_unit_of_works/header_guw", { uowg: uowg } )) %>");
+<% end %>
+
 var gridster = [];
 var iteration = -1;
 $(function () { //DOM Ready

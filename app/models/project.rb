@@ -651,15 +651,18 @@ class Project < ActiveRecord::Base
             unless old_mp.view.nil?
               #Update the new project/estimation views and widgets
               #update_views_and_widgets(new_prj, old_mp, new_mp)
-              new_prj.update_project_views_and_widgets(old_mp, new_mp)
+              update_project_views_and_widgets(old_mp, new_mp)
             end
 
 
             #Update the Unit of works's groups
-            new_mp.guw_unit_of_work_groups.where(organization_id: organization.id, project_id: new_prj.id).each do |guw_group|
+            new_mp.guw_unit_of_work_groups.each do |guw_group|
               new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
               new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-              guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id, project_id: new_prj.id)
+              guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id,
+                                          project_id: new_prj.id,
+                                          guw_model_id: old_mp.guw_model_id,
+                                          organization_id: new_prj.organization_id)
 
               # Update the group unit of works and attributes
               guw_group.guw_unit_of_works.each do |guw_uow|
@@ -670,6 +673,7 @@ class Project < ActiveRecord::Base
                 new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
                 guw_uow.update_attributes(module_project_id: new_uow_mp_id,
                                           pbs_project_element_id: new_pbs_id,
+                                          organization_id: new_prj.organization_id,
                                           project_id: new_prj.id)
 
                 # copy des coefficient-elements-unit-of-works
@@ -677,6 +681,8 @@ class Project < ActiveRecord::Base
                   unless new_guw_coeff_elt_uow.nil?
                     new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
                     new_guw_coeff_elt_uow.module_project_id = new_mp.id
+                    new_guw_coeff_elt_uow.guw_model_id = old_mp.guw_model_id
+                    new_guw_coeff_elt_uow.project_id = new_prj.id
                     new_guw_coeff_elt_uow.save
                   end
                 end
@@ -759,6 +765,7 @@ class Project < ActiveRecord::Base
           end
         end
       end
+
       new_prj
     # rescue
     #   nil
