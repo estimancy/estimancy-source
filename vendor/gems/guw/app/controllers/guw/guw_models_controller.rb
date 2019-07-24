@@ -2212,10 +2212,3 @@ class Guw::GuwModelsController < ApplicationController
     @word_trees_data_model
   end
 end
-
-
-  # Guw::GuwCoefficientElementUnitOfWork.all.each do |gceuow|
-  #   if gceuow.guw_unit_of_work_id
-  #
-  #   end
-  # end
