@@ -18,8 +18,7 @@
   <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
                                                                                        guw_model_id: @guw_model.id,
                                                                                        project_id: project_id,
-                                                                                       module_project_id: current_mp.id,
-                                                                                       pbs_project_element_id: current_psb.id) %>
+                                                                                       module_project_id: current_mp.id) %>
 
   <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
                                                                   project_id: project_id,

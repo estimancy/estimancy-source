@@ -2904,7 +2904,8 @@ public
           end
 
           #Update the Unit of works's groups
-          new_mp.guw_unit_of_work_groups.where(organization_id: @organization.id, project_id: new_prj.id).each do |guw_group|
+          # new_mp.guw_unit_of_work_groups.where(organization_id: @organization.id, project_id: new_prj.id).each do |guw_group|
+          new_mp.guw_unit_of_work_groups.each do |guw_group|
             new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
             new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
             guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id,

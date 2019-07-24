@@ -107,4 +107,15 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     redirect_to main_app.dashboard_path(@project)
   end
 
+  # ModuleProject.all.each do |mp|
+  #   mp.guw_unit_of_work_groups.each do |group|
+  #
+  #     group.organization_id = mp.organization_id
+  #     group.guw_model_id = mp.guw_model_id
+  #     group.project_id = mp.project_id
+  #
+  #     group.save
+  #   end
+  # end
+
 end
