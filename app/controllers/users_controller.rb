@@ -298,8 +298,6 @@ public
     @user.transaction_id = @user.transaction_id.nil? ? "#{@user.id}_1" : @user.transaction_id.next rescue "#{@user.id}_1"
     @user.event_organization_id = @current_organization.id #params[:organization_id]
     @user.originator_id = @current_user.id
-    # @user.organization_ids_before_last_update = @user.organization_ids.to_json
-    # @user.group_ids_before_last_update = @user.group_ids.to_json
 
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
@@ -377,6 +375,7 @@ public
     @user.language_id = params[:user][:language_id]
     #@user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : params[:user][:subscription_end_date]
     @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : user_params[:subscription_end_date]
+    @user.email = params[:user][:email]
 
     #validation conditions
     if params[:user][:password].blank?
@@ -402,7 +401,9 @@ public
         flash[:error] = specific_message
       end
 
-      @user_current_password = nil;  @user_password = nil; @user_password_confirmation = nil
+      @user_current_password = nil
+      @user_password = nil
+      @user_password_confirmation = nil
 
       tab_name = "tabs-1"
       if params['tabs-5']
@@ -421,7 +422,10 @@ public
       end
 
     else
-      @user_current_password = params[:user][:current_password];  @user_password = params[:user][:password]; @user_password_confirmation = params[:user][:password_confirmation]
+      @user_current_password = params[:user][:current_password]
+      @user_password = params[:user][:password]
+      @user_password_confirmation = params[:user][:password_confirmation]
+
       render(:edit, organization_id: @organization_id)
     end
 

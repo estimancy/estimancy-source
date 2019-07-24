@@ -3,7 +3,6 @@
   <div class="results-sidebar-title"><%= I18n.t(:label_results) %></div>
 
   <% module_project =  current_module_project %>
-  <!-- Current module_project results : only text view_widget -->
   <%= render partial: "views_widgets/dashboard_module_project_results", locals: { module_project: module_project } %>
 
   <div class="results-sidebar-divider"></div>

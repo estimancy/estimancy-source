@@ -3,14 +3,14 @@
     <img class="logo" width="400" src="/assets/Estimancy_Logo_Base-Line_RVB.png" id="exifviewer-img-1" exifid="-752947365" oldsrc="https://arnaud-devui.bitbucket.io/images/logo.png">
   </div>
   <section class="login-form text-left">
-    <%= simple_form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
+    <%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post }) do |f| %>
       <h1>Renvoyer la demande de confirmation</h1>
       <p>Saisissez votre login. Vous recevrez les instructions pour confirmer votre compte par email.</p>
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
         <div class="input-group-prepend">
           <div class="input-group-text"><i class="material-icons-outlined">account_circle</i></div>
         </div>
-        <input class="mdl-textfield__input" type="text" id="user_id_connexion" name="user[id_connexion]" style="width: 360px;">
+        <input class="mdl-textfield__input" type="text" id="user_id_connexion" name="user[login_name]" style="width: 360px;">
       </div>
       <button type="submit" class="btn btn-primary btn-login mt-5 mb-4"><img class="brand-icon" src="/assets/logo_arrows_white_small.svg">
         Valider

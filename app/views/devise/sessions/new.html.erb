@@ -1,3 +1,5 @@
+<%= render 'layouts/notifications' %>
+
 <div class="login-page vh-100 d-flex flex-column justify-content-between align-items-center">
   <div class="logo-container">
     <img class="logo" width="400" src="/assets/Estimancy_Logo_Base-Line_RVB.png" id="exifviewer-img-1" exifid="-752947365" oldsrc="https://arnaud-devui.bitbucket.io/images/logo.png">
@@ -33,6 +35,7 @@
       <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
         <%= link_to I18n.t('devise.confirmations.not_receive_confirmation_instructions'), new_confirmation_path(resource_name), class: "login-form-link" %><br />
       <% end -%>
+     <%= link_to I18n.t(:call_support), "mailto:support@estimancy.com", class: "login-form-link" %><br />
     <% end %>
   </section>
 </div>

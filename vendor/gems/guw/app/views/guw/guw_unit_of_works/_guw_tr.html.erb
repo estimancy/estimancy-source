@@ -544,11 +544,11 @@
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton" x-placement="top-end" style="position: absolute; transform: translate3d(-209px, -185px, 0px); top: 0px; left: 0px; will-change: transform;">
           <% if guow.guw_unit_of_work.nil? %>
-            <a class="dropdown-item" href="<%= guw.guw_unit_of_work_duplicate_path(guow) %>" method="POST"><i class="material-icons">file_copy</i><%= I18n.t(:add_to_kb) %></a>
+            <a class="dropdown-item" href="#" method="POST"><i class="material-icons">file_copy</i><%= I18n.t(:add_to_kb) %></a>
             <%= link_to raw("<i class='material-icons'>file_copy</i> Suggest a correction"), guw.guw_unit_of_work_add_correction_path(guow), method: "post", class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>file_copy</i> Duplicate"), guw.guw_unit_of_work_duplicate_path(guow), method: "post", remote: true, class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", remote: true, class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", remote: true, class: "dropdown-item" %>
+            <%= link_to raw("<i class='material-icons'>file_copy</i> Duplicate"), guw.guw_unit_of_work_duplicate_path(guow), method: "post",  class: "dropdown-item" %>
+            <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", class: "dropdown-item" %>
+            <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", class: "dropdown-item" %>
           <% else %>
             <%= link_to raw("<i class='material-icons'>check</i> Accept"), guw.guw_unit_of_work_accept_correction_path(guow), method: "post", class: "dropdown-item" %>
           <% end %>

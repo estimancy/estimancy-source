@@ -30,14 +30,14 @@ class User < ActiveRecord::Base
          :recoverable, :rememberable,
          :confirmable, # account confirmation
          :omniauthable, :omniauth_providers => [:google_oauth2, :saml],
-         :authentication_keys => [:id_connexion]
+         :authentication_keys => [:login_name]
 
   validates_presence_of :password, :on => :create
   validates_confirmation_of :password, :on => :create
   validates_length_of :password, :within => Devise.password_length, :allow_blank => true
   validates_format_of :email, :with  => Devise.email_regexp, :allow_blank => true, :if => :email_changed?
 
-  attr_accessible :current_password, :email, :login_name, :id_connexion, :super_admin, :password_changed,
+  attr_accessible :current_password, :email, :login_name, :super_admin, :password_changed,
                   :password, :password_confirmation, :remember_me, :provider, :uid, :description,
                   :avatar, :language_id, :first_name, :last_name, :initials, :time_zone, :locked_at,
                   :object_per_page, :password_salt, :password_hash, :password_reset_token, :auth_token, :created_at,
@@ -45,7 +45,7 @@ class User < ActiveRecord::Base
                   :previous_login, :quick_access, :allow_full_screen_dashboard
 
   # Virtual attribute for authenticating by either login_name or email  # This is in addition to a real persisted field like 'login_name'
-  attr_accessor :id_connexion, :updating_password, :current_password
+  attr_accessor :login_name, :updating_password, :current_password
 
   # Hair-Triggers
 
