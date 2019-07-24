@@ -305,3 +305,23 @@
   //  background-color: #ffffff;
   //}
 }
+
+.bold_class{
+  font-weight: bold;
+}
+
+.bold_class.asc:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f0de"  !important;
+  font-style: normal;
+  font-weight: 900;
+  margin-left: 5px;
+}
+
+.bold_class.desc:after {
+  font-family: "Font Awesome 5 Free";
+  content: "\f0dd"  !important;
+  font-style: normal;
+  font-weight: 900;
+  margin-left: 5px;
+}

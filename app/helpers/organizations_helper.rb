@@ -81,6 +81,14 @@ module OrganizationsHelper
       sort_order = session[:sort_order]
     end
 
+    if column.name.to_s == sort_column
+      bold_class = "bold_class"
+      order_class = sort_order.to_s
+    else
+      bold_class = ""
+      order_class = ""
+    end
+
     search_column = session[:search_column]
     search_order = session[:search_order]
 
@@ -117,7 +125,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "asc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy")
+          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "asc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
 
         when "asc"
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -125,7 +133,7 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy")
+          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
 
         else
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -133,14 +141,14 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy")
+          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
 
       end
 
     else
       #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
 
-      lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: column_sort_order, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy")
+      lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: column_sort_order, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
     end
 
 
