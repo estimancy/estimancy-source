@@ -2931,6 +2931,7 @@ public
                   new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
                   new_guw_coeff_elt_uow.module_project_id = new_mp.id
                   new_guw_coeff_elt_uow.guw_model_id = old_mp.guw_model_id
+                  new_guw_coeff_elt_uow.project_id = new_prj.id
                   new_guw_coeff_elt_uow.save
                 end
               end
@@ -4197,3 +4198,12 @@ public
     end
   end
 end
+
+# o = Organization.find(73)
+# Guw::GuwCoefficientElementUnitOfWorksController.where(organization_id: 73).each do |gceuow|
+#   gceuow_module_project = gceuow.module_project
+#   unless gceuow_module_project.nil?
+#     gceuow.project_id = gceuow_module_project.project_id
+#     gceuow.save
+#   end
+# end
