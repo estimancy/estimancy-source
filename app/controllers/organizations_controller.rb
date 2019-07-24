@@ -2061,7 +2061,18 @@ class OrganizationsController < ApplicationController
     end
 
     if session[:sort_column].blank?
-      session[:sort_column] = "start_date"
+      #session[:sort_column] = "start_date"
+      project_selected_columns = @organization.project_selected_columns
+      default_sort_column = @organization.default_estimations_sort_column rescue nil
+      default_sort_order = @organization.default_estimations_sort_order rescue nil
+
+      if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
+        session[:sort_column] = default_sort_column
+        session[:sort_order] = default_sort_order
+      else
+        session[:sort_column] = "title"
+        session[:sort_order] = "asc"
+      end
     end
 
     if session[:sort_order].blank?
@@ -3856,13 +3867,16 @@ class OrganizationsController < ApplicationController
           # ignored
           # type code here
       end
+      @current_organization.default_estimations_sort_column = params[:default_estimations_sort_column]
+      @current_organization.default_estimations_sort_order = params[:default_estimations_sort_order]
       @current_organization.save
     end
 
-    #respond_to do |format|
-    #  format.js
-    #  format.json { render json: selected_columns }
-    #end
+    respond_to do |format|
+     format.html { redirect_to organization_setting_path(@current_organization, :anchor => 'tabs-select-columns-list', partial_name: 'tabs_select_columns_list')}
+     format.js
+     format.json { render json: selected_columns }
+    end
   end
 
   # Duplicate the organization

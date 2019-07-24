@@ -11,10 +11,8 @@
                          :ondblclick => "moveOptions(this.form.available_columns, this.form.selected_columns);" %>
         </td>
         <td class="buttons" style="padding: 10px;">
-          <p><input type="button" value="&#8594;"
-                 onclick="moveOptions(this.form.available_columns, this.form.selected_columns);" /></p>
-          <input type="button" value="&#8592;"
-                 onclick="moveOptions(this.form.selected_columns, this.form.available_columns);" />
+          <p><input type="button" value="&#8594;" onclick="moveOptions(this.form.available_columns, this.form.selected_columns);" /></p>
+             <input type="button" value="&#8592;" onclick="moveOptions(this.form.selected_columns, this.form.available_columns);" />
         </td>
         <td>
           <%= label_tag "selected_columns", I18n.t(:label_selected_columns) %>
@@ -34,8 +32,52 @@
     </table>
 
     <br>
+    <br>
+    <h4><%= I18n.t(:default_estimations_sort_params) %></h4>
+    <div>
+      <label><%= I18n.t(:default_estimations_sort_column) %></label>
+      <%= select_tag 'default_estimations_sort_column', options_for_select(query_selected_inline_columns_options(Project),
+                                                                           selected: @current_organization.default_estimations_sort_column) %>
+    </div>
+
+    <div>
+      <label><%= I18n.t(:default_estimations_sort_order) %></label>
+      <%= select_tag 'default_estimations_sort_order', options_for_select([[I18n.t(:asc_order), "asc"], [I18n.t(:desc_order), "desc"]],
+                                                                           selected: @current_organization.default_estimations_sort_order) %>
+    </div>
+
+    <br>
     <% if can? :manage_projects_selected_columns, Organization %>
         <span><%= submit_tag I18n.t(:label_save), class: "btn btn-primary" %></span>
     <% end %>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#query-columns').closest('form').submit(function(){
+                $('#selected_columns option').prop('selected', true);
+
+                //get the selected value in Array
+                var selected_columns = new Array();
+
+                $('#selected_columns option').each(function(){
+                    selected_columns.push(this.value);
+                });
+
+                //update the data in database
+                $.ajax({
+                    url:"/update_available_inline_columns",
+                    method: 'GET',
+                    data: {
+                        query_classname: "Project",
+                        selected_inline_columns: selected_columns,
+                        default_estimations_sort_column: $('#default_estimations_sort_column').val(),
+                        default_estimations_sort_order: $('#default_estimations_sort_order').val()
+                    }
+                })
+            });
+        });
+    </script>
+
 
 <% end %>

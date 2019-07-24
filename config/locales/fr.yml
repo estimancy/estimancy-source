@@ -2495,6 +2495,11 @@ fr:
   associated_status: "Statuts associés"
   validation_text: "Texte de validation"
   label_modules: "Modules"
+  default_estimations_sort_params: "Paramètres de tri par défaut pour la liste des estimations"
+  default_estimations_sort_column: "Colonne de tri par défaut"
+  default_estimations_sort_order: "Ordre de tri par défaut"
+  asc_order: "Croissant"
+  desc_order: "Décroissant"
 
   add_to_kb: "Ajouter à la base de connaissance"
 

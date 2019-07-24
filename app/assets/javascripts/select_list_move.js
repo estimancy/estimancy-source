@@ -53,6 +53,17 @@ function moveOptions(theSelFrom, theSelTo)
         addOption(theSelTo, selectedText[i], selectedValues[i]);
     }
 
+    //update
+    $("#default_estimations_sort_column option").each(function() {
+        $(this).remove();
+    });
+
+    $("#selected_columns option").each(function(){
+        $('#default_estimations_sort_column').append('<option value="'+ this.value +'">'+ this.text +'</option>');
+        //$('#default_estimations_sort_column option[value="'+ theSelFrom.options[i].value +'"]').remove();
+    })
+
+
     if(NS4) history.go(0);
 }
 

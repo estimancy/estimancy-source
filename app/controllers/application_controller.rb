@@ -733,6 +733,7 @@ class ApplicationController < ActionController::Base
   def get_sorted_estimations(organization_id, projects, sort_column, sort_order, search_hash={})
     # @projects = @organization.organization_estimations
 
+    organization = Organization.where(id: organization_id).first
     k = sort_column #params[:f]
     s = sort_order  #params[:s]
 
@@ -747,7 +748,17 @@ class ApplicationController < ActionController::Base
     project_ids = projects.map(&:id)
 
     if k.blank?
-      projects =  projects.reorder("start_date desc").order('created_at desc')
+      #projects =  projects.reorder("start_date desc").order('created_at desc')
+
+      project_selected_columns = organization.project_selected_columns
+      default_sort_column = organization.default_estimations_sort_column rescue nil
+      default_sort_order = organization.default_estimations_sort_order rescue nil
+
+      if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
+        projects =  projects.reorder("#{default_sort_column} #{default_sort_order}").order('created_at desc')
+      else
+        projects =  projects.reorder("title asc").order('created_at desc')
+      end
     else
       case k
         when  "start_date", "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"

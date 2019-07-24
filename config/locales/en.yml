@@ -2442,6 +2442,11 @@ en:
   associated_status: "Associated Status"
   validation_text: "Validation text"
   label_modules: "Modules"
+  default_estimations_sort_params: "Default sort parameters for estimates list"
+  default_estimations_sort_column: "Default sort column"
+  default_estimations_sort_order: "Default sort order"
+  asc_order: "Ascending"
+  desc_order: "Descending"
 
   add_to_kb: "Add to Knowledge DB"
 
