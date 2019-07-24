@@ -2076,7 +2076,9 @@ class OrganizationsController < ApplicationController
     end
 
     if session[:sort_order].blank?
-      session[:sort_order] ="desc"
+      if session[:sort_column].in?(["start_date", "created_at"])
+        session[:sort_order] ="desc"
+      end
     end
 
     @sort_action = params[:sort_action].blank? ? session[:sort_action] : params[:sort_action]
