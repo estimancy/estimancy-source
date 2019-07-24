@@ -4200,10 +4200,10 @@ public
 end
 
 # o = Organization.find(73)
-# Guw::GuwCoefficientElementUnitOfWorksController.where(organization_id: 73).each do |gceuow|
-#   gceuow_module_project = gceuow.module_project
-#   unless gceuow_module_project.nil?
-#     gceuow.project_id = gceuow_module_project.project_id
+# Guw::GuwCoefficientElementUnitOfWork.where(organization_id: 73).each do |gceuow|
+#   mp = ModuleProject.find(gceuow.module_project_id)
+#   unless mp.nil?
+#     gceuow.project_id = mp.project_id
 #     gceuow.save
 #   end
 # end
