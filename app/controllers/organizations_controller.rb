@@ -2070,8 +2070,11 @@ class OrganizationsController < ApplicationController
         session[:sort_column] = default_sort_column
         session[:sort_order] = default_sort_order
       else
-        session[:sort_column] = "title"
-        session[:sort_order] = "asc"
+        # session[:sort_column] = "title"
+        # session[:sort_order] = "asc"
+
+        session[:sort_column] = "created_at"
+        session[:sort_order] = "desc"
       end
     end
 

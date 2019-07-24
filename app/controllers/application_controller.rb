@@ -758,8 +758,8 @@ class ApplicationController < ActionController::Base
         k = default_sort_column
         s = default_sort_order
       else
-        k = "title"
-        s = "asc"
+        k = "created_at"  #"title"
+        s = "desc"  #"asc"
       end
     end
 
