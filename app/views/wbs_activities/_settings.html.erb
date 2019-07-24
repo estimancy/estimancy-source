@@ -180,8 +180,8 @@
     <% end %>
 <% end %>
 
-<%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form', remote: true do %>
-<%#= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
+<%#= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form', remote: true do %>
+<%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
 
   <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
   <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
