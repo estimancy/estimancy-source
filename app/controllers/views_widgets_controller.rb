@@ -415,7 +415,6 @@ class ViewsWidgetsController < ApplicationController
     end
   end
 
-
   # Show the effort display unit if the attribute alias is part of Effort attributes
   def show_widget_effort_display_unit(module_project_id=nil, estimation_value_id=nil)
 

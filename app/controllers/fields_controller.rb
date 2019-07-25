@@ -105,10 +105,23 @@ class FieldsController < ApplicationController
 end
 
 
-# o = Organization.find(69)
-# o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
-#   # effort
-#   pf = ProjectField.where(project_id: project.id, field_id: 96).first
-#   vw = ViewsWidget.where(name: "Charge Totale (jh)", module_project_id: project.module_project_ids)
-#   vw.estimation_value.string_data_
-# end
+o = Organization.find(69)
+o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+  # effort
+  pf = ProjectField.where(project_id: project.id, field_id: 96).first
+  unless pf.nil?
+    vw = ViewsWidget.where(name: "Charge Totale (jh)", module_project_id: project.module_project_ids).first
+    pf.views_widget_id = vw.id
+    pf.save
+  end
+
+  # vw_estimation_value = vw.estimation_value
+  # unless vw_estimation_value.nil?
+  #   value = vw_estimation_value.string_data_probable[project.root_component.id]
+  #   puts value
+  #   if value.nil?
+  #     pf.value = value
+  #     pf.save
+  #   end
+  # end
+end
