@@ -225,10 +225,10 @@ class ViewsWidgetsController < ApplicationController
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
 
-      @views_widget.min_value = params[:views_widget][:min_value]
-      @views_widget.max_value = params[:views_widget][:max_value]
+    @views_widget.min_value = params[:views_widget][:min_value]
+    @views_widget.max_value = params[:views_widget][:max_value]
 
-      project = @project
+    project = @project
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
