@@ -103,3 +103,12 @@ class FieldsController < ApplicationController
     end
   end
 end
+
+
+# o = Organization.find(69)
+# o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+#   # effort
+#   pf = ProjectField.where(project_id: project.id, field_id: 96).first
+#   vw = ViewsWidget.where(name: "Charge Totale (jh)", module_project_id: project.module_project_ids)
+#   vw.estimation_value.string_data_
+# end
