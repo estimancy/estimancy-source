@@ -152,6 +152,7 @@ class ViewsWidget < ActiveRecord::Base
           project.save
         else
           project.is_locked = false
+          project.save
         end
 
         unless pf.nil?
