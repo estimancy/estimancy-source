@@ -42,7 +42,15 @@ $("#views_widget_module_project_id").change(function() {
 
 $("#notifications").html("<%= j(render "layouts/notifications") %>");
 
-$('input, textarea, select').each(function () {
-    if($(this).attr('type') != "submit")
+//$('input, textarea, select').each(function () {
+//    if($(this).attr('type') != "submit")
+//        $(this).addClass('custom_margin');
+//})
+
+$("form.edit_views_widget").each(function(){
+    $(this).find(':input').each(function () {
+        //if($(this).attr('type') != "submit")
         $(this).addClass('custom_margin');
-})
+    })
+});
+
