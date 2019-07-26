@@ -352,14 +352,14 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(0, 4, "Domaine")
         worksheet_synt.add_cell(0, 5, "Service")
         worksheet_synt.add_cell(0, 6, "Localisation WBS")
-        worksheet_synt.add_cell(0, 6, "Localisation Modèle")
-        worksheet_synt.add_cell(0, 7, "Catégorie")
-        worksheet_synt.add_cell(0, 8, "Fournisseur")
-        worksheet_synt.add_cell(0, 9, "Date")
-        worksheet_synt.add_cell(0, 10, "Statut")
-        worksheet_synt.add_cell(0, 11, "Charge totale")
-        worksheet_synt.add_cell(0, 12, "Coût total (€)")
-        worksheet_synt.add_cell(0, 13, "Prix moyen pondéré")
+        worksheet_synt.add_cell(0, 7, "Localisation Modèle")
+        worksheet_synt.add_cell(0, 8, "Catégorie")
+        worksheet_synt.add_cell(0, 9, "Fournisseur")
+        worksheet_synt.add_cell(0, 10, "Date")
+        worksheet_synt.add_cell(0, 11, "Statut")
+        worksheet_synt.add_cell(0, 12, "Charge totale")
+        worksheet_synt.add_cell(0, 13, "Coût total (€)")
+        worksheet_synt.add_cell(0, 14, "Prix moyen pondéré")
 
         pi = 1
 
