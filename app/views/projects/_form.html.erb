@@ -552,11 +552,11 @@
 
 
       <%# if current_user.super_admin == true %>
-        <div id="tabs-history">
-          <%= hidden_field_tag "current_showed_project_id", @project.id %>
-          <div id="project_tree_id" data-project_tree="<%= @projects_json_tree %>"></div>
-          <%= render :partial => "show_project_tree_history", :object => [@projects_json_tree] %>
-        </div>
+      <div id="tabs-history">
+        <%= hidden_field_tag "current_showed_project_id", @project.id %>
+        <div id="project_tree_id" data-project_tree="<%= @projects_json_tree %>"></div>
+        <%= render :partial => "show_project_tree_history", :object => [@projects_json_tree] %>
+      </div>
       <%# end %>
 
     <% end %>
