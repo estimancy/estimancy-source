@@ -1,27 +1,25 @@
-<% if current_user.super_admin == true %>
-  <div id="project_history_actions" style="margin-bottom: 50px;" xmlns="http://www.w3.org/1999/html">
-    <div class="project_history">
-      <h4>
-        <%= hidden_field_tag :select_at_least_one_project, I18n.t(:select_at_least_one_project) %>
-        <%= hidden_field_tag "checked_nodes", [] %>
+<div id="project_history_actions" style="margin-bottom: 50px;" xmlns="http://www.w3.org/1999/html">
+  <div class="project_history">
+    <h4>
+      <%= hidden_field_tag :select_at_least_one_project, I18n.t(:select_at_least_one_project) %>
+      <%= hidden_field_tag "checked_nodes", [] %>
 
-        <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
-          <span style="color:#23A4FF; float: left; margin-left: 0px; margin-right: 10px;">
-              Estimation Actions
-          </span>
+      <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
+        <span style="color:#23A4FF; float: left; margin-left: 0px; margin-right: 10px;">
+            Estimation Actions
+        </span>
 
-          <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-pencil pull-left', :id => 'edit_node_path', :title => I18n.t('edit'), :remote => true %>
-          <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-star pull-left', :id => 'activate_node_path', :title => I18n.t('button_activate_project'), :remote => true %>
-          <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-ok-circle pull-left', :id => 'promote_node_path', :title => I18n.t('button_commit_project'), :remote => true %>
-          <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip fa fa-code-fork pull-left', :id => 'set_checkout_version_path', style: "margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout) unless @project.is_childless?) %>
-          <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-info pull-left', :id => 'find_use_projects_from_history', :project_id => @project.id, :title => I18n.t('button_find_use'), :remote => true %>
-          <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-copy pull-left', :id => 'duplicate_node_path', :title => I18n.t('button_duplicate_project'), :remote => true %>
-          <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-trash pull-left', :style => 'color:red', :id => 'delete_node_path', :title => I18n.t('delete'), :remote => true %>
-        <% end %>
-      </h4>
-    </div>
+        <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-pencil pull-left', :id => 'edit_node_path', :title => I18n.t('edit'), :remote => true %>
+        <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-star pull-left', :id => 'activate_node_path', :title => I18n.t('button_activate_project'), :remote => true %>
+        <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-ok-circle pull-left', :id => 'promote_node_path', :title => I18n.t('button_commit_project'), :remote => true %>
+        <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip fa fa-code-fork pull-left', :id => 'set_checkout_version_path', style: "margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout) unless @project.is_childless?) %>
+        <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-info pull-left', :id => 'find_use_projects_from_history', :project_id => @project.id, :title => I18n.t('button_find_use'), :remote => true %>
+        <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-copy pull-left', :id => 'duplicate_node_path', :title => I18n.t('button_duplicate_project'), :remote => true %>
+        <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-trash pull-left', :style => 'color:red', :id => 'delete_node_path', :title => I18n.t('delete'), :remote => true %>
+      <% end %>
+    </h4>
   </div>
-<% end %>
+</div>
 
 <div id="container">
   <div id="center-container">
