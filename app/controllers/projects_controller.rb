@@ -120,9 +120,9 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(0, 6, "Localisation WBS")
 
         if @organization.name == "CDS RH"
-          worksheet_synt.add_cell(0, 7, "Localisation Modèle")
+          worksheet_cf.add_cell(0, 7, "Localisation Modèle")
         else
-          worksheet_synt.add_cell(0, 7, "Urgence Devis")
+          worksheet_cf.add_cell(0, 7, "Urgence Devis")
         end
 
         worksheet_cf.add_cell(0, 8, "Catégorie")
@@ -276,9 +276,9 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 6, "Localisation WBS")
 
         if @organization.name == "CDS RH"
-          worksheet_synt.add_cell(0, 7, "Localisation Modèle")
+          worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
         else
-          worksheet_synt.add_cell(0, 7, "Urgence Devis")
+          worksheet_wbs.add_cell(0, 7, "Urgence Devis")
         end
 
         worksheet_wbs.add_cell(0, 8, "Catégorie")
@@ -325,7 +325,7 @@ class ProjectsController < ApplicationController
               worksheet_wbs.add_cell(iii+1, 6, value)
             end
 
-            worksheet_synt.add_cell(iii+1, 7, project_platform_category.nil? ? '' : project_platform_category)
+            worksheet_wbs.add_cell(iii+1, 7, project_platform_category.nil? ? '' : project_platform_category)
 
             worksheet_wbs.add_cell(iii+1, 8, project_project_category.to_s)
             worksheet_wbs.add_cell(iii+1, 9, project_provider.nil? ? '' : project_provider)
@@ -442,8 +442,6 @@ class ProjectsController < ApplicationController
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
     redirect_to :back
-
-    # send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
   end
 
   def download
