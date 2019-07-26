@@ -325,7 +325,7 @@ class ProjectsController < ApplicationController
               worksheet_wbs.add_cell(iii+1, 6, value)
             end
 
-            worksheet_synt.add_cell(pi, 7, project_platform_category)
+            worksheet_synt.add_cell(iii+1, 7, project_platform_category.to_s)
 
             worksheet_wbs.add_cell(iii+1, 8, project_project_category.to_s)
             worksheet_wbs.add_cell(iii+1, 9, project_provider.nil? ? '' : project_provider)
