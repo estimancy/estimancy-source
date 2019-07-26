@@ -117,7 +117,7 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(0, 3, "Numero de demande")
         worksheet_cf.add_cell(0, 4, "Domaine")
         worksheet_cf.add_cell(0, 5, "Service")
-        worksheet_cf.add_cell(0, 6, "Localisation")
+        worksheet_cf.add_cell(0, 6, "Localisation WBS")
 
         if @organization.name == "CDS RH"
           worksheet_synt.add_cell(0, 7, "Localisation Modèle")
@@ -273,7 +273,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 3, "Numero de demande")
         worksheet_wbs.add_cell(0, 4, "Domaine")
         worksheet_wbs.add_cell(0, 5, "Service")
-        worksheet_wbs.add_cell(0, 6, "Localisation")
+        worksheet_wbs.add_cell(0, 6, "Localisation WBS")
 
         if @organization.name == "CDS RH"
           worksheet_synt.add_cell(0, 7, "Localisation Modèle")
@@ -325,7 +325,7 @@ class ProjectsController < ApplicationController
               worksheet_wbs.add_cell(iii+1, 6, value)
             end
 
-            worksheet_synt.add_cell(iii+1, 7, project_platform_category.to_s)
+            worksheet_synt.add_cell(iii+1, 7, project_platform_category.nil? ? '' : project_platform_category)
 
             worksheet_wbs.add_cell(iii+1, 8, project_project_category.to_s)
             worksheet_wbs.add_cell(iii+1, 9, project_provider.nil? ? '' : project_provider)
