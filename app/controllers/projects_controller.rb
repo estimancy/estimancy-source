@@ -147,7 +147,7 @@ class ProjectsController < ApplicationController
         @statuses_hash = Hash.new
         @guw_hash = Hash.new {|h,k| h[k] = [] }
 
-        field = Field.where(organization_id: @current_organization.id, name: "Localisation").first
+        field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
         @organization_projects.each do |project|
           project.project_fields.each do |pf|
@@ -277,7 +277,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
 
 
-        fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
+        fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)"]).first
         fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
 
         ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio).each_with_index do |mpre, iii|
