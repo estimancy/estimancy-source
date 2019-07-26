@@ -562,6 +562,23 @@ class ViewsWidgetsController < ApplicationController
     estimation_values = module_project.get_module_project_estimation_values.group_by{ |attr| attr.in_out }.sort()
   end
 
+
+  # def vw_pf_script
+  #   o = Organization.find(69)
+  #   o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+  #     # effort
+  #     pf = ProjectField.where(project_id: project.id, field_id: 96).first_or_create
+  #     vw = ViewsWidget.where(name: "Charge Totale (jh)", module_project_id: project.module_project_ids).first
+  #     pf.views_widget_id = vw.id
+  #     value = get_kpi_value_without_unit(vw)
+  #     if value.nil?
+  #       pf.value = value
+  #     end
+  #     pf.save
+  #   end
+  #
+  #   redirect_to root_url
+  # end
 end
 
 
