@@ -351,7 +351,8 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(0, 3, "Numero de demande")
         worksheet_synt.add_cell(0, 4, "Domaine")
         worksheet_synt.add_cell(0, 5, "Service")
-        worksheet_synt.add_cell(0, 6, "Localisation")
+        worksheet_synt.add_cell(0, 6, "Localisation WBS")
+        worksheet_synt.add_cell(0, 6, "Localisation Modèle")
         worksheet_synt.add_cell(0, 7, "Catégorie")
         worksheet_synt.add_cell(0, 8, "Fournisseur")
         worksheet_synt.add_cell(0, 9, "Date")
@@ -370,6 +371,7 @@ class ProjectsController < ApplicationController
             project_project_area = project.project_area.nil? ? nil : project.project_area.name
             project_acquisition_category = project.acquisition_category.nil? ? nil : project.acquisition_category.name
             project_project_category = project.project_category.nil? ? nil : project.project_category.name
+            project_platform_category = project.platform_category.nil? ? nil : project.platform_category.name
             project_provider = project.provider.nil? ? nil : project.provider.name
             project_estimation_status = project.estimation_status.nil? ? nil : project.estimation_status.name
 
@@ -379,24 +381,25 @@ class ProjectsController < ApplicationController
             worksheet_synt.add_cell(pi, 3, project.request_number)
             worksheet_synt.add_cell(pi, 4, project_project_area)
             worksheet_synt.add_cell(pi, 5, project_acquisition_category)
+            worksheet_synt.add_cell(pi, 6, project_platform_category)
 
             pf = project.project_fields.select{ |i| i.field_id == field.id }.first
 
             unless field.nil?
               value = pf.nil? ? nil : pf.value
-              worksheet_synt.add_cell(pi, 6, value)
+              worksheet_synt.add_cell(pi, 7, value)
             end
 
-            worksheet_synt.add_cell(pi, 7, project_project_category.to_s)
-            worksheet_synt.add_cell(pi, 8, project_provider)
-            worksheet_synt.add_cell(pi, 9, project.start_date.to_s)
-            worksheet_synt.add_cell(pi, 10, project_estimation_status)
+            worksheet_synt.add_cell(pi, 8, project_project_category.to_s)
+            worksheet_synt.add_cell(pi, 9, project_provider)
+            worksheet_synt.add_cell(pi, 10, project.start_date.to_s)
+            worksheet_synt.add_cell(pi, 11, project_estimation_status)
 
-            worksheet_synt.add_cell(pi, 11, @total_effort[project.id].sum.to_f.round(2))
-            worksheet_synt.add_cell(pi, 12, @total_cost[project.id].sum.to_f.round(2))
+            worksheet_synt.add_cell(pi, 12, @total_effort[project.id].sum.to_f.round(2))
+            worksheet_synt.add_cell(pi, 13, @total_cost[project.id].sum.to_f.round(2))
 
             unless @total_effort[project.id].sum == 0
-              worksheet_synt.add_cell(pi, 13, (@total_cost[project.id].sum.to_f / @total_effort[project.id].sum.to_f).round(2) )
+              worksheet_synt.add_cell(pi, 14, (@total_cost[project.id].sum.to_f / @total_effort[project.id].sum.to_f).round(2) )
             end
 
             pi = pi + 1
