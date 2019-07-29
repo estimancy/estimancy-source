@@ -1,0 +1,43 @@
+<div id="team" class="edition-page-group py-4"></div>
+<div class="row">
+  <div class="col-12">
+    <h5 class="blue"><%= I18n.t(:team_module) %></h5>
+
+    <% if can? :show_modules_instances, ModuleProject %>
+      <% if can? :manage_modules_instances, ModuleProject %>
+        <%= link_to I18n.t(:create_button), staffing.new_staffing_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+      <% end %>
+
+      <table class="table table-list">
+        <tr>
+          <th><%= I18n.t(:name) %></th>
+          <th><%= I18n.t(:created_date) %></th>
+          <th class="action"><%= I18n.t(:actions) %></th>
+        </tr>
+
+        <% @organization.staffing_models.order("name asc").each do |i| %>
+          <tr>
+            <td class="span5">
+              <%= link_to i.name, staffing.edit_staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+            </td>
+            <td class="span2 align-center">
+              <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
+            </td>
+            <td class="align-center">
+              <%= link_to raw("<i class='material-icons'>edit</i>"), staffing.edit_staffing_model_path(i, organization_id: @organization.id),
+                          confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
+              <% if can? :manage_modules_instances, ModuleProject %>
+                <%= link_to raw("<i class='material-icons'>file_copy</i>"), staffing.staffing_model_duplicate_path(i, organization_id: @organization.id),
+                            :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), staffing.staffing_model_path(i, organization_id: @organization.id),
+                            confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </table>
+    <% else %>
+      <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
+    <% end %>
+  </div>
+</div>

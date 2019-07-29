@@ -1,366 +1,45 @@
 <div class="row">
   <div class="col-10">
-    <div id="taille" class="edition-page-group py-4"><span><%= I18n.t :size %></span></div>
-    <div class="d-flex">
-      <div style="flex: 1">
-        <h5><%= I18n.t(:label_Guw_model) %></h5>
-      </div>
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:create_button), guw.new_guw_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-      <% end %>
-    </div>
-    <br>
-    <% if can? :show_modules_instances, ModuleProject %>
-      <table class="table table-list">
-        <tr>
-          <th><%= I18n.t(:name) %></th>
-          <th><%= I18n.t(:created_date) %></th>
-          <th class="action"><%= I18n.t(:actions) %></th>
-        </tr>
-
-        <% @guw_models.each do |i| %>
-          <tr>
-            <td class="span7">
-              <% if i.default_display == "list" %>
-                <%= link_to i.name, guw.guw_model_all_guw_types_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-              <% else %>
-                <%= link_to i.name, guw.guw_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-              <% end %>
-            </td>
-            <td class="span2 align-center">
-              <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-            </td>
-            <td class="align-center">
-              <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_path(i, organization_id: @organization.id), :class => 'material-icons', :title => I18n.t('edit') %>
-              <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to raw("<i class='material-icons'>file_copy</i>"), guw.guw_model_duplicate_path(i, organization_id: @organization.id), :class => 'material-icons', :title => I18n.t('duplicate_module'), method: "post" %>
-                <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_path(i, organization_id: @organization.id), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-      </table>
-
+    <% if @item_title.blank? %>
+      <div id="tabs_size" class="edition-page-group py-4"><span id="item_title"><%= I18n.t('size') %></span></div>
     <% else %>
-      <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
+      <div id="tabs" class="edition-page-group py-4"><span id="item_title"><%= @item_title %></span></div>
     <% end %>
 
-    <br>
-    <% unless Pemodule.where(alias: "skb").first.nil? %>
-
-      <h5>Module Base de connaissance de taille</h5>
-
-      <% if can? :show_modules_instances, ModuleProject %>
-        <% if can? :manage_modules_instances, ModuleProject %>
-          <%= link_to I18n.t(:create_button), skb.new_skb_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-        <% end %>
-        <hr>
-
-        <table class="table table-list">
-          <tr>
-            <th><%= I18n.t(:name) %></th>
-            <th><%= I18n.t(:created_date) %></th>
-            <th class="action"><%= I18n.t(:actions) %></th>
-          </tr>
-
-          <% @skb_models.each do |i| %>
-            <tr>
-              <td class="span7">
-                <%= link_to i.name, skb.edit_skb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-              </td>
-              <td class="span2 align-center">
-                <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-              </td>
-              <td class="align-center">
-                <%= link_to raw("<i class='material-icons'>edit</i>"), skb.edit_skb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
-                <% if can? :manage_modules_instances, ModuleProject %>
-                  <%= link_to raw("<i class='material-icons'>file_copy</i>"), skb.skb_model_duplicate_path(i, organization_id: @organization.id), :class => 'material-icons', :title => I18n.t('duplicate_module'), method: "post" %>
-                  <%= link_to raw("<i class='material-icons'>delete</i>"), skb.skb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </table>
-
-      <% else %>
-        <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-      <% end %>
-    <% end %>
-
-    <div id="effort" class="edition-page-group py-4"><span>Effort</span></div>
-    <div class="row">
-      <div class="col-12">
-        <h5 class="blue"><%= I18n.t(:module_effort_generique) %></h5>
-
-        <% if can? :show_modules_instances, ModuleProject %>
-          <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to I18n.t(:create_button), ge.new_ge_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-          <% end %>
-
-          <table class="table table-list">
-            <tr>
-              <th><%= I18n.t(:name) %></th>
-              <th><%= I18n.t(:created_date) %></th>
-              <th class="action"><%= I18n.t(:actions) %></th>
-            </tr>
-
-            <% @organization.ge_models.order("name asc").each do |i| %>
-              <tr>
-                <td class="span5">
-                  <%= link_to i.name, ge.edit_ge_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-                </td>
-                <td class="span2 align-center">
-                  <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-                </td>
-                <td class="align-center">
-                  <%= link_to raw("<i class='material-icons'>edit</i>"), ge.edit_ge_model_path(i, organization_id: @organization.id),
-                              confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
-                  <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to raw("<i class='material-icons'>file_copy</i>"), ge.ge_model_duplicate_path(i, organization_id: @organization.id),
-                                :class => 'material-icons', :title => I18n.t('duplicate_module'), method: "post" %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), ge.ge_model_path(i, organization_id: @organization.id),
-                                confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
-                  <% end %>
-                </td>
-              </tr>
+    <section class="card card-content-bloc estimancy-form">
+      <div class="mb-5">
+        <div class="effort-bloc">
+          <div id="settings_content" class="card-body">
+            <% if @partial_name.blank? %>
+              <%= render :partial => "organizations/tabs_module_size" %>
+            <% else %>
+              <%= render :partial => "organizations/#{@partial_name}" %>
             <% end %>
-          </table>
-        <% else %>
-          <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-        <% end %>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
-        <h5 class="blue"><%= I18n.t(:knowledge_base_module)%></h5>
-
-        <% if can? :show_modules_instances, ModuleProject %>
-          <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to I18n.t(:create_button), kb.new_kb_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-        <% end %>
-
-          <table class="table table-list">
-            <tr>
-              <th><%= I18n.t(:name) %></th>
-              <th><%= I18n.t(:created_date) %></th>
-              <th class="action"><%= I18n.t(:actions) %></th>
-            </tr>
-
-            <% @organization.kb_models.order("name asc").each do |i| %>
-              <tr>
-                <td class="span5">
-                  <%= link_to i.name, kb.edit_kb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-                </td>
-                <td class="span2 align-center">
-                  <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-                </td>
-                <td class="align-center">
-                  <%= link_to raw("<i class='material-icons'>edit</i>"), kb.edit_kb_model_path(i, organization_id: @organization.id),
-                              confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
-                  <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to raw("<i class='material-icons'>file_copy</i>"), kb.kb_model_duplicate_path(i,organization_id: @organization.id),
-                                :class => 'material-icons', :title => I18n.t("Duplicate knowledge base"), method: "post" %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), kb.kb_model_path(i, organization_id: @organization.id),
-                                confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </table>
-        <% else %>
-          <div class="red_color">
-            <%= I18n.t(:notice_cannot_view_modules_instances) %>
           </div>
-        <% end %>
+        </div>
       </div>
-    </div>
+    </section>
 
-    <div class="row">
-      <div class="col-12">
-        <h5 class="blue"><%= I18n.t(:operation_module) %></h5>
-
-        <% if can? :show_modules_instances, ModuleProject %>
-          <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to I18n.t(:create_button), operation.new_operation_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-          <% end %>
-
-          <table class="table table-list">
-            <tr>
-              <th><%= I18n.t(:name) %></th>
-              <th><%= I18n.t(:created_date) %></th>
-              <th class="action"><%= I18n.t(:actions) %></th>
-            </tr>
-
-            <% @organization.operation_models.order("name asc").each do |i| %>
-              <tr>
-                <td class="span5">
-                  <%= link_to i.name, operation.edit_operation_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-                </td>
-                <td class="span2 align-center">
-                  <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-                </td>
-                <td class="align-center">
-                  <%= link_to raw("<i class='material-icons'>edit</i>"), operation.edit_operation_model_path(i, organization_id: @organization.id),
-                              confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
-                  <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to raw("<i class='material-icons'>file_copy</i>"), operation.operation_model_duplicate_path(i, organization_id: @organization.id),
-                                :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), operation.operation_model_path(i, organization_id: @organization.id),
-                                confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </table>
-        <% else %>
-          <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-        <% end %>
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="col-12">
-        <h5 class="blue"><%= I18n.t(:Judgment_Expert_module) %></h5>
-        <% if can? :manage_modules_instances, ModuleProject %>
-            <%= link_to I18n.t(:create_button), expert_judgement.new_instance_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-        <% end %>
-
-        <table class="table table-list">
-          <tr>
-            <th><%= I18n.t(:name) %></th>
-            <th><%= I18n.t(:created_date) %></th>
-            <th class="action"><%= I18n.t(:actions) %></th>
-          </tr>
-
-          <% @organization.expert_judgement_instances.order("name asc").each do |i| %>
-            <tr>
-              <td class="span5">
-                <%= link_to i.name, expert_judgement.edit_instance_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-              </td>
-              <td class="span2 align-center">
-                -
-              </td>
-              <td class="align-center">
-                <%= link_to raw("<i class='material-icons'>edit</i>"), expert_judgement.edit_instance_path(i, organization_id: @organization.id),
-                            confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
-                <% if can? :manage_modules_instances, ModuleProject %>
-                  <%= link_to raw("<i class='material-icons'>file_copy</i>"), expert_judgement.instance_duplicate_expert_judgment_path(i, organization_id: @organization.id),
-                              :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
-                  <%= link_to I18n.t(:delete), expert_judgement.instance_path(i, organization_id: @organization.id),  confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
-                  <%= link_to raw("<i class='material-icons'>delete</i>"), expert_judgement.instance_path(i, organization_id: @organization.id),
-                              confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
-                <% end %>
-              </td>
-            </tr>
-          <% end %>
-        </table>
-      </div>
-    </div>
-
-    <div id="activite" class="edition-page-group py-4"><span><%= I18n.t :activity %></span></div>
-    <div class="row">
-      <div class="col-12">
-        <h5 class="blue"><%= I18n.t(:wbs_activities_module) %></h5>
-
-        <% if can? :show_modules_instances, ModuleProject %>
-          <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to I18n.t(:create_button), new_organization_wbs_activity_path(@organization), :class => 'btn btn-primary', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
-          <% end %>
-
-          <table class="table table-list">
-            <tr>
-              <th><%= I18n.t(:name) %></th>
-              <th><%= I18n.t(:description) %></th>
-              <th><%= I18n.t(:created_at)%></th>
-              <th class="action" style="width: 160px"><%= I18n.t(:actions) %></th>
-            </tr>
-
-            <% @wbs_activities.order("name asc").each do |wbs_activity| %>
-              <tr>
-                <td><%= link_to(wbs_activity.name, edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module)) %></td>
-                <td><%= wbs_activity.description %></td>
-                <td class="span2 align-center">
-                  <%= wbs_activity.created_at.nil? ? '-' : I18n.l(wbs_activity.created_at) %>
-                </td>
-                <td class="center">
-                  <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'),
-                              confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
-                  <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to raw("<i class='material-icons'>file_copy</i>"), duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id),
-                                :class => 'material-icons', :title => I18n.t(:duplicate_module) %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), wbs_activity,
-                                confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: :delete, organization_id: @organization.id %>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </table>
-        <% else %>
-          <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-        <% end %>
-      </div>
-    </div>
-
-    <div id="team" class="edition-page-group py-4"><span><%= I18n.t :team %></span></div>
-    <div class="row">
-      <div class="col-12">
-        <h5 class="blue"><%= I18n.t(:team_module) %></h5>
-
-        <% if can? :show_modules_instances, ModuleProject %>
-          <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to I18n.t(:create_button), staffing.new_staffing_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-          <% end %>
-
-          <table class="table table-list">
-            <tr>
-              <th><%= I18n.t(:name) %></th>
-              <th><%= I18n.t(:created_date) %></th>
-              <th class="action"><%= I18n.t(:actions) %></th>
-            </tr>
-
-            <% @organization.staffing_models.order("name asc").each do |i| %>
-              <tr>
-                <td class="span5">
-                  <%= link_to i.name, staffing.edit_staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-                </td>
-                <td class="span2 align-center">
-                  <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
-                </td>
-                <td class="align-center">
-                  <%= link_to raw("<i class='material-icons'>edit</i>"), staffing.edit_staffing_model_path(i, organization_id: @organization.id),
-                              confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
-                  <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to raw("<i class='material-icons'>file_copy</i>"), staffing.staffing_model_duplicate_path(i, organization_id: @organization.id),
-                                :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), staffing.staffing_model_path(i, organization_id: @organization.id),
-                                confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
-                  <% end %>
-                </td>
-              </tr>
-            <% end %>
-          </table>
-        <% else %>
-          <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
-        <% end %>
-      </div>
-    </div>
   </div>
 
   <div class="col-2">
     <div id="edition-sidebar">
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link group" href="#taille"><span><%= I18n.t(:size) %></span></a>
+<!--          <a class="nav-link group" href="#taille"><span><%#= I18n.t(:size) %></span></a>-->
+          <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_size', item_title: I18n.t('size'), anchor: 'size') %>"><span><%= I18n.t("size") %></span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link group" href="#effort"><span><%= I18n.t(:effort) %></span></a>
+<!--          <a class="nav-link group" href="#effort"><span><%#= I18n.t(:effort) %></span></a>-->
+          <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort'), anchor: 'effort') %>"><span><%= I18n.t("effort") %></span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link group" href="#activite"><span><%= I18n.t(:activity) %></span></a>
+<!--          <a class="nav-link group" href="#activite"><span><%#= I18n.t(:activity) %></span></a>-->
+          <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_activity', item_title: I18n.t('activity'), anchor: 'activity') %>"><span><%= I18n.t("activity") %></span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link group" href="#team"><span><%= I18n.t(:team) %></span></a>
+<!--          <a class="nav-link group" href="#team"><span><%#= I18n.t(:team) %></span></a>-->
+          <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_team', item_title: I18n.t('team'), anchor: 'team') %>"><span><%= I18n.t("team") %></span></a>
         </li>
       </ul>
     </div>

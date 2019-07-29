@@ -20,6 +20,7 @@
       </ul>
 
       <div class="tab-content" id="pills-tabContent">
+
         <div class="tab-pane fade show active" id="tabs-1" role="tabpanel" aria-labelledby="tabs-1">
           <div class="card-body" style="margin-left:40px">
 
@@ -40,7 +41,7 @@
 
             <%= simple_form_for(@kb_model) do |f| %>
 
-            <%= f.error_notification %>
+              <%= f.error_notification %>
 
               <%= hidden_field_tag :organization_id, @organization.id %>
 
@@ -151,12 +152,11 @@
               </div>
 
             <% end %>
-
           </div>
         </div>
 
         <% if action_name.in?(%w(edit update)) %>
-          <div id="tabs-2">
+          <div class="tab-pane fade show" id="tabs-2" role="tabpanel" aria-labelledby="tabs-2">
             <div class="row-fluid">
               <div class="span3">
 
@@ -169,7 +169,7 @@
                     <%= hidden_field_tag :kb_model_id, @kb_model.id %>
                     <%= hidden_field_tag :organization_id, @organization.id %>
                   </div>
-                  <%= submit_tag I18n.t(:import), :class => 'btn' %>
+                  <%= submit_tag I18n.t(:import), :class => 'btn btn-primary' %>
                 <% end %>
               </div>
               <div class="span1">

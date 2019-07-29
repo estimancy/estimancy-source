@@ -1,0 +1,86 @@
+<div id="taille" class="edition-page-group py-4"></div>
+<div class="d-flex">
+  <div style="flex: 1">
+    <h5><%= I18n.t(:label_Guw_model) %></h5>
+  </div>
+  <% if can? :manage_modules_instances, ModuleProject %>
+    <%= link_to I18n.t(:create_button), guw.new_guw_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+  <% end %>
+</div>
+<br>
+<% if can? :show_modules_instances, ModuleProject %>
+  <table class="table table-list">
+    <tr>
+      <th><%= I18n.t(:name) %></th>
+      <th><%= I18n.t(:created_date) %></th>
+      <th class="action"><%= I18n.t(:actions) %></th>
+    </tr>
+
+    <% @guw_models.each do |i| %>
+      <tr>
+        <td class="span7">
+          <% if i.default_display == "list" %>
+            <%= link_to i.name, guw.guw_model_all_guw_types_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+          <% else %>
+            <%= link_to i.name, guw.guw_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+          <% end %>
+        </td>
+        <td class="span2 align-center">
+          <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
+        </td>
+        <td class="align-center">
+          <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_path(i, organization_id: @organization.id), :class => 'material-icons', :title => I18n.t('edit') %>
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%= link_to raw("<i class='material-icons'>file_copy</i>"), guw.guw_model_duplicate_path(i, organization_id: @organization.id), :class => 'material-icons', :title => I18n.t('duplicate_module'), method: "post" %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_path(i, organization_id: @organization.id), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+          <% end %>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+
+<% else %>
+  <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
+<% end %>
+
+<br>
+<% unless Pemodule.where(alias: "skb").first.nil? %>
+
+  <h5>Module Base de connaissance de taille</h5>
+
+  <% if can? :show_modules_instances, ModuleProject %>
+    <% if can? :manage_modules_instances, ModuleProject %>
+      <%= link_to I18n.t(:create_button), skb.new_skb_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+    <% end %>
+    <hr>
+
+    <table class="table table-list">
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:created_date) %></th>
+        <th class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+
+      <% @skb_models.each do |i| %>
+        <tr>
+          <td class="span7">
+            <%= link_to i.name, skb.edit_skb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+          </td>
+          <td class="span2 align-center">
+            <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
+          </td>
+          <td class="align-center">
+            <%= link_to raw("<i class='material-icons'>edit</i>"), skb.edit_skb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to raw("<i class='material-icons'>file_copy</i>"), skb.skb_model_duplicate_path(i, organization_id: @organization.id), :class => 'material-icons', :title => I18n.t('duplicate_module'), method: "post" %>
+              <%= link_to raw("<i class='material-icons'>delete</i>"), skb.skb_model_path(i, organization_id: @organization.id), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+
+  <% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_modules_instances) %></div>
+  <% end %>
+<% end %>

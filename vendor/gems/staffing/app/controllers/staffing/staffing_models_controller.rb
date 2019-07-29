@@ -58,7 +58,7 @@
       @staffing_model = StaffingModel.new
 
       set_page_title I18n.t(:New_Team_module_instance)
-      set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:team_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "team"), I18n.t(:new) => ""
+      set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:team_modules) => main_app.organization_module_estimation_path(params['organization_id'], partial_name: 'tabs_module_team', item_title: I18n.t('team'), anchor: "team"), I18n.t(:new) => ""
     end
   
     # GET /staffing_models/1/edit
@@ -69,7 +69,7 @@
       @organization = @staffing_model.organization
 
       set_page_title I18n.t(:Edit_Staffing)
-      set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:team_modules) => main_app.organization_module_estimation_path(@organization, anchor: "team"), @staffing_model.name => ""
+      set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:team_modules) => main_app.organization_module_estimation_path(@organization, partial_name: 'tabs_module_team', item_title: I18n.t('team'), anchor: "team"), @staffing_model.name => ""
     end
   
     # POST /staffing_models
@@ -92,7 +92,7 @@
       @staffing_model.max_range = params[:staffing_model]['max_range']
 
       if @staffing_model.save
-        redirect_to main_app.organization_module_estimation_path(@staffing_model.organization_id, anchor: "team", notice: 'Staffing model was successfully created.')
+        redirect_to main_app.organization_module_estimation_path(@staffing_model.organization_id, partial_name: 'tabs_module_team', item_title: I18n.t('team'), anchor: "team", notice: 'Staffing model was successfully created.')
       else
         render action: "new"
       end
@@ -166,7 +166,7 @@
       @staffing.save
       new_staffing.save
 
-      redirect_to main_app.organization_module_estimation_path(@staffing.organization_id, anchor: "team", notice: 'Staffing model was successfully created.' )
+      redirect_to main_app.organization_module_estimation_path(@staffing.organization_id, partial_name: 'tabs_module_team', item_title: I18n.t('team'), anchor: "team", notice: 'Staffing model was successfully created.' )
     end
 
 

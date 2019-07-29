@@ -1011,7 +1011,7 @@ class OrganizationsController < ApplicationController
   end
 
 
-  def import_project_areas
+  def nizationimport_project_areas
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
     tab_error = []
@@ -2021,12 +2021,16 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
 
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
+
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:label_estimation_modules) => ""
     set_page_title I18n.t(:module ,parameter: @organization)
     @guw_models = @organization.guw_models.order("name asc")
     @skb_models = @organization.skb_models.order("name asc")
     @wbs_activities = @organization.wbs_activities.order("name asc")
     #@technologies = @organization.organization_technologies.order("name asc")
+
   end
 
   def users

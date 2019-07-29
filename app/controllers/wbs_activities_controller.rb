@@ -166,7 +166,10 @@ class WbsActivitiesController < ApplicationController
 
       #redirect_to redirect(wbs_activities_path), :notice => "#{I18n.t(:notice_wbs_activity_successful_updated)}"
       ###redirect_to main_app.organization_module_estimation_path(@organization_id, anchor: "activite")
-      redirect_to redirect_apply(main_app.edit_organization_wbs_activity_path(@organization_id, @wbs_activity.id), nil, main_app.organization_module_estimation_path(@organization_id, anchor: "activite"))
+
+      redirect_to redirect_apply(main_app.edit_organization_wbs_activity_path(@organization_id, @wbs_activity.id), nil, main_app.organization_module_estimation_path(@organization_id, partial_name: 'tabs_module_activity', item_title: I18n.t('activity'), anchor: "activite"))
+      #redirect_to redirect_apply(main_app.organization_module_estimation_path(@organization, partial_name: 'tabs_module_activity', item_title: I18n.t('activity'), anchor: 'activity'))
+
     else
       @organization = @wbs_activity_organization
       @wbs_activity_elements_list = @wbs_activity.wbs_activity_elements
