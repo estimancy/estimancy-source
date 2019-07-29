@@ -3,41 +3,41 @@
     <li><a href="#tabs-report"><%= I18n.t(:filtered_excel_report)%></a></li>
     <li><a href="#tabs-report-all"><%= I18n.t(:detailed_excel_report)%></a></li>
     <li><a href="#tabs-pdf-all"><%= I18n.t(:detailed_pdf_report)%></a></li>
-    <li><a href="#extract-data"><%= I18n.t(:raw_data_extract)%></a></li>
+<!--    <li><a href="#extract-data"><%#= I18n.t(:raw_data_extract)%></a></li>-->
   </ul>
 
-  <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
-    <p>
-      <%= I18n.t(:raw_data_range_dates) %>
-    </p>
+<!--  <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">-->
+<!--    <p>-->
+      <%#= I18n.t(:raw_data_range_dates) %>
+<!--    </p>-->
 
-    <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
-      <div class="row-fluid">
-        <div class="span12">
-          <%= label_tag 'Date min' %>
-          <%= text_field_tag 'date_min' %>
-        </div>
-      </div>
+    <%#= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
+<!--      <div class="row-fluid">-->
+<!--        <div class="span12">-->
+          <%#= label_tag 'Date min' %>
+          <%#= text_field_tag 'date_min' %>
+<!--        </div>-->
+<!--      </div>-->
 
-      <br>
+<!--      <br>-->
 
-      <div class="row-fluid">
-        <div class="span12">
-          <%= label_tag 'Date max' %>
-          <%= text_field_tag 'date_max' %>
-        </div>
-      </div>
+<!--      <div class="row-fluid">-->
+<!--        <div class="span12">-->
+          <%#= label_tag 'Date max' %>
+          <%#= text_field_tag 'date_max' %>
+<!--        </div>-->
+<!--      </div>-->
 
-      <br>
+<!--      <br>-->
 
-      <div class="row-fluid">
-        <div class="span12">
-          <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary" %>
-        </div>
-      </div>
-    <% end %>
+<!--      <div class="row-fluid">-->
+<!--        <div class="span12">-->
+          <%#= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary" %>
+<!--        </div>-->
+<!--      </div>-->
+    <%# end %>
 
-  </div>
+<!--  </div>-->
 
 
   <div id="tabs-report-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">

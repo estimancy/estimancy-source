@@ -117,19 +117,26 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(0, 3, "Numero de demande")
         worksheet_cf.add_cell(0, 4, "Domaine")
         worksheet_cf.add_cell(0, 5, "Service")
-        worksheet_cf.add_cell(0, 6, "Localisation")
-        worksheet_cf.add_cell(0, 7, "Catégorie")
-        worksheet_cf.add_cell(0, 8, "Fournisseur")
-        worksheet_cf.add_cell(0, 9, "Date")
-        worksheet_cf.add_cell(0, 10, "Statut")
-        worksheet_cf.add_cell(0, 11, "Composant fonctionnel")
-        worksheet_cf.add_cell(0, 12, "Type de composant")
-        worksheet_cf.add_cell(0, 13, "Complexité théorique")
-        worksheet_cf.add_cell(0, 14, "Complexité calculée")
-        worksheet_cf.add_cell(0, 15, "% DEV théorique")
-        worksheet_cf.add_cell(0, 16, "% DEV calculé")
-        worksheet_cf.add_cell(0, 17, "% TEST théorique")
-        worksheet_cf.add_cell(0, 18, "% TEST calculé")
+        worksheet_cf.add_cell(0, 6, "Localisation WBS")
+
+        if @organization.name == "CDS RH"
+          worksheet_cf.add_cell(0, 7, "Localisation Modèle")
+        else
+          worksheet_cf.add_cell(0, 7, "Urgence Devis")
+        end
+
+        worksheet_cf.add_cell(0, 8, "Catégorie")
+        worksheet_cf.add_cell(0, 9, "Fournisseur")
+        worksheet_cf.add_cell(0, 10, "Date")
+        worksheet_cf.add_cell(0, 11, "Statut")
+        worksheet_cf.add_cell(0, 12, "Composant fonctionnel")
+        worksheet_cf.add_cell(0, 13, "Type de composant")
+        worksheet_cf.add_cell(0, 14, "Complexité théorique")
+        worksheet_cf.add_cell(0, 15, "Complexité calculée")
+        worksheet_cf.add_cell(0, 16, "% DEV théorique")
+        worksheet_cf.add_cell(0, 17, "% DEV calculé")
+        worksheet_cf.add_cell(0, 18, "% TEST théorique")
+        worksheet_cf.add_cell(0, 19, "% TEST calculé")
 
         i = 1
 
@@ -147,7 +154,7 @@ class ProjectsController < ApplicationController
         @statuses_hash = Hash.new
         @guw_hash = Hash.new {|h,k| h[k] = [] }
 
-        field = Field.where(organization_id: @current_organization.id, name: "Localisation").first
+        field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
         @organization_projects.each do |project|
           project.project_fields.each do |pf|
@@ -173,13 +180,14 @@ class ProjectsController < ApplicationController
             project_application = project.application.nil? ? nil : project.application.name
             project_project_area = project.project_area.nil? ? nil : project.project_area.name
             project_acquisition_category = project.acquisition_category.nil? ? nil : project.acquisition_category.name
+            project_project_category = project.project_category.nil? ? nil : project.project_category.name
             project_platform_category = project.platform_category.nil? ? nil : project.platform_category.name
             project_provider = project.provider.nil? ? nil : project.provider.name
             project_estimation_status = project.estimation_status.nil? ? nil : project.estimation_status.name
 
             @guow_guw_types = Hash.new
 
-              project.guw_unit_of_works.each do |guow|
+            project.guw_unit_of_works.each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application.to_s)
@@ -194,15 +202,31 @@ class ProjectsController < ApplicationController
               end
 
               worksheet_cf.add_cell(i, 7, project_platform_category.to_s)
-              worksheet_cf.add_cell(i, 8, project_provider.to_s)
-              worksheet_cf.add_cell(i, 9, project.start_date)
-              worksheet_cf.add_cell(i, 10, project_estimation_status.to_s)
-              worksheet_cf.add_cell(i, 11, guow.name)
 
-              worksheet_cf.add_cell(i, 12, guow.guw_type.nil? ? nil : guow.guw_type.name)
+              worksheet_cf.add_cell(i, 8, project_project_category.to_s)
+              worksheet_cf.add_cell(i, 9, project_provider.to_s)
+              worksheet_cf.add_cell(i, 10, project.start_date.to_s)
+              worksheet_cf.add_cell(i, 11, project_estimation_status.to_s)
+              worksheet_cf.add_cell(i, 12, guow.name)
 
-              worksheet_cf.add_cell(i, 13, guow.intermediate_percent)
-              worksheet_cf.add_cell(i, 14, guow.intermediate_weight)
+              worksheet_cf.add_cell(i, 13, guow.guw_type.nil? ? nil : guow.guw_type.name)
+
+              if guow.intermediate_percent.nil? && guow.intermediate_weight.nil?
+                @guw_coefficients.each do |gc|
+                  if gc.coefficient_type == "Liste" && gc.name == "Taille"
+                    ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id && i.module_project_id == guow.module_project_id && i.guw_unit_of_work_id == guow.id }.last
+                    unless ceuw.nil?
+                      guw_coefficient_element_name = ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name
+                    end
+
+                    worksheet_cf.add_cell(i, 14, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
+                    worksheet_cf.add_cell(i, 15, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
+                  end
+                end
+              else
+                worksheet_cf.add_cell(i, 14, guow.intermediate_percent)
+                worksheet_cf.add_cell(i, 15, guow.intermediate_weight)
+              end
 
               j = 0
               @guw_coefficients.each do |gc|
@@ -211,18 +235,18 @@ class ProjectsController < ApplicationController
                   default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
                   ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
 
-                  worksheet_cf.add_cell(i, 15 + j, default.nil? ? 100 : default.value.to_f)
-                  worksheet_cf.add_cell(i, 15 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
+                  worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
+                  worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
                   j = j + 2
                 end
               end
 
               guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
-                worksheet_cf.add_cell(i, 19 + j, uowa.most_likely)
+                worksheet_cf.add_cell(i, 20 + j, uowa.most_likely)
               end
 
               @guw_model_guw_attributes.each_with_index do |guw_attribute, ii|
-                worksheet_cf.add_cell(0, 19+ii, guw_attribute.name)
+                worksheet_cf.add_cell(0, 20+ii, guw_attribute.name)
               end
 
               i = i + 1
@@ -249,21 +273,28 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 3, "Numero de demande")
         worksheet_wbs.add_cell(0, 4, "Domaine")
         worksheet_wbs.add_cell(0, 5, "Service")
-        worksheet_wbs.add_cell(0, 6, "Localisation")
-        worksheet_wbs.add_cell(0, 7, "Catégorie")
-        worksheet_wbs.add_cell(0, 8, "Fournisseur")
-        worksheet_wbs.add_cell(0, 9, "Date")
-        worksheet_wbs.add_cell(0, 10, "Statut")
-        worksheet_wbs.add_cell(0, 11, "Ratio")
-        worksheet_wbs.add_cell(0, 12, "Phase")
-        worksheet_wbs.add_cell(0, 13, "TJM")
-        worksheet_wbs.add_cell(0, 14, "Charge calculée")
-        worksheet_wbs.add_cell(0, 15, "Charge retenue")
-        worksheet_wbs.add_cell(0, 16, "Coût calculé (€)")
-        worksheet_wbs.add_cell(0, 17, "Coût retenu (€)")
+        worksheet_wbs.add_cell(0, 6, "Localisation WBS")
+
+        if @organization.name == "CDS RH"
+          worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
+        else
+          worksheet_wbs.add_cell(0, 7, "Urgence Devis")
+        end
+
+        worksheet_wbs.add_cell(0, 8, "Catégorie")
+        worksheet_wbs.add_cell(0, 9, "Fournisseur")
+        worksheet_wbs.add_cell(0, 10, "Date")
+        worksheet_wbs.add_cell(0, 11, "Statut")
+        worksheet_wbs.add_cell(0, 12, "Ratio")
+        worksheet_wbs.add_cell(0, 13, "Phase")
+        worksheet_wbs.add_cell(0, 14, "TJM")
+        worksheet_wbs.add_cell(0, 15, "Charge calculée")
+        worksheet_wbs.add_cell(0, 16, "Charge retenue")
+        worksheet_wbs.add_cell(0, 17, "Coût calculé (€)")
+        worksheet_wbs.add_cell(0, 18, "Coût retenu (€)")
 
 
-        fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)"]).first
+        fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)"]).first
         fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
 
         ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio).each_with_index do |mpre, iii|
@@ -273,6 +304,7 @@ class ProjectsController < ApplicationController
           project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
           project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
           project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
+          project_project_category = mpre_project.project_category.nil? ? nil : mpre_project.project_category.name
           project_platform_category = mpre_project.platform_category.nil? ? nil : mpre_project.platform_category.name
           project_provider = mpre_project.provider.nil? ? nil : mpre_project.provider.name
           project_estimation_status = mpre_project.estimation_status.nil? ? nil : mpre_project.estimation_status.name
@@ -294,16 +326,18 @@ class ProjectsController < ApplicationController
             end
 
             worksheet_wbs.add_cell(iii+1, 7, project_platform_category.nil? ? '' : project_platform_category)
-            worksheet_wbs.add_cell(iii+1, 8, project_provider.nil? ? '' : project_provider)
-            worksheet_wbs.add_cell(iii+1, 9, mpre_project.start_date.to_s)
-            worksheet_wbs.add_cell(iii+1, 10, @statuses_hash[mpre_project.id])
-            worksheet_wbs.add_cell(iii+1, 11, mpre.wbs_activity_ratio.name)
-            worksheet_wbs.add_cell(iii+1, 12, mpre.name)
-            worksheet_wbs.add_cell(iii+1, 13, mpre.tjm)
-            worksheet_wbs.add_cell(iii+1, 14, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
-            worksheet_wbs.add_cell(iii+1, 15, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
-            worksheet_wbs.add_cell(iii+1, 16, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
-            worksheet_wbs.add_cell(iii+1, 17, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
+
+            worksheet_wbs.add_cell(iii+1, 8, project_project_category.to_s)
+            worksheet_wbs.add_cell(iii+1, 9, project_provider.nil? ? '' : project_provider)
+            worksheet_wbs.add_cell(iii+1, 10, mpre_project.start_date.to_s)
+            worksheet_wbs.add_cell(iii+1, 11, project_estimation_status.to_s)
+            worksheet_wbs.add_cell(iii+1, 12, mpre.wbs_activity_ratio.nil? ? nil : mpre.wbs_activity_ratio.name)
+            worksheet_wbs.add_cell(iii+1, 13, mpre.name)
+            worksheet_wbs.add_cell(iii+1, 14, mpre.tjm)
+            worksheet_wbs.add_cell(iii+1, 15, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
+            worksheet_wbs.add_cell(iii+1, 16, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
+            worksheet_wbs.add_cell(iii+1, 17, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
+            worksheet_wbs.add_cell(iii+1, 18, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
           end
         end
 
@@ -337,14 +371,21 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(0, 3, "Numero de demande")
         worksheet_synt.add_cell(0, 4, "Domaine")
         worksheet_synt.add_cell(0, 5, "Service")
-        worksheet_synt.add_cell(0, 6, "Localisation")
-        worksheet_synt.add_cell(0, 7, "Catégorie")
-        worksheet_synt.add_cell(0, 8, "Fournisseur")
-        worksheet_synt.add_cell(0, 9, "Date")
-        worksheet_synt.add_cell(0, 10, "Statut")
-        worksheet_synt.add_cell(0, 11, "Charge totale")
-        worksheet_synt.add_cell(0, 12, "Coût total (€)")
-        worksheet_synt.add_cell(0, 13, "Prix moyen pondéré")
+        worksheet_synt.add_cell(0, 6, "Localisation WBS")
+
+        if @organization.name == "CDS RH"
+          worksheet_synt.add_cell(0, 7, "Localisation Modèle")
+        else
+          worksheet_synt.add_cell(0, 7, "Urgence Devis")
+        end
+
+        worksheet_synt.add_cell(0, 8, "Catégorie")
+        worksheet_synt.add_cell(0, 9, "Fournisseur")
+        worksheet_synt.add_cell(0, 10, "Date")
+        worksheet_synt.add_cell(0, 11, "Statut")
+        worksheet_synt.add_cell(0, 12, "Charge totale")
+        worksheet_synt.add_cell(0, 13, "Coût total (€)")
+        worksheet_synt.add_cell(0, 14, "Prix moyen pondéré")
 
         pi = 1
 
@@ -355,6 +396,7 @@ class ProjectsController < ApplicationController
             project_application = project.application.nil? ? nil : project.application.name
             project_project_area = project.project_area.nil? ? nil : project.project_area.name
             project_acquisition_category = project.acquisition_category.nil? ? nil : project.acquisition_category.name
+            project_project_category = project.project_category.nil? ? nil : project.project_category.name
             project_platform_category = project.platform_category.nil? ? nil : project.platform_category.name
             project_provider = project.provider.nil? ? nil : project.provider.name
             project_estimation_status = project.estimation_status.nil? ? nil : project.estimation_status.name
@@ -374,15 +416,17 @@ class ProjectsController < ApplicationController
             end
 
             worksheet_synt.add_cell(pi, 7, project_platform_category)
-            worksheet_synt.add_cell(pi, 8, project_provider)
-            worksheet_synt.add_cell(pi, 9, project.start_date)
-            worksheet_synt.add_cell(pi, 10, project_estimation_status)
 
-            worksheet_synt.add_cell(pi, 11, @total_effort[project.id].sum.to_f.round(2))
-            worksheet_synt.add_cell(pi, 12, @total_cost[project.id].sum.to_f.round(2))
+            worksheet_synt.add_cell(pi, 8, project_project_category.to_s)
+            worksheet_synt.add_cell(pi, 9, project_provider)
+            worksheet_synt.add_cell(pi, 10, project.start_date.to_s)
+            worksheet_synt.add_cell(pi, 11, project_estimation_status)
+
+            worksheet_synt.add_cell(pi, 12, @total_effort[project.id].sum.to_f.round(2))
+            worksheet_synt.add_cell(pi, 13, @total_cost[project.id].sum.to_f.round(2))
 
             unless @total_effort[project.id].sum == 0
-              worksheet_synt.add_cell(pi, 13, (@total_cost[project.id].sum.to_f / @total_effort[project.id].sum.to_f).round(2) )
+              worksheet_synt.add_cell(pi, 14, (@total_cost[project.id].sum.to_f / @total_effort[project.id].sum.to_f).round(2) )
             end
 
             pi = pi + 1
@@ -396,11 +440,10 @@ class ProjectsController < ApplicationController
       end
     end
 
+    flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
     redirect_to :back
-
-    # send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
   end
-  
+
   def download
     @organization = Organization.find(params[:organization_id])
     send_file(
@@ -4291,9 +4334,18 @@ public
 
     @projects = {}
     tmp = Hash.new {|h,k| h[k] = [] }
-    Project.where(conditions).where(start_date: (Time.parse(params[:date_min])..Time.parse(params[:date_max]))).each do |project|
-      tmp[project.request_number.to_s] << project
-      @projects[project.business_need.to_s] = tmp
+
+    unless params[:date_max].blank? || params[:date_min].blank?
+      str = Time.parse(params[:date_min])..Time.parse(params[:date_max])
+      Project.where(conditions).where(start_date: str).each do |project|
+        tmp[project.request_number.to_s] << project
+        @projects[project.business_need.to_s] = tmp
+      end
+    else
+      Project.where(conditions).each do |project|
+        tmp[project.request_number.to_s] << project
+        @projects[project.business_need.to_s] = tmp
+      end
     end
 
     @user = current_user

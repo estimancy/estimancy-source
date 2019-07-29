@@ -225,10 +225,10 @@ class ViewsWidgetsController < ApplicationController
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
 
-      @views_widget.min_value = params[:views_widget][:min_value]
-      @views_widget.max_value = params[:views_widget][:max_value]
+    @views_widget.min_value = params[:views_widget][:min_value]
+    @views_widget.max_value = params[:views_widget][:max_value]
 
-      project = @project
+    project = @project
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
@@ -415,7 +415,6 @@ class ViewsWidgetsController < ApplicationController
     end
   end
 
-
   # Show the effort display unit if the attribute alias is part of Effort attributes
   def show_widget_effort_display_unit(module_project_id=nil, estimation_value_id=nil)
 
@@ -563,6 +562,23 @@ class ViewsWidgetsController < ApplicationController
     estimation_values = module_project.get_module_project_estimation_values.group_by{ |attr| attr.in_out }.sort()
   end
 
+
+  # def vw_pf_script
+  #   o = Organization.find(69)
+  #   o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+  #     # effort
+  #     pf = ProjectField.where(project_id: project.id, field_id: 96).first_or_create
+  #     vw = ViewsWidget.where(name: "Charge Totale (jh)", module_project_id: project.module_project_ids).first
+  #     pf.views_widget_id = vw.id
+  #     value = get_kpi_value_without_unit(vw)
+  #     if value.nil?
+  #       pf.value = value
+  #     end
+  #     pf.save
+  #   end
+  #
+  #   redirect_to root_url
+  # end
 end
 
 

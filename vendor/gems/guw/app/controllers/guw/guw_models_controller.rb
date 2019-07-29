@@ -1958,7 +1958,7 @@ class Guw::GuwModelsController < ApplicationController
             unless guw_coefficient.guw_coefficient_elements.empty?
               ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
                                                                 guw_coefficient_id: guw_coefficient.id,
-                                                                module_project_id: current_module_project.id).first
+                                                                module_project_id: current_module_project.id).last
 
               if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
 
