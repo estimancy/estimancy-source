@@ -1940,6 +1940,8 @@ class OrganizationsController < ApplicationController
   def authorization
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
 
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:authorisation, parameter: @organization)
@@ -2001,6 +2003,9 @@ class OrganizationsController < ApplicationController
 
   def setting_demand
     set_page_title (I18n.t('setting_demands'))
+
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
 
     @organization = Organization.find(params[:organization_id])
     @demands = Demand.where(organization_id: @organization.id).all

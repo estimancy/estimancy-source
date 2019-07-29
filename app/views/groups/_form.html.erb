@@ -43,7 +43,7 @@
             <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
             <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy' %>
           <% end %>
-          <%= link_to I18n.t('back'), organization_authorization_path(@organization, anchor: "tabs-group"), :class => 'btn btn-secondary btn-estimancy' %>
+          <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group"), :class => 'btn btn-secondary btn-estimancy' %>
         </div>
     <% end -%>
   </div>
@@ -98,7 +98,7 @@
           <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
           <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy' %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_authorization_path(@organization, anchor: "tabs-group"), :class => 'btn btn-secondary btn-estimancy' %>
+        <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group"), :class => 'btn btn-secondary btn-estimancy' %>
       <% end -%>
     </div>
   <% end %>

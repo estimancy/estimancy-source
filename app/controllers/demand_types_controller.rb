@@ -19,7 +19,7 @@ class DemandTypesController < ApplicationController
 
     if @demand_type.save
       flash[:notice] = "Demande créee avec succès"
-      redirect_to organization_setting_demand_path(@organization, anchor: :demandes_types)
+      redirect_to organization_setting_demand_path(@organization, partial_name: 'tabs_demand_types', item_title: I18n.t('demands_types'), anchor: :demandes_types)
     else
       render action: 'new'
     end

@@ -24,7 +24,7 @@ class DemandStatusesController < ApplicationController
 
     if @demand_status.save
       flash[:notice] = "DemandStatuse créee avec succès"
-      redirect_to organization_setting_demand_path(@organization)
+      redirect_to organization_setting_demand_path(@organization, partial_name: 'tabs_demand_statuses', item_title: I18n.t('demands_statuses'), anchor: 'demands_statuses')
     else
       render action: 'new'
     end
@@ -34,7 +34,7 @@ class DemandStatusesController < ApplicationController
     @demand_status = DemandStatus.find(params[:id])
     @organization = Organization.find(params[:organization_id])
     @demand_status.update(params[:demand_status])
-    redirect_to organization_setting_demand_path(@organization)
+    redirect_to organization_setting_demand_path(@organization, partial_name: 'tabs_demand_statuses', item_title: I18n.t('demands_statuses'), anchor: 'demands_statuses')
   end
 
   def set_demand_status_workflow

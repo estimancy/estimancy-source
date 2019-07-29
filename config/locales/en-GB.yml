@@ -326,6 +326,8 @@ en-gb:
   associated_service: "Associated service"
   create_a_service: "Create a service"
   criticality: "Criticality"
+  create_a_criticality: "Create a criticality"
+  create_a_severity: "Create a severity"
   new_demand_status: "New demand status"
 
   # guw_models

@@ -1,217 +1,25 @@
 <div class="row">
   <div class="col-10">
 
-    <div id="demandes_types">
-      <div class="edition-page-group py-4">
-        <span><%= I18n.t('demands_types') %></span>
+    <% if @item_title.blank? %>
+        <div id="tabs-demandes_types" class="edition-page-group py-4"><span id="item_title"><%= I18n.t('demands_types') %></span></div>
+    <% else %>
+        <div id='<%= "tabs-#{@item_title}" %>' class="edition-page-group py-4"><span id="item_title"><%= @item_title %></span></div>
+    <% end %>
+
+    <section class="card card-content-bloc estimancy-form">
+      <div class="mb-5">
+        <div class="effort-bloc">
+          <div id="settings_content" class="card-body">
+            <% if @partial_name.blank? %>
+                <%= render :partial => "organizations/tabs_demand_types" %>
+            <% else %>
+                <%= render :partial => "organizations/#{@partial_name}" %>
+            <% end %>
+          </div>
+        </div>
       </div>
-      <%= link_to "#{I18n.t :create_demand_type}", new_organization_demand_type_path(@organization), class: "btn btn-primary btn-estimancy" %>
-      <hr>
-      <table id="table_list_1" class="table table-list">
-        <thead>
-        <tr>
-          <th><%= I18n.t :name %></th>
-          <th><%= I18n.t :description %></th>
-          <th><%= I18n.t :cost_source %></th>  <%# provenance des couts %>
-          <th><%= I18n.t :starting_status  %></th>
-          <th>Actions</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <% @demand_types.each do |dt| %>
-          <tr>
-            <td><%= dt.name %></td>
-            <td><%= dt.description %></td>
-            <td><%= dt.cost_from %></td>
-            <td><%= dt.demand_status %></td>
-            <td>
-              <%= link_to 'Editer', edit_organization_demand_type_path(@organization, dt), :class => 'icon-pencil' %> |
-              <%= link_to 'Supprimer', organization_demand_type_path(@organization, dt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-            </td>
-          </tr>
-        <% end %>
-        </tbody>
-
-        <%= render :partial => 'layouts/footer_table' %>
-      </table>
-    </div>
-
-    <div id="demands_statuses">
-      <div class="edition-page-group py-4">
-        <span><%= I18n.t('demands_statuses') %></span>
-      </div>
-
-      <% if @organization.demand_statuses.length > 0 %>
-        <%= link_to "#{I18n.t :create_demand_status}", new_organization_demand_status_path(@organization), class: "btn btn-primary btn-estimancy" %>
-        <hr>
-
-        <table id="table_list_1" class="table table-list">
-          <thead>
-          <tr>
-            <th>
-              <%= I18n.t :name %>
-            </th>
-            <th>
-              <%= I18n.t :demand_type %>
-            </th>
-            <th>
-              <%= I18n.t :number %>
-            </th>
-            <th>
-              Alias
-            </th>
-            <th>
-              <%= I18n.t :color  %>
-            </th>
-          </tr>
-          </thead>
-          <tbody>
-          <% @demand_statuses.each do |demand_status| %>
-            <tr>
-              <td><%= link_to demand_status.name, edit_organization_demand_status_path(@organization, demand_status) %></td>
-              <td><%= demand_status.demand_type %></td>
-              <td><%= demand_status.status_number %></td>
-              <td><%= demand_status.status_alias %></td>
-              <td><%= demand_status.status_color %></td>
-            </tr>
-          <% end %>
-          </tbody>
-        </table>
-      <% end %>
-    </div>
-
-    <div id="services">
-      <div class="edition-page-group py-4">
-        <span><%= I18n.t('services') %></span>
-      </div>
-
-      <%= link_to "#{I18n.t :create_a_service}", new_organization_service_path(@organization), class: "btn btn-primary btn-estimancy" %>
-      <hr>
-
-      <table id="table_list_1" class="table table-list">
-        <thead>
-        <tr>
-          <th>
-            Name
-          </th>
-          <th>
-            Description
-          </th>
-          <th>
-            Livrable
-          </th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <% @services.each do |service| %>
-          <tr>
-            <td><%= service.name %></td>
-            <td><%= service.description %></td>
-            <td><%= service.livrable %></td>
-            <td>
-              <%= link_to '', edit_organization_service_path(@organization, service), class: 'fa fa-pencil' %>
-              <%= link_to '', organization_service_path(@organization, service), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-            </td>
-          </tr>
-        <% end %>
-        </tbody>
-
-        <%= render :partial => 'layouts/footer_table' %>
-      </table>
-    </div>
-
-    <div id="livrables">
-      <div class="edition-page-group py-4">
-        <span><%= I18n.t('livrable') %></span>
-      </div>
-      <%= link_to "#{I18n.t :create_a_livrable}", new_organization_livrable_path(@organization), class: "btn btn-primary btn-estimancy" %>
-      <hr>
-      <table id="table_list_1" class="table table-list">
-        <thead>
-        <tr>
-          <th>
-            <%= I18n.t :name %>
-          </th>
-          <th>
-            <%= I18n.t :description %>
-          </th>
-          <th>
-            <%= I18n.t :states %> <%# états %>
-          </th>
-          <th>
-            <%= I18n.t :associated_service %>
-          </th>
-        </tr>
-        </thead>
-
-        <tbody>
-        <% @livrables.each do |livrable| %>
-          <tr>
-            <td><%= livrable.name %></td>
-            <td><%= livrable.description %></td>
-            <td><%= livrable.state %></td>
-            <td><%= livrable.service %></td>
-            <td>
-              <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
-              <%= link_to '', organization_livrable_path(@organization, livrable), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
-            </td>
-          </tr>
-        <% end %>
-        </tbody>
-
-        <%= render :partial => 'layouts/footer_table' %>
-      </table>
-    </div>
-
-    <div id="criticality">
-      <div class="edition-page-group py-4">
-        <span><%= I18n.t('severity') %></span>
-      </div>
-      <%#= link_to "#{I18n.t :severity}", new_organization_severity_path(@organization), class: "btn btn-primary btn-estimancy" %>
-
-      <table id="table_list_1" class="table table-list">
-        <thead>
-          <tr>
-            <th>
-              <%= I18n.t :name %>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          <% @organization.criticalities.each do |criticality| %>
-            <tr>
-              <td><%= link_to criticality.name, "#" %></td>
-            </tr>
-          <% end %>
-        </tbody>
-      </table>
-    </div>
-
-    <div id="severity">
-      <div class="edition-page-group py-4">
-        <span><%= I18n.t('criticality') %></span>
-      </div>
-
-      <table id="table_list_1" class="table table-list">
-        <thead>
-        <tr>
-          <th>
-            <%= I18n.t :name %>
-          </th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @organization.severities.each do |severity| %>
-          <tr>
-            <td><%= link_to severity.name, "#" %></td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
-    </div>
-
+    </section>
   </div>
 
   <div class="col-2">
@@ -219,22 +27,23 @@
       <h4 class="mb-0">Navigation</h4>
       <ul class="nav flex-column">
         <li class="nav-item">
-          <a class="nav-link group" href="#demandes_types"><span><%= I18n.t(:demands_types) %></span></a>
+          <a class="nav-link group" href="<%= organization_setting_demand_path(@organization, partial_name: 'tabs_demand_types', item_title: I18n.t('demands_types'), anchor: 'tabs-demandes_types') %>"><span><%= I18n.t("demands_types") %></span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link group" href="#demands_statuses"><span><%= I18n.t(:demands_statuses) %></span></a>
+          <a class="nav-link group" href="<%= organization_setting_demand_path(@organization, partial_name: 'tabs_demand_statuses', item_title: I18n.t('demands_statuses'), anchor: 'tabs-demands_statuses') %>"><span><%= I18n.t("demands_statuses") %></span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link group" href="#services"><span><%= I18n.t(:services) %></span></a>
+          <a class="nav-link group" href="<%= organization_setting_demand_path(@organization, partial_name: 'tabs_demand_services', item_title: I18n.t('services'), anchor: 'tabs-services') %>"><span><%= I18n.t("services") %></span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link group" href="#livrables"><span><%= I18n.t(:livrable) %></span></a>
+          <a class="nav-link group" href="<%= organization_setting_demand_path(@organization, partial_name: 'tabs_demand_livrables', item_title: I18n.t('livrable'), anchor: 'tabs-livrables') %>"><span><%= I18n.t("livrable") %></span></a>
+
         </li>
         <li class="nav-item">
-          <a class="nav-link group" href="#severity"><span><%= I18n.t (:severity) %></span></a>
+          <a class="nav-link group" href="<%= organization_setting_demand_path(@organization, partial_name: 'tabs_demand_severity', item_title: I18n.t('severity'), anchor: 'tabs-severity') %>"><span><%= I18n.t("severity") %></span></a>
         </li>
         <li class="nav-item">
-          <a class="nav-link group" href="#criticality"><span><%= I18n.t (:criticality) %></span></a>
+          <a class="nav-link group" href="<%= organization_setting_demand_path(@organization, partial_name: 'tabs_demand_criticality', item_title: I18n.t('criticality'), anchor: 'tabs-criticality') %>"><span><%= I18n.t("criticality") %></span></a>
         </li>
       </ul>
     </div>

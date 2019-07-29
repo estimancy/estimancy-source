@@ -327,6 +327,8 @@ fr1:
   associated_service: "Service associé"
   create_a_service: "Créer un service"
   criticality: "Criticité"
+  create_a_criticality: "Créer une criticité"
+  create_a_severity: "Créer une sévérité"
   new_demand_status: "Nouveau statut de demande"
 
   # guw_models

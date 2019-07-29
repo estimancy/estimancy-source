@@ -122,12 +122,20 @@ class PermissionsController < ApplicationController
     end
 
     redirect_tab = "tabs-global-permissions"
+    partial_name = 'tabs_authorization_global_permissions'
+    item_title = I18n.t('global_permissions')
+
     if !params[:modules_permissions].nil?
       redirect_tab = "tabs-modules-permissions"
+      partial_name = 'tabs_authorization_module_permissions'
+      item_title = I18n.t('modules_permissions')
+
     elsif !params[:organization_permissions].nil?
       redirect_tab = "tabs-organization-permissions"
+      partial_name = 'tabs_authorization_organization_permissions'
+      item_title = I18n.t('organization_permissions')
     end
-    redirect_to organization_authorization_path(@current_organization, anchor: redirect_tab)
+    redirect_to organization_authorization_path(@current_organization, partial_name: partial_name, item_title: item_title, anchor: redirect_tab)
   end
 
   #Set rights on estimations permissions
@@ -137,7 +145,7 @@ class PermissionsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     #For the cancel button
     if params[:commit] == I18n.t('cancel')
-      redirect_to organization_authorization_path(@organization, :anchor => "tabs-estimations-permissions"), :notice => "#{I18n.t (:notice_permission_successful_cancelled)}"
+      redirect_to organization_authorization_path(@organization, partial_name: 'tabs_authorization_estimation_permissions', item_title: I18n.t('estimations_permissions'), :anchor => "tabs-estimations-permissions"), :notice => "#{I18n.t (:notice_permission_successful_cancelled)}"
     else
       @project_security_levels = @organization.project_security_levels
       @permissions = Permission.all
@@ -154,7 +162,7 @@ class PermissionsController < ApplicationController
         end
       end
 
-      redirect_to organization_authorization_path(@organization, anchor: "tabs-estimations-permissions")
+      redirect_to organization_authorization_path(@organization, partial_name: 'tabs_authorization_estimation_permissions', item_title: I18n.t('estimations_permissions'), anchor: "tabs-estimations-permissions")
     end
   end
 

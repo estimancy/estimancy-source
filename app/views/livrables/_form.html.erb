@@ -51,7 +51,7 @@
                   <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
                   <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
                 <% end %>
-                <%= link_to I18n.t('back'), organization_setting_demand_path(@organization), :class => 'btn' %>
+                <%= link_to I18n.t('back'), organization_setting_demand_path(@organization, partial_name: 'tabs_demand_livrables', item_title: I18n.t('livrable'), anchor: 'tabs-livrables'), :class => 'btn' %>
               </div>
             <% end %>
           </div>

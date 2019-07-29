@@ -25,7 +25,7 @@
             <% end %>
             <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <% end %>
-        <%= link_to I18n.t('back'), organization_authorization_path(@organization, anchor: "tabs-project-security-levels"), :class => 'btn' %>
+        <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_security_levels', item_title: I18n.t('security_level'), anchor: "tabs-project-security-levels"), :class => 'btn' %>
       </div>
 
     <% end %>

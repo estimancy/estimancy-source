@@ -1,0 +1,32 @@
+<div id="demandes_types">
+  <%= link_to "#{I18n.t :create_demand_type}", new_organization_demand_type_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <hr>
+  <table id="table_list_1" class="table table-list">
+    <thead>
+    <tr>
+      <th><%= I18n.t :name %></th>
+      <th><%= I18n.t :description %></th>
+      <th><%= I18n.t :cost_source %></th>  <%# provenance des couts %>
+      <th><%= I18n.t :starting_status  %></th>
+      <th>Actions</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @demand_types.each do |dt| %>
+        <tr>
+          <td><%= dt.name %></td>
+          <td><%= dt.description %></td>
+          <td><%= dt.cost_from %></td>
+          <td><%= dt.demand_status %></td>
+          <td>
+            <%= link_to 'Editer', edit_organization_demand_type_path(@organization, dt), :class => 'icon-pencil' %> |
+            <%= link_to 'Supprimer', organization_demand_type_path(@organization, dt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+          </td>
+        </tr>
+    <% end %>
+    </tbody>
+
+    <%= render :partial => 'layouts/footer_table' %>
+  </table>
+</div>

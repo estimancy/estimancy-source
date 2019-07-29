@@ -1,0 +1,36 @@
+<div id="services">
+  <%= link_to "#{I18n.t :create_a_service}", new_organization_service_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <hr>
+
+  <table id="table_list_1" class="table table-list">
+    <thead>
+    <tr>
+      <th>
+        Name
+      </th>
+      <th>
+        Description
+      </th>
+      <th>
+        Livrable
+      </th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @services.each do |service| %>
+        <tr>
+          <td><%= service.name %></td>
+          <td><%= service.description %></td>
+          <td><%= service.livrable %></td>
+          <td>
+            <%= link_to '', edit_organization_service_path(@organization, service), class: 'fa fa-pencil' %>
+            <%= link_to '', organization_service_path(@organization, service), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+          </td>
+        </tr>
+    <% end %>
+    </tbody>
+
+    <%= render :partial => 'layouts/footer_table' %>
+  </table>
+</div>

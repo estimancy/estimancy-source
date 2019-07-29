@@ -1,0 +1,22 @@
+
+<div id="severity">
+  <%= link_to "#{I18n.t :create_a_severity}", new_organization_severity_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <table id="table_list_1" class="table table-list">
+    <thead>
+    <tr>
+      <th>
+        <%= I18n.t :name %>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @organization.severities.each do |severity| %>
+        <tr>
+          <td><%= link_to severity.name, "#" %></td>
+        </tr>
+    <% end %>
+    </tbody>
+
+    <%= render :partial => 'layouts/footer_table' %>
+  </table>
+</div>

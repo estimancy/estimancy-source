@@ -66,7 +66,7 @@ class GroupsController < ApplicationController
     set_breadcrumbs I18n.t(:groups) => organization_setting_path(@organization, anchor: "tabs-group"), I18n.t('new_group') => ""
 
     if @group.save
-      redirect_to organization_authorization_path(@organization, anchor: "tabs-group")
+      redirect_to organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group")
     else
       render action: 'new'
     end
@@ -104,7 +104,7 @@ class GroupsController < ApplicationController
       flash[:notice] = I18n.t(:error_group_failed_update)
     end
 
-    redirect_to redirect_apply(edit_organization_group_path(@group.organization, @group, anchor: "tabs-2"), nil, organization_authorization_path(@group.organization_id, :anchor => 'tabs-group'))
+    redirect_to redirect_apply(edit_organization_group_path(@group.organization, @group, anchor: "tabs-2"), nil, organization_authorization_path(@group.organization_id, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), :anchor => 'tabs-group'))
   end
 
   # #Update the selected users in the project's securities
@@ -150,7 +150,7 @@ class GroupsController < ApplicationController
       #redirect_to redirect(groups_path), :notice => "#{I18n.t (:notice_group_successful_updated)}"
       flash[:notice] =  "#{I18n.t (:notice_group_successful_updated)}"
       #redirect_to edit_organization_path(@organization)
-      redirect_to redirect_apply(edit_organization_group_path(@organization, @group, anchor: "tabs-1"), nil, organization_authorization_path(@organization, :anchor => 'tabs-group'))
+      redirect_to redirect_apply(edit_organization_group_path(@organization, @group, anchor: "tabs-1"), nil, organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), :anchor => 'tabs-group'))
     else
       render action: 'edit'
     end
@@ -167,7 +167,7 @@ class GroupsController < ApplicationController
     @group.destroy
 
     flash[:notice] = I18n.t (:notice_group_successful_deleted)
-    redirect_to organization_authorization_path(@organization, anchor: "tabs-group")
+    redirect_to organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group")
   end
 
 end

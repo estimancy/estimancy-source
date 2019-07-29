@@ -71,7 +71,7 @@ class ProjectSecurityLevelsController < ApplicationController
 
     if @project_security_level.update_attributes(params[:project_security_level].merge(originator_id: @current_user.id, event_organization_id: @organization.id))
       #redirect_to organization_authorization_path(@project_security_level.organization_id, anchor: "tabs-project-security-levels"), notice: "#{I18n.t (:notice_project_securities_level_successful_updated)}"
-      redirect_to redirect_apply(edit_organization_project_security_level_path(@organization, @project_security_level), nil, organization_authorization_path(@organization, :anchor => 'tabs-project-security-levels')), notice: "#{I18n.t (:notice_project_securities_level_successful_updated)}"
+      redirect_to redirect_apply(edit_organization_project_security_level_path(@organization, @project_security_level), nil, organization_authorization_path(@organization, partial_name: 'tabs_authorization_security_levels', item_title: I18n.t('security_level'), :anchor => 'tabs-project-security-levels')), notice: "#{I18n.t (:notice_project_securities_level_successful_updated)}"
     else
       render action: 'edit'
     end
@@ -84,6 +84,6 @@ class ProjectSecurityLevelsController < ApplicationController
     organization_id = @project_security_level.organization_id
     @project_security_level.destroy
 
-    redirect_to organization_authorization_path(organization_id, anchor: "tabs-project-security-levels")
+    redirect_to organization_authorization_path(organization_id, partial_name: 'tabs_authorization_security_levels', item_title: I18n.t('security_level'), anchor: "tabs-project-security-levels")
   end
 end

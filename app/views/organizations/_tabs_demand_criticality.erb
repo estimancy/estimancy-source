@@ -1,0 +1,21 @@
+<div id="criticality">
+  <%= link_to "#{I18n.t(:create_a_criticality)}", new_organization_criticability_path(@organization), class: "btn btn-primary btn-estimancy" %>
+
+  <table id="table_list_1" class="table table-list">
+    <thead>
+    <tr>
+      <th>
+        <%= I18n.t :name %>
+      </th>
+    </tr>
+    </thead>
+    <tbody>
+    <% @organization.criticalities.each do |criticality| %>
+        <tr>
+          <td><%= link_to criticality.name, "#" %></td>
+        </tr>
+    <% end %>
+    </tbody>
+    <%= render :partial => 'layouts/footer_table' %>
+  </table>
+</div>

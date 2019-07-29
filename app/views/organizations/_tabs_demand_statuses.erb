@@ -1,0 +1,39 @@
+<div id="demands_statuses">
+  <%# if @organization.demand_statuses.length > 0 %>
+      <%= link_to "#{I18n.t :create_demand_status}", new_organization_demand_status_path(@organization), class: "btn btn-primary btn-estimancy" %>
+      <hr>
+
+      <table id="table_list_1" class="table table-list">
+        <thead>
+        <tr>
+          <th>
+            <%= I18n.t :name %>
+          </th>
+          <th>
+            <%= I18n.t :demand_type %>
+          </th>
+          <th>
+            <%= I18n.t :number %>
+          </th>
+          <th>
+            Alias
+          </th>
+          <th>
+            <%= I18n.t :color  %>
+          </th>
+        </tr>
+        </thead>
+        <tbody>
+        <% @demand_statuses.each do |demand_status| %>
+            <tr>
+              <td><%= link_to demand_status.name, edit_organization_demand_status_path(@organization, demand_status) %></td>
+              <td><%= demand_status.demand_type %></td>
+              <td><%= demand_status.status_number %></td>
+              <td><%= demand_status.status_alias %></td>
+              <td><%= demand_status.status_color %></td>
+            </tr>
+        <% end %>
+        </tbody>
+      </table>
+  <%# end %>
+</div>
