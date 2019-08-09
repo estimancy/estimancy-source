@@ -365,10 +365,10 @@
                         <td><%= guw_attribute.name %></td>
                         <td><%= guw_attribute.description %></td>
                         <td class="center">
-                          <%= link_to 'Editer', guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute), class: "fa fa-pencil" %>
+                          <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute), :class => 'material-icons', :title => I18n.t('edit') %>
                           <% if can? :manage_modules_instances, ModuleProject %>
-                            <%= link_to 'Supprimer', guw_attribute, method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
-                          <% end %>
+                            <%= link_to raw("<i class='material-icons'>delete</i>"), guw_attribute, confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                        <% end %>
                         </td>
                       </tr>
                     <% end %>
@@ -420,9 +420,9 @@
                                 <td class="align-center"><%= guw_output.standard_coefficient %></td>
                                 <td class="align-center"><%= guw_output.display_order %></td>
                                 <td class="center">
-                                  <%= link_to 'Editer', guw.edit_guw_model_guw_output_path(@guw_model, guw_output), class: "fa fa-pencil" %>
+                                  <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_output_path(@guw_model, guw_output), :class => 'material-icons', :title => I18n.t('edit') %>
                                   <% if can? :manage_modules_instances, ModuleProject %>
-                                    <%= link_to 'Supprimer', guw.guw_model_guw_output_path(@guw_model, guw_output), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "fa fa-trash" %>
+                                    <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_output_path(@guw_model, guw_output), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
                                   <% end %>
                                 </td>
                               </tr>
@@ -452,9 +452,9 @@
                 </b>
 
                 <div class="edition-bloc-content">
-                  <%= link_to "Editer", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient) %>
+                  <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), :class => 'material-icons', :title => I18n.t('edit') %>
                   <% if can? :manage_modules_instances, ModuleProject %>
-                    <%= link_to "Supprimer", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, confirm: I18n.t(:are_you_sure) %>
+                    <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
                   <% end %>
                 </div>
 
@@ -501,9 +501,9 @@
                         <%= guw_coefficient_element.display_order %>
                       </td>
                       <td class="align-center">
-                        <%= link_to "Editer", guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), class: "fa fa-pencil" %>
+                        <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), :class => 'material-icons', :title => I18n.t('edit') %>
                         <% if can? :manage_modules_instances, ModuleProject %>
-                          <%= link_to "Supprimer", guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), method: :delete, class: "fa fa-trash" %>
+                          <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
                         <% end %>
                       </td>
                     </tr>

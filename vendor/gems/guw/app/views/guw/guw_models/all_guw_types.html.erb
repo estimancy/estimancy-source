@@ -13,6 +13,7 @@
     <thead>
       <tr>
         <th>Nom</th>
+        <th></th>
         <th>Actions</th>
       </tr>
     </thead>
@@ -26,8 +27,8 @@
             <%= guw_type.guw_complexities.map(&:name).join(", ") %>
           </td>
           <td class="center">
-            <%= link_to "Editer |", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "fa fa-edit" %>
-            <%= link_to "Supprimer", guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "fa fa-trash" %>
+            <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_type_path(@guw_model, guw_type), :class => 'material-icons', :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), guw_type, confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
           </td>
         </tr>
       <% end %>

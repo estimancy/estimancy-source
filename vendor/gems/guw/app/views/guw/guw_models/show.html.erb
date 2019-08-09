@@ -4,12 +4,14 @@
     <% guw_model_guw_attributes = @guw_model.guw_attributes %>
     <% guw_outputs = Guw::GuwOutput.where(guw_model_id: @guw_model.id).order("display_order ASC") %>
 
-    <% guw_model_guw_types.each do |guw_type| %>
-      <div id="tabs-<%= guw_type.id %>" class="edition-page-group py-4">
+
+      <% guw_model_guw_types.each do |guw_type| %>
+      <div id="tabs-<%= guw_type.id %>" class="collapse">
+<!--      <div id="tabs-<%#= guw_type.id %>" class="edition-page-group py-4">-->
         <span>
           <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type) %>
         </span>
-      </div>
+<!--      </div>-->
       <div class="card card-content-bloc estimation-edition">
         <div class="card-body">
           <div class="edition-bloc-title">
@@ -326,6 +328,7 @@
         </div>
       </div>
     <% end %>
+    </div>
   </div>
 
   <div class="col-2">
@@ -334,7 +337,8 @@
       <ul class="nav flex-column">
         <% guw_model_guw_types.each do |guw_type| %>
           <li class="nav-item">
-            <a class="nav-link group" href="#tabs-<%= guw_type.id %>">
+            <a class="nav-link group" href="#tabs-<%= guw_type.id %>"
+            data-toggle="collapse" aria-expanded="false" aria-controls="tabs-<%= guw_type.id %>">
               <span>
                 <%= guw_type %>
               </span>

@@ -1,82 +1,195 @@
-<div class="tabs">
-  <ul>
-    <li>
-      <a href="#tabs-1">
-       <%= I18n.t(:team_model) %>
-      </a>
-    </li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
-    <%= simple_form_for(@staffing_model) do |f| %>
-      <div class="alert alert-info">
-        <%= I18n.t(:what_he_do).html_safe %>
-      </div>
+      <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
 
-      <% if @staffing_model.errors.any? %>
-        <!--<div id="error_explanation" class="alert-error">-->
+        <li class="nav-item">
+          <a class="nav-link show active"  data-toggle="pill" id="tab-team-models" href="#tab-team-models" role="tab" aria-selected="true"><%= I18n.t(:team_model) %></a>
+        </li>
+      </ul>
 
-          <!--<h2>-->
-            <!--<%#= I18n.t(:prohibited_this, parameter: pluralize(@staffing_model.errors.count, "error")) %>-->
-            <!--<%#= pluralize(@staffing_model.errors.count, "error") %>-->
-          <!--</h2>-->
+      <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="tabs-model" role="tabpanel" aria-labelledby="tabs-model_tab">
+          <div class="card-body">
+            <div class="edition-bloc-left">
+              <div class="edition-bloc-content">
 
-          <!--<ul>-->
-          <!--<%# @staffing_model.errors.full_messages.each do |msg| %>-->
-            <!--<li><%#= msg %></li>-->
-          <!--<%# end %>-->
-          <!--</ul>-->
-        <!--</div>-->
-      <% end %>
+                <div class="edition-bloc-form">
+                  <%= simple_form_for(@staffing_model) do |f| %>
+                    <div class="alert alert-info">
+                      <%= I18n.t(:what_he_do).html_safe %>
+                    </div>
 
-      <div class="form-inputs">
-        <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
-        <%= f.input :name, label: I18n.t(:name) %>
-        <%= f.input :config_type, as: :select, collection: [["Standard", "old"], ["Time Cost Tradeoff", "new"]], selected: @staffing_model.config_type, label: "Type de configuration" %>
-        <%= f.input :description, label: I18n.t(:description), :input_html => {:class => 'input-xxlarge', :rows => 5 } %>
-        <%= f.input :staffing_method, as: :select, collection: [["Trapeze", "trapeze"], ["Rayleigh", "rayleigh"]], selected: @staffing_model.staffing_method, label: 'Méthode de staffing' %>
-        <%= f.input :mc_donell_coef, label: 'McDonell Coef' , input_html: { placeholder: "Valeur conseillé : 6" } %>
-        <%= f.input :puissance_n, label: "Puissance N", input_html: { placeholder: "Valeur conseillé : 0.33" } %>
-        <div>
-          <%= label_tag :trapeze_default_values, I18n.t(:def_default_value) %>
-          <%= I18n.t(:what_to_do).html_safe %>
-          <div class="row-fluid">
-            <div class="span3"><%= f.input :x0, label: "x0", input_html: { value: @staffing_model.trapeze_default_values['x0'] || 0 } %></div>
-            <div class="span3"><%= f.input :y0, label: "y0", input_html: { value: @staffing_model.trapeze_default_values['y0'] || 20 } %></div>
-          </div>
 
-          <div class="row-fluid">
-            <div class="span3"> <%= f.input :x1, label: "x1", input_html: { value: @staffing_model.trapeze_default_values['x1'] || 20 } %></div>
-            <div class="span3"> <%= f.input :x2, label: "x2", input_html: { value: @staffing_model.trapeze_default_values['x2'] || 80 } %></div>
-          </div>
+                  <% if @staffing_model.errors.any? %>
+                    <!--<div id="error_explanation" class="alert-error">-->
 
-          <div class="row-fluid">
-            <div class="span3"><%= f.input :x3, label: "x3", input_html: { value: @staffing_model.trapeze_default_values['x3'] || 100 } %></div>
-            <div class="span3"><%= f.input :y3, label: "y3", input_html: { value: @staffing_model.trapeze_default_values['y3'] || 20 } %></div>
-          </div>
+                    <!--<h2>-->
+                    <!--<%#= I18n.t(:prohibited_this, parameter: pluralize(@staffing_model.errors.count, "error")) %>-->
+                    <!--<%#= pluralize(@staffing_model.errors.count, "error") %>-->
+                    <!--</h2>-->
 
-          <div class="row-fluid">
-            <div class="span3"><%= f.input :min_range, label: "Borne min", input_html: { value: @staffing_model.min_range } %></div>
-            <div class="span3"><%= f.input :max_range, label: "Borne max", input_html: { value: @staffing_model.max_range } %></div>
+                    <!--<ul>-->
+                    <!--<%# @staffing_model.errors.full_messages.each do |msg| %>-->
+                    <!--<li><%#= msg %></li>-->
+                    <!--<%# end %>-->
+                    <!--</ul>-->
+                    <!--</div>-->
+                  <% end %>
+
+                  <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                      <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :config_type, as: :select, collection: [["Standard", "old"], ["Time Cost Tradeoff", "new"]],
+                                  selected: @staffing_model.config_type, label: "Type de configuration", input_html: { class: "form-control" } %>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :staffing_method, as: :select, collection:  [["Trapeze", "trapeze"], ["Rayleigh", "rayleigh"]],
+                                  selected: @staffing_model.config_type, label: "Méthode de staffing", input_html: { class: "form-control" } %>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :mc_donell_coef, label: false, input_html: { class: 'mdl-textfield__input', placeholder: "Valeur conseillé : 6"} %>
+                      <label class="mdl-textfield__label" for="mc_donell_coef"><%= "McDonell Coef" %></label>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :puissance_n, label: false, input_html: { class: 'mdl-textfield__input', placeholder: "Valeur conseillé : 0.33"} %>
+                      <label class="mdl-textfield__label" for="puissance_n"><%= "Puissance N" %></label>
+                    </div>
+                  </div>
+
+                  <div class="col-12">
+                    <%= label_tag :trapeze_default_values, I18n.t(:def_default_value) %>
+                    <%= I18n.t(:what_to_do).html_safe %>
+                  </div>
+
+                  <br>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <label class="mdl-textfield__label" for="x0"><%= "x0" %></label>
+                        <%= f.input :x0, label: false, input_html: { class: 'mdl-textfield__input', value: @staffing_model.trapeze_default_values['x0'] || 0} %>
+                      </div>
+                    </div>
+
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <label class="mdl-textfield__label" for="y0"><%= "y0" %></label>
+                        <%= f.input :y0, label: false, input_html: { class: 'mdl-textfield__input', value: @staffing_model.trapeze_default_values['y0'] || 20} %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <label class="mdl-textfield__label" for="x1"><%= "x1" %></label>
+                        <%= f.input :x1, label: false, input_html: { class: 'mdl-textfield__input', value: @staffing_model.trapeze_default_values['x1'] || 20} %>
+                      </div>
+                    </div>
+
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <label class="mdl-textfield__label" for="x2"><%= "x2" %></label>
+                        <%= f.input :x2, label: false, input_html: { class: 'mdl-textfield__input', value: @staffing_model.trapeze_default_values['x2'] || 80} %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <label class="mdl-textfield__label" for="x3"><%= "x3" %></label>
+                        <%= f.input :x3, label: false, input_html: { class: 'mdl-textfield__input', value: @staffing_model.trapeze_default_values['x3'] || 100} %>
+                      </div>
+                    </div>
+
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <label class="mdl-textfield__label" for="y3"><%= "y3" %></label>
+                        <%= f.input :y3, label: false, input_html: { class: 'mdl-textfield__input', value: @staffing_model.trapeze_default_values['y3'] || 20} %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <label class="mdl-textfield__label" for="min_range"><%= "Borne min" %></label>
+                        <%= f.input :min_range, label: false, input_html: { class: 'mdl-textfield__input', value: @staffing_model.min_range } %>
+                      </div>
+                    </div>
+
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <label class="mdl-textfield__label" for="max_range"><%= "Borne max" %></label>
+                        <%= f.input :max_range, label: false, input_html: { class: 'mdl-textfield__input', value: @staffing_model.max_range} %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :effort_unit, label: false, input_html: { class: 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="effort_unit"><%= I18n.t(:effort_unit) %></label>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :standard_unit_coefficient, label: false, input_html: { class: 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="standard_unit_coefficient"><%= I18n.t(:standard_coef_conv) %></label>
+                    </div>
+                  </div>
+
+                  <div class="actions-tabs">
+                    <% if can? :manage_modules_instances, ModuleProject %>
+                      <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+                    <% end %>
+                    <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "team"), class: "btn btn-secondary" %>
+                  </div>
+
+                  <% end %>
+
+                </div>
+
+              </div>
+            </div>
           </div>
         </div>
-
-        <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
-        <%= f.input :enabled_input, label: I18n.t(:Changing_of_the_effort_enter) %>
-        <%= f.input :effort_week_unit, label: I18n.t(:effort_week_unit) %>
-
-        <h5><%= I18n.t(:effort) %></h5>
-        <%= f.input :effort_unit, label: I18n.t(:effort_unit) %>
-        <%= f.input :standard_unit_coefficient, label: I18n.t(:standard_coef_conv) %>
       </div>
 
-      <div class="actions-tabs">
-        <% if can? :manage_modules_instances, ModuleProject %>
-            <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-        <% end %>
-        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "team"), class: "btn" %>
-      </div>
-
-    <% end %>
+    </div>
   </div>
-</div>
+</section>

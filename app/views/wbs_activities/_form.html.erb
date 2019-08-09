@@ -1,145 +1,231 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:general) %> </a></li>
-    <% if action_name.in?(%w(edit update)) %>
-        <li><a href="#tabs-2"><%= I18n.t(:wbs_elements) %></a></li>
-        <li><a href="#tabs-3"><%= I18n.t(:ratios) %> </a></li>
-        <li><a href="#tabs-4"><%= I18n.t(:ratios_elements) %></a></li>
-    <% end %>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-    <div id="tabs-1">
-      <div class="row-fluid">
-        <div class="span9">
-            <%= simple_form_for(@wbs_activity) do |f| %>
-        <%= f.error_notification %>
+      <br>
 
-        <%= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
-        <% if controller.action_name == 'edit' and @wbs_activity.retired? %>
-          <%= f.input :state, :label => I18n.t('state'), :as => :select, :collection => WbsActivity.aasm.states_for_select, :input_html => {:class => 'input-xxlarge'} %>
-        <% else %>
-          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
-          <%= f.input :three_points_estimation, :label => I18n.t(:three_points_estimation) %>
-          <%= f.input :enabled_input, label: I18n.t(:modification_entry_valur) %>
+      <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
 
-          <%#= f.input :hide_wbs_header, label: I18n.t(:hide_wbs_header) %>
-          <%= f.input :hide_wbs_header,  as: :select,
-                     collection: [[I18n.t(:hide_all), "hide_all"],
-                                  [I18n.t(:show_only_ratio), "show_only_ratio"],
-                                  [I18n.t(:show_all), "show_all"]],
-                      :include_blank => false,
-                      label: I18n.t(:show_hide_wbs_header),
-                     :input_html => {:class => 'input-xlarge', :style => 'margin-left:0px'}
-          %>
-          <%#= f.input :gender, as: :radio_buttons, collection: [['0', 'female'], ['1', 'male']], label_method: :second, value_method: :first %>
+        <li class="nav-item">
+          <a class="nav-link show active"  data-toggle="pill" id="tabs-1_tab" href="#tabs-1" role="tab" aria-selected="true"><%= I18n.t(:general) %> </a>
+        </li>
 
-          <%= f.input :effort_unit, :label => I18n.t(:Wording_of_the_module_unit_effort) %>
-          <%= f.input :effort_unit_coefficient, :label => I18n.t(:Conversion_factor_standard_effort) %>
-          <%= f.input :average_rate_wording, :label => I18n.t(:average_rate_wording) %>
+        <%if action_name.in?(%w(edit update)) %>
+          <li class="nav-item">
+            <a class="nav-link"  data-toggle="pill" id="tabs-2_tab" href="#tabs-2" role="tab" aria-selected="false"><%= I18n.t(:wbs_elements) %></a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link"  data-toggle="pill" id="tabs-3_tab" href="#tabs-3" role="tab" aria-selected="false">C<%= I18n.t(:ratios) %></a>
+          </li>
+
+          <li class="nav-item">
+            <a class="nav-link"  data-toggle="pill" id="tabs-4_tab" href="#tabs-4" role="tab" aria-selected="false"><%= I18n.t(:ratios_elements) %></a>
+          </li>
+        <% end  %>
+      </ul>
+
+      <br>
+
+      <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="tabs-1" role="tabpanel" aria-labelledby="tabs-1_tab">
+          <div class="card-body">
+
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-content">
+
+                  <div class="edition-bloc-form">
+                    <%= simple_form_for(@wbs_activity) do |f| %>
+                      <%= f.error_notification %>
+
+                      <%= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
+
+                        <% if controller.action_name == 'edit' and @wbs_activity.retired? %>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :state, as: :select, collection: WbsActivity.aasm.states_for_select, label: "#{I18n.t :type_of_configuration}", input_html: { class: "form-control", rows: "5" } %>
+                              <label class="mdl-textfield__label" for="state"><%= I18n.t(:state) %></label>
+                            </div>
+                          </div>
+
+                        <% else %>
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                              <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                            </div>
+                          </div>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input'} %>
+                              <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                            </div>
+                          </div>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
+                              <%= f.input :enabled_input, label: I18n.t(:modification_entry_valur) %>
+                            </div>
+                          </div>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :hide_wbs_header, as: :select,
+                                          collection: [[I18n.t(:hide_all), "hide_all"],
+                                                      [I18n.t(:show_only_ratio), "show_only_ratio"],
+                                                      [I18n.t(:show_all), "show_all"]],
+                                          :include_blank => false,
+                                          :label => I18n.t(:show_hide_wbs_header), input_html: { class: "form-control"} %>
+                            </div>
+                          </div>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :effort_unit, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                              <label class="mdl-textfield__label" for="effort_unit"><%= I18n.t(:Wording_of_the_module_unit_effort) %></label>
+                            </div>
+                          </div>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :effort_unit_coefficient, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                              <label class="mdl-textfield__label" for="effort_unit_coefficient"><%= I18n.t(:Conversion_factor_standard_effort) %></label>
+                            </div>
+                          </div>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :average_rate_wording, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                              <label class="mdl-textfield__label" for="average_rate_wording"><%= I18n.t(:average_rate_wording) %></label>
+                            </div>
+                          </div>
+                        <% end %>
+
+                      <div id="accordion_wbs_profile" class="accordion">
+                        <div class="accordion-group accordion-caret">
+                          <div class="accordion-heading">
+                            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_wbs_profile" href="#wbs_activity_organization_profiles">
+                              <i class="fa fa-caret-down"></i>
+                              <b><%= I18n.t(:profiles) %> : <%= I18n.t(:select_wbs_activity_profiles) %></b>
+                            </a>
+                          </div>
+                          <div id="wbs_activity_organization_profiles" class="accordion-body in collapse">
+                            <div class="accordion-inner">
+                              <%= hidden_field_tag "wbs_activity[organization_profile_ids][]", nil %>
+                              <% for profile in @organization.organization_profiles.order('name') %>
+                                <div>
+                                  <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id, @wbs_activity.organization_profiles.include?(profile) %>
+                                  <i class="profile_description_tooltip" title="<%= profile.description %>"><%= profile.name %></i>
+                                </div>
+                              <% end %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <br>
+
+                      <div class="actions-tabs">
+                        <% if can? :manage_modules_instances, ModuleProject %>
+                          <% if action_name == 'new' || action_name == 'create' %>
+                            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                          <% elsif action_name == 'edit' || action_name == 'update' %>
+                            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                          <% end %>
+                        <% end %>
+                        <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn btn-secondary' %>
+                      </div>
+                    <% end %>
+                  </div>
+
+                  <!-- Test -->
+                  <div class="span3">
+                    <% unless @wbs_activity.new_record? %>
+                      <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondaryfloat-right' %>
+                    <% else %>
+                      <!--<a href="#import" role="button" class="btn pull-right button_margin_right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal">-->
+                      <!--<%#= I18n.t(:import) %>-->
+                      <!--</a>-->
+                      <%= link_to I18n.t(:import), "#import", class: "btn float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
+
+                      <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                          <div class="modal-header modal-drag">
+                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                            <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
+                          </div>
+                          <div class="modal-body">
+                            <%= hidden_field_tag "organization_id", @current_organization.id %>
+                            <%= file_field_tag :file %>
+                          </div>
+                          <div class="modal-footer">
+                            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
+                            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                          </div>
+                          <div class="loading span11 hide">
+                            <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
+                          </div>
+                        <% end %>
+                      </div>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+
+          </div>
+        </div>
+
+        <% if action_name.in?(%w(edit update)) %>
+            <div class="tab-pane fade" id="tabs-2" role="tabpanel" aria-labelledby="tabs-2_tab">
+              <div class="card-body">
+                <div class="edition-bloc-left">
+                  <div class="edition-bloc-content">
+                    <div class="well component_tree" style="background-color: transparent">
+                      <%= raw generate_activity_as_subtree(@wbs_activity_elements_list.first.root, @wbs_activity_elements, '') %>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
         <% end %>
 
-        <div id="accordion_wbs_profile" class="accordion">
-          <div class="accordion-group accordion-caret">
-            <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_wbs_profile" href="#wbs_activity_organization_profiles">
-                <i class="fa fa-caret-down"></i>
-                <b><%= I18n.t(:profiles) %> : <%= I18n.t(:select_wbs_activity_profiles) %></b>
-              </a>
-            </div>
-            <div id="wbs_activity_organization_profiles" class="accordion-body in collapse">
-              <div class="accordion-inner">
-                <%= hidden_field_tag "wbs_activity[organization_profile_ids][]", nil %>
-                <% for profile in @organization.organization_profiles.order('name') %>
-                  <div>
-                    <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id, @wbs_activity.organization_profiles.include?(profile) %>
-                    <i class="profile_description_tooltip" title="<%= profile.description %>"><%= profile.name %></i>
-                  </div>
-                <% end %>
+        <div class="tab-pane fade" id="tabs-3" role="tabpanel" aria-labelledby="tabs-3_tab">
+          <div class="card-body">
+
+            <div class="edition-bloc-left">
+              <div class="edition-bloc-content">
+                <div class="group_button">
+                  <%= link_to I18n.t(:create_button), new_wbs_activity_ratio_path(:activity_id => @wbs_activity.id), :class => 'btn btn-primary' %>
+                </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        <div class="actions-tabs">
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <% if action_name == 'new' || action_name == 'create' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <% elsif action_name == 'edit' || action_name == 'update' %>
-                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <% end %>
-            <% end %>
-            <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn btn-secondary' %>
-        </div>
-      <% end %>
-        </div>
-
-        <!-- Test -->
-        <div class="span3">
-            <% unless @wbs_activity.new_record? %>
-                <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondaryfloat-right' %>
-            <% else %>
-              <!--<a href="#import" role="button" class="btn pull-right button_margin_right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal">-->
-                <!--<%#= I18n.t(:import) %>-->
-              <!--</a>-->
-              <%= link_to I18n.t(:import), "#import", class: "btn float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
-
-              <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-                  <div class="modal-header modal-drag">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
-                  </div>
-                  <div class="modal-body">
-                    <%= hidden_field_tag "organization_id", @current_organization.id %>
-                    <%= file_field_tag :file %>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
-                    <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-                  </div>
-                  <div class="loading span11 hide">
-                    <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
-                  </div>
-                <% end %>
-              </div>
-            <% end %>
-        </div>
-      </div>
-      <!-- Test -->
-    </div>
-
-    <% if action_name.in?(%w(edit update)) %>
-        <div id="tabs-2">
-          <div class="well component_tree" style="background-color: transparent">
-            <%= raw generate_activity_as_subtree(@wbs_activity_elements_list.first.root, @wbs_activity_elements, '') %>
-          </div>
-        </div>
-
-        <div id="tabs-3">
-          <div class="group_button">
-            <%= link_to I18n.t(:create_button), new_wbs_activity_ratio_path(:activity_id => @wbs_activity.id), :class => 'btn btn-secondary' %>
-          </div>
-
-          <table id="table_list_3" class="table tablesorterPager table-striped table-bordered table-condensed">
-            <thead>
+            <table id="table_list_3" class="table tablesorterPager table-striped table-bordered table-condensed">
+              <thead>
               <tr>
                 <th><%= I18n.t(:name) %></th>
                 <th><%= I18n.t(:description) %></th>
                 <th class="action" colspan=5><%= I18n.t(:actions) %></th>
               </tr>
-            </thead>
-            <% @wbs_activity_ratios.each do |wbs_activity_ratio| %>
+              </thead>
+              <% @wbs_activity_ratios.each do |wbs_activity_ratio| %>
                 <tr>
                   <td><%= link_to wbs_activity_ratio.name, edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-4') %></td>
                   <td><%= wbs_activity_ratio.description %></td>
                   <td class="align-center">
-                    <%= link_to 'Editer', edit_wbs_activity_ratio_path(wbs_activity_ratio, :activity_id => wbs_activity_ratio.wbs_activity_id), :class => 'button_attribute_tooltip icon-pencil', :title => I18n.t(:edit) %>
+                    <%= link_to raw("<i class='material-icons'>edit</i>"), edit_wbs_activity_ratio_path(wbs_activity_ratio, :activity_id => wbs_activity_ratio.wbs_activity_id), :class => 'material-icons', :title => I18n.t('edit') %>
                     <% if can? :manage_modules_instances, ModuleProject %>
-                      <%= link_to 'Dupliquer', duplicate_wbs_activity_ratio_path(wbs_activity_ratio), :class => 'button_attribute_tooltip icon-copy', :title => I18n.t(:duplicate_ratio) %>
-                      <%= link_to 'Supprimer', wbs_activity_ratio, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'button_attribute_tooltip icon-trash', :style => 'color:red', :title => I18n.t(:delete) %>
-                      <%= link_to 'Exporter', export_wbs_activity_ratios_path(wbs_activity_ratio), :class => 'button_attribute_tooltip icon-download', :title => I18n.t(:export) %>
+                      <%= link_to raw("<i class='material-icons'>file_copy</i>"), duplicate_wbs_activity_ratio_path(wbs_activity_ratio),
+                                  :class => 'materials-icons', :title => I18n.t('duplicate_ratio'), :method => "POST" %>
+                      <%= link_to raw("<i class='material-icons'>delete</i>"), wbs_activity_ratio,
+                                  confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                      <%#= link_to 'Supprimer', wbs_activity_ratio, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'button_attribute_tooltip icon-trash', :style => 'color:red', :title => I18n.t(:delete) %>
+                      <%#= link_to 'Exporter', export_wbs_activity_ratios_path(wbs_activity_ratio), :class => 'button_attribute_tooltip icon-download', :title => I18n.t(:export) %>
+                      <%= link_to raw("<i class='material-icons'>archive</i>"), export_wbs_activity_ratios_path(wbs_activity_ratio), :class => 'button_attribute_tooltip icon-download', title: I18n.t(:export) %>
                       <a href="#myWBSModal" role="button" class="button_attribute_tooltip icon-upload" data-toggle="modal" title="Import a CSV file"></a>
                     <% end %>
                   </td>
@@ -174,64 +260,123 @@
                   <% end %>
                 </div>
 
-            <% end %>
-            <%= render :partial => 'layouts/footer_table' %>
-          </table>
+              <% end %>
+              <%= render :partial => 'layouts/footer_table' %>
+            </table>
+          </div>
         </div>
 
-        <div id="tabs-4">
-          <div style="margin-bottom: 20px;">
-            <%= I18n.t(:select_ratio_table) %>
-            <%= select_tag 'Ratio', options_for_select(@wbs_activity_ratios.map { |i| [i.name, i.id] }, :selected => (params[:project_default_ratio] || @wbs_activity_ratio)), :class => 'select_ratio' %>
-          </div>
+        <div class="tab-pane fade" id="tabs-4" role="tabpanel" aria-labelledby="tabs-4_tab" style="overflow:auto;">
+          <div class="card-body">
 
-          <!--<%#= form_tag '/save_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>-->
-            <!--<div id="ratio_section">-->
-              <!--<%#= render :partial => 'wbs_activity_ratio_elements', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>-->
-            <!--</div>-->
-          <!--<%# end %>-->
+            <div class="edition-bloc-left">
+              <div class="edition-bloc-content">
+                <div style="margin-bottom: 20px;">
+                  <%= I18n.t(:select_ratio_table) %>
+                  <%= select_tag 'Ratio', options_for_select(@wbs_activity_ratios.map { |i| [i.name, i.id] }, :selected => (params[:project_default_ratio] || @wbs_activity_ratio)), :class => 'select_ratio' %>
+                </div>
 
-          <% if @selected_ratio.nil?  %>
-              <div class="well well-rounded">
-                Aucun ratio sélectionné
-              </div>
+                <!--<%#= form_tag '/save_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>-->
+                <!--<div id="ratio_section">-->
+                <!--<%#= render :partial => 'wbs_activity_ratio_elements', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>-->
+                <!--</div>-->
+                <!--<%# end %>-->
 
-          <% else %>
-              <div class="well well-rounded">
-                  <!--  Test formula with percentage calculations -->
-                  <%= form_tag '/save_percentage_of_input_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
+                <% if @selected_ratio.nil?  %>
+                  <div class="well well-rounded">
+                    Aucun ratio sélectionné
+                  </div>
+
+                <% else %>
+                  <div class="well well-rounded">
+                    <!--  Test formula with percentage calculations -->
+                    <%= form_tag '/save_percentage_of_input_values', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
                       <div id="percentage_of_input_ratio_section">
                         <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_percentage_of_input', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
                       </div>
-                  <% end %>
-              </div>
-              <br />
+                    <% end %>
+                  </div>
+                  <br />
 
-              <div class="well well-rounded">
-                  <%= form_tag '/save_formula', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
+                  <div class="well well-rounded">
+                    <%= form_tag '/save_formula', :id => 'save_ratio_elt_reference', :remote => true, :class => 'simple_form' do %>
                       <div id="formula_ratio_section">
                         <%= render :partial => 'wbs_activities/wbs_activity_ratio_elements_formula', :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio] %>
                       </div>
-                  <% end %>
-              </div>
+                    <% end %>
+                  </div>
 
-              <br />
-              <!-- Table of of Ratio values per profile -->
-              <div class="well well-rounded">
-                <div class="pull-left">
-                  <h4 style="color: #0073ea;"><%= I18n.t(:wbs_ratio_per_profile) %></h4>
-                </div><br>
-                <%= form_tag save_wbs_activity_ratio_per_profile_path, remote: true, class: 'simple_form' do %>
-                  <div id="activities_ratio_per_profile">
-                    <% @wbs_organization_profiles = @wbs_organization_profiles.order('name') %>
-                    <%= render :partial => 'wbs_activities/activities_ratio_per_profile', :object => [@wbs_activity_ratio_elements, @wbs_organization_profiles] %>
+                  <br />
+                  <!-- Table of of Ratio values per profile -->
+                  <div class="well well-rounded">
+                    <div class="pull-left">
+                      <h4 style="color: #0073ea;"><%= I18n.t(:wbs_ratio_per_profile) %></h4>
+                    </div><br>
+                    <%= form_tag save_wbs_activity_ratio_per_profile_path, remote: true, class: 'simple_form' do %>
+                      <div id="activities_ratio_per_profile">
+                        <% @wbs_organization_profiles = @wbs_organization_profiles.order('name') %>
+                        <%= render :partial => 'wbs_activities/activities_ratio_per_profile', :object => [@wbs_activity_ratio_elements, @wbs_organization_profiles] %>
+                      </div>
+                    <% end %>
                   </div>
                 <% end %>
+
               </div>
-          <% end %>
+            </div>
+
+          </div>
         </div>
 
-        </div>
-    <% end %>
 
-</div>
+
+        </div>
+
+<!--      <p>-->
+<!--        <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">-->
+<!--          Link with href-->
+<!--        </a>-->
+<!--        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">-->
+<!--          Button with data-target-->
+<!--        </button>-->
+<!--      </p>-->
+<!--      <div class="collapse" id="collapseExample">-->
+<!--        <div class="card card-body">-->
+<!--          Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident.-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div id="tab-1" class="collapse">-->
+<!--        <div class="card card-body">-->
+<!--          Content of first tab-->
+<!--        </div>-->
+<!--      </div>-->
+
+
+<!--      <div id="tab-2" class="collapse">-->
+<!--        <div class="card card-body">-->
+<!--          Content of second tab-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <div id="tab-3" class="collapse">-->
+<!--        <div class="card card-body">-->
+<!--          Content of third tab-->
+<!--        </div>-->
+<!--      </div>-->
+
+<!--      <ul class="nav flex-column">-->
+        <%# tab = ['a', 'b', 'c'] %>
+        <%# tab.each do |elem| %>
+<!--          <li class="nav-item">-->
+<!--            <a class="nav-link group" href="#tab-<%#= tab.find_index(elem)+1 %>" data-toggle="collapse" aria-expanded="false" aria-controls="tab-<%#= tab.find_index(elem)+1 %>">-->
+<!--              <span>-->
+                <%#= elem %>
+<!--              </span>-->
+<!--            </a>-->
+<!--          </li>-->
+        <%# end %>
+<!--      </ul>-->
+
+    </div>
+  </div>
+</section>
