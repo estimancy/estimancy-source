@@ -11,7 +11,7 @@ namespace :guw do
     # rake db:migrate:up VERSION=20171027100650 RAILS_ENV=production
     # rake db:migrate RAILS_ENV=production
 
-    puts "Update_guw_tables_for_indexes en cours"
+    puts "Update_guw_tables_for_indexes en cours. Début : #{Time.now}"
 
     puts "ModuleProject"
     # 1
@@ -25,32 +25,38 @@ namespace :guw do
 
     puts "EstimationValue"
     # 2
-    EstimationValue.all.each do |ev|
-      unless ev.module_project.nil?
-        ev.organization_id = ev.module_project.organization_id
-        ev.save
+    EstimationValue.find_in_batches(batch_size: 1000).each do |evs|
+      evs.each do |ev|
+        unless ev.module_project.nil?
+          ev.organization_id = ev.module_project.organization_id
+          ev.save
+        end
       end
     end
 
     puts "GuwCoefficientElementUnitOfWork"
     # 3 (attention c'est long)
-    Guw::GuwCoefficientElementUnitOfWork.all.each do |ceuow|
-      # ActiveRecord::Base.transaction do
-        guw_unit_of_work = ceuow.guw_unit_of_work
-        unless guw_unit_of_work.nil?
-          ceuow.organization_id = guw_unit_of_work.organization_id
-          ceuow.guw_model_id = guw_unit_of_work.guw_model_id
-          ceuow.project_id = guw_unit_of_work.project_id
-          ceuow.module_project_id = guw_unit_of_work.module_project_id
-          ceuow.save(validate: false)
-        end
-      # end
+    Guw::GuwCoefficientElementUnitOfWork.find_in_batches(batch_size: 1000).each do |ceuows|
+      ceuows.each do |ceuow|
+        # ActiveRecord::Base.transaction do
+          guw_unit_of_work = ceuow.guw_unit_of_work
+          unless guw_unit_of_work.nil?
+            if guw_unit_of_work.organization_id.nil?
+              ceuow.organization_id = guw_unit_of_work.organization_id
+              ceuow.guw_model_id = guw_unit_of_work.guw_model_id
+              ceuow.project_id = guw_unit_of_work.project_id
+              ceuow.module_project_id = guw_unit_of_work.module_project_id
+              ceuow.save(validate: false)
+            end
+          end
+        # end
+      end
     end
 
     puts "GuwUnitOfWorkAttribute"
     # 4 (attention, c'est long)
-    Guw::GuwUnitOfWorkAttribute.all.each do |uow_attr|
-      # ActiveRecord::Base.transaction do
+    Guw::GuwUnitOfWorkAttribute.find_in_batches(batch_size: 1000).each do |uow_attrs|
+      uow_attrs.each do |uow_attr|
         guw_unit_of_work = uow_attr.guw_unit_of_work
         unless guw_unit_of_work.nil?
           uow_attr.organization_id = guw_unit_of_work.organization_id
@@ -59,7 +65,7 @@ namespace :guw do
           uow_attr.module_project_id = guw_unit_of_work.module_project_id
           uow_attr.save(validate: false)
         end
-      # end
+      end
     end
 
 
@@ -296,6 +302,8 @@ namespace :guw do
         end
       # end
     end
+
+    puts "Terminé : #{Time.now}"
 
   end
 end
