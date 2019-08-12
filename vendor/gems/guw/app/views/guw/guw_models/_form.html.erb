@@ -45,10 +45,14 @@
                       <% end %>
 
                       <% if @guw_model.default_display == "tab" %>
-                        <%= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary btn-estimancy' %>
+                        <%#= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary btn-estimancy' %>
+                          <% unless @guw_model.guw_types.empty? %>
+                            <%= link_to I18n.t(:see_model), guw.guw_type_path(@guw_model.guw_types.first), :class => 'btn btn-secondary btn-estimancy', confirm: I18n.t(:warning_edit_instance_module) %>
+                          <% end %>
                       <% else %>
                         <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary btn-estimancy' %>
                       <% end %>
+
                     </div>
                   <% else %>
                     <a href="#import" role="button" class="btn btn-primary pull-right" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
