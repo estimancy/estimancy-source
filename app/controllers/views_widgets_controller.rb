@@ -562,23 +562,60 @@ class ViewsWidgetsController < ApplicationController
     estimation_values = module_project.get_module_project_estimation_values.group_by{ |attr| attr.in_out }.sort()
   end
 
-
   # def vw_pf_script
+  #   include ProjectsHelper
+  #   include ViewsWidgetsHelper
+  #
   #   o = Organization.find(69)
   #   o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
   #     # effort
   #     pf = ProjectField.where(project_id: project.id, field_id: 96).first_or_create
   #     vw = ViewsWidget.where(name: "Charge Totale (jh)", module_project_id: project.module_project_ids).first
   #     pf.views_widget_id = vw.id
-  #     value = get_kpi_value_without_unit(vw)
-  #     if value.nil?
+  #     value = get_kpi_value_without_unit(vw, project.root_component)
+  #
+  #     unless value.nil?
   #       pf.value = value
   #     end
   #     pf.save
   #   end
   #
-  #   redirect_to root_url
+  #   include ProjectsHelper
+  #   include ViewsWidgetsHelper
+  #   o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+  #     # cost
+  #     pf = ProjectField.where(project_id: project.id, field_id: 97).first_or_create
+  #     vw = ViewsWidget.where(name: "Coût Total (€)", module_project_id: project.module_project_ids).first
+  #     begin
+  #       pf.views_widget_id = vw.id
+  #       value = get_kpi_value_without_unit(vw, project.root_component)
+  #       unless value.nil?
+  #         pf.value = value
+  #       end
+  #       pf.save
+  #     rescue
+  #     end
+  #   end
+  #
+  #   # include ProjectsHelper
+  #   # include ViewsWidgetsHelper
+  #   # o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+  #     # localisation
+  #     # pf = ProjectField.where(project_id: project.id, field_id: 119).first_or_create
+  #     # vw = ViewsWidget.where(name: "Localisation", module_project_id: project.module_project_ids).first
+  #     # begin
+  #     #   pf.views_widget_id = vw.id
+  #     #   value = get_ev_value(vw.estimation_value.id, project.root_component)
+  #     #   unless value.nil? || value == 0
+  #     #     pf.value = value
+  #     #   end
+  #     #   pf.save
+  #     # rescue
+  #     # end
+  #   # end
+  #
   # end
+
 end
 
 
