@@ -184,8 +184,32 @@
               <div class="card-body">
                 <div class="edition-bloc-left">
                   <div class="edition-bloc-content">
-                    <div class="well component_tree" style="background-color: transparent">
+                    <div class="well component_tree">
                       <%= raw generate_activity_as_subtree(@wbs_activity_elements_list.first.root, @wbs_activity_elements, '') %>
+
+                    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+                    <script>
+                      $(document).ready(function(){
+                          $('.component_tree ul li, .widget-content ul li').hover(
+                              function () {
+                                  $(this.children).css('display', 'inline');
+                              },
+                              function () {
+                                  $('.block_link').hide();
+                              }
+                          );
+
+                          $('.block_label, div.block_link').hover(
+                              function () {
+                                  $('div.block_label.selected_pbs').css('width', 'inherit');
+                              },
+                              function () {
+                                  $('div.block_label.selected_pbs').css('width', '100%');
+                              }
+                          );
+                      });
+                    </script>
+
                     </div>
                   </div>
                 </div>
@@ -326,8 +350,6 @@
 
           </div>
         </div>
-
-
 
         </div>
 
