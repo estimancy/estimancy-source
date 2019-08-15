@@ -32,16 +32,13 @@ namespace :guw do
       Guw::GuwCoefficientElementUnitOfWork.all.each_with_index do |ceuow, index|
         guw_unit_of_work = ceuow.guw_unit_of_work
         unless guw_unit_of_work.nil?
-          if guw_unit_of_work.organization_id.nil?
-            ceuow.organization_id = guw_unit_of_work.organization_id
-            ceuow.guw_model_id = guw_unit_of_work.guw_model_id
-            ceuow.project_id = guw_unit_of_work.project_id
-            ceuow.module_project_id = guw_unit_of_work.module_project_id
-            ceuow.save(validate: false)
+          ceuow.organization_id = guw_unit_of_work.organization_id
+          ceuow.guw_model_id = guw_unit_of_work.guw_model_id
+          ceuow.project_id = guw_unit_of_work.project_id
+          ceuow.module_project_id = guw_unit_of_work.module_project_id
+          ceuow.save(validate: false)
 
-            progress_bar(index)
-
-          end
+          progress_bar(index)
         end
       end
     end
@@ -364,13 +361,12 @@ namespace :guw do
       # end
     end
 
-    # puts "Terminé : #{Time.now}"
+    puts "Terminé : #{Time.now}"
 
   end
 
   def progress_bar(index)
     printf("Save: %d ", index)
-    # sleep(0.1)
   end
 
 end
