@@ -369,6 +369,7 @@ en:
   field: "Field"
   browser: "Browser"
   via: "Via"
+  contact_us: "Contact Us"
 
   # security audit utilities view
   begin_date: "Start date"

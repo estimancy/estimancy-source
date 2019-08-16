@@ -356,6 +356,7 @@ frsncf_amoa_infra:
   field: "Field"
   browser: "Browser"
   via: "Via"
+  contact_us: "Contactez nous"
 
   # security audit utilities view
   begin_date: "Date de début"

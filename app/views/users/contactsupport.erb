@@ -1,72 +1,91 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:contactsupport) %> </a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
-    <div class="row-fluid">
-      <div class="span4">
-        <h2><%= I18n.t(:your_configuration) %></h2>
-
-        <hr class="bs-docs-separator">
-
-        <%= I18n.t('text_projestimate_open_source_references') %> <%= link_to '(Estimancy dependencies)', 'dependencies.html', target:"_blank" %>
-
-        <hr class="bs-docs-separator">
-        <dl class="dl-horizontal">
-          <dt>Estimancy</dt>
-          <dd><span class="label label-info"><%= @functional_version_number %></span>
-          <dt><%= I18n.t(:last_update) %></dt>
-          <dd><span class="label label-info"><%= update_date %></span>
-          </dd>
-          <dt>Ruby</dt>
-          <dd><span class="label label-info"> <%= ruby_version %> </span></dd>
-          <dt>Rails</dt>
-          <dd><span class="label label-info"> <%= rails_version %> </span></dd>
-          <dt><%= I18n.t :environment %></dt>
-          <dd><span class="label label-info"> <%= environment %> </span></dd>
-          <dt>SGBD</dt>
-          <dd><span class="label label-info"> <%= database_adapter %> </span></dd>
-          <dt><%= I18n.t :field %></dt> <%# Domaine %>
-          <dd><span class="label label-info"> <%= root_url %> </span></dd>
-          <dt><%= I18n.t :browser %></dt>
-          <dd><span class="label label-info"> <%= browser %> <%= version_browser %> (<%= platform %>)</span></dd>
-          <dt>OS</dt>
-          <dd><span class="label label-info"> <%= os %></span></dd>
-        </dl>
-      </div>
-
-
-      <div class="span4">
-        <h2><%= I18n.t(:contact_us) %></h2>
-        <hr class="bs-docs-separator">
-        <ul>
-          <li> <b><%= I18n.t :via %> e-mail : </b> <a href="url ou mailto:"> support@estimancy.com </a> </li><br/>
-          <li> <b><%= I18n.t :via %> télephone : </b> +33 977 21 67 89 </li><br/>
-          <li> <b><%= I18n.t :via %> Skype : </b> </li><br/>
-
-            <script type="text/javascript" src="https://secure.skypeassets.com/i/scom/js/skype-uri.js"></script>
-            <div id="SkypeButton_Call_PSEUDO_1" class="skype">
-              <script type="text/javascript">
-                Skype.ui({
-                  "name": "call",
-                  "element": "SkypeButton_Call_PSEUDO_1",
-                  "participants": ["support@estimancy.com"],
-                  "imageSize":32
-              });
-              </script>
-            </div>
-
+      <div class="tabs">
+        <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link show active"  data-toggle="pill" id="pills-tabs-1" href="#tabs-1" role="tab" aria-selected="true">
+              <%= I18n.t(:contactsupport) %>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link"  data-toggle="pill" id="pills-contact-us" href="#tabs-2" role="tab" aria-selected="false">
+              <%= I18n.t(:contact_us) %></a>
+          </li>
         </ul>
       </div>
 
-      <div class="span4">
-        <h2><%= link_to "Support / Documentation", support_path %></h2>
+      <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="tabs-1" role="tabpanel" aria-labelledby="pills-tabs-1-tab">
+          <div class="card-body">
+            <div>
+                <h2><%= I18n.t(:your_configuration) %></h2>
 
-        <hr class="bs-docs-separator">
+                <hr class="bs-docs-separator">
 
+                <%= I18n.t('text_projestimate_open_source_references') %>
+                    <%= link_to '(Estimancy dependencies)', 'dependencies.html', target:"_blank" %>
+
+                <hr class="bs-docs-separator">
+                <dl class="dl-horizontal">
+                  <dt>Estimancy</dt>
+                  <dd><span class="label label-info"><%= @functional_version_number %></span>
+                  <dt><%= I18n.t(:last_update) %></dt>
+                  <dd><span class="label label-info"><%= update_date %></span>
+                  </dd>
+                  <dt>Ruby</dt>
+                  <dd><span class="label label-info"> <%= ruby_version %> </span></dd>
+                  <dt>Rails</dt>
+                  <dd><span class="label label-info"> <%= rails_version %> </span></dd>
+                  <dt><%= I18n.t :environment %></dt>
+                  <dd><span class="label label-info"> <%= environment %> </span></dd>
+                  <dt>SGBD</dt>
+                  <dd><span class="label label-info"> <%= database_adapter %> </span></dd>
+                  <dt><%= I18n.t :field %></dt> <%# Domaine %>
+                  <dd><span class="label label-info"> <%= root_url %> </span></dd>
+                  <dt><%= I18n.t :browser %></dt>
+                  <dd><span class="label label-info"> <%= browser %> <%= version_browser %> (<%= platform %>)</span></dd>
+                  <dt>OS</dt>
+                  <dd><span class="label label-info"> <%= os %></span></dd>
+                </dl>
+            </div>
+          </div>
+      </div>
+        <div class="tab-pane fade" id="tabs-2" role="tabpanel" aria-labelledby="pills-tabs-2-tab">
+          <div class="card-body">
+
+            <h2><%= I18n.t(:contact_us) %></h2>
+            <hr class="bs-docs-separator">
+
+            <ul>
+              <li> <b><%= I18n.t :via %> e-mail : </b> <a href="url ou mailto:"> support@estimancy.com </a> </li><br/>
+              <li> <b><%= I18n.t :via %> télephone : </b> +33 977 21 67 89 </li><br/>
+              <li> <b><%= I18n.t :via %> Skype : </b> </li><br/>
+
+                <script type="text/javascript" src="https://secure.skypeassets.com/i/scom/js/skype-uri.js"></script>
+                <div id="SkypeButton_Call_PSEUDO_1" class="skype">
+                  <script type="text/javascript">
+                    Skype.ui({
+                      "name": "call",
+                      "element": "SkypeButton_Call_PSEUDO_1",
+                      "participants": ["support@estimancy.com"],
+                      "imageSize":32
+                  });
+                  </script>
+                </div>
+            </ul>
+
+            <div class="span4">
+              <h2><%= link_to "Support / Documentation", support_path %></h2>
+<!--              <hr class="bs-docs-separator">-->
+            </div>
+
+          </div>
+
+        </div>
       </div>
 
     </div>
   </div>
-</div>
+</section>

@@ -32,7 +32,7 @@ module WbsActivityElementsHelper
         tree << "<ul style='margin-left:1px;' id='tree'>
                    <li style='margin-left:-1px;'>
                     <div class='block_label'>
-                        #{show_element_name(element)}
+                      #{show_element_name(element)}
                     </div>
                     <div class='block_link'>
                       #{ link_activity_element(element) }
@@ -47,7 +47,7 @@ module WbsActivityElementsHelper
             tree << "
                      <li style='margin-left:#{element.depth}px;' >
                       <div class='block_label'>
-                        #{show_element_name(e)}
+                        #{ show_element_name(e)}
                       </div>
                       <div class='block_link'>
                         #{ link_activity_element(e) }
@@ -74,7 +74,7 @@ module WbsActivityElementsHelper
         tree << "<ul style='margin-left:1px;' id='tree'>
                    <li style='margin-left:-1px;'>
                     <div class='block_label'>
-                        #{show_element_name(element)}
+                      #{ show_element_name(element)}
                     </div>
                     <div class='block_link'>
                       #{ link_activity_element(element) }
@@ -129,7 +129,7 @@ module WbsActivityElementsHelper
             tree << "
                      <li style='margin-left:-#{gap+element.depth}px;' class='testcolor' >
                       <div class='block_label'>
-                        #{show_element_name(e)}
+                        #{ show_element_name(e) }
                       </div>
                       <div class='block_link'>
                         #{ link_activity_element(e, is_project_show_view) }
@@ -142,7 +142,7 @@ module WbsActivityElementsHelper
               tree << "
                        <li style='margin-left:-#{gap+element.depth}px;' class='testcolor' >
                         <div class='block_label'>
-                          #{show_element_name(e)}
+                          #{ show_element_name(e) }
                         </div>
                         <div class='block_link'>
                           #{ link_activity_element(e, is_project_show_view) }
