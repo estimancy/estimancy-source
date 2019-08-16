@@ -13,10 +13,10 @@ namespace :guw do
 
     puts "Update_guw_tables_for_indexes en cours. Début : #{Time.now}"
 
-    puts "\nEstimationValue : #{ EstimationValue.all.size } elements"
+    puts "\nEstimationValue : #{ EstimationValue.where(organization_id: nil).all.size } elements"
     # 2
     ActiveRecord::Base.transaction do
-      EstimationValue.all.each_with_index do |ev, index|
+      EstimationValue.where(organization_id: nil).each_with_index do |ev, index|
         unless ev.module_project.nil?
           ev.organization_id = ev.module_project.organization_id
           ev.save
@@ -26,44 +26,51 @@ namespace :guw do
       end
     end
 
-    puts "\nGuwCoefficientElementUnitOfWork : #{Guw::GuwCoefficientElementUnitOfWork.all.size} elements"
+    puts "\nGuwCoefficientElementUnitOfWork : #{Guw::GuwCoefficientElementUnitOfWork.where(organization_id: nil).all.size} elements"
     # 3 (attention c'est long)
-    ActiveRecord::Base.transaction do
-      Guw::GuwCoefficientElementUnitOfWork.all.each_with_index do |ceuow, index|
-        guw_unit_of_work = ceuow.guw_unit_of_work
-        unless guw_unit_of_work.nil?
-          ceuow.organization_id = guw_unit_of_work.organization_id
-          ceuow.guw_model_id = guw_unit_of_work.guw_model_id
-          ceuow.project_id = guw_unit_of_work.project_id
-          ceuow.module_project_id = guw_unit_of_work.module_project_id
-          ceuow.save(validate: false)
+    # ActiveRecord::Base.transaction do
+      index = 0
+      Guw::GuwCoefficientElementUnitOfWork.where(organization_id: nil).find_each do |ceuow|
+        # if ceuow.organization_id == nil
+          guw_unit_of_work = ceuow.guw_unit_of_work
+          unless guw_unit_of_work.nil?
+            ceuow.organization_id = guw_unit_of_work.organization_id
+            ceuow.guw_model_id = guw_unit_of_work.guw_model_id
+            ceuow.project_id = guw_unit_of_work.project_id
+            ceuow.module_project_id = guw_unit_of_work.module_project_id
+            ceuow.save(validate: false)
 
-          progress_bar(index)
-        end
-      end
+            index = index + 1
+
+            progress_bar(index)
+          end
+        # end
+      # end
     end
 
-    puts "\nGuwUnitOfWorkAttribute : #{Guw::GuwUnitOfWorkAttribute.all.size} elements"
+    puts "\nGuwUnitOfWorkAttribute : #{Guw::GuwUnitOfWorkAttribute.where(organization_id: nil).all.size} elements"
     # 4 (attention, c'est long)
-    ActiveRecord::Base.transaction do
-      Guw::GuwUnitOfWorkAttribute.all.each_with_index do |uow_attr, index|
-        guw_unit_of_work = uow_attr.guw_unit_of_work
-        unless guw_unit_of_work.nil?
-          uow_attr.organization_id = guw_unit_of_work.organization_id
-          uow_attr.guw_model_id = guw_unit_of_work.guw_model_id
-          uow_attr.project_id = guw_unit_of_work.project_id
-          uow_attr.module_project_id = guw_unit_of_work.module_project_id
-          uow_attr.save(validate: false)
+    # ActiveRecord::Base.transaction do
+      Guw::GuwUnitOfWorkAttribute.where(organization_id: nil).each_with_index do |uow_attr, index|
+        # if uow_attr.organization_id == nil
+          guw_unit_of_work = uow_attr.guw_unit_of_work
+          unless guw_unit_of_work.nil?
+            uow_attr.organization_id = guw_unit_of_work.organization_id
+            uow_attr.guw_model_id = guw_unit_of_work.guw_model_id
+            uow_attr.project_id = guw_unit_of_work.project_id
+            uow_attr.module_project_id = guw_unit_of_work.module_project_id
+            uow_attr.save(validate: false)
 
-          progress_bar(index)
+            progress_bar(index)
 
-        end
+          end
+        # end
       end
-    end
+    # end
 
-    puts "\nModuleProject : #{ModuleProject.all.size} elements"
+    puts "\nModuleProject : #{ModuleProject.where(organization_id: nil).all.size} elements"
     # 1
-    ModuleProject.all.each_with_index do |mp, index|
+    ModuleProject.where(organization_id: nil).each_with_index do |mp, index|
       unless mp.project.nil?
         project = mp.project
         mp.organization_id = project.organization_id
@@ -73,9 +80,9 @@ namespace :guw do
       end
     end
 
-    puts "\nGuwUnitOfWorkGroup : #{Guw::GuwUnitOfWorkGroup.all.size} elements"
+    puts "\nGuwUnitOfWorkGroup : #{Guw::GuwUnitOfWorkGroup.where(organization_id: nil).all.size} elements"
     #5
-    Guw::GuwUnitOfWorkGroup.all.each_with_index do |uow_gr, index|
+    Guw::GuwUnitOfWorkGroup.where(organization_id: nil).each_with_index do |uow_gr, index|
       # ActiveRecord::Base.transaction do
         module_project = uow_gr.module_project
         unless module_project.nil?
@@ -90,9 +97,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwCoefficient : #{Guw::GuwCoefficient.all.size} elements"
+    puts "\nGuwCoefficient : #{Guw::GuwCoefficient.where(organization_id: nil).all.size} elements"
     #6
-    Guw::GuwCoefficient.all.each_with_index do |coef, index|
+    Guw::GuwCoefficient.where(organization_id: nil).each_with_index do |coef, index|
       ActiveRecord::Base.transaction do
         guw_model = coef.guw_model
         unless guw_model.nil?
@@ -105,9 +112,9 @@ namespace :guw do
       end
     end
 
-    puts "\nGuwCoefficientElement : #{Guw::GuwCoefficientElement.all.size} elements"
+    puts "\nGuwCoefficientElement : #{Guw::GuwCoefficientElement.where(organization_id: nil).all.size} elements"
     #7
-    Guw::GuwCoefficientElement.all.each_with_index do |coef_elt, index|
+    Guw::GuwCoefficientElement.where(organization_id: nil).each_with_index do |coef_elt, index|
       # ActiveRecord::Base.transaction do
       guw_coefficient = coef_elt.guw_coefficient
       unless guw_coefficient.nil?
@@ -126,9 +133,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwType : #{Guw::GuwType.all.size} elements"
+    puts "\nGuwType : #{Guw::GuwType.where(organization_id: nil).all.size} elements"
     #8
-    Guw::GuwType.all.each_with_index do |type, index|
+    Guw::GuwType.where(organization_id: nil).each_with_index do |type, index|
       # ActiveRecord::Base.transaction do
         guw_model = type.guw_model
         unless guw_model.nil?
@@ -141,9 +148,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwOutput : #{Guw::GuwOutput.all.size} elements"
+    puts "\nGuwOutput : #{Guw::GuwOutput.where(organization_id: nil).all.size} elements"
     #9
-    Guw::GuwOutput.all.each_with_index do |output, index|
+    Guw::GuwOutput.where(organization_id: nil).each_with_index do |output, index|
       # ActiveRecord::Base.transaction do
         guw_model = output.guw_model
         unless guw_model.nil?
@@ -156,9 +163,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwOutputType : #{Guw::GuwOutputType.all.size} elements"
+    puts "\nGuwOutputType : #{Guw::GuwOutputType.where(organization_id: nil).all.size} elements"
     #10
-    Guw::GuwOutputType.all.each_with_index do |output_type, index|
+    Guw::GuwOutputType.where(organization_id: nil).each_with_index do |output_type, index|
       # ActiveRecord::Base.transaction do
         guw_model = output_type.guw_model
         unless guw_model.nil?
@@ -171,9 +178,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwWorkUnit : #{Guw::GuwWorkUnit.all.size} elements"
+    puts "\nGuwWorkUnit : #{Guw::GuwWorkUnit.where(organization_id: nil).all.size} elements"
     #11
-    Guw::GuwWorkUnit.all.each_with_index do |wu, index|
+    Guw::GuwWorkUnit.where(organization_id: nil).each_with_index do |wu, index|
       # ActiveRecord::Base.transaction do
         guw_model = wu.guw_model
         unless guw_model.nil?
@@ -186,9 +193,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwComplexity : #{Guw::GuwComplexity.all.size} elements"
+    puts "\nGuwComplexity : #{Guw::GuwComplexity.where(organization_id: nil).all.size} elements"
     #12
-    Guw::GuwComplexity.all.each_with_index do |cplx, index|
+    Guw::GuwComplexity.where(organization_id: nil).each_with_index do |cplx, index|
       # ActiveRecord::Base.transaction do
       guw_type = cplx.guw_type
       unless guw_type.nil?
@@ -202,9 +209,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwOutputAssociation : #{Guw::GuwOutputAssociation.all.size} elements"
+    puts "\nGuwOutputAssociation : #{Guw::GuwOutputAssociation.where(organization_id: nil).all.size} elements"
     #13 guw_guw_output_associations
-    Guw::GuwOutputAssociation.all.each_with_index do |output_ass, index|
+    Guw::GuwOutputAssociation.where(organization_id: nil).each_with_index do |output_ass, index|
       # ActiveRecord::Base.transaction do
         complexity = output_ass.guw_complexity
         unless complexity.nil?
@@ -218,9 +225,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwComplexityTechnology : #{Guw::GuwComplexityTechnology.all.size} elements"
+    puts "\nGuwComplexityTechnology : #{Guw::GuwComplexityTechnology.where(organization_id: nil).all.size} elements"
     #14
-    Guw::GuwComplexityTechnology.all.each_with_index do |cplx_tech, index|
+    Guw::GuwComplexityTechnology.where(organization_id: nil).each_with_index do |cplx_tech, index|
       # ActiveRecord::Base.transaction do
         guw_complexity = cplx_tech.guw_complexity
         unless guw_complexity.nil?
@@ -234,9 +241,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwComplexityWorkUnit : #{Guw::GuwComplexityWorkUnit.all.size} elements"
+    puts "\nGuwComplexityWorkUnit : #{Guw::GuwComplexityWorkUnit.where(organization_id: nil).all.size} elements"
     #15 guw_type_id et guw_output_id ne sont pas tout le temps remplis
-    Guw::GuwComplexityWorkUnit.all.each_with_index do |cplx_wu, index|
+    Guw::GuwComplexityWorkUnit.where(organization_id: nil).each_with_index do |cplx_wu, index|
       # ActiveRecord::Base.transaction do
         guw_complexity = cplx_wu.guw_complexity
         unless guw_complexity.nil?
@@ -250,9 +257,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwOutputComplexity : #{Guw::GuwOutputComplexity.all.size} elements"
+    puts "\nGuwOutputComplexity : #{Guw::GuwOutputComplexity.where(organization_id: nil).all.size} elements"
     #16
-    Guw::GuwOutputComplexity.all.each_with_index do |output_cplx, index|
+    Guw::GuwOutputComplexity.where(organization_id: nil).each_with_index do |output_cplx, index|
       # ActiveRecord::Base.transaction do
         guw_complexity = output_cplx.guw_complexity
         unless guw_complexity.nil?
@@ -266,9 +273,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwOutputComplexityInitialization : #{Guw::GuwOutputComplexityInitialization.all.size} elements"
+    puts "\nGuwOutputComplexityInitialization : #{Guw::GuwOutputComplexityInitialization.where(organization_id: nil).all.size} elements"
     #17
-    Guw::GuwOutputComplexityInitialization.all.each_with_index do |oci, index|
+    Guw::GuwOutputComplexityInitialization.where(organization_id: nil).each_with_index do |oci, index|
       # ActiveRecord::Base.transaction do
         guw_complexity = oci.guw_complexity
         unless guw_complexity.nil?
@@ -282,9 +289,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwComplexityCoefficientElement : #{Guw::GuwComplexityCoefficientElement.all.size} elements"
+    puts "\nGuwComplexityCoefficientElement : #{Guw::GuwComplexityCoefficientElement.where(organization_id: nil).all.size} elements"
     #18
-    Guw::GuwComplexityCoefficientElement.all.each_with_index do |cplx_ce, index|
+    Guw::GuwComplexityCoefficientElement.where(organization_id: nil).each_with_index do |cplx_ce, index|
       ActiveRecord::Base.transaction do
         guw_complexity = cplx_ce.guw_complexity
         unless guw_complexity.nil?
@@ -298,9 +305,9 @@ namespace :guw do
       end
     end
 
-    puts "\nGuwAttribute : #{Guw::GuwAttribute.all.size} elements"
+    puts "\nGuwAttribute : #{Guw::GuwAttribute.where(organization_id: nil).all.size} elements"
     #19
-    Guw::GuwAttribute.all.each_with_index do |attr, index|
+    Guw::GuwAttribute.where(organization_id: nil).each_with_index do |attr, index|
       # ActiveRecord::Base.transaction do
         guw_model = attr.guw_model
         unless guw_model.nil?
@@ -313,9 +320,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwAttributeType : #{Guw::GuwAttributeType.all.size} elements"
+    puts "\nGuwAttributeType : #{Guw::GuwAttributeType.where(organization_id: nil).size} elements"
     #20
-    Guw::GuwAttributeType.all.each_with_index do |attr_type, index|
+    Guw::GuwAttributeType.where(organization_id: nil).each_with_index do |attr_type, index|
       # ActiveRecord::Base.transaction do
         guw_type = attr_type.guw_type
         unless guw_type.nil?
@@ -329,9 +336,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwAttributeComplexity : #{Guw::GuwAttributeComplexity.all.size} elements"
+    puts "\nGuwAttributeComplexity : #{Guw::GuwAttributeComplexity.where(organization_id: nil).all.size} elements"
     #21
-    Guw::GuwAttributeComplexity.all.each_with_index do |attr_cplx, index|
+    Guw::GuwAttributeComplexity.where(organization_id: nil).each_with_index do |attr_cplx, index|
       # ActiveRecord::Base.transaction do
         guw_type = attr_cplx.guw_type
         unless guw_type.nil?
@@ -345,9 +352,9 @@ namespace :guw do
       # end
     end
 
-    puts "\nGuwTypeComplexity : #{Guw::GuwTypeComplexity.all.size} elements"
+    puts "\nGuwTypeComplexity : #{Guw::GuwTypeComplexity.where(organization_id: nil).all.size} elements"
     #22
-    Guw::GuwTypeComplexity.all.each_with_index do |type_cplx, index|
+    Guw::GuwTypeComplexity.where(organization_id: nil).each_with_index do |type_cplx, index|
       # ActiveRecord::Base.transaction do
         guw_type = type_cplx.guw_type
         unless guw_type.nil?
@@ -366,7 +373,7 @@ namespace :guw do
   end
 
   def progress_bar(index)
-    printf("Save: %d ", index)
+    printf("\r Save: %d", index)
   end
 
 end
