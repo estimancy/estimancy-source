@@ -27,8 +27,8 @@
           <td class="span1"><%= admin_setting.value %></td>
           <td class="span3"><%= admin_setting.description %></td>
           <td class="center">
-            <%= link_to '', edit_admin_setting_path(admin_setting), :class => 'icon-pencil', :title => I18n.t('edit') %>
-            <%= link_to ' ', admin_setting, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_admin_setting_path(admin_setting), :class => 'material-icons', :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), admin_setting, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
           </td>
         </tr>
       <% end %>

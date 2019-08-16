@@ -34,11 +34,11 @@
                 <td><%= attribute.attr_type.nil? ? nil : attribute.attr_type.humanize %></td>
                 <td><%= attribute.guw_model_id %></td>
                 <td class="center" style="min-width: 105px;">
-                  <%= link_to '', edit_pe_attribute_path(attribute), :class => 'icon-pencil', :title => I18n.t('edit') %>
-                  <%= link_to('', {:controller => 'pe_attributes',
+                  <%= link_to raw("<i class='material-icons'>edit</i>"), edit_pe_attribute_path(attribute), :class => 'material-icon', :title => I18n.t('edit') %>
+                  <%= link_to(raw("<i class='material-icons'>info</i>"), {:controller => 'pe_attributes',
                                    :action => 'find_use_attribute',
-                                   :pe_attribute_id => attribute.id}, :remote => true, "data-pe_attribute_id" => attribute.id, :class => 'icon-info', :id => 'find_use_pe_attribute', :title => I18n.t('button_find_use')) %>
-                  <%= link_to '', attribute, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                                   :pe_attribute_id => attribute.id}, :remote => true, "data-pe_attribute_id" => attribute.id, :class => 'material-icon', :id => 'find_use_pe_attribute', :title => I18n.t('button_find_use')) %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), attribute, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
                 </td>
               </tr>
           <% end %>

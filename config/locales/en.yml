@@ -379,6 +379,7 @@ en:
 
   # maintenances
   object: Object
+  send_all_users: "Send all users"
 
   # organizations/form
   select_size_module: "Select the size module"

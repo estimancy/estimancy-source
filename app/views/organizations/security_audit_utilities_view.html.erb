@@ -1,51 +1,74 @@
-<div>
-  <h4><%= I18n.t(:actions_history) %></h4>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div style="margin: 10px;">
-    <%= form_tag export_to_pdf_security_audit_utilities_path(format: :pdf, organization_id: @current_organization.id), method: :get do %>
-        <%#= I18n.t(:filters)%>
-        <div class="input row-fluid">
-          <div class="span2">
-              <label class="string control-label" for="objet"><%= I18n.t :begin_date %></label>
-              <input class="date-picker input-large" id="start_date" name="start_date" size="50" type="text">
-          </div>
-          <div class="span2">
-              <label class="string control-label" for="objet"><%= I18n.t :close_date %></label>
-              <input class="date-picker input-large" id="end_date" name="end_date" size="50" type="text">
-          </div>
-          <div class="span2" style="margin-top: 25px;">
-            <%= submit_tag I18n.t(:export_pdf), :formtarget => "_blank", class: "btn btn-primary", :title => 'Exporter en PDF' %>
+      <div class="edition-bloc-title">
+
+        <h4><%= I18n.t(:actions_history) %></h4>
+
+      </div>
+
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+
+          <div style="margin: 10px;">
+            <%= form_tag export_to_pdf_security_audit_utilities_path(format: :pdf, organization_id: @current_organization.id), method: :get do %>
+              <%#= I18n.t(:filters)%>
+
+              <div class="form-row">
+                <div class="col-5">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="string control-label" for="start_date"><%= I18n.t :begin_date %></label>
+                      <input id="start_date" class="date-picker mdl-textfield__input" size="50" type="text">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-5">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="string control-label" for="end_date"><%= I18n.t :close_date %></label>
+                      <input id="end_date" class="date-picker mdl-textfield__input" size="50" name="end_date"type="text">
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-5">
+                  <%= submit_tag I18n.t(:export_pdf), :formtarget => "_blank", class: "btn btn-primary", :title => 'Exporter en PDF' %>
+                  <%# Supprimer tout l'historique %>
+                  <%= link_to "#{I18n.t :delete_all_history}", destroy_all_security_audit_utilities_path,
+                              confirm: "Voulez-vous vraiment supprimer tout l'historique ?", class: "btn btn-secondary" %>
+                </div>
+              </div>
+
+              <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+              <script>
+                  $(document).ready(function () {
+                      $(".date-picker").datepicker({
+                          language: '<%= set_user_language_for_datepicker %>',
+                          autoclose: true,
+                          todayHighlight: true,
+                          todayBtn: true
+                      });
+                  });
+              </script>
+
+            <% end %>
+
           </div>
         </div>
+      </div>
 
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-        <script>
-            $(document).ready(function () {
-                $(".date-picker").datepicker({
-                    language: '<%= set_user_language_for_datepicker %>',
-                    autoclose: true,
-                    todayHighlight: true,
-                    todayBtn: true
-                });
-            });
-        </script>
-    <% end %>
+      <hr/>
 
-    <div style="margin-bottom: 50px; margin-top: -40px;">
-      <%= link_to "#{I18n.t :delete_all_history}", destroy_all_security_audit_utilities_path,
-                  confirm: "Voulez-vous vraiment supprimer tout l'historique ?", class: "btn btn-inverse pull-right" %>
-      <%# Supprimer tout l'historique %>
+      <%# Afficher l'historique de l'audit %>
+      <div style="margin-left: 10px;">
+        <%= link_to "#{I18n.t :view_audit_history}", organization_security_audit_utilities_path, class: "btn btn-primary" %>
+      </div>
+
+      <div id="show_security_audit_utilities" style="margin-top: 30px;"></div>
+
     </div>
   </div>
-
-</div>
-
-<hr />
-<div style="margin-top: 50px;">
-  <%= link_to "#{I18n.t :view_audit_history}", organization_security_audit_utilities_path,
-              class: "btn btn-primary pull-left" %> <%# Afficher l'historique de l'audit %>
-</div>
-
-
-<div id="show_security_audit_utilities" style="margin-top: 30px;">
-</div>
+</section>
