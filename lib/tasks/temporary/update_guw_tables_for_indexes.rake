@@ -30,7 +30,7 @@ namespace :guw do
     # 3 (attention c'est long)
     # ActiveRecord::Base.transaction do
       index = 0
-      Guw::GuwCoefficientElementUnitOfWork.where(organization_id: nil).find_each do |ceuow|
+      Guw::GuwCoefficientElementUnitOfWork.where(organization_id: nil).each do |ceuow|
         # if ceuow.organization_id == nil
           guw_unit_of_work = ceuow.guw_unit_of_work
           unless guw_unit_of_work.nil?
