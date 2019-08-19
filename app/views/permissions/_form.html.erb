@@ -1,33 +1,103 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:global_permissions) %> </a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
-    <%= simple_form_for(@permission) do |f| %>
-      <%= f.error_notification %>
+      <div class="edition-bloc-title">
+        <ul>
+          <li><h4><a href="#tabs-1"><%= I18n.t(:global_permissions) %> </a></h4></li>
+        </ul>
 
-      <%= f.input :alias, :label => I18n.t('alias'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+        <div id="tabs-1">
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+              <%= simple_form_for(@permission) do |f| %>
+                <%= f.error_notification %>
 
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge'} %>
+                <div class="form-row">
+                  <div class="col-8">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :alias, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>
+                      <label class="mdl-textfield__label" for="alias"><%= I18n.t(:alias) %></label>
+                    </div>
+                  </div>
+                </div>
 
-      <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+                <div class="form-row">
+                  <div class="col-8">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>
+                      <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                    </div>
+                  </div>
+                </div>
 
-      <%= f.input :object_type, :label => I18n.t(:object_type), :collection => [ ['General Objects','general_objects'], ['Organization Super Admin Objects','organization_super_admin_objects'], ['Project Dependencies Objects','project_dependencies_objects'], ['Modules Objects','module_objects']], :input_html => {:class => 'input-xxlarge'}, include_blank: false %>
+                <div class="form-row">
+                  <div class="col-8">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :description, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :rows => 5 }  %>
+                      <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                    </div>
+                  </div>
+                </div>
 
-      <%= f.input :category, :label => I18n.t('category'), :collection => ['Admin', 'Library - Organization', 'Organization Estimation Template', 'Library - Project Settings', 'Projects', 'Project', 'Organization Data', 'Module Instances', 'Cocomo Data', '1 level Unit of Work Data'], :input_html => {:class => 'input-xxlarge'} %>
+                <div class="form-row">
+                  <div class="col-8">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :object_type, :label => false,
+                                  :collection => [ ['General Objects','general_objects'],
+                                                   ['Organization Super Admin Objects','organization_super_admin_objects'],
+                                                   ['Project Dependencies Objects','project_dependencies_objects'],
+                                                   ['Modules Objects','module_objects']],
+                                  :input_html => {:class => 'mdl-textfield__input form-control'}, include_blank: false %>
+                      <label class="mdl-textfield__label" for="object_type"><%= I18n.t(:object_type) %></label>
+                    </div>
+                  </div>
+                </div>
 
-      <%= f.input :is_master_permission, :label => I18n.t('is_permission_master'), :input_html => {:class => 'input-xxlarge'}, :as => :boolean %>
+                <div class="form-row">
+                  <div class="col-8">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :category, :label => false,
+                                  :collection => ['Admin', 'Library - Organization',
+                                                  'Organization Estimation Template', 'Library - Project Settings',
+                                                  'Projects', 'Project', 'Organization Data', 'Module Instances',
+                                                  'Cocomo Data', '1 level Unit of Work Data'],
+                                  :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="category"><%= I18n.t(:category) %></label>
+                    </div>
+                  </div>
+                </div>
 
-      <%= f.input :is_permission_project, :label => I18n.t('is_permission_project'), :input_html => {:class => 'input-small'}, :as => :boolean %>
+                <div class="form-row">
+                  <div class="col-8">
+                    <%= f.input :is_permission_project, :label => I18n.t('is_permission_project'), :input_html => {:class => 'input-xxlarge'}, :as => :boolean %>
+                  </div>
+                </div>
 
-      <%= f.input :object_associated, :label => I18n.t('label_associated_object'), :input_html => {:class => 'input-xxlarge'}, :as => :select, :collection => ActiveRecord::Base.connection.tables.map{|t| t.classify }.compact.reject{|j| j == 'SchemaMigration' } %>
+                <div class="form-row">
+                  <div class="col-8">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :object_associated, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'},
+                                  :collection => ActiveRecord::Base.connection.tables.map{|t| t.classify }.compact.reject{|j| j == 'SchemaMigration' } %>
+                      <label class="mdl-textfield__label" for="object_associated"><%= I18n.t(:label_associated_object) %></label>
+                    </div>
+                  </div>
+                </div>
 
-      <div class="actions-tabs">
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <%= link_to I18n.t('back'), permissions_path, :class => 'btn' %>
+                <div class="form-row">
+                  <div class="col-8">
+                    <div class="actions-tabs">
+                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                        <%= link_to I18n.t('back'), permissions_path, :class => 'btn btn-secondary' %>
+                    </div>
+                  </div>
+                </div>
+
+              <% end %>
+            </div>
+          </div>
+        </div>
       </div>
-
-    <% end %>
+    </div>
   </div>
-</div>
+</section>
