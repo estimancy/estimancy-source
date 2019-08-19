@@ -6,14 +6,14 @@
     <li><a href="#tabs-platform-categories"><%= I18n.t(:platform_categories) %></a></li>
     <li><a href="#tabs-project-categories"><%= I18n.t(:project_categories) %></a></li>
     <li><a href="#tabs-providers"><%= I18n.t(:providers) %></a></li>
-    <li><a href="#tabs-wet"><%= I18n.t(:label_WorkElementType) %></a></li>
+<!--    <li><a href="#tabs-wet"><%#= I18n.t(:label_WorkElementType) %></a></li>-->
     <li><a href="#tabs-estimations-statuses"><%= I18n.t(:estimations_statuses) %> </a></li>
     <li><a href="#tabs-profile"><%= I18n.t(:profiles) %></a></li>
     <li><a href="#tabs-fields"><%= I18n.t(:fields) %></a></li>
     <li><a href="#tabs-estimation-models"><%= I18n.t(:estimation_models) %></a></li>
-    <% if current_user.super_admin == true %>
-        <li><a href="#tabs-views"><%= I18n.t(:views) %></a></li>
-    <% end %>
+    <%# if current_user.super_admin == true %>
+<!--        <li><a href="#tabs-views"><%#= I18n.t(:views) %></a></li>-->
+    <%# end %>
     <li><a href="#tabs-select-columns-list"><%= I18n.t(:select_columns_list) %></a></li>
   </ul>
 
@@ -262,46 +262,6 @@
     <% end %>
   </div>
 
-  <div id="tabs-wet">
-    <% if can? :show_work_element_types, WorkElementType %>
-      <% if can? :manage, WorkElementType %>
-        <div class="group_button">
-            <%= link_to I18n.t(:create_button), new_organization_work_element_type_path(@organization), :class => 'btn' %>
-            <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn' %>
-        </div>
-      <% end %>
-
-      <table id="table_list_4" class="table tablesorter tablesorterPager table-striped table-bordered table-condensed">
-        <thead>
-        <tr>
-          <th><%= I18n.t(:name) %></th>
-          <th><%= I18n.t(:alias) %></th>
-          <th><%= I18n.t(:description) %></th>
-          <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
-        </tr>
-        </thead>
-        <tbody>
-        <% @work_element_types.each do |work_element_type| %>
-          <tr>
-            <td><%= work_element_type.name %></td>
-            <td><%= work_element_type.alias %></td>
-            <td><%= work_element_type.description %></td>
-            <td class="center">
-              <%= link_to '', edit_organization_work_element_type_path(@organization, work_element_type), :class => 'icon-pencil' %>
-              <% if can? :manage, WorkElementType %>
-                  <%= link_to '',  organization_work_element_type_path(@organization, work_element_type), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-              <% end %>
-            </td>
-          </tr>
-        <% end %>
-        </tbody>
-      </table>
-    <% else %>
-      <div class="red_color"><%= I18n.t(:notice_cannot_view_work_element_types) %></div>
-    <% end %>
-  </div>
-
-
   <div id="tabs-acquisition-categories">
     <% if can? :show_acquisition_categories, AcquisitionCategory %>
       <% if can? :manage, AcquisitionCategory %>
@@ -424,12 +384,12 @@
     <% end %>
   </div>
 
-  <% if current_user.super_admin == true %>
-      <div id="tabs-views">
-        <%= render partial: "views/views_and_widgets" %>
+  <%# if current_user.super_admin == true %>
+<!--      <div id="tabs-views">-->
+        <%# render partial: "views/views_and_widgets" %>
         <!--<%#= I18n.t(:notice_cannot_view_views_and_widgets) %>-->
-      </div>
-  <% end %>
+<!--      </div>-->
+  <%# end %>
 
   <div id="tabs-select-columns-list" style="min-height: 50px;">
     <% if can? :show_projects_selected_columns, Organization %>
