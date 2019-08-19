@@ -1,72 +1,178 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:auth_methods) %> </a></li>
-  </ul>
-  <div id="tabs-1">
-    <%= simple_form_for(@auth_method) do |f| %>
-        <%= f.error_notification %>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-        <div>
-          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-          <%= f.input :server_name, :label => I18n.t('server_name'), :input_html => {:class => 'input-large'} %>
-          <table>
-            <tr>
-              <td><%= f.input :port, :as => :select, :collection => ['389', '636'], :label => I18n.t('port'), :input_html => {:class => 'input-medium'} %></td>
-              <td>&nbsp &nbsp &nbsp</td>
-              <td><%= f.input :encryption, :label => I18n.t('encryption'),  :collection => ['No encryption', 'SSL (ldaps://)', 'StartTLS' ] %></td>
-            </tr>
-          </table>
-          <%= f.input :ldap_bind_dn, :label => I18n.t('ldap_bind_dn'), :input_html => {:class => 'input-xxlarge', :type => "text"} %>
-          <%= f.input :password, :label => I18n.t('ldap_bind_encrypted_password'), :input_html => {:class => 'input-xlarge', :disabled => false, :type => "text"} %>
-          <%= f.input :base_dn, :label => I18n.t('base_dn'), :input_html => {:class => 'input-xxlarge'} %>
-          <table>
-            <tr>
-              <td><%= f.input :priority_order, :label => I18n.t('priority_order'), :input_html => {:class => 'input-small'} %></td>
-              <td>&nbsp &nbsp &nbsp</td>
-              <td><%= f.input :on_the_fly_user_creation, :label => I18n.t('on_the_fly_user_creation') %></td>
-            </tr>
-          </table>
+        <div class="edition-bloc-title">
+          <ul>
+            <li><h4><a href="#tabs-1"><%= I18n.t(:auth_methods) %> </a></h4></li>
+          </ul>
+        </div>
 
-          <div id="accordion1" class="accordion">
-            <div class="accordion-group accordion-caret">
-              <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
-                  <i class="fa fa-caret-down"></i>
-                  <b><%= I18n.t('ldap_attributes') %></b>
-                </a>
-              </div>
-              <div id="collapseOne" class="accordion-body in collapse">
-                <div class="accordion-inner">
-                  <table>
-                    <tr>
-                      <td><%= f.input :user_name_attribute, :label => I18n.t('user_name_attribute'), :input_html => {:class => 'input-large'} %></td>
-                    </tr>
-                    <tr>
-                      <td><%= f.input :first_name_attribute, :label => I18n.t('first_name_attribute'), :input_html => {:class => 'input-large'} %></td>
-                      <td><%= f.input :last_name_attribute, :label => I18n.t('last_name_attribute'), :input_html => {:class => 'input-large'} %></td>
-                    </tr>
-                    <tr>
-                      <td><%= f.input :email_attribute, :label => I18n.t('email_attribute'), :input_html => {:class => 'input-large', :type => "text"} %></td>
-                      <td><%= f.input :initials_attribute, :label => I18n.t('initials_attribute'), :input_html => {:class => 'input-large'} %></td>
-                    </tr>
-                  </table>
+        <div id="tabs-1">
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
 
+            <%= simple_form_for(@auth_method) do |f| %>
+              <%= f.error_notification %>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>
+                      <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :server_name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="server_name"><%= I18n.t(:server_name) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :port, :as => :select, :collection => ['389', '636'],
+                                :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="port"><%= I18n.t(:port) %></label>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :encryption, :label => false,
+                                  :collection => ['No encryption', 'SSL (ldaps://)', 'StartTLS' ],
+                                  :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="encryption"><%= I18n.t(:encryption) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :ldap_bind_dn, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :type => "text"} %>
+                      <label class="mdl-textfield__label" for="ldap_bind_dn"><%= I18n.t(:ldap_bind_dn) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :password, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :disabled => false, :type => "text"} %>
+                      <label class="mdl-textfield__label" for="password"><%= I18n.t(:ldap_bind_encrypted_password) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :base_dn, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="base_dn"><%= I18n.t(:base_dn) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :priority_order, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                        <label class="mdl-textfield__label" for="priority_order"><%= I18n.t(:priority_order) %></label>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                      <%= f.input :on_the_fly_user_creation, :label => I18n.t(:on_the_fly_user_creation),
+                                  :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                  </div>
+                </div>
+
+
+                <div id="accordion1" class="accordion">
+                  <div class="accordion-group accordion-caret">
+                    <div class="accordion-heading">
+                      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+                        <i class="fa fa-caret-down"></i>
+                        <b><%= I18n.t('ldap_attributes') %></b>
+                      </a>
+                    </div>
+                    <div id="collapseOne" class="accordion-body in collapse">
+                      <div class="accordion-inner">
+
+                            <div class="form-row">
+                              <div class="col-5">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                  <%= f.input :user_name_attribute, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                                  <label class="mdl-textfield__label" for="user_name_attribute"><%= I18n.t(:user_name_attribute) %></label>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="form-row">
+                              <div class="col-5">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                    <%= f.input :first_name_attribute, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                                    <label class="mdl-textfield__label" for="first_name_attribute"><%= I18n.t(:first_name_attribute) %></label>
+                                </div>
+                              </div>
+
+                              <div class="col-5">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                  <%= f.input :last_name_attribute, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                                  <label class="mdl-textfield__label" for="last_name_attribute"><%= I18n.t(:last_name_attribute) %></label>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="form-row">
+                              <div class="col-5">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                  <%= f.input :email_attribute, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :type => "text"} %>
+                                  <label class="mdl-textfield__label" for="email_attribute"><%= I18n.t(:email_attribute) %></label>
+                                </div>
+                              </div>
+
+                              <div class="col-5">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                  <%= f.input :initials_attribute, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                                  <label class="mdl-textfield__label" for="initials_attribute"><%= I18n.t(:initials_attribute) %></label>
+                                </div>
+                              </div>
+                            </div>
+
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="actions-tabs">
+                      <% if action_name.in?(%w(new create)) %>
+                        <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                      <% elsif action_name == 'edit' || action_name=='update' %>
+                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                        <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% end %>
+                      <%= link_to I18n.t('back'), auth_methods_path, :class => 'btn btn-secondary' %>
+                    </div>
+                  <% end %>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div class="actions-tabs">
-            <% if action_name.in?(%w(new create)) %>
-              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <% elsif action_name == 'edit' || action_name=='update' %>
-              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-            <% end %>
-            <%= link_to I18n.t('back'), auth_methods_path, :class => 'btn' %>
+            </div>
+
           </div>
-    <% end %>
+      </div>
+
     </div>
   </div>
-</div>
+</section>
