@@ -396,7 +396,7 @@ class ProjectsController < ApplicationController
 
     check_module_project
 
-    rp = current_user.recent_projects
+    rp = current_user.recent_projects.to_a
     rp << @project.id
     # unless rp.size == 1
     #   rp.shift
