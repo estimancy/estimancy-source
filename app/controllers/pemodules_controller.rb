@@ -57,7 +57,7 @@ class PemodulesController < ApplicationController
     @wets = WorkElementType.all.reject{|i| i.alias == 'link' || i.alias == 'folder'}
     @pemodule = Pemodule.find(params[:id])
     @attributes = PeAttribute.all
-    @attribute_settings = AttributeModule.all(:conditions => {:pemodule_id => @pemodule.id})
+    @attribute_settings = AttributeModule.where(:pemodule_id => @pemodule.id)
   end
 
   def update

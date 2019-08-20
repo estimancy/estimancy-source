@@ -1,105 +1,144 @@
-<div class="tabs">
+<section class="card card-content-bloc estimancy-form">
+    <div class="mb-5">
+        <div class="effort-bloc">
 
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:pemodule_global_parameters) %></a></li>
-    <% unless @pemodule.is_typed || @pemodule.alias.eql?(@initialization_module.alias) %>
-        <li><a href="#tabs-2"><%= I18n.t(:pe_attributes) %></a></li>
-        <li><a href="#tabs-3"><%= I18n.t(:attributes_settings) %></a></li>
-    <% end %>
-  </ul>
-
-  <div id="tabs-1">
-    <%= simple_form_for(@pemodule) do |f| %>
-
-        <%= f.error_notification %>
-
-        <%= hidden_field_tag 'id', (@pemodule.id || nil) %>
-        <div>
-          <table>
-            <tr>
-              <td><%= f.input :title, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %> </td>
-
-              <td><%= f.input :alias, :label => I18n.t('alias'), :input_html => {:class => 'input-medium'} %></td>
-            </tr>
-          </table>
-
-          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
-
-          <%# f.input :with_activities, :input_html => {:style => 'margin-left:0px'}, :label => I18n.t(:label_module_with_activities), :as => :radio_buttons, collection: [:no, :yes_for_input, :yes_for_output_with_ratio, :yes_for_output_without_ratio, :yes_for_input_output_with_ratio, :yes_for_input_output_without_ratio] %>
-        </div>
-
-        <div class="actions-tabs">
-            <% if action_name == 'new' || action_name=="create" %>
-                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+          <ul class="nav nav-pills tabs" role="tabList" id="pills-tab">
+            <li class="nav-item">
+              <a class="nav-link show active" data-toggle="pill" id="tabs-1-pill" href="#tabs-1" role="tab" aria-selected="true">
+                <%= I18n.t(:pemodule_global_parameters) %>
+              </a>
+            </li>
+          <% unless @pemodule.is_typed || @pemodule.alias.eql?(@initialization_module.alias) %>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="pill" id="tabs-2-pill" href="#tabs-2" role="tab" aria-selected="false">
+                <%= I18n.t(:pe_attributes) %></a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" data-toggle="pill" id="tabs-3-pill" href="#tabs-3" role="tab" aria-selected="false"><%= I18n.t(:attributes_settings) %></a>
+            </li>
             <% end %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-            <%= link_to I18n.t('back'), pemodules_path, :class => 'btn' %>
-            <span class="on_success_global"></span>
-        </div>
-    <% end -%>
-  </div>
+          </ul>
 
-  <% unless @pemodule.is_typed || @pemodule.alias.eql?(@initialization_module.alias) %>
+          <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="tabs-1" role="tabpanel" aria-labelledby="tabs-1-pill">
+              <br>
+              <div class="card-body">
+              <%= simple_form_for(@pemodule) do |f| %>
+              <%= f.error_notification %>
 
-      <div id="tabs-2">
-        <%= form_tag('/update_selected_attributes', :method => 'get', :class => 'simple_form') do -%>
+              <%= hidden_field_tag 'id', (@pemodule.id || nil) %>
 
-            <%= hidden_field_tag 'module_id', @pemodule.id %>
-            <%= hidden_field_tag 'pemodule[pe_attribute_ids][]' %>
+                <div class="edition-bloc-content">
+                  <div class="edition-bloc-form">
 
-            <table id="table_list_2" class="table tablesorterPager table-striped table-bordered table-condensed">
-              <thead>
-              <tr>
-                <th><%= I18n.t(:pe_attribute_name) %></th>
-                <th class="filter-select"><%= I18n.t(:selected) %></th>
-                <th><%= I18n.t(:description) %></th>
-                <th>Instance de module</th>
-              </tr>
-              </thead>
-              <tbody>
-              <% @attributes.each do |attr| %>
-                  <% @pemodule.pe_attributes.include?(attr) ? module_attr=@pemodule.attribute_modules.where('pe_attribute_id=?', attr).first : module_attr=nil %>
-                  <tr class="<%= cycle('even', 'odd') %>">
-                    <td><%= link_to(attr.name, edit_pe_attribute_path(attr), :class => 'attribute_tooltip', :style => 'color:green;', :title => display_attribute_rule(attr, module_attr)) unless attr.nil? %></td>
-                    <td>
-                      <span class="hidden">
-                        <%= @attribute_settings.map(&:pe_attribute_id).include?(attr.id).to_s.humanize %>
-                      </span>
-                      <%= check_box_tag 'pemodule[pe_attribute_ids][]', attr.id, @attribute_settings.map(&:pe_attribute_id).include?(attr.id), :disabled => @pemodule == @initialization_module %>
-                    <td><%= attr.description %></td>
-                    <td>
-                      <% if attr.guw_model_id %>
-                        <%= "#{attr.guw_model_id }   (#{attr.guw_model})" %>
-                      <% elsif attr.operation_model_id %>
-                          <%= "#{attr.operation_model_id }   (#{attr.operation_model})" %>
-                      <% end %>
-                    </td>
-                  </tr>
-              <% end %>
-              <%= render :partial => 'layouts/footer_table' %>
-              </tbody>
-            </table>
+                    <div class="form-row">
 
-            <div class="actions-tabs">
-                <% if action_name == 'new' || action_name=="create" %>
-                    <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-                <% end %>
-                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-                <%= link_to I18n.t('back'), pemodules_path, :class => 'btn' %>
-                <span class="on_success_attr"></span>
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :title, :label => false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                          <label class="mdl-textfield__label" for="title" required><%= I18n.t(:name) %></label>
+                        </div>
+                      </div>
+
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :alias, :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+                          <label class="mdl-textfield__label" for="alias" required><%= I18n.t(:alias) %></label>
+                        </div>
+                      </div>
+
+                    </div>
+
+                    <div class="form-row">
+                      <div class="col-10">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5 } %>
+                          <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <%# f.input :with_activities, :input_html => {:style => 'margin-left:0px'}, :label => I18n.t(:label_module_with_activities), :as => :radio_buttons, collection: [:no, :yes_for_input, :yes_for_output_with_ratio, :yes_for_output_without_ratio, :yes_for_input_output_with_ratio, :yes_for_input_output_without_ratio] %>
+
+
+                  <div class="actions-tabs">
+                    <% if action_name == 'new' || action_name=="create" %>
+                      <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                    <% end %>
+                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                      <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <%= link_to I18n.t('back'), pemodules_path, :class => 'btn btn-secondary' %>
+                    <span class="on_success_global"></span>
+                  </div>
+                  <% end -%>
+
+                </div>
+              </div>
             </div>
+          </div>
 
-        <% end -%>
-      </div>
+          <% unless @pemodule.is_typed || @pemodule.alias.eql?(@initialization_module.alias) %>
 
-      <div id="tabs-3" style="overflow-x:auto;">
-        <%= form_tag('/set_attributes_module', :method => 'POST', :class => 'simple_form') do -%>
-            <%= hidden_field_tag :current_tab, '', :class => 'current_tab' %>
-            <%= hidden_field_tag 'pemodule[pe_attribute_ids][]' %>
+              <div class="tab-pane fade" id="tabs-2" role="tabpanel" aria-labelledby="tabs-2-pill">
+                <br>
+                <%= form_tag('/update_selected_attributes', :method => 'get', :class => 'simple_form') do -%>
 
-            <script>
+                  <%= hidden_field_tag 'module_id', @pemodule.id %>
+                  <%= hidden_field_tag 'pemodule[pe_attribute_ids][]' %>
+
+                  <table id="table_list_2" class="table table-list">
+                    <thead>
+                      <tr>
+                        <th><%= I18n.t(:pe_attribute_name) %></th>
+                        <th class="filter-select"><%= I18n.t(:selected) %></th>
+                        <th><%= I18n.t(:description) %></th>
+                        <th>Instance de module</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    <% @attributes.each do |attr| %>
+                    <% @pemodule.pe_attributes.include?(attr) ? module_attr=@pemodule.attribute_modules.where('pe_attribute_id=?', attr).first : module_attr=nil %>
+                    <tr class="<%= cycle('even', 'odd') %>">
+                      <td><%= link_to(attr.name, edit_pe_attribute_path(attr), :class => 'attribute_tooltip', :style => 'color:green;', :title => display_attribute_rule(attr, module_attr)) unless attr.nil? %></td>
+                      <td>
+                        <span class="hidden">
+                          <%= @attribute_settings.map(&:pe_attribute_id).include?(attr.id).to_s.humanize %>
+                        </span>
+                      <%= check_box_tag 'pemodule[pe_attribute_ids][]', attr.id, @attribute_settings.map(&:pe_attribute_id).include?(attr.id), :disabled => @pemodule == @initialization_module %>
+                      <td><%= attr.description %></td>
+                      <td>
+                        <% if attr.guw_model_id %>
+                          <%= "#{attr.guw_model_id }   (#{attr.guw_model})" %>
+                        <% elsif attr.operation_model_id %>
+                            <%= "#{attr.operation_model_id }   (#{attr.operation_model})" %>
+                        <% end %>
+                      </td>
+                    </tr>
+                    <% end %>
+                    <%= render :partial => 'layouts/footer_table' %>
+                    </tbody>
+                  </table>
+
+                  <div class="actions-tabs">
+                    <% if action_name == 'new' || action_name=="create" %>
+                        <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                    <% end %>
+                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                    <%= link_to I18n.t('back'), pemodules_path, :class => 'btn btn-secondary' %>
+                    <span class="on_success_attr"></span>
+                </div>
+
+          <% end %>
+          </div>
+
+          <div class="tab-pane fade" id="tabs-3" role="tabpanel" aria-labelledby="tabs-3-pill">
+            <br>
+            <%= form_tag('/set_attributes_module', :method => 'POST', :class => 'simple_form') do -%>
+              <%= hidden_field_tag :current_tab, '', :class => 'current_tab' %>
+              <%= hidden_field_tag 'pemodule[pe_attribute_ids][]' %>
+
+              <script>
                 $(document).ready(function () {
                     $('.tabs').tabs({
                         select: function (event, ui) {
@@ -111,23 +150,26 @@
                         }
                     });
                 });
-            </script>
-            <%= hidden_field_tag 'module_id', @pemodule.id %>
-            <%= render :partial => 'attribute_settings', :object => @attribute_settings %>
+              </script>
+              <%= hidden_field_tag 'module_id', @pemodule.id %>
+              <%= render :partial => 'attribute_settings', :object => @attribute_settings %>
 
-            <div class="actions-tabs">
+              <div class="actions-tabs">
                 <% if action_name == 'new' || action_name=="create" %>
                     <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
                 <% end %>
                 <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
                 <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-                <%= link_to I18n.t('back'), pemodules_path, :class => 'btn' %>
+                <%= link_to I18n.t('back'), pemodules_path, :class => 'btn btn-secondary' %>
                 <span class="on_success_attr_set"></span>
-            </div>
+              </div>
 
-        <% end -%>
-      </div>
-  <% end %>
+            <% end -%>
+          </div>
+            <% end -%>
+          </div>
 
-</div>
+    </div>
+  </div>
 
+</section>
