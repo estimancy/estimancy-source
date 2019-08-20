@@ -12,7 +12,7 @@
             </div>
         <% end %>
 
-        <table id="table_list_12" class="table tablesorterPager table-striped table-bordered table-condensed">
+        <table id="table_list_12" class="table tablesorterPager table-striped table-bordered table-condensed" style="overflow:auto;">
           <thead>
           <tr>
             <th style="text-align:left;"><%= I18n.t(:name) %></th>
@@ -26,10 +26,12 @@
                 <td><%= project_security_level.name %></td>
                 <td><%= project_security_level.description %></td>
                 <td class="center">
-                  <%= link_to '', edit_organization_project_security_level_path(@organization, project_security_level), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                  <%#= link_to 'Editter', edit_organization_project_security_level_path(@organization, project_security_level), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                  <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_project_security_level_path(@organization, project_security_level), :class => 'material-icons', :title => I18n.t('edit') %>
                   <% if can? :manage, ProjectSecurityLevel %>
-                      <%= link_to '', organization_project_security_level_path(@organization, project_security_level), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-                  <% end %>
+                    <%#= link_to 'Supprimer', organization_project_security_level_path(@organization, project_security_level), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                    <%= link_to raw("<i class='material-icons'>delete</i>"), organization_project_security_level_path(@organization, project_security_level), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                <% end %>
                 </td>
               </tr>
           <% end %>

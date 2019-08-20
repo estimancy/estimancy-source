@@ -123,4 +123,6 @@ Guw::Engine.routes.draw do
   post "auto_sizing" => "guw_models#auto_sizing", as: "auto_sizing"
 
   post "deported" => "guw_unit_of_works#deported", as: "deported"
+
+  post "guw_coeff_chart" => "guw_unit_of_works#guw_coeff_chart", as: "guw_coeff_chart"
 end

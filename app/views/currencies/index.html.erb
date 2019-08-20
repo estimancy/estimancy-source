@@ -32,8 +32,8 @@
             <td><%= currency.sign %></td>
             <td><%= currency.conversion_rate %></td>
             <td class="center">
-              <%= link_to '', edit_currency_path(currency), :class => 'icon-pencil', :title => I18n.t('edit') %>
-              <%= link_to '', currency, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_currency_path(currency), :class => 'material-icon', :title => I18n.t('edit') %>
+              <%= link_to raw("<i class='material-icons'>delete</i>"), currency, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
             </td>
           </tr>
       <% end %>

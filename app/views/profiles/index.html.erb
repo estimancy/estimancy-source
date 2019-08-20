@@ -28,8 +28,8 @@
             <td><%= profile.cost_per_hour %></td>
 
             <td class="center">
-              <%= link_to '', edit_profile_path(profile), :class => 'icon-pencil', :title => I18n.t('edit') %>
-              <%= link_to '', profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_profile_path(profile), :class => 'material-icon', :title => I18n.t('edit') %>
+              <%= link_to raw("<i class='material-icons'>delete</i>"), profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
             </td>
           </tr>
       <% end %>

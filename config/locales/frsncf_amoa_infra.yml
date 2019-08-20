@@ -356,6 +356,7 @@ frsncf_amoa_infra:
   field: "Field"
   browser: "Browser"
   via: "Via"
+  contact_us: "Contactez nous"
 
   # security audit utilities view
   begin_date: "Date de début"
@@ -364,7 +365,8 @@ frsncf_amoa_infra:
   delete_all_history: "Supprimer l'historique"
 
   # maintenances
-  object: Objet
+  object: "Objet"
+  send_all_users: "Envoyer aux utilisateurs"
 
   # organizations/form
   select_size_module: "Sélectionner le module de taille"

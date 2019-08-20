@@ -94,7 +94,7 @@
         <% end -%>
       </div>
 
-      <div id="tabs-3" style="overflow-x: auto;">
+      <div id="tabs-3" style="overflow-x:auto;">
         <%= form_tag('/set_attributes_module', :method => 'POST', :class => 'simple_form') do -%>
             <%= hidden_field_tag :current_tab, '', :class => 'current_tab' %>
             <%= hidden_field_tag 'pemodule[pe_attribute_ids][]' %>

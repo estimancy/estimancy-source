@@ -1,33 +1,56 @@
-<div class="tabs">
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        <%= I18n.t(:security_level) %>
-      </a>
-    </li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
-    <%= simple_form_for([@organization, @project_security_level]) do |f| %>
-      <%= f.error_notification %>
+      <ul>
+      <li>
+        <a href="#tabs-1">
+          <%= I18n.t(:security_level) %>
+        </a>
+      </li>
+    </ul>
 
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:autofocus => (controller.action_name == 'new'), :class => 'input-xxlarge' } %>
-      <%= f.input :description, :label => I18n.t('description'), :input_html => { :class => 'input-xxlarge', :rows => 5 } %>
+      <div class="edition-bloc-content">
+      <div class="edition-bloc-form">
+        <%= simple_form_for([@organization, @project_security_level]) do |f| %>
+          <%= f.error_notification %>
 
-      <%= f.input :organization_id, as: :hidden, :input_html => { value: params[:organization_id] } %>
+          <div class="form-row">
+          <div class="col-3">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :name, :label => false, :input_html => {:autofocus => (controller.action_name == 'new'), :class => 'mdl-textfield__input form-control' } %>
+              <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+            </div>
+          </div>
+        </div>
 
-      <div class="actions-tabs">
-        <% if can? :manage, ProjectSecurityLevel %>
-            <% if action_name.in?(%w(new create)) %>
-                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-            <% elsif action_name == 'edit' || action_name=="update" %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-            <% end %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <div class="form-row">
+          <div class="col-3">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+            <%= f.input :description, :label => false, :input_html => { :class => 'mdl-textfield__input form-control', :rows => 8 } %>
+              <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+            </div>
+          </div>
+        </div>
+
+          <%= f.input :organization_id, as: :hidden, :input_html => { value: params[:organization_id] } %>
+
+          <div class="actions-tabs">
+          <% if can? :manage, ProjectSecurityLevel %>
+              <% if action_name.in?(%w(new create)) %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <% elsif action_name == 'edit' || action_name=="update" %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <% end %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <% end %>
+          <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_security_levels', item_title: I18n.t('security_level'), anchor: "tabs-project-security-levels"), :class => 'btn' %>
+        </div>
+
         <% end %>
-        <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_security_levels', item_title: I18n.t('security_level'), anchor: "tabs-project-security-levels"), :class => 'btn' %>
       </div>
+    </div>
 
-    <% end %>
+    </div>
   </div>
-</div>
+</section>

@@ -32,7 +32,7 @@ module WbsActivityElementsHelper
         tree << "<ul style='margin-left:1px;' id='tree'>
                    <li style='margin-left:-1px;'>
                     <div class='block_label'>
-                        #{show_element_name(element)}
+                      #{show_element_name(element)}
                     </div>
                     <div class='block_link'>
                       #{ link_activity_element(element) }
@@ -47,7 +47,7 @@ module WbsActivityElementsHelper
             tree << "
                      <li style='margin-left:#{element.depth}px;' >
                       <div class='block_label'>
-                        #{show_element_name(e)}
+                        #{ show_element_name(e)}
                       </div>
                       <div class='block_link'>
                         #{ link_activity_element(e) }
@@ -74,7 +74,7 @@ module WbsActivityElementsHelper
         tree << "<ul style='margin-left:1px;' id='tree'>
                    <li style='margin-left:-1px;'>
                     <div class='block_label'>
-                        #{show_element_name(element)}
+                      #{ show_element_name(element)}
                     </div>
                     <div class='block_link'>
                       #{ link_activity_element(element) }
@@ -129,7 +129,7 @@ module WbsActivityElementsHelper
             tree << "
                      <li style='margin-left:-#{gap+element.depth}px;' class='testcolor' >
                       <div class='block_label'>
-                        #{show_element_name(e)}
+                        #{ show_element_name(e) }
                       </div>
                       <div class='block_link'>
                         #{ link_activity_element(e, is_project_show_view) }
@@ -142,7 +142,7 @@ module WbsActivityElementsHelper
               tree << "
                        <li style='margin-left:-#{gap+element.depth}px;' class='testcolor' >
                         <div class='block_label'>
-                          #{show_element_name(e)}
+                          #{ show_element_name(e) }
                         </div>
                         <div class='block_link'>
                           #{ link_activity_element(e, is_project_show_view) }
@@ -224,15 +224,14 @@ module WbsActivityElementsHelper
     end
   end
 
-
   def link_activity_element(element, is_project_show_view=false)
     res = String.new
     unless is_project_show_view
       if element.attributes.has_key? 'record_status_id'
-        res << link_to('', new_wbs_activity_element_path(:selected_parent_id => element.id, :activity_id => element.wbs_activity_id), :class => 'button_attribute_tooltip icon-plus pull-left', :title => I18n.t('button_add'))
-        res << link_to('', edit_wbs_activity_element_path(element, :activity_id => element.wbs_activity_id), :class => 'button_attribute_tooltip icon-pencil pull-left', :title => I18n.t('edit'))
-        res << link_to('', element, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'button_attribute_tooltip icon-trash pull-left', :title => I18n.t('delete'))
-      else
+        res << link_to(raw("<i class='material-icons'>add</i>"), new_wbs_activity_element_path(:selected_parent_id => element.id, :activity_id => element.wbs_activity_id), :class => 'material-icons;.d-none', :title => I18n.t('button_add'))
+        res << link_to(raw("<i class='material-icons'>edit</i>"), edit_wbs_activity_element_path(element, :activity_id => element.wbs_activity_id), :class => 'material-icons', :title => I18n.t('edit'))
+        res << link_to(raw("<i class='material-icons'>delete</i>"), element, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete'))
+        else
         res << link_to_unless(element.cannot_get_new_child_link?, '', new_wbs_project_element_path(:selected_parent_id => element.id, :project_id => @project.id), :class => 'button_attribute_tooltip icon-plus pull-left', :title => I18n.t('button_add'))
         res << link_to_unless(element.is_root?, '', edit_wbs_project_element_path(element, :project_id => @project.id), :class => 'button_attribute_tooltip icon-pencil pull-left', :title => I18n.t('edit'))
         res << link_to_unless(element.is_root?, '', wbs_project_element_path(element, :project_id => @project.id), confirm: I18n.t('are_you_sure'), method: :delete, :project_id => @project.id, :class => 'button_attribute_tooltip icon-trash pull-left', :title => I18n.t('delete')) unless  !element.destroy_leaf

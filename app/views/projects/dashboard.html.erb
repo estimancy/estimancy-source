@@ -10,7 +10,6 @@
     <div id="bashboard" class="edition-page-group py-4"><span><%= I18n.t(:calculation_modules) %></span></div>
     <%= render(:partial => 'projects/setting_module') %>
   <% else %>
-
       <div id="bashboard" class="edition-page-group py-4"><span><%= I18n.t(:dashboard) %></span></div>
       <div class="mb-4">
         <div class="widgets-list">
@@ -187,7 +186,6 @@
         </div>
         <!-- Fin Les graphiques -->
 
-
         <!-- Graph de test Usabilis -->
         <!--<div class="mb-5">-->
           <!--<div class="effort-chart-bloc card card-widget">-->
@@ -285,7 +283,11 @@
 
     </div>
   <% end %>
+
+  <% %>
+
 </div>
+
 
 <%# hidden_field_tag :project_id, @project.id %>
 <%# render 'dashboard_inner' %>

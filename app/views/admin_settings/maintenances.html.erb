@@ -1,24 +1,45 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-2"><%= I18n.t(:maintenance_message)%></a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
 
-  <div id="tabs-2">
-    <%= form_tag mass_mailing_path do %>
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-
-
-      <div class="input string optional user_initials">
-        <label class="string control-label" for="objet"><%= I18n.t :object %></label>
-        <input class="string input-xxlarge" id="objet" name="objet" size="50" type="text">
+      <div class="edition-bloc-title">
+          <ul>
+            <li><h4><a href="#tabs-2"><%= I18n.t(:maintenance_message)%></a></h4></li>
+        </ul>
       </div>
 
-      <div class="input string optional user_initials">
-        <label class="string optional control-label" for="message"><%= I18n.t :maintenance_message %></label>
-        <%= text_area_tag "message", "", class: "tinymce optional", rows: "15" %>
+      <div id="tabs-2">
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+              <%= form_tag mass_mailing_path do %>
+              <div class="input string optional user_initials">
+                <div class="col-5">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="objet"><%= I18n.t :object %></label>
+                    <input class="mdl-textfield__input" id="objet" name="objet" size="50" type="text">
+                  </div>
+                </div>
+              </div>
+
+              <div class="input string optional user_initials">
+                <div class="col-5">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="message"><%= I18n.t :maintenance_message %></label>
+                    <input class="mdl-textfield__input" id="objet" name="objet" rows="7" type="text">
+                  </div>
+                </div>
+<!--                <label class="string optional control-label" for="message"><%#= I18n.t :maintenance_message %></label>-->
+                <%#= text_area_tag "message", "", class: "textfield__input", rows: "15" %>
+              </div>
+
+              <%= submit_tag I18n.t(:send_all_users), class: "btn btn-primary" %>
+            <% end %>
+          </div>
+          </div>
+        </div>
       </div>
 
-      <%= submit_tag I18n.t(:send_all_users), class: "btn" %>
-    <% end %>
+    </div>
   </div>
-</div>
+</section>

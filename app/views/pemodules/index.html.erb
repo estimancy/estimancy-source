@@ -34,9 +34,9 @@
                 <td><%= pemodule.description %></td>
                 <td class="center">
                   <% if can? :manage, Pemodule %>
-                    <%= link_to '', edit_pemodule_path(pemodule, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
-                    <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :pemodule_id => pemodule.id}, :remote => true, :class => 'icon-info', :title => I18n.t('button_find_use')) %>
-                    <%= link_to '', pemodule, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                    <%= link_to raw("<i class='material-icons'>edit</i>"), edit_pemodule_path(pemodule, :anchor => 'tabs-1'), :class => 'material-icon', :title => I18n.t('edit') %>
+                    <%= link_to(raw("<i class='material-icons'>info</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :pemodule_id => pemodule.id}, :remote => true, :class => 'material-icon', :title => I18n.t('button_find_use')) %>
+                    <%= link_to raw("<i class='material-icons'>delete</i>"), pemodule, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
                   <% end %>
                 </td>
               </tr>

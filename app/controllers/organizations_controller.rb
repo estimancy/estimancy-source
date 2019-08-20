@@ -3997,6 +3997,47 @@ class OrganizationsController < ApplicationController
     end
   end
 
+  #guow : guw_unit_of_works
+  #gcoeff : @guw_coefficient
+  def guw_coeff_chart(guow, gcoeff)
+    @coeff_data = []
+    @colors = []
+    create_nb, modif_nb, delete_nb, dup_nb, redund_nb, registered_nb = 0
+
+    @organization = Organization.find(:id)
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:id])
+    unless params[:guw_coefficient["#{guow.id}][#{gcoeff.id}]"]].blank?
+      coeff_cplx = params[:guw_coefficient["#{guow.id}][#{gcoeff.id}]"]]
+      case coeff_cplx
+      when 1
+        create_nb = create_nb + 1
+      when 2
+        modif_nb = modif_nb + 1
+      when 3
+        delete_nb = delete_nb + 1
+      when 4
+        dup_nb = dup_nb + 1
+      when 5
+        redund_nb = redund_nb + 1
+      when 6
+        registered_nb = registered_nb + 1
+      end
+    end
+
+    @colors << '#007DAB'
+    @colors << '#78B2FF'
+    @colors << '#FFFA6E'
+    @colors << '#D96675'
+    @colors << '#D95F18'
+
+
+    @organization.applications.each do |app|
+      @coeff_data << ["#{app.name}"]
+      @coeff_data << create_nb << modif_nb << delete_nb << dup_nb<< redund_nb << registered_nb
+    end
+
+  end
+
   #########   END Organization settings pages  ###################
 
 
