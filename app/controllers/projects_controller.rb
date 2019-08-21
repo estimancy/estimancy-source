@@ -1168,22 +1168,24 @@ class ProjectsController < ApplicationController
 
     if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && (can?(:edit_project, @project) || can_alter_estimation?(@project))) # Have the write access to project
 
-      if @project.is_model == true
-        if params[:project][:application_ids].present?
-          @project.applications.delete_all
-          @project.application_ids = params[:project][:application_ids]
-        else
-          @project.application_name = params[:project][:application_name]
-        end
-      else
-        begin
-          if params[:project][:application_id].present?
-            @project.application_id = params[:project][:application_id]
+      unless params[:project].nil?
+        if @project.is_model == true
+          if params[:project][:application_ids].present?
+            @project.applications.delete_all
+            @project.application_ids = params[:project][:application_ids]
           else
             @project.application_name = params[:project][:application_name]
           end
-        rescue
-          # ignored
+        else
+          begin
+            if params[:project][:application_id].present?
+              @project.application_id = params[:project][:application_id]
+            else
+              @project.application_name = params[:project][:application_name]
+            end
+          rescue
+            # ignored
+          end
         end
       end
 
