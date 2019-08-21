@@ -138,8 +138,7 @@
 
                       <%= select_tag("status_group_role[#{estimation_status.id}][#{group.id}]", options_for_select(@organization.project_security_levels.map{|i| [i.name, i.id]},
                                                                                                                    selected: esgr.nil? ? '' : esgr.project_security_level_id),
-                                                                                                                   prompt: "Aucune permission",
-                                                                                                                   class: "input-small") %>
+                                                                                                                   prompt: "Aucune permission") %>
                     </td>
                   <% end %>
                 <% else %>
