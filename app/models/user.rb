@@ -45,7 +45,7 @@ class User < ActiveRecord::Base
                   :previous_login, :quick_access, :allow_full_screen_dashboard
 
   # Virtual attribute for authenticating by either login_name or email  # This is in addition to a real persisted field like 'login_name'
-  attr_accessor :login_name, :updating_password, :current_password
+  attr_accessor :updating_password, :current_password
 
   # Hair-Triggers
 
