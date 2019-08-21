@@ -86,7 +86,9 @@
                 <% owner = User.where(initials: owner_key.value).first %>
                 <%= hidden_field_tag "user_securities_#{owner.id}" %>
                 <tr>
-                  <%= owner_key.value %>
+                  <td>
+                    <%= owner_key.value %>
+                  </td>
                   <% @organization.project_security_levels.each do |prj_level| %>
                       <%
                          ps = ProjectSecurity.where(user_id: owner.nil? ? nil : owner.id,

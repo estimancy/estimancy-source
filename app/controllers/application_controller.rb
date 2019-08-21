@@ -206,26 +206,18 @@ class ApplicationController < ActionController::Base
       if current_user.organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
-          when "estimations", "sort", "search", "add_filter_on_project_version"
-            # Rails.cache.fetch("ability_#{@current_organization.id}_#{current_user}") do
-
-              @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.projects)
-
-              # u = current_user
-              # u.ability = @current_ability
-              # u.save
-
-            # end
+          when "estimations", "sort", "search"
+            @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.projects)
           when "projects_from"
             estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
             @current_ability ||= Ability.new(current_user, @current_organization, estimation_models)
         else
-          @current_ability ||= Ability.new(current_user, @current_organization, [@project])
-
-          # u = current_user
-          # u.ability = @current_ability
-          # u.save
-
+          # A améliorer
+          if params[:controller] == "projects" && params[:action] == "edit"
+            @current_ability ||= Ability.new(current_user, @current_organization, [Project.find(params[:id])])
+          else
+            @current_ability ||= Ability.new(current_user, @current_organization, [@project])
+          end
         end
       else
         @current_ability = Ability.new(current_user, nil, nil)

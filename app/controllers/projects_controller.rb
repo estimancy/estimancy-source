@@ -1060,8 +1060,8 @@ class ProjectsController < ApplicationController
       set_breadcrumbs I18n.t(:estimation_models) => organization_setting_path(@organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models'), @project => edit_project_path(@project), "<span class='badge' style='background-color: #{@project.status_background_color}'>#{@project.status_name}</span>" => edit_project_path(@project)
 
       if cannot?(:manage_estimation_models, Project)
-        unless can_show_estimation?(@project)
-          redirect_to :back, flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)} and return
+        if !can?(:show_project, @project)
+          redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
         end
       end
 
@@ -1074,8 +1074,8 @@ class ProjectsController < ApplicationController
       # end
 
       # We need to verify user's groups rights on estimation according to the current estimation status
-      unless can_modify_estimation?(@project)
-        unless can_show_estimation?(@project)
+      if !can?(:edit_project, @project)
+        if !can?(:show_project, @project)
           redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
         end
       end
@@ -1552,7 +1552,7 @@ class ProjectsController < ApplicationController
     @providers = @organization.providers
 
     # We need to verify user's groups rights on estimation according to the current estimation status
-    if !can_show_estimation?(@project)
+    if !can?(:show_project, @project)
       redirect_to(organization_estimations_path(@organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
     end
 
@@ -2950,7 +2950,7 @@ public
     project = Project.find(params[:project_id])
     authorize! :commit_project, project
 
-    if !can_modify_estimation?(project)
+    if !can?(:edit_project, project)
       redirect_to(organization_estimations_path(@current_organization), flash: {warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
     end
 
@@ -4422,7 +4422,7 @@ public
     authorize! :show_project, @project
 
     # return if user doesn't have the rigth to consult the estimation
-    if !can_show_estimation?(@project)
+    if !can?(:show_project, @project)
       redirect_to(organization_estimations_path(@current_organization), flash: { warning: I18n.t(:warning_no_show_permission_on_project_status)}) and return
     end
 
