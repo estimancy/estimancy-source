@@ -1,6 +1,8 @@
 <%= simple_form_for(@project) do |f| %>
 
 
+  <%= hidden_field_tag :tabs_name, params[:tabs_name] %>
+
   <%= hidden_field_tag :project_id, @project.id %>
   <%= hidden_field_tag :organization_id, @organization.id %>
 

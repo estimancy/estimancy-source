@@ -1268,106 +1268,110 @@ class ProjectsController < ApplicationController
       # END Before modifications for trigger
 
 
+      if params["tabs_name"] == "tabs_securities"
       # Après les modifications pour les Trigger
-      if params['is_project_show_view'].nil? || (params['is_project_show_view'] == "true" && !params['group_security_levels'].nil?)
-        new_project_securities = []
-        all_project_securities = @project.project_securities
+        if params['is_project_show_view'].nil? || (params['is_project_show_view'] == "true" && !params['group_security_levels'].nil?)
+          new_project_securities = []
+          # all_project_securities = @project.project_securities
 
-        # GROUP
-        unless params["group_securities"].nil?
-          group_securities_a_garder = []
-          group_securities_to_add = []
-          group_securities_to_destroy = []
+          # GROUP
+          unless params["group_securities"].nil?
+            group_securities_a_garder = []
+            group_securities_to_add = []
+            group_securities_to_destroy = []
 
-          params["group_securities"].each do |psl|
-            params["group_securities"][psl.first].each do |group|
-              ps = @project.project_securities.where(group_id: group.first.to_i, project_security_level_id: psl.first,
-                                                     is_model_permission: false, is_estimation_permission: true).first
-              if ps
-                group_securities_a_garder << ps
-              else
-                group_securities_to_add << @project.project_securities.create(group_id: group.first.to_i, project_security_level_id: psl.first,
-                                                                              is_model_permission: false, is_estimation_permission: true,
-                                                                              originator_id: @current_user.id, event_organization_id: @organization.id)
+            params["group_securities"].each do |psl|
+              params["group_securities"][psl.first].each do |group|
+                ps = @project.project_securities.where(group_id: group.first.to_i, project_security_level_id: psl.first,
+                                                       is_model_permission: false, is_estimation_permission: true).first
+                if ps
+                  group_securities_a_garder << ps
+                else
+                  group_securities_to_add << @project.project_securities.create(group_id: group.first.to_i, project_security_level_id: psl.first,
+                                                                                is_model_permission: false, is_estimation_permission: true,
+                                                                                originator_id: @current_user.id, event_organization_id: @organization.id)
+                end
               end
             end
+            # on met à jour les securite des groupes du projet
+            new_project_securities << group_securities_a_garder.map(&:id) + group_securities_to_add.map(&:id)
           end
-          # on met à jour les securite des groupes du projet
-          new_project_securities << group_securities_a_garder.map(&:id) + group_securities_to_add.map(&:id)
-        end
 
-        # GROUP FROM MODEL
-        unless params["group_securities_from_model"].nil?
-          group_from_model_securities_a_garder = []
-          group_from_model_securities_to_add = []
+          # GROUP FROM MODEL
+          unless params["group_securities_from_model"].nil?
+            group_from_model_securities_a_garder = []
+            group_from_model_securities_to_add = []
 
-          params["group_securities_from_model"].each do |psl|
-            params["group_securities_from_model"][psl.first].each do |group|
+            params["group_securities_from_model"].each do |psl|
+              params["group_securities_from_model"][psl.first].each do |group|
 
-              ps = @project.project_securities.where(group_id: group.first.to_i, project_security_level_id: psl.first,
-                                                     is_model_permission: true, is_estimation_permission: false).first
-              if ps
-                group_from_model_securities_a_garder << ps
-              else
-                group_from_model_securities_to_add << @project.project_securities.create(group_id: group.first.to_i, project_security_level_id: psl.first,
-                                                                                        is_model_permission: true, is_estimation_permission: false,
-                                                                                        originator_id: @current_user.id, event_organization_id: @organization.id)
+                ps = @project.project_securities.where(group_id: group.first.to_i, project_security_level_id: psl.first,
+                                                       is_model_permission: true, is_estimation_permission: false).first
+                if ps
+                  group_from_model_securities_a_garder << ps
+                else
+                  group_from_model_securities_to_add << @project.project_securities.create(group_id: group.first.to_i,
+                                                                                           project_security_level_id: psl.first,
+                                                                                          is_model_permission: true,
+                                                                                           is_estimation_permission: false,
+                                                                                          originator_id: @current_user.id,
+                                                                                           event_organization_id: @organization.id)
+                end
               end
             end
+            # on met à jour les securite des groupes du projet
+            new_project_securities << group_from_model_securities_a_garder.map(&:id) + group_from_model_securities_to_add.map(&:id)
           end
-          # on met à jour les securite des groupes du projet
-          new_project_securities << group_from_model_securities_a_garder.map(&:id) + group_from_model_securities_to_add.map(&:id)
-        end
 
-
-        # USER
-        unless params["user_securities"].nil?
-          user_securities_a_garder = []
-          user_securities_to_add = []
-          params["user_securities"].each do |psl|
-            params["user_securities"][psl.first].each do |user|
-              ps = @project.project_securities.where(user_id: user.first.to_i, project_security_level_id: psl.first,
-                                                     is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: true).first
-              if ps
-                user_securities_a_garder << ps
-              else
-                user_securities_to_add << @project.project_securities.create(user_id: user.first.to_i, project_security_level_id: psl.first, is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: true,
-                                                                             originator_id: @current_user.id, event_organization_id: @organization.id)
+          # USER
+          unless params["user_securities"].nil?
+            user_securities_a_garder = []
+            user_securities_to_add = []
+            params["user_securities"].each do |psl|
+              params["user_securities"][psl.first].each do |user|
+                ps = @project.project_securities.where(user_id: user.first.to_i, project_security_level_id: psl.first,
+                                                       is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: true).first
+                if ps
+                  user_securities_a_garder << ps
+                else
+                  user_securities_to_add << @project.project_securities.create(user_id: user.first.to_i, project_security_level_id: psl.first, is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: true,
+                                                                               originator_id: @current_user.id, event_organization_id: @organization.id)
+                end
               end
             end
+            # on met à jour les securite des users du project
+            new_project_securities << user_securities_a_garder.map(&:id) + user_securities_to_add.map(&:id)
           end
-          # on met à jour les securite des users du project
-          new_project_securities << user_securities_a_garder.map(&:id) + user_securities_to_add.map(&:id)
-        end
 
-        # USER FROM MODEL
-        unless params["user_securities_from_model"].nil?
-          user_from_model_securities_a_garder = []
-          user_from_model_securities_to_add = []
+          # USER FROM MODEL
+          unless params["user_securities_from_model"].nil?
+            user_from_model_securities_a_garder = []
+            user_from_model_securities_to_add = []
 
-          params["user_securities_from_model"].each do |psl|
-            params["user_securities_from_model"][psl.first].each do |user|
-              # TODO : vérifier cette boucle
-              owner_key = AdminSetting.find_by_key("Estimation Owner")
-              owner = User.where(initials: owner_key.value).first
+            params["user_securities_from_model"].each do |psl|
+              params["user_securities_from_model"][psl.first].each do |user|
+                # TODO : vérifier cette boucle
+                owner_key = AdminSetting.find_by_key("Estimation Owner")
+                owner = User.where(initials: owner_key.value).first
 
-              ps = @project.project_securities.where(user_id: owner.id.to_i, project_security_level_id: psl.first,
-                                                      is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: false).first
-              if ps
-                user_from_model_securities_a_garder << ps
-              else
-                user_from_model_securities_to_add << @project.project_securities.create(user_id: owner.id.to_i, project_security_level_id: psl.first,
-                                                                                         is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: false,
-                                                                                         originator_id: @current_user.id, event_organization_id: @organization.id)
+                ps = @project.project_securities.where(user_id: owner.id.to_i, project_security_level_id: psl.first,
+                                                        is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: false).first
+                if ps
+                  user_from_model_securities_a_garder << ps
+                else
+                  user_from_model_securities_to_add << @project.project_securities.create(user_id: owner.id.to_i, project_security_level_id: psl.first,
+                                                                                           is_model_permission: @project.is_model.nil? ? false : @project.is_model, is_estimation_permission: false,
+                                                                                           originator_id: @current_user.id, event_organization_id: @organization.id)
+                end
               end
             end
+            # on met à jour les securite des users du projet cree à partir du model
+            new_project_securities << user_from_model_securities_a_garder.map(&:id) + user_from_model_securities_to_add.map(&:id)
           end
-          # on met à jour les securite des users du projet cree à partir du model
-          new_project_securities << user_from_model_securities_a_garder.map(&:id) + user_from_model_securities_to_add.map(&:id)
-        end
 
-        @project.project_security_ids = new_project_securities.flatten.reject{ |e| e.blank? }
-        @project.save
+          @project.project_security_ids = new_project_securities.flatten.reject{ |e| e.blank? }
+          @project.save
+        end
       end
 
       # Get the max X and Y positions of modules
