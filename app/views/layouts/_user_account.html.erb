@@ -25,7 +25,7 @@
   </li>
 
   <li class="dropdown">
-    <a href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>">
+    <a href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>" data-no-turbolink="false">
       <i class="fa fa-print fa-lg pull-left"></i>&nbsp;
     </a>
   </li>
@@ -38,21 +38,21 @@
     </a>
     <ul class="dropdown-menu">
       <li>
-        <a href="<%= main_app.edit_organization_user_path(@current_organization, current_user) %>" title="<%= I18n.t 'edit' %>">
+        <a href="<%= main_app.edit_organization_user_path(@current_organization, current_user) %>" title="<%= I18n.t 'edit' %>" data-no-turbolink="false">
           <%= current_user %>
         </a>
       </li>
 
       <li class="dropdown">
-        <a href="<%= main_app.organization_authorization_path(@current_organization) %>"> <%= I18n.t(:permission) %> </a>
+        <a href="<%= main_app.organization_authorization_path(@current_organization) %>" data-no-turbolink="false"> <%= I18n.t(:permission) %> </a>
       </li>
 
       <li class="dropdown">
-        <a href="<%= main_app.organization_users_path(@current_organization) %>"> <%= I18n.t(:users) %> </a>
+        <a href="<%= main_app.organization_users_path(@current_organization) %>" data-no-turbolink="false"> <%= I18n.t(:users) %> </a>
       </li>
 
       <li class="dropdown">
-        <a href="/organizationals_params"><%= I18n.t(:Organisation_change) %> </a>
+        <a href="/organizationals_params" data-no-turbolink="false"><%= I18n.t(:Organisation_change) %> </a>
       </li>
     </ul>
   </li>
@@ -64,17 +64,17 @@
     <ul class="dropdown-menu">
       <% if @current_organization %>
           <li class="dropdown">
-            <a href="<%= main_app.edit_organization_path(@current_organization)%>">
+            <a href="<%= main_app.edit_organization_path(@current_organization)%>" data-no-turbolink="false">
               <%= @current_organization %>
             </a>
           </li>
           <li class="dropdown">
-            <a href="<%= main_app.organization_setting_path(@current_organization)%>">
+            <a href="<%= main_app.organization_setting_path(@current_organization)%>" data-no-turbolink="false">
               <%= I18n.t(:setting)%>
             </a>
           </li>
           <li class="dropdown">
-            <a href="<%= main_app.organization_module_estimation_path(@current_organization)%>">
+            <a href="<%= main_app.organization_module_estimation_path(@current_organization)%>" data-no-turbolink="false">
               <%= I18n.t(:projestimate_module)%>
             </a>
           </li>
@@ -91,7 +91,7 @@
         <ul class="dropdown-menu">
           <% if @current_organization && can?(:manage_security_audit, @current_organization)%>
               <li class="dropdown">
-                <a href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
+                <a href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>" data-no-turbolink="false">
                   <%= I18n.t(:security_audit_utilities)%>
                 </a>
               </li>
@@ -121,49 +121,49 @@
           <i class="fa fa-user-plus fa-lg pull-left"></i>
         </a>
         <ul class="dropdown-menu">
-          <li class="dropdown"><a href="<%= main_app.organizationals_params_path %> ">
+          <li class="dropdown"><a href="<%= main_app.organizationals_params_path %> " data-no-turbolink="false">
             <%= I18n.t(:organizations) %></a>
           </li>
 
-          <li class="dropdown"><a href="<%= main_app.users_path %>"> <%= I18n.t(:users) %></a></li>
+          <li class="dropdown"><a href="<%= main_app.users_path %>" data-no-turbolink="false" <%= I18n.t(:users) %></a></li>
 
-          <li class="dropdown"><a href="<%= main_app.profiles_path %>"> <%= I18n.t(:profiles) %> </a></li>
+          <li class="dropdown"><a href="<%= main_app.profiles_path %>" data-no-turbolink="false"> <%= I18n.t(:profiles) %> </a></li>
 
-          <li class="dropdown"><a href="<%= main_app.currencies_path %>">
+          <li class="dropdown"><a href="<%= main_app.currencies_path %>" data-no-turbolink="false">
             <%= I18n.t(:currencies) %></a>
           </li>
 
           <li class="divider"></li>
 
-          <li class="dropdown"><a href="<%= main_app.admin_settings_path %>">
+          <li class="dropdown"><a href="<%= main_app.admin_settings_path %>" data-no-turbolink="false">
             <%= I18n.t(:tech_setting) %></a>
           </li>
 
-          <li class="dropdown"><a href="<%= main_app.auth_methods_path %>">
+          <li class="dropdown"><a href="<%= main_app.auth_methods_path %>" data-no-turbolink="false">
             <%= I18n.t(:auth_methods) %></a>
           </li>
 
-          <li class="dropdown"><a href="<%= main_app.maintenances_path %>">
+          <li class="dropdown"><a href="<%= main_app.maintenances_path %>" data-no-turbolink="false">
             <%= I18n;t(:maintenance_message)%></a>
           </li>
 
-          <li class="dropdown"><a href="<%= main_app.audits_path %>"> <%= I18n.t(:Audit)%> </a></li>
+          <li class="dropdown"><a href="<%= main_app.audits_path %>" data-no-turbolink="false"> <%= I18n.t(:Audit)%> </a></li>
 
           <li class="divider"></li>
 
-          <li class="dropdown"><a href="<%= main_app.pe_attributes_path %>">
+          <li class="dropdown"><a href="<%= main_app.pe_attributes_path %>" data-no-turbolink="false">
             <%= I18n.t(:pe_attributes) %></a>
           </li>
 
-          <li class="dropdown"><a href="<%= main_app.pemodules_path %>">
+          <li class="dropdown"><a href="<%= main_app.pemodules_path %>" data-no-turbolink="false">
               <%= I18n.t(:projestimate_module) %></a>
           </li>
 
-          <li class="dropdown"><a href="<%= main_app.permissions_path %>">
+          <li class="dropdown"><a href="<%= main_app.permissions_path %>" data-no-turbolink="false">
               <%= I18n.t(:all_permissions) %></a>
           </li>
 
-          <li class="dropdown"><a href="<%= main_app.languages_path %>">
+          <li class="dropdown"><a href="<%= main_app.languages_path %>" data-no-turbolink="false">
               <%= I18n.t(:languages) %></a>
           </li>
         </ul>
