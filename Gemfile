@@ -273,3 +273,5 @@ gem 'jquery-number-rails'
 gem 'bootstrap-datepicker-rails'
 
 gem 'jscolor-rails'
+
+gem 'selectize-rails'

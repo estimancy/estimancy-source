@@ -44,6 +44,7 @@
                   <div class="col-8">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :object_type, :label => false,
+                                  :as => :select,
                                   :collection => [ ['General Objects','general_objects'],
                                                    ['Organization Super Admin Objects','organization_super_admin_objects'],
                                                    ['Project Dependencies Objects','project_dependencies_objects'],
@@ -58,6 +59,7 @@
                   <div class="col-8">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :category, :label => false,
+                                  :as => :select,
                                   :collection => ['Admin', 'Library - Organization',
                                                   'Organization Estimation Template', 'Library - Project Settings',
                                                   'Projects', 'Project', 'Organization Data', 'Module Instances',
@@ -98,6 +100,7 @@
           </div>
         </div>
       </div>
+
     </div>
   </div>
 </section>

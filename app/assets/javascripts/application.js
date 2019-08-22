@@ -20,13 +20,12 @@
 //= require spectrum.js
 //= require jscolor
 
-
-
 //= require bootstrap-datepicker
 //= require bootstrap-datepicker/core
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.fr.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.de.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.it.js
 
+//= require selectize.js
 
 
