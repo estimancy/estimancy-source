@@ -230,7 +230,11 @@ module ProjectsHelper
   #Conversion en fonction de la précision en params uniquement #> 12.12300 (si precision = 5) ou 12.12 si (si precision = 2)
   def convert_with_precision(value, precision, delimiter = false)
     begin
-      v = number_with_precision(value, precision: precision.to_i, locale: :fr, delimiter: delimiter ? I18n.l('number.format.delimiter') : '')
+      if current_user.locale == "en"
+        v = number_with_precision(value, precision: precision.to_i, locale: :en, delimiter: ',')
+      else
+        v = number_with_precision(value, precision: precision.to_i, locale: :fr, delimiter: '.')
+      end
     rescue
       begin
         v = "%.#{precision}f" % value

@@ -19,6 +19,8 @@
 //= require jquery-number
 //= require spectrum.js
 //= require jscolor
+//= require jquery.gridster.js
+//= require jquery.gridster-0.7.0.js
 
 //= require bootstrap-datepicker
 //= require bootstrap-datepicker/core

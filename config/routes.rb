@@ -48,7 +48,7 @@ Projestimate::Application.routes.draw do
 
   resources :fields
   resources :views_widgets
-  post 'update_view_widget_positions' => 'views_widgets#update_view_widget_positions', :as => 'update_view_widget_positions'
+  get 'update_view_widget_positions' => 'views_widgets#update_view_widget_positions', :as => 'update_view_widget_positions'
   get 'update_view_widget_sizes' => 'views_widgets#update_view_widget_sizes', :as => 'update_view_widget_sizes'
   get 'update_widget_module_project_data' => 'views_widgets#update_widget_module_project_data', :as => 'update_widget_module_project_data'
   get 'show_widget_effort_display_unit' => 'views_widgets#show_widget_effort_display_unit', :as => 'show_widget_effort_display_unit'

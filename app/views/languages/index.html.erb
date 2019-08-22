@@ -21,7 +21,7 @@
             <tr>
               <td class="span1"><%= language.to_s %></td>
               <td class="span1"><%= language.locale %></td>
-              <td class="center">a
+              <td class="center">
                 <%= link_to raw("<i class='material-icons'>edit</i>"), edit_language_path(language), :class => 'material-icon', :title => I18n.t('edit') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), language, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon',
                             :title => I18n.t('delete') %>

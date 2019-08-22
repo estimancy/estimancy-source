@@ -61,29 +61,30 @@
   <div class="row">
     <div class="col-12 tools">
       <% if can? :execute_estimation_plan, @project %>
-        <%= link_to raw("<i class='material-icons'>group</i>"), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "float-right", title: "#{I18n.t :group}" %>
-      <% end %>
-
-      <% if can? :execute_estimation_plan, @project %>
         <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
           <%= link_to raw("<i class='material-icons'>save_alt</i>"), "#!", "data-toggle": "modal", "data-target": "#extract", class: "float-right", title: I18n.t(:import) %>
         <% end %>
       <% end %>
 
       <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
-        <%= link_to raw("<i class='material-icons'>launch</i>"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
-        <%= link_to raw("<i class='material-icons'>unarchive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
-    <% else %>
-        <%= link_to raw("<i class='material-icons'>archive</i>"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
+        <%= link_to image_tag("/assets/twotone-data-24px.svg", size: "24x24"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
+        <%= link_to image_tag("/assets/baseline-save2_alt-24px.svg", size: "24x24"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
+        <%# link_to raw("<i class='material-icons'>unarchive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
+      <% else %>
+        <%= link_to raw("<i class='material-icons'>archive</i> &nbsp;"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
+      <% end %>
+
+      <% if can? :execute_estimation_plan, @project %>
+        <%= link_to raw("<i class='material-icons'>group</i>"), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "float-right", title: "#{I18n.t :group}" %>
+      <% end %>
+      <% if can? :execute_estimation_plan, @project %>
+        <%= link_to raw("<i class='material-icons'>restore</i>"), "#!", onclick: "multiraz()", class: "float-right", title: "#{I18n.t :restore}" %>
       <% end %>
 
       <% if @guw_model.view_data == true %>
         <%= link_to raw("<i class='material-icons'>screen_share</i>"), guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", target: :_blank, class: "float-right", title: I18n.t(:data_model) %>
       <% end %>
 
-      <% if can? :execute_estimation_plan, @project %>
-        <%= link_to raw("<i class='material-icons'>restore</i>"), "#!", onclick: "multiraz()", class: "float-right", title: "#{I18n.t :restore}" %>
-      <% end %>
     </div>
   </div>
 

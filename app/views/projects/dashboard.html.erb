@@ -10,46 +10,46 @@
     <div id="bashboard" class="edition-page-group py-4"><span><%= I18n.t(:calculation_modules) %></span></div>
     <%= render(:partial => 'projects/setting_module') %>
   <% else %>
-      <div id="bashboard" class="edition-page-group py-4"><span><%= I18n.t(:dashboard) %></span></div>
-      <div class="mb-4">
-        <div class="widgets-list">
+    <div id="bashboard" class="edition-page-group py-4"><span><%= I18n.t(:dashboard) %></span></div>
+    <div class="mb-4">
+      <div class="widgets-list">
 
-          <div class="tools float-right">
-            <% mp = @project.module_projects.where(pemodule_id: @initialization_module.id).first %>
-            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
-            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
-            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>  <!-- add_box -->
-          </div>
+        <div class="tools float-right">
+          <% mp = @project.module_projects.where(pemodule_id: @initialization_module.id).first %>
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>  <!-- add_box -->
+        </div>
 
         <% @widgets = {} %>
         <% @project_module_projects = @project.module_projects %>
 
         <%# @project_module_projects.each do |module_project| %>
-          <% module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
-          <% module_project_view = module_project.view %>
-          <% unless module_project_view.nil? %>
-            <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
-            <% module_project_view_widgets.each do |view_widget| %>
-              <% if view_widget.is_label_widget? %>
-                <% view_widget_data = get_label_widget_data(view_widget.id) %>
-                <% @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
-              <% elsif view_widget.is_kpi_widget? %>
-                <% view_widget_data = get_kpi_value(view_widget) %>
-                <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
-              <% else %>
-                <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                  <% if view_widget.widget_type == "text" %>
-                    <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
-                    <% value_to_show = view_widget_data[:value_to_show] %>
-                    <% @widgets[view_widget.name] = [view_widget, value_to_show] %>
-                  <% end %>
-                <% else %>
-                  <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
-                  <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
+        <% module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
+        <% module_project_view = module_project.view %>
+        <% unless module_project_view.nil? %>
+          <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
+          <% module_project_view_widgets.each do |view_widget| %>
+            <% if view_widget.is_label_widget? %>
+              <% view_widget_data = get_label_widget_data(view_widget.id) %>
+              <% @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
+            <% elsif view_widget.is_kpi_widget? %>
+              <% view_widget_data = get_kpi_value(view_widget) %>
+              <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
+            <% else %>
+              <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                <% if view_widget.widget_type == "text" %>
+                  <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                  <% value_to_show = view_widget_data[:value_to_show] %>
+                  <% @widgets[view_widget.name] = [view_widget, value_to_show] %>
                 <% end %>
+              <% else %>
+                <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
+                <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
               <% end %>
             <% end %>
           <% end %>
+        <% end %>
         <%# end %>
 
         <div id="estimation_link_container" class="widget-list-content">
@@ -69,13 +69,13 @@
                             <span>
                               <%= value.nil? ? '-' : value %>
                             </span>
-                              <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
-                                <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
-                                <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
-                              <% end %>
-                              <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
-                                <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
-                              <% end %>
+                            <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
+                              <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
+                              <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                            <% end %>
+                            <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
+                              <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                            <% end %>
                           </div>
                         </div>
                       </div>
@@ -97,35 +97,35 @@
       <div class="mb-5">
         <div class="effort-bloc">
           <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
-              <% project_table_view_widgets.each_with_index do |vw, index| %>
-                <% unless vw.widget_type == "text" %>
-                  <li class="nav-item">
-                    <a class="nav-link <%= (index == 0) ? 'show active' : '' %>"  data-toggle="pill" id="pills-<%= vw.id %>-tab" href="#pills-<%= vw.id %>" role="tab" aria-selected="<%= (index == 0) ? 'true' : ' false' %>"><%= vw.name %></a>
-                  </li>
-                <% end %>
+            <% project_table_view_widgets.each_with_index do |vw, index| %>
+              <% unless vw.widget_type == "text" %>
+                <li class="nav-item">
+                  <a class="nav-link <%= (index == 0) ? 'show active' : '' %>"  data-toggle="pill" id="pills-<%= vw.id %>-tab" href="#pills-<%= vw.id %>" role="tab" aria-selected="<%= (index == 0) ? 'true' : ' false' %>"><%= vw.name %></a>
+                </li>
               <% end %>
+            <% end %>
           </ul>
 
           <div class="tab-content" id="pills-tabContent">
             <%# @project.module_projects.each do |module_project| %>
-              <% project_table_view_widgets.each_with_index do |vw, index| %>
-                <%# unless vw.widget_type == "text" %>
-                  <div class="tab-pane fade <%= (index == 0) ? 'show active' : '' %>" id="pills-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-<%= vw.id %>-tab">
-                    <div class="card card-widget">
-                      <div class="card-body">
-                        <div class="effort-bloc-tools d-flex justify-content-end mb-2">
-                          <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: vw.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => vw.name) %>
-                          <a href="<%= main_app.edit_views_widget_path(vw, module_project_id: current_module_project.id, view_id: current_module_project.view_id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
-                          <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(vw), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
-                        </div>
-                        <div class="effort-table">
-                          <%= get_view_widget_data(vw.module_project_id, vw.id)[:value_to_show] %>
-                        </div>
-                      </div>
+            <% project_table_view_widgets.each_with_index do |vw, index| %>
+              <%# unless vw.widget_type == "text" %>
+              <div class="tab-pane fade <%= (index == 0) ? 'show active' : '' %>" id="pills-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-<%= vw.id %>-tab">
+                <div class="card card-widget">
+                  <div class="card-body">
+                    <div class="effort-bloc-tools d-flex justify-content-end mb-2">
+                      <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: vw.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => vw.name) %>
+                      <a href="<%= main_app.edit_views_widget_path(vw, module_project_id: current_module_project.id, view_id: current_module_project.view_id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
+                      <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(vw), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                    </div>
+                    <div class="effort-table">
+                      <%= get_view_widget_data(vw.module_project_id, vw.id)[:value_to_show] %>
                     </div>
                   </div>
-                <%# end %>
-              <% end %>
+                </div>
+              </div>
+              <%# end %>
+            <% end %>
             <%# end %>
           </div>
         </div>
@@ -135,152 +135,56 @@
 
       <!-- Les Vignettes graphiques -->
       <% vw_graph_types = ["line_chart", "bar_chart", "area_chart", "pie_chart", "stacked_bar_chart", "timeline",
-                              "histogram_effort_per_phase", "histogram_cost_per_phase", "pie_chart_effort_per_phase",
-                              "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",
-                              "stacked_bar_chart_cost_per_phases_profiles", "stacked_grouped_bar_chart_effort_per_phases_profiles",
-                              "stacked_grouped_bar_chart_cost_per_phases_profiles"] %>
+                           "histogram_effort_per_phase", "histogram_cost_per_phase", "pie_chart_effort_per_phase",
+                           "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",
+                           "stacked_bar_chart_cost_per_phases_profiles", "stacked_grouped_bar_chart_effort_per_phases_profiles",
+                           "stacked_grouped_bar_chart_cost_per_phases_profiles"] %>
       <% project_graph_view_widgets = @project.views_widgets.where(widget_type: vw_graph_types) %>
 
-        <div class="mb-5">
-          <div class="effort-bloc">
+      <div class="mb-5">
+        <div class="effort-bloc">
 
-            <ul class="nav nav-pills tabs" id="pills-graph-tab" role="tablist">
-              <% index = 0 %>
-              <% project_graph_view_widgets.each_with_index do |vw, index| %>
-                  <% index = index + 1 %>
-                  <li class="nav-item">
-                    <a class="nav-link <%= (index == 1) ? 'active' : '' %>"  data-toggle="pill" id="pills-graph-<%= vw.id %>-tab" href="#pills-graph-<%= vw.id %>" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>">
-                      <%= vw.name %>
-                    </a>
-                  </li>
-              <% end %>
-            </ul>
+          <ul class="nav nav-pills tabs" id="pills-graph-tab" role="tablist">
+            <% index = 0 %>
+            <% project_graph_view_widgets.each_with_index do |vw, index| %>
+              <% index = index + 1 %>
+              <li class="nav-item">
+                <a class="nav-link <%= (index == 1) ? 'active' : '' %>"  data-toggle="pill" id="pills-graph-<%= vw.id %>-tab" href="#pills-graph-<%= vw.id %>" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>">
+                  <%= vw.name %>
+                </a>
+              </li>
+            <% end %>
+          </ul>
 
-            <div class="tab-content" id="pills-graph-tabContent">
-              <% index = 0 %>
+          <div class="tab-content" id="pills-graph-tabContent">
+            <% index = 0 %>
 
-              <% project_graph_view_widgets.each_with_index do |vw, index| %>
-                  <% index = index + 1 %>
+            <% project_graph_view_widgets.each_with_index do |vw, index| %>
+              <% index = index + 1 %>
 
-                  <div class="tab-pane fade <%= (index == 1) ? 'show active' : '' %>" id="pills-graph-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-graph-<%= vw.id %>-tab">
-                    <div class="effort-chart-bloc card card-widget">
-                      <div class="card-body">
-                        <h3><%= vw.name %></h3>
+              <div class="tab-pane fade <%= (index == 1) ? 'show active' : '' %>" id="pills-graph-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-graph-<%= vw.id %>-tab">
+                <div class="effort-chart-bloc card card-widget">
+                  <div class="card-body">
+                    <h3><%= vw.name %></h3>
 
-                        <div class="effort-bloc-tools d-flex justify-content-end mb-2">
-                          <a href="#" title="<%= I18n.t :get_app %>"><i class="material-icons">get_app</i></a>
-                          <a href="#" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
-                          <a href="#" title="<%= I18n.t :delete %>"><i class="material-icons">delete</i></a>
-                        </div>
+                    <div class="effort-bloc-tools d-flex justify-content-end mb-2">
+                      <a href="#" title="<%= I18n.t :get_app %>"><i class="material-icons">get_app</i></a>
+                      <a href="#" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
+                      <a href="#" title="<%= I18n.t :delete %>"><i class="material-icons">delete</i></a>
+                    </div>
 
-                        <div class="effort-chart mt-4 mb-4">
-                        <!--<div class="effort-table">-->
-                          <%= get_view_widget_data(vw.module_project.id, vw.id)[:value_to_show] %>
-                        </div>
-                      </div>
+                    <div class="effort-chart mt-4 mb-4">
+                      <!--<div class="effort-table">-->
+                      <%= get_view_widget_data(vw.module_project.id, vw.id)[:value_to_show] %>
                     </div>
                   </div>
-              <% end %>
-            </div>
+                </div>
+              </div>
+            <% end %>
           </div>
         </div>
-        <!-- Fin Les graphiques -->
-
-        <!-- Graph de test Usabilis -->
-        <!--<div class="mb-5">-->
-          <!--<div class="effort-chart-bloc card card-widget">-->
-            <!--<div class="card-body">-->
-              <!--<h3>Répartition effort par activités</h3>-->
-              <!--<div class="effort-chart mt-4 mb-4">-->
-                <!--<div class="effort-chart-canvas"><canvas id="pieCanvas" width="280" height="280"></canvas></div>-->
-                <!--<div class="effort-chart-legend" id="pieLegend"><div><span class="legend-color" style="background-color:#007DAB;">&nbsp;</span> Réalisation / Test Unitaires<span class="legend-percent">(41%)</span></div><div><span class="legend-color" style="background-color:#0099C9;">&nbsp;</span> Gestion de projet<span class="legend-percent">(22%)</span></div><div><span class="legend-color" style="background-color:#84CEE5;">&nbsp;</span> Intégration et Tests<span class="legend-percent">(20%)</span></div><div><span class="legend-color" style="background-color:#CFD8DC;">&nbsp;</span> Autre<span class="legend-percent">(17%)</span></div></div>-->
-              <!--</div>-->
-            <!--</div>-->
-          <!--</div>-->
-
-          <script>
-//              var myCanvas = document.getElementById("pieCanvas");
-//              var myLegend = document.getElementById("pieLegend");
-//              myCanvas.width = 280;
-//              myCanvas.height = 280;
-//
-//              var ctx = myCanvas.getContext("2d");
-//
-//              function drawPieSlice(ctx,centerX, centerY, radius, startAngle, endAngle, color ){
-//                  ctx.fillStyle = color;
-//                  ctx.beginPath();
-//                  ctx.moveTo(centerX,centerY);
-//                  ctx.arc(centerX, centerY, radius, startAngle, endAngle);
-//                  ctx.closePath();
-//                  ctx.fill();
-//              }
-//
-//              // Pie chart
-//              var Piechart = function(options){
-//                  this.options = options;
-//                  this.canvas = options.canvas;
-//                  this.ctx = this.canvas.getContext("2d");
-//                  this.colors = options.colors;
-//
-//                  this.draw = function(){
-//                      var total_value = 0;
-//                      var color_index = 0;
-//                      for (var categ in this.options.data){
-//                          var val = this.options.data[categ];
-//                          total_value += val;
-//                      }
-//
-//                      var start_angle = 0;
-//                      for (categ in this.options.data){
-//                          var val = this.options.data[categ];
-//                          var slice_angle = 2 * Math.PI * val / total_value;
-//
-//                          drawPieSlice(
-//                                  this.ctx,
-//                                  this.canvas.width/2,
-//                                  this.canvas.height/2,
-//                                  Math.min(this.canvas.width/2,this.canvas.height/2),
-//                                  start_angle,
-//                                  start_angle+slice_angle,
-//                                  this.colors[color_index%this.colors.length]
-//                          );
-//
-//                          start_angle += slice_angle;
-//                          color_index++;
-//                      }
-//
-//                      if (this.options.legend){
-//                          color_index = 0;
-//                          var legendHTML = "";
-//                          for (categ in this.options.data){
-//                              var val = this.options.data[categ];
-//                              legendHTML += "<div><span class='legend-color' style='background-color:"+this.colors[color_index++]+";'>&nbsp;</span> "+categ+"<span class='legend-percent'>("+Math.round(100 * val / total_value)+"%)</span></div>";
-//                          }
-//                          this.options.legend.innerHTML = legendHTML;
-//                      }
-//                  };
-//              };
-//
-//              var myVinyls = {
-//                  "Réalisation / Test Unitaires": 41,
-//                  "Gestion de projet": 22,
-//                  "Intégration et Tests": 20,
-//                  "Autre": 17
-//              };
-//
-//              var myPiechart = new Piechart(
-//                      {
-//                          canvas:myCanvas,
-//                          data:myVinyls,
-//                          colors:["#007DAB","#0099C9", "#84CEE5","#CFD8DC"],
-//                          legend:myLegend
-//                      }
-//              );
-//              myPiechart.draw();
-          </script>
-        <!--</div>-->
-        <!-- Fin Graph de test Usabilis -->
-
+      </div>
+      <!-- Fin Les graphiques -->
     </div>
   <% end %>
 
@@ -291,3 +195,120 @@
 
 <%# hidden_field_tag :project_id, @project.id %>
 <%# render 'dashboard_inner' %>
+
+
+<!--<div id="output_data_view_widgets_results col-10" style="margin-top: 60px;">-->
+  <%#= render :partial => 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x, @wbs_activity_ratio] %>
+<!--</div>-->
+
+<!--<script>-->
+<!--    // ============================ GRIDSTER widgets management ================================================-->
+<!--    function load_gridster() {-->
+<!--        var gridster = [];-->
+<!--        var iteration = -1;-->
+<!--        $(function () { //DOM Ready-->
+
+<!--            $('[id^="view_widgets_container_"]').each(function () {-->
+<!--                var container_id = $(this).attr('id');-->
+<!--                var $widgets_container = $('#' + container_id);-->
+
+<!--                //$("#"+container_id+ " > ul").gridster({-->
+<!--                gridster[++iteration] = $("#" + container_id + " ul").gridster({-->
+<!--                    namespace: '#' + container_id,-->
+<!--                    widget_margins: [5, 5],-->
+<!--                    widget_base_dimensions: [60, 60],-->
+<!--                    widget_selector: "li",-->
+<!--                    extra_rows: 0,-->
+<!--                    extra_cols: 0,-->
+<!--                    shift_widgets_up: false,-->
+<!--                    shift_larger_widgets_down: false,-->
+<!--                    collision: {-->
+<!--                        wait_for_mouseup: true-->
+<!--                    },-->
+
+<!--                    //autogenerate_stylesheet: true,-->
+<!--                    min_cols: 1,-->
+<!--                    max_cols: 100,-->
+
+<!--                    serialize_params: function ($w, wgd) {-->
+<!--                        return {-->
+<!--                            /* add element (ID, view_widget_id and container_id) to data*/-->
+<!--                            id: $w.attr('id'),-->
+<!--                            view_widget_id: $w.data('view_widget_id'),-->
+<!--                            container_id: $w.data('container_id'),-->
+<!--                            /* defaults */-->
+<!--                            col: wgd.col, row: wgd.row, size_x: wgd.size_x, size_y: wgd.size_y-->
+<!--                        }-->
+<!--                    },-->
+
+<!--                    draggable: {-->
+<!--                        // Update all widgets positions-->
+<!--                        stop: function (event, ui) {-->
+<!--                            //var gridster = $(".gridster ul").gridster().data('gridster');-->
+<!--                            var gridster = $('#' + container_id + ".gridster ul").gridster().data('gridster');-->
+<!--                            var gridster_elements = gridster.serialize();-->
+
+<!--                            //alert(JSON.stringify(gridster_elements));-->
+<!--                            //alert(gridster_elements);-->
+<!--                            //alert(JSON.parse(gridster_elements);-->
+
+<!--                            $.ajax({-->
+<!--                                type: 'POST',-->
+<!--                                url: "/update_view_widget_positions",-->
+<!--                                data: {-->
+<!--                                    view_id: this.id,-->
+<!--                                    views_widgets: gridster_elements-->
+<!--                                }-->
+<!--                            });-->
+<!--                        }-->
+<!--                    },-->
+
+
+<!--                    // Qui marchait avec l'ancienne version-->
+<!--                    resize: {-->
+<!--                        enabled: true,-->
+<!--                        axes: ['both'],-->
+
+<!--                        //handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],-->
+<!--                        //max_size: [20, 20],-->
+<!--                        //min_size: [1, 1],-->
+
+<!--                        stop: function (event, ui, $widget) {-->
+
+<!--                            // Get final width and height of widget-->
+<!--                            var newHeight = this.resize_coords.data.height;-->
+<!--                            var newWidth = this.resize_coords.data.width;-->
+<!--                            var text_size = ((newHeight + newWidth) / 2) * 0.015;-->
+
+<!--                            //Update the font-size according to the widget sizes-->
+<!--                            var widget_id = $widget.data('id');-->
+<!--                            $('li#' + widget_id + '.widget_text').css("fontSize", text_size + "em");-->
+
+<!--                            // Update font-size : $('.changeMe').css("font-size", $(this).val() + "px");-->
+<!--                            $('#widget_text_' + widget_id + '.widget_text.without_min_max').fitText(0.6);-->
+<!--                            $('#widget_text_' + widget_id + '.widget_text.with_min_max').fitText(0.7);-->
+<!--                            $("li.no_estimation_value").fitText(2);-->
+<!--                            $('#widget_name_' + widget_id + '.widget_name').fitText(0.8);-->
+<!--                            $('span#min_max_' + widget_id + '.min_max').fitText(1);-->
+
+<!--                            //Update the widget size (width, height) in database-->
+<!--                            var newDimensions = this.serialize($widget)[0]; //get final sizex and sizey-->
+<!--                            $.ajax({-->
+<!--                                method: 'GET',-->
+<!--                                url: "/update_view_widget_sizes",-->
+<!--                                data: {-->
+<!--                                    view_widget_id: $widget.data('view_widget_id'),-->
+<!--                                    sizex: newDimensions.size_x,-->
+<!--                                    sizey: newDimensions.size_y-->
+<!--                                }-->
+<!--                            });-->
+<!--                        }-->
+<!--                    }-->
+
+<!--                }).data('gridster');-->
+<!--            })-->
+<!--        });-->
+<!--    };-->
+<!--    load_gridster();-->
+
+<!--</script>-->

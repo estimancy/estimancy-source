@@ -544,7 +544,7 @@ class WbsActivitiesController < ApplicationController
         if !selected_elements.nil? && selected_elements.include?(mp_ratio_element.id.to_s)
           mp_ratio_element.selected = true
         else
-          if !mp_ratio_element.wbs_activity_ratio_element.nil? && mp_ratio_element.wbs_activity_ratio_element.is_optional==true
+          if !mp_ratio_element.wbs_activity_ratio_element.nil? && mp_ratio_element.wbs_activity_ratio_element.is_optional == true
             mp_ratio_element.selected = false
           else
             mp_ratio_element.selected = true
@@ -944,7 +944,7 @@ class WbsActivitiesController < ApplicationController
                       # Update values for ancestors
                       wbs_activity_element.children.each do |child|
                         mp_ratio_element_for_effort_profile = @module_project_ratio_elements.where(wbs_activity_element_id: child.id).first
-                        if mp_ratio_element_for_effort_profile && mp_ratio_element_for_effort_profile.selected==true
+                        if mp_ratio_element_for_effort_profile && mp_ratio_element_for_effort_profile.selected == true
                           unless parent_profile_est_value["#{child.id}"].nil?
                             if ancestor_value.nil?
                               ancestor_value = parent_profile_est_value["#{child.id}"].to_f
