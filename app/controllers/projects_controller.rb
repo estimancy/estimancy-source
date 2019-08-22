@@ -1044,6 +1044,7 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
     @organization = @project.organization
     session[:active_nav_link] = "edit"
+    session[:project_id] = @project.id
     @partial_name = params[:tabs_name]
 
     @project_areas = @organization.project_areas
