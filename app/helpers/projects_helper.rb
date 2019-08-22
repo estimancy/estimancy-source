@@ -89,7 +89,7 @@ module ProjectsHelper
           I18n.t(:delay)
         when "cost", "theoretical_cost"
           #@project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.name.underscore.pluralize}"
-          @project.organization.currency.nil? ? nil.to_s : "#{@project.organization.currency.sign}"
+          @current_organization.currency.nil? ? nil.to_s : "#{@current_organization.currency.sign}"
         else
           ""
       end

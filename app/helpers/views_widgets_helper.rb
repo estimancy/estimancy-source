@@ -515,10 +515,11 @@ module ViewsWidgetsHelper
 
     # General data
     view_widget = ViewsWidget.find(view_widget_id)
-    pbs_project_elt = view_widget.pbs_project_element.nil? ? current_component : view_widget.pbs_project_element
+    # pbs_project_elt = view_widget.pbs_project_element.nil? ? current_component : view_widget.pbs_project_element
     # pbs_project_elt = current_component
     module_project = ModuleProject.find(module_project_id)
     project = module_project.project
+    pbs_project_elt = project.root_component
     pemodule = module_project.pemodule
 
     widget_data = {}

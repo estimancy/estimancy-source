@@ -85,7 +85,7 @@
                     <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
                     <% @widgets[view_widget.name] = view_widget_data %>
                   <% else %>
-                    <% view_widget_data = new_get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                    <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id)[:value_to_show] %>
                     <% if view_widget.widget_type == "text" %>
                       <% @widgets[view_widget.name] = view_widget_data %>
                     <% end %>
@@ -170,9 +170,9 @@
                         <div class="col">
                           <%= k %>
                           <div class="estimation-overview-info-number">
-                              <span>
-                                <%= value %>
-                              </span>
+                            <span>
+                              <%= value %>
+                            </span>
                           </div>
                         </div>
                       <% else %>
