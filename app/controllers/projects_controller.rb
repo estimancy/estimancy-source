@@ -4049,6 +4049,10 @@ public
     end
   end
 
+  def load_overview
+    @project = Project.find(params[:project_id])
+  end
+
   #Function that manage link_to from project history graphical view
   def show_project_history
     #No authorize required as authorizations are manage  in each called function...
