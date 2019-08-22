@@ -50,16 +50,26 @@
 
           <% unless controller.action_name == "all_organizations" %>
             <%= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" do %>
-              <div class="input-group global-search-bar">
-                <div class="input-group-prepend global-search-bar-prepend">
-                  <span class="input-group-text" id="search-icon">
+              <div class="input-group global-search-bar"   >
+                <div class="input-group-prepend global-search-bar-prepend" >
+                  <span class="input-group-text" id="search-icon" >
                     <i class="material-icons">search</i>
                   </span>
                 </div>
-                <input value="<%= params[:advanced_search] %>" name="advanced_search" type="text" class="form-control global-search-bar-input" placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>" aria-label="search" aria-describedby="search-icon">
+
+                <input value="<%= params[:advanced_search] %>"
+                       id="adv_search"
+                       type="text"
+                       name="advanced_search"
+                       placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>"
+                       class="form-control global-search-bar-input"
+                       aria-label="search" aria-describedby="search-icon">
+
                 <div class="input-group-append global-search-bar-append">
-                  <a class="input-group-text unclickable" href="#" style="text-decoration: none;"><%= I18n.t :advanced_research_estimates %></a>
+                  <a class="input-group-text unclickable" href="#" style="text-decoration: none;">
+                    <%= I18n.t :advanced_research_estimates %></a>
                 </div>
+
               </div>
             <% end %>
           <% end %>
@@ -313,5 +323,20 @@
 
     <%= javascript_include_tag 'application' %>
     <script defer="" src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+    <script>
+        $('#adv_search').selectize({
+            delimiter: ',',
+            persist: false,
+            create: function(input) {
+                return {
+                    value: input,
+                    text: input,
+
+                }
+            }
+        });
+    </script>
+
   </body>
 </html>
