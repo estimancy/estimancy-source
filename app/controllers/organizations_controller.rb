@@ -3868,7 +3868,7 @@ class OrganizationsController < ApplicationController
   end
 
   def update_available_inline_columns
-    # update selected column
+    # update selected columne
     selected_columns = params['selected_inline_columns']
     query_classname = params['query_classname'].constantize
     unless selected_columns.nil?
@@ -4038,8 +4038,70 @@ class OrganizationsController < ApplicationController
 
   end
 
-  #########   END Organization settings pages  ###################
+  def dashboard2
+      @organization = Organization.find(params[:organization_id])
+      @attributes = PeAttribute.all
+      @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
 
+      @users = @organization.users
+      @fields = @organization.fields
+
+      @organization_profiles = @organization.organization_profiles
+      @work_element_types = @organization.work_element_types
+
+      # get organization estimations per year
+      #@projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort_by{|created_at, _extras| created_at }
+      @projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] }
+
+      # Budget global
+      @data_for_global_budget = []
+      @bt_colors = []
+      budget_header = ["Budgets"]
+      organization_budget_types = @organization.budget_types
+      @nb_series = organization_budget_types.all.size
+
+      organization_budget_types.each do |bt|
+        budget_header << bt.name
+        @bt_colors << bt.color
+      end
+      @bt_colors << '#007DAB'
+
+      budget_header << I18n.t(:planned_budget)
+      #budget_header << { role: 'annotation' }
+      @data_for_global_budget << budget_header
+
+      @organization.budgets.each do |budget|
+        budget_values = ["#{budget.name}"]
+        budget_sum = 0.0
+        budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
+
+        # budget_used_applications.each do |application|
+        #   application_values = []
+        #   data = Budget::fetch_project_field_data(@organization, budget, application)
+        #   organization_budget_types.each do |budget_type|
+        #     application_values << data["#{budget_type.name}"].to_f
+        #   end
+        #   budget_sum = application_values.sum
+        #   budget_values << budget_sum
+        # end
+
+        organization_budget_types.each do |budget_type|
+          budget_type_values = []
+          budget_used_applications.each do |application|
+            data = Budget::fetch_project_field_data(@organization, budget, application)
+            budget_type_values << data["#{budget_type.name}"].to_f
+          end
+          budget_sum = budget_type_values.sum
+          budget_values << budget_sum
+        end
+
+        budget_values << budget.sum
+        #budget_values << ''
+        @data_for_global_budget << budget_values
+      end
+  end
+
+  #########   END Organization settings pages  ###################
 
   private
   def check_if_organization_is_image(organization)

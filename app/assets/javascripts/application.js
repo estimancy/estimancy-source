@@ -30,4 +30,5 @@
 
 //= require selectize.js
 //= require bootstrap-tokenfield.js
+//= require bootstrap-tokenfield.min.js
 

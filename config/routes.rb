@@ -309,6 +309,9 @@ Projestimate::Application.routes.draw do
     get "users" => 'organizations#users', as: 'organization_users'
     get "estimations" => 'organizations#estimations'
     get "report" => 'organizations#report'
+
+    get "dashboard2" => 'organizations#dashboard2'
+
     post "generate_report_csv" => 'organizations#generate_report_csv'
     post "generate_report_excel" => 'organizations#generate_report_excel'
     post "generate_report_excel_estimations" => 'organizations#generate_report_excel_estimations'
