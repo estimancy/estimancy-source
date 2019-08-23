@@ -29,5 +29,5 @@
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.it.js
 
 //= require selectize.js
-
+//= require bootstrap-tokenfield.js
 
