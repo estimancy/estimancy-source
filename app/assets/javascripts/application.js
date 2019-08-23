@@ -19,15 +19,10 @@
 //= require jquery-number
 //= require spectrum.js
 //= require jscolor
-//= require jquery.gridster.js
-//= require jquery.gridster-0.7.0.js
 
 //= require bootstrap-datepicker
 //= require bootstrap-datepicker/core
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.fr.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.de.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.it.js
-
-//= require selectize.js
-//= require bootstrap-tokenfield.js
 

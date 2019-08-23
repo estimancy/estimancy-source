@@ -325,36 +325,5 @@
     <%= javascript_include_tag 'application' %>
     <script defer="" src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
-    <script>
-        var $select = $('#adv_search').selectize({
-            delimiter: ' ',
-            persist: false,
-            create: function(input) {
-                 return {
-                     value: input,
-                     text: input,
-                 }
-            },
-        });
-        $(document).on('keypress', function(e){
-            if (e.which == 13) {
-                $('#adv_search_form').submit();
-                //alert($('#adv_search').val());
-            }
-
-        })
-    </script>
-
-<!--    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>-->
-<!--    <script>-->
-<!--        $('#adv_search').tokenfield({-->
-<!--            autocomplete: {-->
-<!--                source: ['red', 'blue', 'green', 'violet', 'purple'],-->
-<!--                delay: 100-->
-<!--            },-->
-<!--            showAutocompleteOnFocus: true-->
-<!--        });-->
-<!--    </script>-->
-
   </body>
 </html>
