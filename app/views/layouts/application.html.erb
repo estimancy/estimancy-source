@@ -88,6 +88,7 @@
                 <a class="dropdown-item account-item" href="<%= main_app.organization_authorization_path(@current_organization) %>"><%= I18n.t(:permission) %></a>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_users_path(@current_organization) %>"><%= I18n.t(:users) %></a>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>"><%= I18n.t(:report) %></a>
+                <a class="dropdown-item account-item" href="<%= main_app.organization_dashboard2_path(@current_organization) %>" title="<%= I18n.t(:dashboard) %>"><%= I18n.t(:dashboard) %></a>
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">Configuration</h6>
                 <a class="dropdown-item account-item" href="<%= main_app.edit_organization_path(@current_organization)%>" title="<%= I18n.t(:report) %>"><%= @current_organization %></a>
