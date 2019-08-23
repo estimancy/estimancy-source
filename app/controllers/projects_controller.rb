@@ -1044,6 +1044,7 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:id])
     @organization = @project.organization
     session[:active_nav_link] = "edit"
+    session[:project_id] = @project.id
     @partial_name = params[:tabs_name]
 
     @project_areas = @organization.project_areas
@@ -4046,6 +4047,10 @@ public
     fields.each do |f|
       @fields_coefficients[f.id] = f.coefficient
     end
+  end
+
+  def load_overview
+    @project = Project.find(params[:project_id])
   end
 
   #Function that manage link_to from project history graphical view

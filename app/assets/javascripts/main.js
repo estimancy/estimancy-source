@@ -33195,6 +33195,14 @@ $( document ).ready(function() {
                 $('.estimation-table tr.selected').removeClass('selected');
                 $(this).addClass('selected');
                 setOverviewSticky($(this).find('.estimation-overview'));
+
+                console.log($(this).data("project_id"));
+                return $.ajax({
+                    url: "/load_overview",
+                    method: "GET",
+                    data: "project_id=" + $(this).data("project_id")
+                });
+
             }
         }
     } );

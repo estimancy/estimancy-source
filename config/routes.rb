@@ -106,6 +106,8 @@ Projestimate::Application.routes.draw do
 
   get 'sort' => 'projects#sort', :as => 'sort'
 
+  get 'load_overview' => 'projects#load_overview', :as => 'load_overview'
+
   get 'build_rapport' => 'projects#build_rapport', :as => 'build_rapport'
   get 'rapport' => 'projects#rapport', :as => 'rapport'
 
