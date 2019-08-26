@@ -142,3 +142,137 @@
       <% end %>    <!-- Iteration for X position -->
     </div>  <!-- END div for Y position -->
 <% end %>   <!-- Iteration for Y position -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Les Vignettes de type Tableau -->
+<% vw_table_types = ["effort_per_phases_profiles_table", "cost_per_phases_profiles_table", "effort_per_phases_profiles_table_without_zero", "cost_per_phases_profiles_table_without_zero",
+                     "table_effort_and_cost_per_phases_profiles", "table_effort_and_cost_per_phases_profiles_without_zero"] %>
+<% project_table_view_widgets = @project.views_widgets.where(widget_type: vw_table_types) %>
+
+<div class="mb-5">
+  <div class="effort-bloc">
+    <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+      <% project_table_view_widgets.each_with_index do |vw, index| %>
+        <% unless vw.widget_type == "text" %>
+          <li class="nav-item">
+            <a class="nav-link <%= (index == 0) ? 'show active' : '' %>"  data-toggle="pill" id="pills-<%= vw.id %>-tab" href="#pills-<%= vw.id %>" role="tab" aria-selected="<%= (index == 0) ? 'true' : ' false' %>"><%= vw.name %></a>
+          </li>
+        <% end %>
+      <% end %>
+    </ul>
+
+    <div class="tab-content" id="pills-tabContent">
+      <%# @project.module_projects.each do |module_project| %>
+      <% project_table_view_widgets.each_with_index do |vw, index| %>
+        <%# unless vw.widget_type == "text" %>
+        <div class="tab-pane fade <%= (index == 0) ? 'show active' : '' %>" id="pills-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-<%= vw.id %>-tab">
+          <div class="card card-widget">
+            <div class="card-body">
+              <div class="effort-bloc-tools d-flex justify-content-end mb-2">
+                <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: vw.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => vw.name) %>
+                <a href="<%= main_app.edit_views_widget_path(vw, module_project_id: current_module_project.id, view_id: current_module_project.view_id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(vw), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+              </div>
+              <div class="effort-table">
+                <%= get_view_widget_data(vw.module_project_id, vw.id)[:value_to_show] %>
+              </div>
+            </div>
+          </div>
+        </div>
+        <%# end %>
+      <% end %>
+      <%# end %>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Les Vignettes graphiques -->
+<% vw_graph_types = ["line_chart", "bar_chart", "area_chart", "pie_chart", "stacked_bar_chart", "timeline",
+                     "histogram_effort_per_phase", "histogram_cost_per_phase", "pie_chart_effort_per_phase",
+                     "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",
+                     "stacked_bar_chart_cost_per_phases_profiles", "stacked_grouped_bar_chart_effort_per_phases_profiles",
+                     "stacked_grouped_bar_chart_cost_per_phases_profiles"] %>
+<% project_graph_view_widgets = @project.views_widgets.where(widget_type: vw_graph_types) %>
+
+<div class="mb-5">
+  <div class="effort-bloc">
+
+    <ul class="nav nav-pills tabs" id="pills-graph-tab" role="tablist">
+      <% index = 0 %>
+      <% project_graph_view_widgets.each_with_index do |vw, index| %>
+        <% index = index + 1 %>
+        <li class="nav-item">
+          <a class="nav-link <%= (index == 1) ? 'active' : '' %>"  data-toggle="pill" id="pills-graph-<%= vw.id %>-tab" href="#pills-graph-<%= vw.id %>" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>">
+            <%= vw.name %>
+          </a>
+        </li>
+      <% end %>
+    </ul>
+
+    <div class="tab-content" id="pills-graph-tabContent">
+      <% index = 0 %>
+
+      <% project_graph_view_widgets.each_with_index do |vw, index| %>
+        <% index = index + 1 %>
+
+        <div class="tab-pane fade <%= (index == 1) ? 'show active' : '' %>" id="pills-graph-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-graph-<%= vw.id %>-tab">
+          <div class="effort-chart-bloc card card-widget">
+            <div class="card-body">
+              <h3><%= vw.name %></h3>
+
+              <div class="effort-bloc-tools d-flex justify-content-end mb-2">
+                <a href="#" title="<%= I18n.t :get_app %>"><i class="material-icons">get_app</i></a>
+                <a href="#" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
+                <a href="#" title="<%= I18n.t :delete %>"><i class="material-icons">delete</i></a>
+              </div>
+
+              <div class="effort-chart mt-4 mb-4">
+                <!--<div class="effort-table">-->
+                <%= get_view_widget_data(vw.module_project.id, vw.id)[:value_to_show] %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+<!-- Fin Les graphiques -->
