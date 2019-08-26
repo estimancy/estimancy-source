@@ -100,7 +100,8 @@
                 <a class="dropdown-item account-item" href="<%= load_admin_setting('url_wiki') %>">Wiki</a>
                 <a class="dropdown-item account-item" href="/contactsupport">A propos</a>
                 <% if current_user.super_admin == true %>
-                  <h6 class="dropdown-header"><%= I18n.t :settings %></h6>
+                  <div class="dropdown-divider"></div>
+                  <h6 class="dropdown-header"><%= I18n.t :settings_super_admin %></h6>
                   <a class="dropdown-item account-item" href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
                     <%= I18n.t(:security_audit_utilities) %>
                   </a>
@@ -325,37 +326,6 @@
 
     <%= javascript_include_tag 'application' %>
     <script defer="" src="https://code.getmdl.io/1.3.0/material.min.js"></script>
-
-    <script>
-        var $select = $('#adv_search').selectize({
-            delimiter: ' ',
-            persist: false,
-            create: function(input) {
-                 return {
-                     value: input,
-                     text: input,
-                 }
-            },
-        });
-        $(document).on('keypress', function(e){
-            if (e.which == 13) {
-                $('#adv_search_form').submit();
-                //alert($('#adv_search').val());
-            }
-
-        })
-    </script>
-
-<!--    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.2/jquery.min.js"></script>-->
-<!--    <script>-->
-<!--        $('#adv_search').tokenfield({-->
-<!--            autocomplete: {-->
-<!--                source: ['red', 'blue', 'green', 'violet', 'purple'],-->
-<!--                delay: 100-->
-<!--            },-->
-<!--            showAutocompleteOnFocus: true-->
-<!--        });-->
-<!--    </script>-->
 
   </body>
 </html>

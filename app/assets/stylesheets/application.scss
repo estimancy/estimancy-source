@@ -6,8 +6,9 @@
 @import "default/*";
 
 @import "dashboard.css";
-//@import "jquery.gridster.css";
-//@import "jquery.gridster-0.7.0.css";
+
+@import "gridstack.scss";
+@import "gridstack-extra.scss";
 
 @import "partials/*";
 
@@ -21,9 +22,3 @@
 @import 'selectize.css';
 
 @import 'selectize.default.scss';
-
-@import 'bootstrap-tokenfield.css';
-@import 'bootstrap-tokenfield.min.css';
-
-@import 'tokenfield-typeahead.css';
-@import 'tokenfield-typeahead.min.css';

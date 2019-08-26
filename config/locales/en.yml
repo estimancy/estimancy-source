@@ -807,6 +807,7 @@ en:
   text_group_associated_projects: "Associated projects (projects in which the group has access)"
   text_user_associated_projects: "Associated projects (projects in which the user has access)"
   settings: "Preferences"
+  settings_super_admin: "Super Administrator"
   authentication: "Users's Authentication"
   authentication_mode: "Users's Authentication mode"
   password: "Password"

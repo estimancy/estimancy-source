@@ -787,6 +787,7 @@ fr1:
   text_group_associated_projects: "Projets associés (projets auxquels le groupe a accès)"
   text_user_associated_projects: "Projets associés (projets auxquels l'utilisateur a accès)"
   settings: "Préférences"
+  settings_super_admin: "Préférences Administrateur"
   authentication: "Authentification de l'utilisateur"
   authentication_mode: "Mode d'authentification de l'utilisateur"
   password: "Mot de passe"
