@@ -1,44 +1,59 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:profiles) %></a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h4><a href="#tabs-1"><%= I18n.t(:profiles) %></a></h4>
+        </div>
+      </div>
 
-    <div class="group_button">
-      <%= link_to I18n.t('create_button'), new_profile_path, :class => 'btn' %>
+      <div class="edition-bloc-content">
+        <div class="card-body">
+
+        <div id="tabs-1">
+
+          <div class="group_button">
+            <%= link_to I18n.t('create_button'), new_profile_path, :class => 'btn btn-primary' %>
+          </div>
+
+          <br>
+
+          <table id="table_list_1" class="table table-list">
+            <thead>
+              <tr>
+                <th><%= I18n.t(:name) %></th>
+                <th><%= I18n.t(:description) %></th>
+                <th><%= I18n.t(:cost_per_hour) %></th>
+                <th  class="action"><%= I18n.t(:actions) %></th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+            <% @profiles.each do |profile| %>
+                <tr>
+                  <td class="td_min_width"><%= profile.name %></td>
+                  <td><%= profile.description %></td>
+                  <td><%= profile.cost_per_hour %></td>
+
+                  <td class="center">
+                    <%= link_to raw("<i class='material-icons'>edit</i>"), edit_profile_path(profile), :class => 'material-icon', :title => I18n.t('edit') %>
+                    <%= link_to raw("<i class='material-icons'>delete</i>"), profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                  </td>
+                </tr>
+            <% end %>
+
+            <%= render :partial => 'layouts/footer_table' %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      </div>
+
     </div>
-
-    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-      <thead>
-      <tr>
-        <th><%= I18n.t(:name) %></th>
-        <th><%= I18n.t(:description) %></th>
-        <th><%= I18n.t(:cost_per_hour) %></th>
-        <th  class="action"><%= I18n.t(:actions) %></th>
-      </tr>
-      </thead>
-
-      <tbody>
-
-      <% @profiles.each do |profile| %>
-          <tr>
-            <td class="td_min_width"><%= profile.name %></td>
-            <td><%= profile.description %></td>
-            <td><%= profile.cost_per_hour %></td>
-
-            <td class="center">
-              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_profile_path(profile), :class => 'material-icon', :title => I18n.t('edit') %>
-              <%= link_to raw("<i class='material-icons'>delete</i>"), profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
-            </td>
-          </tr>
-      <% end %>
-
-      <%= render :partial => 'layouts/footer_table' %>
-      </tbody>
-    </table>
   </div>
-</div>
+</section>
 
 
 

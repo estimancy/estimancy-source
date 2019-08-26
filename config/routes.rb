@@ -310,7 +310,7 @@ Projestimate::Application.routes.draw do
     get "estimations" => 'organizations#estimations'
     get "report" => 'organizations#report'
 
-    get "dashboard2" => 'organizations#dashboard2'
+    get "kpi" => 'organizations#kpi'
 
     post "generate_report_csv" => 'organizations#generate_report_csv'
     post "generate_report_excel" => 'organizations#generate_report_excel'

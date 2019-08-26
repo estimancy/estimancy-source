@@ -1,51 +1,63 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:projestimate_module) %></a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
-
-    <% if can? :manage, Pemodule %>
-        <div class="group_button">
-            <%= link_to I18n.t('create_button'), new_pemodule_path, :class => 'btn' %>
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h4><a href="#tabs-1"><%= I18n.t(:projestimate_module) %></a></h4>
         </div>
-    <% end %>
+      </div>
 
-    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <div class="edition-bloc-content">
+        <div class="card-body">
+          <div id="tabs-1">
 
-      <thead>
-      <tr>
-        <th><%= I18n.t(:name) %></th>
-        <th>Alias</th>
-        <th><%= I18n.t(:description) %></th>
-        <th class="action"><%= I18n.t(:actions) %></th>
-      </tr>
-      </thead>
+            <% if can? :manage, Pemodule %>
+                <div class="group_button">
+                    <%= link_to I18n.t('create_button'), new_pemodule_path, :class => 'btn btn-primary' %>
+                </div>
+            <% end %>
 
-      <% if @pemodules.empty? %>
-          <tr>
-            <td colspan="4"><%= I18n.t(:refers_to) %> <%= link_to I18n.t('official_documentation'), load_admin_setting('url_wiki') %> <%= I18n.t(:to_install_module) %> </td>
-          </tr>
-      <% else %>
-          <% @pemodules.each do |pemodule| %>
-              <tr class="">
-                <td class="span3"><%= pemodule.title %></td>
-                <td class="span3"><%= pemodule.alias %></td>
-                <td><%= pemodule.description %></td>
-                <td class="center">
-                  <% if can? :manage, Pemodule %>
-                    <%= link_to raw("<i class='material-icons'>edit</i>"), edit_pemodule_path(pemodule, :anchor => 'tabs-1'), :class => 'material-icon', :title => I18n.t('edit') %>
-                    <%= link_to(raw("<i class='material-icons'>info</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :pemodule_id => pemodule.id}, :remote => true, :class => 'material-icon', :title => I18n.t('button_find_use')) %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), pemodule, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
-                  <% end %>
-                </td>
+            <table id="table_list_1" class="table table-list" >
+
+              <thead>
+              <tr>
+                <th><%= I18n.t(:name) %></th>
+                <th>Alias</th>
+                <th><%= I18n.t(:description) %></th>
+                <th class="action"><%= I18n.t(:actions) %></th>
               </tr>
-          <% end %>
-      <% end %>
+              </thead>
 
-      <%= render :partial => 'layouts/footer_table' %>
-    </table>
+              <% if @pemodules.empty? %>
+                  <tr>
+                    <td colspan="4"><%= I18n.t(:refers_to) %> <%= link_to I18n.t('official_documentation'), load_admin_setting('url_wiki') %> <%= I18n.t(:to_install_module) %> </td>
+                  </tr>
+              <% else %>
+                  <% @pemodules.each do |pemodule| %>
+                      <tr class="">
+                        <td class="span3"><%= pemodule.title %></td>
+                        <td class="span3"><%= pemodule.alias %></td>
+                        <td><%= pemodule.description %></td>
+                        <td class="center">
+                          <% if can? :manage, Pemodule %>
+                            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_pemodule_path(pemodule, :anchor => 'tabs-1'), :class => 'material-icon', :title => I18n.t('edit') %>
+                            <%= link_to(raw("<i class='material-icons'>info</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :pemodule_id => pemodule.id}, :remote => true, :class => 'material-icon', :title => I18n.t('button_find_use')) %>
+                            <%= link_to raw("<i class='material-icons'>delete</i>"), pemodule, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                          <% end %>
+                        </td>
+                      </tr>
+                  <% end %>
+              <% end %>
 
-  </div>
+              <%= render :partial => 'layouts/footer_table' %>
+            </table>
 
-</div>
+          </div>
+        </div>
+      </div>
+
+      </div>
+    </div>
+
+</section>

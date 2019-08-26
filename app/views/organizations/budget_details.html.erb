@@ -4,28 +4,41 @@
     google.charts.load('current', {packages: ['corechart', 'bar']});
 </script>
 
-<section class="card card-content-bloc">
-  <div class="card-body">
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-    <h4>
-      <%= I18n.t(:budget_details_per_application) %>
-    </h4>
 
-    <%= form_tag organization_get_budget_details_path(@organization), method: "post", remote: true do %>
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h4>
+          <%= I18n.t(:budget_details_per_application) %>
+        </h4>
+      </div>
+    </div>
 
-        <%= hidden_field_tag "organization_id", @organization.id %>
-        <div class="row">
-          <div class="col-2">
-            <%#= label_tag "Budgets" %>
-            <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_budget), class: "form-control" %>
-          </div>
-          <div class="col">
-            <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
-          </div>
-        </div>
-    <% end %>
+    <div class="edition-bloc-content">
+      <div class="edition-bloc-form">
 
-    <% chart_width = (@current_user.allow_full_screen_dashboard == true ? '50%' : 'auto')%>
-    <div id="budget_details" class="span6" style="margin-top: 30px; width: <%= chart_width %> ;"> </div>
+        <%= form_tag organization_get_budget_details_path(@organization), method: "post", remote: true do %>
+
+            <%= hidden_field_tag "organization_id", @organization.id %>
+            <div class="row">
+              <div class="col-2">
+                <%#= label_tag "Budgets" %>
+                <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:select_budget), class: "form-control" %>
+              </div>
+              <div class="col">
+                <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+              </div>
+            </div>
+        <% end %>
+
+        <% chart_width = (@current_user.allow_full_screen_dashboard == true ? '50%' : 'auto')%>
+        <div id="budget_details" class="span6" style="margin-top: 30px; width: <%= chart_width %> ;"> </div>
+      </div>
+    </div>
   </div>
+</div>
 </section>
+

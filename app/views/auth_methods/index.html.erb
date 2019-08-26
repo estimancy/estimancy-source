@@ -1,34 +1,52 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:auth_methods) %></a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h4>
+            <a href="#tabs-1"><%= I18n.t(:auth_methods) %></a></li>
+          </h4>
+        </div>
+      </div>
 
-    <div class="group_button">
-          <%= link_to I18n.t('create_button'), new_auth_method_path, :class => 'btn' %>
+      <div class="edition-bloc-content">
+        <div class="card-body">
+
+          <div id="tabs-1">
+
+            <div class="group_button">
+                  <%= link_to I18n.t('create_button'), new_auth_method_path, :class => 'btn btn-primary' %>
+            </div>
+
+            <br>
+
+            <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+              <thead>
+              <tr>
+                <th><%= I18n.t(:name) %></th>
+                <th class="action"><%= I18n.t(:actions) %></th>
+              </tr>
+              </thead>
+
+              <tbody>
+              <% @auth_methods.each do |auth_method| %>
+                  <tr>
+                    <td><%= auth_method.name %></td>
+                    <td class="center">
+                      <%= link_to raw("<i class='material-icons'>edit</i>"), edit_auth_method_path(auth_method), :class => 'material-icon', :title => I18n.t('edit') %>
+                      <%= link_to raw("<i class='material-icons'>delete</i>"), auth_method, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                    </td>
+                  </tr>
+              <% end %>
+              <%= render :partial => 'layouts/footer_table' %>
+              </tbody>
+            </table>
+
+          </div>
+        </div>
+      </div>
+
     </div>
-
-    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-      <thead>
-      <tr>
-        <th><%= I18n.t(:name) %></th>
-        <th class="action"><%= I18n.t(:actions) %></th>
-      </tr>
-      </thead>
-
-      <tbody>
-      <% @auth_methods.each do |auth_method| %>
-          <tr>
-            <td><%= auth_method.name %></td>
-            <td class="center">
-              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_auth_method_path(auth_method), :class => 'material-icon', :title => I18n.t('edit') %>
-              <%= link_to raw("<i class='material-icons'>delete</i>"), auth_method, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
-            </td>
-          </tr>
-      <% end %>
-      <%= render :partial => 'layouts/footer_table' %>
-      </tbody>
-    </table>
   </div>
-</div>
+</section>

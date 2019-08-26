@@ -1,62 +1,79 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:pe_attributes) %></a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h4>
+            <a href="#tabs-1"><%= I18n.t(:pe_attributes) %></a>
+          </h4>
+        </div>
+      </div>
 
-    <div class="group_button">
-      <%= link_to I18n.t('create_button'), new_pe_attribute_path, :class => 'btn' %>
+      <div class="edition-bloc-content">
+        <div class="card-body">
+
+        <div id="tabs-1">
+
+          <div class="group_button">
+            <%= link_to I18n.t('create_button'), new_pe_attribute_path, :class => 'btn btn-primary' %>
+          </div>
+
+          <br>
+
+          <table id="table_list_11" class="table tablesorterPager table-striped table-bordered table-condensed ">
+            <thead>
+            <tr>
+              <th><%= I18n.t(:name) %></th>
+              <th>Alias</th>
+              <th><%= I18n.t(:description) %></th>
+              <th class="filter-select"><%= I18n.t(:attributes_type) %></th>
+              <th></th>
+              <th class="action"><%= I18n.t(:actions) %></th>
+            </tr>
+            </thead>
+
+            <tbody>
+
+            <% if @attributes.empty? %>
+                <p style="text-align:center;"> <%= I18n.t('empty') %></p>
+            <% else %>
+                <% @attributes.each do |attribute| %>
+                    <tr>
+                      <td><%= attribute.name %></td>
+                      <td><%= attribute.alias %></td>
+                      <td><%= attribute.description %></td>
+                      <td><%= attribute.attr_type.nil? ? nil : attribute.attr_type.humanize %></td>
+                      <td><%= attribute.guw_model_id %></td>
+                      <td class="center" style="min-width: 105px;">
+                        <%= link_to raw("<i class='material-icons'>edit</i>"), edit_pe_attribute_path(attribute), :class => 'material-icon', :title => I18n.t('edit') %>
+                        <%= link_to(raw("<i class='material-icons'>info</i>"), {:controller => 'pe_attributes',
+                                         :action => 'find_use_attribute',
+                                         :pe_attribute_id => attribute.id}, :remote => true, "data-pe_attribute_id" => attribute.id, :class => 'material-icon', :id => 'find_use_pe_attribute', :title => I18n.t('button_find_use')) %>
+                        <%= link_to raw("<i class='material-icons'>delete</i>"), attribute, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                      </td>
+                    </tr>
+                <% end %>
+                </tbody>
+
+                <%= render :partial => 'layouts/footer_table' %>
+
+                </tr>
+
+            <% end %>
+            </table>
+
+          <div class="show_modules_using_attribute">
+            <%#= raw render :partial => 'pe_attributes/find_use_attribute_modules' %>
+          </div>
+
+          </div>
+        </div>
+      </div>
+
     </div>
-
-    <table id="table_list_11" class="table tablesorterPager table-striped table-bordered table-condensed ">
-      <thead>
-      <tr>
-        <th><%= I18n.t(:name) %></th>
-        <th>Alias</th>
-        <th><%= I18n.t(:description) %></th>
-        <th class="filter-select"><%= I18n.t(:attributes_type) %></th>
-        <th></th>
-        <th class="action"><%= I18n.t(:actions) %></th>
-      </tr>
-      </thead>
-
-      <tbody>
-
-      <% if @attributes.empty? %>
-          <p style="text-align:center;"> <%= I18n.t('empty') %></p>
-      <% else %>
-          <% @attributes.each do |attribute| %>
-              <tr>
-                <td><%= attribute.name %></td>
-                <td><%= attribute.alias %></td>
-                <td><%= attribute.description %></td>
-                <td><%= attribute.attr_type.nil? ? nil : attribute.attr_type.humanize %></td>
-                <td><%= attribute.guw_model_id %></td>
-                <td class="center" style="min-width: 105px;">
-                  <%= link_to raw("<i class='material-icons'>edit</i>"), edit_pe_attribute_path(attribute), :class => 'material-icon', :title => I18n.t('edit') %>
-                  <%= link_to(raw("<i class='material-icons'>info</i>"), {:controller => 'pe_attributes',
-                                   :action => 'find_use_attribute',
-                                   :pe_attribute_id => attribute.id}, :remote => true, "data-pe_attribute_id" => attribute.id, :class => 'material-icon', :id => 'find_use_pe_attribute', :title => I18n.t('button_find_use')) %>
-                  <%= link_to raw("<i class='material-icons'>delete</i>"), attribute, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
-                </td>
-              </tr>
-          <% end %>
-          </tbody>
-
-          <%= render :partial => 'layouts/footer_table' %>
-
-          </tr>
-
-      <% end %>
-      </table>
-
-    <div class="show_modules_using_attribute">
-      <%#= raw render :partial => 'pe_attributes/find_use_attribute_modules' %>
-    </div>
-
   </div>
-</div>
+</section>
 
 
 
