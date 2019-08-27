@@ -1,27 +1,27 @@
+<div class="edition-bloc-left">
+  <div class="edition-bloc-title">
+    <h3>
+      <a href="#tabs-1"><%= I18n.t(:pe_attributes) %></a>
+    </h3>
+  </div>
+</div>
+
 <section class="card card-content-bloc estimancy-form">
   <div class="mb-5">
     <div class="effort-bloc">
-
-      <div class="edition-bloc-left">
-        <div class="edition-bloc-title">
-          <h4>
-            <a href="#tabs-1"><%= I18n.t(:pe_attributes) %></a>
-          </h4>
-        </div>
-      </div>
 
       <div class="edition-bloc-content">
         <div class="card-body">
 
         <div id="tabs-1">
 
-          <div class="group_button">
+          <div>
             <%= link_to I18n.t('create_button'), new_pe_attribute_path, :class => 'btn btn-primary' %>
           </div>
 
           <br>
 
-          <table id="table_list_11" class="table tablesorterPager table-striped table-bordered table-condensed ">
+          <table id="table_list_11" class="table table-list">
             <thead>
             <tr>
               <th><%= I18n.t(:name) %></th>

@@ -1,57 +1,60 @@
+<div class="edition-bloc-left">
+  <div class="edition-bloc-title">
+    <h3>
+      <a href="#tabs-1"><%= I18n.t(:currencies) %></a>
+    </h3>
+  </div>
+</div>
+
 <section class="card card-content-bloc estimancy-form">
   <div class="mb-5">
     <div class="effort-bloc">
-
-      <div class="edition-bloc-left">
-        <div class="edition-bloc-title">
-          <h4><a href="#tabs-1"><%= I18n.t(:currencies) %></a></h4>
-        </div>
-      </div>
 
       <div class="edition-bloc-content">
         <div class="card-body">
 
           <div id="tabs-1">
-            <div class="group_button">
+
+            <div>
               <%= link_to I18n.t('create_button'), new_currency_path, :class => 'btn btn-primary' %>
             </div>
 
             <br>
 
-          <table id="table_list_1" class="table table-list">
-            <thead>
-                <tr>
-                  <th><%= I18n.t(:name) %></th>
-                  <th><%= I18n.t(:alias) %></th>
-                  <th><%= I18n.t(:description) %></th>
-                  <th><%= I18n.t(:iso_code) %></th>
-                  <th><%= I18n.t(:currency_sign) %></th>
-                  <th><%= I18n.t(:conversion_rate) %></th>
-                  <th  class="action"><%= I18n.t(:actions) %></th>
-                </tr>
-            </thead>
+            <table id="table_list_1" class="table table-list">
+              <thead>
+                  <tr>
+                    <th><%= I18n.t(:name) %></th>
+                    <th><%= I18n.t(:alias) %></th>
+                    <th><%= I18n.t(:description) %></th>
+                    <th><%= I18n.t(:iso_code) %></th>
+                    <th><%= I18n.t(:currency_sign) %></th>
+                    <th><%= I18n.t(:conversion_rate) %></th>
+                    <th  class="action"><%= I18n.t(:actions) %></th>
+                  </tr>
+              </thead>
 
-            <tbody>
-            <% @currencies.each do |currency| %>
-                <tr>
-                  <td><%= currency.name %></td>
-                  <td><%= currency.alias %></td>
-                  <td><%= currency.description %></td>
-                  <td><%= currency.iso_code %></td>
-                  <td><%= currency.sign %></td>
-                  <td><%= currency.conversion_rate %></td>
-                  <td class="center">
-                    <%= link_to raw("<i class='material-icons'>edit</i>"), edit_currency_path(currency), :class => 'material-icon', :title => I18n.t('edit') %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), currency, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
-                  </td>
-                </tr>
-            <% end %>
-            <%= render :partial => 'layouts/footer_table' %>
-            </tbody>
+              <tbody>
+              <% @currencies.each do |currency| %>
+                  <tr>
+                    <td><%= currency.name %></td>
+                    <td><%= currency.alias %></td>
+                    <td><%= currency.description %></td>
+                    <td><%= currency.iso_code %></td>
+                    <td><%= currency.sign %></td>
+                    <td><%= currency.conversion_rate %></td>
+                    <td class="center">
+                      <%= link_to raw("<i class='material-icons'>edit</i>"), edit_currency_path(currency), :class => 'material-icon', :title => I18n.t('edit') %>
+                      <%= link_to raw("<i class='material-icons'>delete</i>"), currency, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                    </td>
+                  </tr>
+              <% end %>
+              <%= render :partial => 'layouts/footer_table' %>
+              </tbody>
 
-          </table>
+            </table>
+          </div>
         </div>
-      </div>
 
       </div>
     </div>

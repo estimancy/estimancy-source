@@ -1,22 +1,26 @@
+<div class="edition-bloc-left">
+  <div class="edition-bloc-title">
+    <h3>
+      <a href="#tabs-1"><%= I18n.t(:projestimate_module) %></a>
+    </h3>
+  </div>
+</div>
+
 <section class="card card-content-bloc estimancy-form">
   <div class="mb-5">
     <div class="effort-bloc">
-
-      <div class="edition-bloc-left">
-        <div class="edition-bloc-title">
-          <h4><a href="#tabs-1"><%= I18n.t(:projestimate_module) %></a></h4>
-        </div>
-      </div>
 
       <div class="edition-bloc-content">
         <div class="card-body">
           <div id="tabs-1">
 
             <% if can? :manage, Pemodule %>
-                <div class="group_button">
+                <div>
                     <%= link_to I18n.t('create_button'), new_pemodule_path, :class => 'btn btn-primary' %>
                 </div>
             <% end %>
+
+            <br>
 
             <table id="table_list_1" class="table table-list" >
 

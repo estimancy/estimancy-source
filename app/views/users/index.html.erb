@@ -1,28 +1,28 @@
+<div class="edition-bloc-left">
+  <div class="edition-bloc-title">
+    <h3>
+      <%= I18n.t(:users) %>
+    </h3>
+  </div>
+</div>
+
 <section class="card card-content-bloc estimancy-form">
 
     <div class="mb-5">
-      <div class="effort-bloc">
+      <div class="edition-bloc-content">
         <div class="card-body">
-          <div class="edition-bloc-left">
-
-            <div class="edition-bloc-title row">
-              <div class="col-6">
-                <h1>
-                  <%= I18n.t(:users) %>
-                </h1>
-              </div>
-
-              <div class="col-6">
-                <%= link_to I18n.t('create_button'), new_user_path, :class => 'btn btn-primary btn-estimancy float-right' %>
-              </div>
-            </div>
+          <div>
+            <%= link_to I18n.t('create_button'), new_user_path, :class => 'btn btn-primary btn-estimancy' %>
           </div>
+
+          <br>
 
           <div id="users" class="table-responsive-sm" style="width:100%;overflow:auto; white-space:nowrap;">
             <%= render :partial => 'users', :object => @users %>
           </div>
 
         </div>
+
       </div>
     </div>
 
