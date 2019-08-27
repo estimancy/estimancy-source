@@ -45,7 +45,7 @@ module ApplicationHelper
   end
 
   def display_alert(uo)
-    begin
+    # begin
       model = Project.where(id: uo.project.original_model_id).first
       if model.title == "IFPUG Sourcing"
         if uo.project.estimation_status.name == "Controled" || uo.project.estimation_status.name == "To Correct"
@@ -86,8 +86,8 @@ module ApplicationHelper
           false
         end
       end
-    rescue
-      false
-    end
+    # rescue
+    #   false
+    # end
   end
 end

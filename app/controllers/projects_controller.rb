@@ -4326,16 +4326,14 @@ public
             to_es_controled = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
             to_es_to_correct = EstimationStatus.where(organization_id: @current_organization.id, name: "To correct").first
 
-            if @project.estimation_status_id == from_es.id
-              @project.guw_unit_of_works.each do |uo|
-                simulate_ai(@project, uo)
-              end
-            end
-
             Thread.new do
               ActiveRecord::Base.connection_pool.with_connection do
                 sleep(16)
                 if @project.estimation_status_id == from_es.id
+
+                  @project.guw_unit_of_works.each do |uo|
+                    simulate_ai(@project, uo)
+                  end
 
                   flash[:custom] = "Machine learning process in progress..."
                   flash[:notice] = "Machine learning process in progress..."
