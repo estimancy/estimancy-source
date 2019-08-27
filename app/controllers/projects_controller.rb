@@ -119,7 +119,7 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(0, 5, "Service")
         worksheet_cf.add_cell(0, 6, "Localisation WBS")
 
-        if @organization.name == "CDS VOYAGEURS"
+        unless @organization.name == "CDS VOYAGEURS"
           worksheet_cf.add_cell(0, 7, "Localisation Modèle")
         else
           worksheet_cf.add_cell(0, 7, "Urgence Devis")
@@ -275,7 +275,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 5, "Service")
         worksheet_wbs.add_cell(0, 6, "Localisation WBS")
 
-        if @organization.name == "CDS VOYAGEURS"
+        unless @organization.name == "CDS VOYAGEURS"
           worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
         else
           worksheet_wbs.add_cell(0, 7, "Urgence Devis")
@@ -373,7 +373,7 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(0, 5, "Service")
         worksheet_synt.add_cell(0, 6, "Localisation WBS")
 
-        if @organization.name == "CDS VOYAGEURS"
+        unless @organization.name == "CDS VOYAGEURS"
           worksheet_synt.add_cell(0, 7, "Localisation Modèle")
         else
           worksheet_synt.add_cell(0, 7, "Urgence Devis")
