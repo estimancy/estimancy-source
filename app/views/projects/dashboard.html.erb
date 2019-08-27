@@ -19,6 +19,7 @@
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>  <!-- add_box -->
+          <a href="#" onclick="save_position(); return false;"><i class="material-icons">save</i></a>  <!-- add_box -->
         </div>
 
         <% @widgets = {} %>
@@ -60,7 +61,7 @@
                 <% if (view_widget.estimation_status_id == @project.estimation_status_id) || view_widget.estimation_status_id.nil? || @project.is_model == true %>
                   <% value = @widgets[k].last %>
                   <% unless value.is_a?(Hash) %>
-                    <div class="grid-stack-item" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="1">
+                    <div class="grid-stack-item" data-gs-no-resize="yes" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="1">
                       <div class="grid-stack-item-content">
                         <div class="card card-widget card-indicator card-indicator-with-module">
                           <div class="card-body">
@@ -193,7 +194,7 @@
 
 <link rel="stylesheet" href="/assets/gridstack.css" />
 
-<script type="text/javascript">
+<script>
     $(function () {
 
         var options = {
@@ -209,19 +210,24 @@
 
     });
 
-    // $('.grid-stack').on('dragstop', function(event, ui) {
-    //     var grid = this;
-    //     var element = event.target;
-    //
-    //     $.ajax({
-    //         type: 'GET',
-    //         url: "/update_view_widget_positions",
-    //         data: {
-    //             view_id: grid,
-    //             views_widgets: element
-    //         }
-    //     });
-    // });
+    function save_position(){
+
+        var mygrid = $('.grid-stack').data('gridstack');
+        var items = mygrid.grid.nodes;
+
+        console.log(items);
+
+        $.ajax({
+            type: 'POST',
+            url: "/update_view_widget_positions",
+            data: {
+                view_id: items,
+                views_widgets: ""
+            }
+        });
+    }
+
+
 </script>
 
 <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>-->
