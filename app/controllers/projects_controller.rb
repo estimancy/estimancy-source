@@ -4321,6 +4321,7 @@ public
         model = Project.where(id: @project.original_model_id).first
         unless model.nil?
           if model.title == "IFPUG Sourcing"
+
             from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
 
             to_es_controled = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
@@ -4328,7 +4329,9 @@ public
 
             Thread.new do
               ActiveRecord::Base.connection_pool.with_connection do
-                sleep(16)
+
+                sleep(8)
+
                 if @project.estimation_status_id == from_es.id
 
                   @project.guw_unit_of_works.each do |uo|
@@ -4600,49 +4603,55 @@ public
   end
 
   private def simulate_ai(project, uo)
-    begin
+    # begin
       model = Project.where(id: uo.project.original_model_id).first
       if model.title == "IFPUG Sourcing"
         if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
           if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-            is_valid = false
+            display = false
           elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-            is_valid = false
+            display = false
           else
-            is_valid = true
+            display = true
           end
         elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
           if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-            is_valid = false
+            display = false
           else
-            is_valid = true
+            display = true
           end
         elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
           if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-            is_valid = false
+            display = false
           elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-            is_valid = false
+            display = false
           elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-            is_valid = false
+            display = false
           else
-            is_valid = true
+            display = true
           end
         elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
           if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
-            is_valid = false
+            display = false
           else
-            is_valid = true
+            display = true
           end
         else
-          is_valid = true
+          display = true
         end
       end
-    rescue
-      is_valid = false
-    end
+    # rescue
+    #   is_valid = false
+    # end
 
     if project.is_valid == true
-      project.is_valid = !is_valid
+
+      if display == true
+        project.is_valid = false
+      else
+        project.is_valid = true
+      end
+
       project.save
     end
 
