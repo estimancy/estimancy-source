@@ -4330,7 +4330,7 @@ public
             Thread.new do
               ActiveRecord::Base.connection_pool.with_connection do
 
-                sleep(8)
+                sleep(5)
 
                 if @project.estimation_status_id == from_es.id
 
@@ -4644,7 +4644,7 @@ public
     #   is_valid = false
     # end
 
-    if project.is_valid == true
+    if project.is_valid == true || project.is_valid == nil
 
       if display == true
         project.is_valid = false
