@@ -204,7 +204,7 @@
 
           <div class="float-right">
             <% if can? :execute_estimation_plan, @project %>
-              <% unless @unit_of_work_groups.empty? %>
+                <% unless @unit_of_work_groups.empty? %>
                 <button type="button" class="btn btn-primary new_guw_button" data-toggle="modal" data-target="#new_guw" data-group-id="<%= uowg.id %>">
                   <%= I18n.t('new_unit_of_work') %>
                 </button>
