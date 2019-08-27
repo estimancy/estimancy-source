@@ -51,46 +51,43 @@ module ApplicationHelper
         if uo.project.estimation_status.name == "Controled"
           if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
             if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-              is_valid = false
+              false
             elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-              is_valid = false
+              false
             else
-              is_valid = true
+              true
             end
           elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
             if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-              is_valid = false
+              false
             else
-              is_valid = true
+              true
             end
           elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
             if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-              is_valid = false
+              false
             elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-              is_valid = false
+              false
             elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-              is_valid = false
+              false
             else
-              is_valid = true
+              true
             end
           elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
             if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
-              is_valid = false
+              false
             else
-              is_valid = true
+              true
             end
           else
-            is_valid = true
+            true
           end
         else
-          is_valid = false
+          false
         end
       end
     rescue
-      is_valid = false
+      false
     end
-
-    @project.is_valid = !is_valid
-    @project.save
   end
 end
