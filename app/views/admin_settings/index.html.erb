@@ -1,38 +1,55 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:administration) %></a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h4>
+            <a href="#tabs-1"><%= I18n.t(:administration) %></a>
+          </h4>
+        </div>
+      </div>
 
-    <div class="group_button">
-          <%= link_to I18n.t('create_button'), new_admin_setting_path, :class => 'btn' %>
+      <div class="edition-bloc-content">
+        <div class="card-body">
+
+          <div id="tabs-1">
+
+          <div class="group_button">
+                <%= link_to I18n.t('create_button'), new_admin_setting_path, :class => 'btn btn-primary' %>
+          </div>
+
+          <br>
+
+          <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+            <thead>
+            <tr>
+              <th><%= I18n.t(:category) %></th>
+              <th><%= I18n.t(:key) %></th>
+              <th><%= I18n.t(:value) %></th>
+              <th><%= I18n.t(:description) %></th>
+              <th class="action"><%= I18n.t(:actions) %></th>
+            </tr>
+            </thead>
+
+            <% @admin_settings.each do |admin_setting| %>
+              <tr>
+                <td class="span1"><%= admin_setting.category %></td>
+                <td class="span1"><%= admin_setting.key %></td>
+                <td class="span1"><%= admin_setting.value %></td>
+                <td class="span3"><%= admin_setting.description %></td>
+                <td class="center">
+                  <%= link_to raw("<i class='material-icons'>edit</i>"), edit_admin_setting_path(admin_setting), :class => 'material-icons', :title => I18n.t('edit') %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), admin_setting, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                </td>
+              </tr>
+            <% end %>
+            <%= render :partial => 'layouts/footer_table' %>
+          </table>
+        </div>
+        </div>
+      </div>
+
     </div>
-
-    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-      <thead>
-      <tr>
-        <th><%= I18n.t(:category) %></th>
-        <th><%= I18n.t(:key) %></th>
-        <th><%= I18n.t(:value) %></th>
-        <th><%= I18n.t(:description) %></th>
-        <th class="action"><%= I18n.t(:actions) %></th>
-      </tr>
-      </thead>
-
-      <% @admin_settings.each do |admin_setting| %>
-        <tr>
-          <td class="span1"><%= admin_setting.category %></td>
-          <td class="span1"><%= admin_setting.key %></td>
-          <td class="span1"><%= admin_setting.value %></td>
-          <td class="span3"><%= admin_setting.description %></td>
-          <td class="center">
-            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_admin_setting_path(admin_setting), :class => 'material-icons', :title => I18n.t('edit') %>
-            <%= link_to raw("<i class='material-icons'>delete</i>"), admin_setting, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
-          </td>
-        </tr>
-      <% end %>
-      <%= render :partial => 'layouts/footer_table' %>
-    </table>
   </div>
-</div>
+</section>

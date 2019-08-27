@@ -1,72 +1,88 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:global_permissions) %></a></li>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h4><a href="#tabs-1"><%= I18n.t(:global_permissions) %></a></h4>
+        </div>
+      </div>
 
-    <h5 class="blue"><%= I18n.t(:text_index_permissions_guidance) %> : <%= @permissions.size %> permissions</h5>
-    <div class="group_button">
-        <%= link_to I18n.t('create_button'), new_permission_path, :class => 'btn' %>
-        <a href="#myWBSModal" role="button" class="btn" title="Importer et mettre à jour les permissions" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
-        <%= link_to I18n.t(:export), export_permissions_path, class: "btn" %>
+      <div class="edition-bloc-content">
+        <div class="card-body">
+
+        <div id="tabs-1">
+
+          <h5 class="blue"><%= I18n.t(:text_index_permissions_guidance) %> : <%= @permissions.size %> permissions</h5>
+          <div class="group_button">
+              <%= link_to I18n.t('create_button'), new_permission_path, :class => 'btn btn-primary', :style => "margin-right:5px;x" %>
+              <a href="#myWBSModal" role="button" class="btn btn-primary" title="Importer et mettre à jour les permissions" data-toggle="modal"  style="margin-right:5px;">
+                <%= I18n.t(:import) %>
+              </a>
+              <%= link_to I18n.t(:export), export_permissions_path, class: "btn btn-primary", style:"margin-right:5px;"%>
+          </div>
+
+          <br>
+
+          <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <%= form_tag import_permissions_path, :multipart => true, :class => 'simple_form' do %>
+              <div class="modal-header modal-drag">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+              </div>
+              <div class="modal-body">
+                <%= file_field_tag :file %>
+              </div>
+              <div class="modal-footer">
+                <button class="btn" data-dismiss="modal" aria-hidden="true">
+                  <%= I18n.t(:close) %>
+                </button>
+                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+              </div>
+              <div class="loading span11 hide">
+                <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+              </div>
+            <% end %>
+          </div>
+
+          <table id="table_list_1" class="table table-list">
+            <thead>
+              <tr>
+                <th><%= I18n.t(:name) %></th>
+                <th><%= I18n.t(:alias) %></th>
+                <th class="filter-select"><%= I18n.t(:object_type) %></th>
+                <th class="filter-select"><%= I18n.t(:category) %></th>
+                <th class="filter-select"><%= I18n.t(:is_permission_project) %></th>
+                <th class="filter-select"><%= I18n.t(:is_permission_master) %></th>
+                <th class="filter-select"><%= I18n.t('label_associated_object') %></th>
+                <th class="action"><%= I18n.t(:actions) %></th>
+              </tr>
+            </thead>
+
+            <% @permissions.each do |perm| %>
+              <tr>
+                <td><span class = "attribute_tooltip" title ='<%= perm.description%>' ><%= perm.name %></span></td>
+                <td><%= perm.alias %></td>
+                <td><%= perm.object_type %></td>
+                <td><%= perm.category %></td>
+                <td><%= perm.is_permission_project %></td>
+                <td><%= perm.is_master_permission %></td>
+                <td><%= perm.object_associated.blank? ? 'All' : perm.object_associated %></td>
+                <td class="center">
+                  <%= link_to raw("<i class='material-icons'>edit</i>"), edit_permission_path(perm), :class => 'material-icon', :title => I18n.t('edit') %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), perm, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                </td>
+              </tr>
+            <% end %>
+
+            <%= render :partial => 'layouts/footer_table' %>
+
+          </table>
+
+          </div>
+        </div>
+
+      </div>
     </div>
-
-    <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <%= form_tag import_permissions_path, :multipart => true, :class => 'simple_form' do %>
-        <div class="modal-header modal-drag">
-          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        </div>
-        <div class="modal-body">
-          <%= file_field_tag :file %>
-        </div>
-        <div class="modal-footer">
-          <button class="btn" data-dismiss="modal" aria-hidden="true">
-            <%= I18n.t(:close) %>
-          </button>
-          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-        </div>
-        <div class="loading span11 hide">
-          <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-        </div>
-      <% end %>
-    </div>
-
-    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-      <thead>
-        <tr>
-          <th><%= I18n.t(:name) %></th>
-          <th><%= I18n.t(:alias) %></th>
-          <th class="filter-select"><%= I18n.t(:object_type) %></th>
-          <th class="filter-select"><%= I18n.t(:category) %></th>
-          <th class="filter-select"><%= I18n.t(:is_permission_project) %></th>
-          <th class="filter-select"><%= I18n.t(:is_permission_master) %></th>
-          <th class="filter-select"><%= I18n.t('label_associated_object') %></th>
-          <th class="action"><%= I18n.t(:actions) %></th>
-        </tr>
-      </thead>
-
-      <% @permissions.each do |perm| %>
-        <tr>
-          <td><span class = "attribute_tooltip" title ='<%= perm.description%>' ><%= perm.name %></span></td>
-          <td><%= perm.alias %></td>
-          <td><%= perm.object_type %></td>
-          <td><%= perm.category %></td>
-          <td><%= perm.is_permission_project %></td>
-          <td><%= perm.is_master_permission %></td>
-          <td><%= perm.object_associated.blank? ? 'All' : perm.object_associated %></td>
-          <td class="center">
-            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_permission_path(perm), :class => 'material-icon', :title => I18n.t('edit') %>
-            <%= link_to raw("<i class='material-icons'>delete</i>"), perm, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
-          </td>
-        </tr>
-      <% end %>
-
-      <%= render :partial => 'layouts/footer_table' %>
-    </table>
-
   </div>
-</div>
+</section>
 

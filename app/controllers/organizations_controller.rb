@@ -4038,7 +4038,7 @@ class OrganizationsController < ApplicationController
 
   end
 
-  def dashboard2
+  def kpi
       @organization = Organization.find(params[:organization_id])
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
