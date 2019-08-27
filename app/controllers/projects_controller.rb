@@ -4645,7 +4645,7 @@ public
       is_valid = false
     end
 
-    unless project.is_valid == false
+    if project.is_valid == true
       project.is_valid = !is_valid
       project.save
     end
