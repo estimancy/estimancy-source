@@ -58,6 +58,8 @@ Projestimate::Application.routes.draw do
 
   resources :widgets
 
+  post 'save_position' =>  'views_widgets#save_position', as: 'save_position'
+
   resources :views
 
   resources :plans
