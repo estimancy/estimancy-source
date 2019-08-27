@@ -18,8 +18,7 @@
 //= require jquery-number
 //= require spectrum.js
 //= require jscolor
-//= require jquery-min.js
-//= require jquery-ui-min.js
+
 //= require gridstack.js
 //= require gridstack.jQueryUI.js
 

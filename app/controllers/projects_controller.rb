@@ -396,14 +396,10 @@ class ProjectsController < ApplicationController
 
     check_module_project
 
-    rp = current_user.recent_projects.to_a
-    rp << @project.id
-    # unless rp.size == 1
-    #   rp.shift
-    # end
-    # current_user.recent_projects = rp.uniq
-    current_user.recent_projects = rp
-    current_user.save
+    # rp = current_user.recent_projects.split
+    # rp << @project.id
+    # current_user.recent_projects = rp
+    # current_user.save
   end
 
   # Function to activate the current/selected module_project

@@ -57,14 +57,14 @@
 
         <div class="widget-list-content">
           <div class="widget-group">
-            <div class="grid-stack">
+            <ul class="widget-group-list">
               <% @widgets.keys.each_with_index do |k, index| %>
                 <% view_widget = @widgets[k].first %>
                 <% if (view_widget.estimation_status_id == @project.estimation_status_id) || view_widget.estimation_status_id.nil? || @project.is_model == true %>
                   <% value = @widgets[k].last %>
                   <% unless value.is_a?(Hash) %>
-                    <div class="grid-stack-item" data-gs-no-resize="yes" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="1">
-                      <div class="grid-stack-item-content">
+
+                      <li class="">
                         <div class="card card-widget card-indicator card-indicator-with-module">
                           <div class="card-body">
                             <div class="card-indicator-type"><%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %></div>
@@ -83,12 +83,12 @@
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
+                      </li>
+
                   <% end %>
                 <% end %>
               <% end %>
-            </div>
+            </ul>
           </div>
         </div>
       </div>
@@ -193,44 +193,6 @@
   <!-- Fin Les graphiques -->
 
 </div>
-
-<link rel="stylesheet" href="/assets/gridstack.css" />
-
-<script>
-    $(function () {
-
-        var options = {
-            width: 12,
-            cellHeight: 100,
-            animate: true,
-            draggable: {
-                handle: '.card'
-            }
-        };
-
-        $('.grid-stack').gridstack(options);
-
-    });
-
-    function save_position(){
-
-        var mygrid = $('.grid-stack').data('gridstack');
-        var items = mygrid.grid.nodes;
-
-        console.log(items);
-
-        $.ajax({
-            type: 'POST',
-            url: "/update_view_widget_positions",
-            data: {
-                view_id: items,
-                views_widgets: ""
-            }
-        });
-    }
-
-
-</script>
 
 <!--<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>-->
 <!--<script>-->
