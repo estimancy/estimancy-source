@@ -117,7 +117,7 @@
         <% project_table_view_widgets.each_with_index do |vw, index| %>
           <%# unless vw.widget_type == "text" %>
           <div class="tab-pane fade <%= (index == 0) ? 'show active' : '' %>" id="pills-<%= vw.id %>" role="tabpanel" aria-labelledby="pills-<%= vw.id %>-tab">
-            <div class="card card-widget">
+            <div class="card card-widget" style="z-index: 0;">
               <div class="card-body">
                 <div class="effort-bloc-tools d-flex justify-content-end mb-2">
                   <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: vw.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => vw.name) %>
