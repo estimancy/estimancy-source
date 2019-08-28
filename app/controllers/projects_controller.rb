@@ -4603,8 +4603,7 @@ public
   end
 
   private def simulate_ai(project, uo)
-    # begin
-      model = Project.where(id: uo.project.original_model_id).first
+    model = Project.where(id: uo.project.original_model_id).first
       if model.title == "IFPUG Sourcing"
         if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
           if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
@@ -4640,12 +4639,8 @@ public
           display = true
         end
       end
-    # rescue
-    #   is_valid = false
-    # end
 
     if project.is_valid == true
-
       if project.is_valid == nil
         if display == true
           project.is_valid = false
@@ -4655,16 +4650,6 @@ public
 
         project.save(validate: false)
       end
-
-    elsif project.is_valid == nil
-
-      if display == true
-        project.is_valid = false
-      else
-        project.is_valid = true
-      end
-
-      project.save(validate: false)
     end
 
   end
