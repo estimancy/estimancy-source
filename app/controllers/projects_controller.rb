@@ -4640,7 +4640,7 @@ public
         end
       end
 
-    if project.is_valid == true
+    if project.is_valid == true || display == false
       project.is_valid = !display
       project.save(validate: false)
     end
