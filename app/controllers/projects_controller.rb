@@ -4641,15 +4641,8 @@ public
       end
 
     if project.is_valid == true
-      if project.is_valid == nil
-        if display == true
-          project.is_valid = false
-        else
-          project.is_valid = true
-        end
-
-        project.save(validate: false)
-      end
+      project.is_valid = !display
+      project.save(validate: false)
     end
 
   end
