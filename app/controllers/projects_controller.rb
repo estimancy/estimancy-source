@@ -4644,7 +4644,19 @@ public
     #   is_valid = false
     # end
 
-    if project.is_valid == true || project.is_valid == nil
+    if project.is_valid == true
+
+      if project.is_valid == nil
+        if display == true
+          project.is_valid = false
+        else
+          project.is_valid = true
+        end
+
+        project.save(validate: false)
+      end
+
+    elsif project.is_valid == nil
 
       if display == true
         project.is_valid = false
@@ -4652,7 +4664,7 @@ public
         project.is_valid = true
       end
 
-      project.save
+      project.save(validate: false)
     end
 
   end
