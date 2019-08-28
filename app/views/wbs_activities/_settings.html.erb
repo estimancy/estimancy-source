@@ -194,8 +194,8 @@
 
     <br>
 
-    <% unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
-      <div class="card card-widget">
+    <%# unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
+      <div class="card card-widget" style="visibility:hidden; position: absolute;">
         <div class="card-body">
           <div class="edition-bloc-title">
             Input Value
@@ -492,7 +492,7 @@
           </div>
         </div>
       </div>
-    <% end %>
+    <%# end %>
 
     <!-- Ajout des valeurs des Ratios -->
     <div id="module_project_ratio_elements">
