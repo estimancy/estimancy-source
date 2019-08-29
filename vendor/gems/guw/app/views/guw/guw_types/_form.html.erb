@@ -1,53 +1,165 @@
-<div class="tabs">
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        <%= I18n.t :unit_of_work %>
-      </a>
-    </li>
-  </ul>
-
-  <div id="tabs-1">
-    <%= simple_form_for(@guw_type) do |f| %>
-      <%= f.error_notification %>
-
-      <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
-
-      <div class="form-inputs">
-        <%= f.input :name, label: I18n.t(:work_unit_type) %>
-
-        <%= f.input :description, input_html: { class: 'tinymce', rows: 10, cols: 20 } %>
-
-        <%= f.input :allow_criteria, label: I18n.t(:Changing_the_count_enter) %>
-        <%= f.input :attribute_type, as: :select, label: "Type de calcul pour les attributs", collection: ["Coefficient", "Pourcentage"] %>
-
-        <%= f.input :allow_retained, label: I18n.t(:Changing_of_the_size_enter) %>
-
-        <% if @guw_model.config_type == "old" %>
-          <%= f.input :allow_quantity, label: I18n.t(:Changing_the_quantity_enter) %>
-        <% end %>
-
-        <%= f.input :display_threshold, label: "Afficher le seuil" %>
-        <%= f.input :allow_complexity, label: I18n.t(:Changing_the_complexity_enter) %>
-        <%= f.input :mandatory_comments, label: "Commentaire sur critères obligatoire" %>
-
-        <%= f.input :color_code, label: "Code couleur", input_html: {class: 'color'} %>
-        <%= f.input :color_priority, label: "Priorité de la couleur" %>
-        <%= f.input :allow_line_color, label: "Activez la couleur sur une ligne" %>
-
-        <%= f.input :is_default, label: "Type d'UO par défaut" %>
-        <%= f.input :service_id, :label => I18n.t('service_id'), :as => :select, :collection => @services, selected: @guw_type.service_id, :input_html => {:class => 'input-xxlarge'} %>
+      <div class="edition-bloc-title">
+          <h4><a href="#tabs-1"><%= I18n.t(:unit_of_work) %> </a></h4>
       </div>
 
-      <div class="actions-tabs">
-        <% if can? :manage_modules_instances, ModuleProject %>
-          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary"  %>
-          <%= link_to I18n.t(:delete), @guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "btn btn-danger pull-right" %>
-        <% end %>
-        <%= link_to I18n.t(:back), :back, class: "btn" %>
-      </div>
+      <div id="tabs-1">
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+            <%= simple_form_for(@guw_type) do |f| %>
+              <%= f.error_notification %>
 
-    <% end %>
+              <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')}  %>
+                      <label class="mdl-textfield__label" for="name"><%= I18n.t(:work_unit_type) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input form-control', rows: 3 } %>
+                      <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :allow_criteria, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="allow_criteria" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:Changing_the_count_enter) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :attribute_type, as: :select, label: false, collection: ["Coefficient", "Pourcentage"], input_html: { class: 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="attribute_type"><%= "Type de calcul pour les attributs" %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-6">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :allow_retained, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="allow_retained" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:Changing_of_the_size_enter) %></label>
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :display_threshold, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="allow_retained" style="padding-left: 20px; margin-top: -7px;"><%= "Afficher le seuil" %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <% if @guw_model.config_type == "old" %>
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :allow_quantity, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                        <label class="mdl-textfield__label" for="allow_retained" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:Changing_the_quantity_enter) %></label>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+
+                <div class="form-row">
+                  <div class="col-6">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :allow_complexity, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="allow_complexity" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:Changing_the_complexity_enter) %></label>
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :mandatory_comments, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="mandatory_comments" style="padding-left: 20px; margin-top: -7px;"><%= "Commentaire sur critères obligatoire" %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <div style="margin-left: 130px; margin-top: 5px;"><%= f.input :color_code, label: false , input_html: {class: 'color form-control'} %></div>
+                      <label class="mdl-textfield__label" for="color_code" ><%= "Code couleur" %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :color_priority, label: false, input_html: { class: 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="color_priority"><%= "Priorité de la couleur" %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-6">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :allow_line_color, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="allow_line_color" style="padding-left: 20px; margin-top: -7px;"><%= "Activez la couleur sur une ligne"  %></label>
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :is_default, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="is_default" style="padding-left: 20px; margin-top: -7px;"><%= "Type d'UO par défaut"  %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-6">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :allow_to_suggest_a_correction, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="allow_to_suggest_a_correction" style="padding-left: 20px; margin-top: -7px;"><%= "Proposer une correction"  %></label>
+                    </div>
+                  </div>
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :allow_to_add_to_knowledge_db, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="allow_to_add_to_knowledge_db" style="padding-left: 20px; margin-top: -7px;"><%= "Ajouter à la base de Connaissance"  %></label>
+                    </div>
+                  </div>
+                </div>
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :service_id, :label => false, :as => :select, :collection => @services, selected: @guw_type.service_id, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                    <label class="mdl-textfield__label" for="service_id"><%= I18n.t('service_id') %></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actions-tabs">
+                <% if can? :manage_modules_instances, ModuleProject %>
+                  <%= f.button :submit, I18n.t('save'), class: "btn btn-primary"  %>
+                  <%= link_to I18n.t(:delete), @guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "btn btn-danger" %>
+                <% end %>
+                <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
+              </div>
+
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+</section>

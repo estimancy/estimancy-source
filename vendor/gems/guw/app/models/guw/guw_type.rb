@@ -27,7 +27,8 @@ module Guw
                     :allow_retained, :allow_complexity, :allow_quantity,
                     :guw_model_id, :copy_id, :allow_criteria,
                     :display_threshold, :attribute_type, :is_default,
-                    :color_code, :color_priority, :allow_line_color, :mandatory_comments, :service_id
+                    :color_code, :color_priority, :allow_line_color, :mandatory_comments, :service_id,
+                    :allow_to_suggest_a_correction, :allow_to_add_to_knowledge_db
 
     belongs_to :guw_model
     belongs_to :service
