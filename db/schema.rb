@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190827142543) do
+ActiveRecord::Schema.define(version: 20190828082147) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1064,25 +1064,27 @@ ActiveRecord::Schema.define(version: 20190827142543) do
   end
 
   create_table "guw_guw_types", force: :cascade do |t|
-    t.string   "name",                       limit: 255
-    t.text     "description",                limit: 65535
-    t.integer  "organization_technology_id", limit: 4
-    t.datetime "created_at",                                              null: false
-    t.datetime "updated_at",                                              null: false
-    t.integer  "guw_model_id",               limit: 4
-    t.integer  "copy_id",                    limit: 4
+    t.string   "name",                          limit: 255
+    t.text     "description",                   limit: 65535
+    t.integer  "organization_technology_id",    limit: 4
+    t.datetime "created_at",                                                 null: false
+    t.datetime "updated_at",                                                 null: false
+    t.integer  "guw_model_id",                  limit: 4
+    t.integer  "copy_id",                       limit: 4
     t.boolean  "allow_quantity"
     t.boolean  "allow_retained"
     t.boolean  "allow_complexity"
     t.boolean  "allow_criteria"
     t.boolean  "display_threshold"
-    t.string   "attribute_type",             limit: 255
+    t.string   "attribute_type",                limit: 255
     t.boolean  "is_default"
-    t.string   "color_code",                 limit: 255
-    t.integer  "color_priority",             limit: 4
+    t.string   "color_code",                    limit: 255
+    t.integer  "color_priority",                limit: 4
     t.boolean  "allow_line_color"
-    t.boolean  "mandatory_comments",                       default: true
-    t.integer  "service_id",                 limit: 4
+    t.boolean  "mandatory_comments",                          default: true
+    t.integer  "service_id",                    limit: 4
+    t.boolean  "allow_to_suggest_a_correction"
+    t.boolean  "allow_to_add_to_knowledge_db"
   end
 
   add_index "guw_guw_types", ["guw_model_id", "is_default"], name: "guw_model_default_guw_types", using: :btree
