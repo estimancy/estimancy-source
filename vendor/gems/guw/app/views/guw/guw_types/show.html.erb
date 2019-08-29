@@ -7,9 +7,14 @@
 
     <% guw_type = Guw::GuwType.find(params[:id]) %>
 
-    <span>
-      <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type) %>
-    </span>
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1>
+          <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type) %>
+        </h1>
+      </div>
+    </div>
+
     <!--      </div>-->
     <div class="card card-content-bloc estimation-edition">
       <div class="card-body">

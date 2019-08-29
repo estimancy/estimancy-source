@@ -84,12 +84,12 @@ class Guw::GuwTypesController < ApplicationController
 
     @guw_type.save
 
-    if @guw_model.default_display == "list"
+    # if @guw_model.default_display == "list"
       redirect_to guw.guw_type_path(@guw_type)
-    else
-      #redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
-      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(/[^0-9A-Za-z]/, '')}")
-    end
+    # else
+    #   #redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
+    #   redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(/[^0-9A-Za-z]/, '')}")
+    # end
   end
 
   def destroy

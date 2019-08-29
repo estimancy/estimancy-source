@@ -2414,3 +2414,5 @@ frsncf_amoa_infra:
   default_estimations_sort_order: "Ordre de tri par défaut"
   asc_order: "Croissant"
   desc_order: "Décroissant"
+
+  add_to_kb: "Ajouter à la base de connaissance"
