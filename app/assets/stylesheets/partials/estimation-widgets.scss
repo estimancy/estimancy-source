@@ -78,6 +78,57 @@
     }
   }
 
+  .widget-group {
+    width: 25%;
+
+    .widget-group-label {
+      margin-left: 1rem;
+      text-align: center;
+      font-weight: 500;
+      font-size: 14px;
+      line-height: 16px;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+      color: rgba(88, 88, 90, 0.7);
+      overflow: hidden;
+      padding-bottom: 1rem;
+
+      &:before {
+        float: left;
+        width: 0;
+        white-space: nowrap;
+        font-weight: 100;
+        font-size: 11px;
+        line-height: 16px;
+        letter-spacing: 0.04em;
+        color: $grey-medium;
+        content:
+                "••••••••••••••••••••••••••••••••••••••••"
+                "••••••••••••••••••••••••••••••••••••••••"
+                "••••••••••••••••••••••••••••••••••••••••"
+                "••••••••••••••••••••••••••••••••••••••••"
+      }
+
+      span {
+        background-color: #ECEFF2;
+        padding: 0 1rem;
+      }
+    }
+
+    .widget-group-list {
+      display: flex;
+      flex-direction: column;
+      flex-wrap: wrap;
+      height: 19em;
+
+      li {
+        padding-left: 1rem;
+        padding-bottom: 1rem;
+        width: 100%
+      }
+    }
+  }
+
   //.widget-group {
   //  width: 25%;
   //

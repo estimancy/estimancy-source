@@ -3,6 +3,9 @@
   @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).uniq.compact.max
   @guw_types = @guw_model.guw_types
   @guw_type = @guw_unit_of_work.guw_type
+  @module_project = current_module_project
+  @unit_of_work_groups = @module_project.guw_unit_of_work_groups
+
 %>
 
 <% @hash_guw_outputs = {} %>

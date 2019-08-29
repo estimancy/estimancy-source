@@ -1,17 +1,17 @@
-<div class="card card-widget <%= (@wbs_activity.hide_wbs_header == 'show_all' ? 'show' : 'hide' ) %>">
+<div class="card card-widget" style="visibility:hidden; position: absolute;">
   <div class="card-body">
     <div class="edition-bloc-title">
       <%= I18n.t(:adaptation_input_value) %>
     </div>
     <div class="edition-bloc-content pb-4">
-      <div class="<%= (@wbs_activity.hide_wbs_header == 'show_all' ? 'show' : 'hide') %>">
+      <div class="show">
 
         <%= hidden_field_tag "dashboard_selected_ratio_id", wbs_activity_ratio.id %>
         <% allow_add_new_phase = (wbs_activity_ratio.nil? ? nil : wbs_activity_ratio.allow_add_new_phase) %>
         <% effort_unit = wbs_activity_ratio.wbs_activity.effort_unit #get_attribute_unit(PeAttribute.find_by_alias("effort")) %>
         <% cost_unit = @current_organization.currency.to_s %>
 
-        <table class="table phases-table <%= (@wbs_activity.hide_wbs_header == 'show_all' ? 'show' : 'hide') %>">
+        <table class="table phases-table show">
           <% @module_project_ratio_variables.where("name <> ''").each do |mp_ratio_variable| %>
               <% unless mp_ratio_variable.wbs_activity_ratio_variable.name.blank? %>
                   <% mp_wbs_ratio_variable =  mp_ratio_variable.wbs_activity_ratio_variable.percentage_of_input %>

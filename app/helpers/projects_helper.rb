@@ -1238,8 +1238,12 @@ module ProjectsHelper
     #elsif est_val_pe_attribute.alias == "cost"
     elsif est_val_pe_attribute.alias.in?(["cost", "theoretical_cost"])
       unless value.class == Hash
-        "#{convert_with_precision(value, precision, true)} #{get_attribute_unit(est_val_pe_attribute)}"
+        if current_user.locale == "fr"
+          "#{convert_with_precision(value, precision, true)} #{get_attribute_unit(est_val_pe_attribute)}"
+        else
+          "#{get_attribute_unit(est_val_pe_attribute)} #{convert_with_precision(value, precision, true)}"
         end
+      end
     elsif est_val_pe_attribute.alias == "remaining_defects" || est_val_pe_attribute.alias == "introduced_defects"
       unless value.class == Hash
         "#{convert_with_precision(value, precision, true)}"

@@ -396,14 +396,10 @@ class ProjectsController < ApplicationController
 
     check_module_project
 
-    rp = current_user.recent_projects.to_a
-    rp << @project.id
-    # unless rp.size == 1
-    #   rp.shift
-    # end
-    # current_user.recent_projects = rp.uniq
-    current_user.recent_projects = rp
-    current_user.save
+    # rp = current_user.recent_projects.split
+    # rp << @project.id
+    # current_user.recent_projects = rp
+    # current_user.save
   end
 
   # Function to activate the current/selected module_project
@@ -4325,16 +4321,33 @@ public
         model = Project.where(id: @project.original_model_id).first
         unless model.nil?
           if model.title == "IFPUG Sourcing"
+
             from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
-            es = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
+
+            to_es_controled = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
+            to_es_to_correct = EstimationStatus.where(organization_id: @current_organization.id, name: "To correct").first
+
             Thread.new do
               ActiveRecord::Base.connection_pool.with_connection do
-                sleep(30)
+
+                sleep(5)
+
                 if @project.estimation_status_id == from_es.id
+
+                  @project.guw_unit_of_works.each do |uo|
+                    simulate_ai(@project, uo)
+                  end
+
                   flash[:custom] = "Machine learning process in progress..."
                   flash[:notice] = "Machine learning process in progress..."
                   flash[:warning] = "Machine learning process in progress..."
-                  @project.estimation_status_id = es.id
+
+                  if @project.is_valid == true
+                    @project.estimation_status_id = to_es_controled.id
+                  else
+                    @project.estimation_status_id = to_es_to_correct.id
+                  end
+
                   @project.save
                 end
               end
@@ -4588,4 +4601,50 @@ public
                          value: nil).all.each{ |i| i.delete }
     end
   end
+
+  private def simulate_ai(project, uo)
+    model = Project.where(id: uo.project.original_model_id).first
+      if model.title == "IFPUG Sourcing"
+        if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
+          if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+            display = false
+          elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+            display = false
+          else
+            display = true
+          end
+        elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
+          if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+            display = false
+          else
+            display = true
+          end
+        elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
+          if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+            display = false
+          elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+            display = false
+          elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+            display = false
+          else
+            display = true
+          end
+        elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
+          if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
+            display = false
+          else
+            display = true
+          end
+        else
+          display = true
+        end
+      end
+
+    if project.is_valid == true || display == false
+      project.is_valid = !display
+      project.save(validate: false)
+    end
+
+  end
+
 end
