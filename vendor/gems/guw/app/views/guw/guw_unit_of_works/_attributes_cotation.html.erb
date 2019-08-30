@@ -87,7 +87,7 @@
                 <% if uowa.comments.blank? %>
                   <%= link_to '...', "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}", "data-turbolinks": false  %>
                 <% else %>
-                  <%= link_to raw(uowa.comments.to_s.truncate(30)), "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}", title: raw((uowa.comments.to_s.html_safe)) %>
+                  <%= link_to raw(uowa.comments.to_s.truncate(30)), "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}", title: raw((uowa.comments.to_s.html_safe)), "data-turbolinks": false %>
                 <% end %>
               </td>
 
