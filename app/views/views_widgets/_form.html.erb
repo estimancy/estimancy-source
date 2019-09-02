@@ -20,9 +20,9 @@
             <!--<td><%#= f.association :pbs_project_element, label: I18n.t(:associate_pbs_element), collection: @project_pbs_project_elements, selected: @views_widget.pbs_project_element.nil? ? '' : @views_widget.pbs_project_element.id, include_blank: false, input_html:{class: "inline_attr"}  %></td>-->
             <td>
               <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                <%= f.association :module_project, label: "Modules", collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, include_blank: true, input_html:{class: "inline_attr"} %>
+                <%= f.association :module_project, label: "Modules", collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, include_blank: true, input_html:{ class: "inline_attr" } %>
               <% else %>
-                <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: true, input_html:{class: "inline_attr"} %>
+                <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: true, input_html:{ class: "inline_attr" } %>
               <% end %>
             </td>
             <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html: {class: "inline_attr input-xxl"}, include_blank: true %></td>

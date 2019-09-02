@@ -2719,19 +2719,6 @@ public
       #Update some params with the form input data
       new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_from_model_by, model_name: old_prj, username: @user.name)} \r\n"
 
-      # time_now = Time.now
-      # StatusHistory.create(organization: new_prj.organization.name,
-      #                      project_id: new_prj.id,
-      #                      project: new_prj.title,
-      #                      version_number: old_prj.version_number,
-      #                      change_date: time_now,
-      #                      action: "Création",
-      #                      comments: nil,
-      #                      origin: nil,
-      #                      target: new_prj.estimation_status.name,
-      #                      user: current_user.name,
-      #                      gap: nil)
-
       if params['project']['application_id'].present?
         new_prj.application_id = params['project']['application_id']
       else
@@ -3589,6 +3576,15 @@ public
     new_project_version = params['new_project_version']
 
     new_prj = old_prj.checkout_project_base(current_user, description, version_number, archive_last_project_version, new_project_version)
+
+    old_prj.module_projects.group(:id).each do |old_mp|
+      new_mp = ModuleProject.where(organization_id: @organization.id,
+                                   project_id: new_prj.id,
+                                   copy_id: old_mp.id).first
+      unless old_mp.view.nil?
+        update_views_and_widgets(new_prj, old_mp, new_mp)
+      end
+    end
 
     # On remet à jour ce champs pour la gestion des Trigger
     new_prj.is_new_created_record = false

@@ -405,7 +405,9 @@ class Project < ActiveRecord::Base
       if new_view.save
         old_mp_view_widgets = old_mp.view.views_widgets.all
         old_mp_view_widgets.each do |old_view_widget|
-          new_view_widget_mp = ModuleProject.where(organization_id: organization_id, project_id: new_prj.id, copy_id: old_view_widget.module_project_id).first #find_by_project_id_and_copy_id(new_prj.id, old_view_widget.module_project_id)
+          new_view_widget_mp = ModuleProject.where(organization_id: organization_id,
+                                                   project_id: new_prj.id,
+                                                   copy_id: old_view_widget.module_project_id).first
 
           new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
           widget_est_val = old_view_widget.estimation_value
@@ -543,10 +545,7 @@ class Project < ActiveRecord::Base
       # On met à jour ce champs pour la gestion des Trigger
       new_prj.is_new_created_record = true
 
-      new_prj.version_number = version_number  #set_project_version(old_prj)
-      # if version_number.blank?
-      #   new_prj.version_number = set_project_version(old_prj)
-      # end
+      new_prj.version_number = version_number
 
       new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: (current_user.name rescue nil))}. \r\n"
 
@@ -648,11 +647,12 @@ class Project < ActiveRecord::Base
             end
 
             # if the module_project is nil
-            unless old_mp.view.nil?
+            # unless old_mp.view.nil?
               #Update the new project/estimation views and widgets
               #update_views_and_widgets(new_prj, old_mp, new_mp)
-              update_project_views_and_widgets(old_mp, new_mp)
-            end
+              # update_project_views_and_widgets(old_mp, new_mp)
+              # update_views_and_widgets(new_prj, old_mp, new_mp)
+            # end
 
 
             #Update the Unit of works's groups
@@ -773,28 +773,27 @@ class Project < ActiveRecord::Base
   end
 
   # Sauvegarde avant la tâche sur la creation de version automatique lors du changement de statut
-  def commit_status_SAVE_13_02_2018
-    #Get the project's current status
-    current_status_number = self.estimation_status.status_number
-    # According to the status transitions map, only possible statuses will consider
-    possible_statuses = self.project_estimation_statuses(self.organization).map(&:status_number).sort #self.estimation_status.to_transition_statuses.map(&:status_number).uniq.sort
-    current_status_index = possible_statuses.index(current_status_number)
-    # By default the first possible status is candidate
-    next_status_number = possible_statuses.first
-    # If the current status is not the last element of the array, the next status is next element after the current status
-    if current_status_number != possible_statuses.last
-      next_status_number = possible_statuses[current_status_index+1]
-    end
-
-    begin
-      # Get the next status
-      next_status = self.organization.estimation_statuses.find_by_status_number(next_status_number)
-      self.update_attribute(:estimation_status_id, next_status.id)
-    rescue
-      # ignored
-    end
-  end
-
+  # def commit_status_SAVE_13_02_2018
+  #   #Get the project's current status
+  #   current_status_number = self.estimation_status.status_number
+  #   # According to the status transitions map, only possible statuses will consider
+  #   possible_statuses = self.project_estimation_statuses(self.organization).map(&:status_number).sort #self.estimation_status.to_transition_statuses.map(&:status_number).uniq.sort
+  #   current_status_index = possible_statuses.index(current_status_number)
+  #   # By default the first possible status is candidate
+  #   next_status_number = possible_statuses.first
+  #   # If the current status is not the last element of the array, the next status is next element after the current status
+  #   if current_status_number != possible_statuses.last
+  #     next_status_number = possible_statuses[current_status_index+1]
+  #   end
+  #
+  #   begin
+  #     # Get the next status
+  #     next_status = self.organization.estimation_statuses.find_by_status_number(next_status_number)
+  #     self.update_attribute(:estimation_status_id, next_status.id)
+  #   rescue
+  #     # ignored
+  #   end
+  # end
 
   #Return project value
   def project_value(attr)
