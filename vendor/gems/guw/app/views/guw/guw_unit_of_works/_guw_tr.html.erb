@@ -253,7 +253,6 @@
                                            title: guow.cplx_comments,
                                            step: 0.001 %>
                       <script>
-                        $(document).on('ready turbolinks:load', function() {
                           var previousSavedValue = $(".retained-guw-" + <%= guow.id %>).val();
 
                           $("#complexity_coeff_ajusted_" + <%= guow.id %>).on("change", function(event){
@@ -273,7 +272,6 @@
                               });
                             }
                           });
-                        });
                       </script>
                     <% end %>
                   <% end %>
@@ -352,7 +350,7 @@
               <% if @guw_coefficient.allow_comments == true %>
                 <% if can? :execute_estimation_plan, @project %>
                   <script>
-                    $(document).on('ready turbolinks:load', function() {
+
                       var defaultValue = <%= @guw_coefficient_guw_coefficient_elements.first.default_display_value.to_f %>;
                       var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
                       var currentValue ;
@@ -376,7 +374,7 @@
                           });
                         }
                       });
-                    });
+
                   </script>
                 <% end %>
               <% end %>
