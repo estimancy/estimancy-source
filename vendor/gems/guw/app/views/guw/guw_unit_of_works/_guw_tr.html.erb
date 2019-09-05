@@ -435,7 +435,7 @@
                   <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
                                        step: 0.001,
                                        readonly: true,
-                                       class: "guw-#{guow.id} guw_number_field_tag retained form-control",
+                                       class: "guw-#{guow.id} guw_number_field_tag retained form-control total_#{@guw_output.id}",
                                        style: "text-align: right; " %>
                 </span>
               <%# end %>

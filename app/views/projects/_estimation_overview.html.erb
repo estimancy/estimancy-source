@@ -3,18 +3,22 @@
     <div class="estimation-list-filter">
       <span><%= @projects.count %> <%= I18n.t(:elements) %></span>
       <span>
-        <a href="#"><%= I18n.t(:display_archives) %></a>
+        <% unless params[:archive].present? %>
+          <a href="?archive=1"><%= I18n.t(:display_archives) %></a>
+        <% else %>
+          <a href="<%= url_for(:only_path => false) %>">Hide archives</a>
+        <% end %>
       </span>
     </div>
     <table class="estimation-table">
       <thead>
-      <tr style="background-color: #FFFFFF">
-        <% selected_inline_columns = update_selected_inline_columns(Project) %>
-        <% selected_inline_columns.each do |column| %>
-          <%= column_header(column) %>
-        <% end %>
-        <th></th>
-      </tr>
+        <tr style="background-color: #FFFFFF">
+          <% selected_inline_columns = update_selected_inline_columns(Project) %>
+          <% selected_inline_columns.each do |column| %>
+            <%= column_header(column) %>
+          <% end %>
+          <th></th>
+        </tr>
       </thead>
 
       <tbody>

@@ -2044,7 +2044,7 @@ ActiveRecord::Schema.define(version: 20190828082147) do
     t.boolean  "allow_export_pdf"
     t.integer  "demand_id",                      limit: 4
     t.boolean  "urgent_project"
-    t.boolean  "is_valid",                                     default: true
+    t.boolean  "is_valid"
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree

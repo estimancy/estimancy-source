@@ -169,8 +169,26 @@
                   <% end %>
                 <% end %>
 
-                <%# if can? :execute_estimation_plan, @project %>
                 <th class=""><%= I18n.t :actions %></th>
+              </tr>
+
+              <tr style="height: 0px;">
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                  <% unless i[1].blank? %>
+                    <% go = @hash_guw_outputs[i[0]] %>
+                    <% if go.class == Guw::GuwOutput %>
+                      <td>
+                        <strong class="center" id="total_<%= go.id %>"></strong>
+                      </td>
+                    <% else %>
+                      <td></td>
+                    <% end %>
+                  <% end %>
+                <% end %>
               </tr>
 
               <% @hash_guw_complexities = {} %>
@@ -789,3 +807,19 @@
     </div>
   <% end %>
 </div>
+
+<script>
+  $(document).ready(function(){
+    <% @guw_model.guw_outputs.each do |go| %>
+      var sum = 0;
+      $(".total_<%= go.id %>").each(function() {
+          var value = $(this).val();
+          if(!isNaN(value) && value.length != 0) {
+              sum += parseFloat(value);
+          }
+      });
+
+      $("#total_<%= go.id %>").html(sum);
+    <% end %>
+  });
+</script>

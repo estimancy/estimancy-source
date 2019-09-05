@@ -4261,7 +4261,7 @@ public
             if new_project
               new_status_name = EstimationStatus.find(new_status_id).name rescue ""
               archive_status_name = @project.organization.estimation_statuses.where(is_archive_status: true).first.name rescue ""
-              last_status_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: new_status_name, to_status: archive_status_name, current_user_name: "l'automatisme de changement de statut")}. \r\n"
+              last_status_comments = "#{I18n.l(Time.now)} : #{ I18n.t(:change_estimation_status_from_to, from_status: new_status_name, to_status: archive_status_name, current_user_name: "l'automatisme de changement de statut") }. \r\n"
               last_status_comments << "___________________________________________________________________________\r\n"
               new_comments = last_status_comments + new_comments
 
