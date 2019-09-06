@@ -1,0 +1,144 @@
+<%# @module_positions.times do |j| %>    <!-- @module_positions is the Max Y position of last module -->
+<% for j in 0..@module_positions do %>    <!-- @module_positions is the Max Y position of last module -->
+  <% position_y = j #j+1 %>
+  <!--Get the number of views to show -->
+  <% module_projects_to_show = @project.module_projects.where(position_y: position_y, show_results_view: true).order(:position_x).all %>
+  <% nb_module_projects_to_show = module_projects_to_show.length %>
+
+  <div class="row-fluid">
+    <!-- div for Y position -->
+    <!-- Iteration for each module in position_y -->
+    <% module_projects_to_show.each do |module_project| %>
+      <% span_size =  12/nb_module_projects_to_show %>
+      <div class='<%= "col-#{span_size}" %>'>
+        <div class="widget-box">  <!-- One widget-box by module -->
+          <div class="widget-content" class="<%= "module_project_widget_#{module_project.id}" %>">
+            <div id="<%="view_widgets_container_#{module_project.id}"%>" class="gridster row-fluid" style="width: 100%;">
+              <ul style="display:inline-block">
+                <% font_weight = "normal_font_weight" %>
+                <% if module_project.view %>
+                  <% module_project_view_widgets =  module_project.view.views_widgets.order('position').all %>
+                  <% module_project_view_widgets.each do |view_widget| %>
+                    <% if view_widget.is_label_widget? %>
+                      <% view_widget_data = get_label_widget_data(view_widget.id) %>
+                    <% elsif view_widget.is_kpi_widget? %>
+                      <% view_widget_data = get_kpi_widget_data(view_widget.id) %>
+                    <% else %>
+                      <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                        <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
+                      <% else %>
+                        <% view_widget_data = get_view_widget_data(module_project.id, view_widget.id) %>
+                      <% end %>
+                    <% end %>
+
+                    <% value_to_show = view_widget_data[:value_to_show] %>
+                    <% view_widget_height = view_widget_data[:height] ; view_widget_width = view_widget_data[:width] %>
+                    <% view_widget_font_size = view_widget_data[:icon_font_size] %>
+                    <% view_widget_text_size = view_widget_data[:text_size]  %>
+                    <% view_widget_min_max_size = view_widget_data[:min_max_size] %>
+                    <% min_without_min_max = '12px' ; one_height = ""
+                       min_with_min_max = '9px'
+                       max_without_min_max = '30px' #'50px'
+                       max_with_min_max = '20px' #'40px'
+                       ft_minMax_minFontSize = '12px'
+                       ft_minMax_maxFontSize = '15px'
+                       if view_widget.widget_type == "text" || view_widget.widget_type==""
+                         font_weight = "bold_font_weight"
+
+                         if view_widget.height.to_i == 1
+                           max_with_min_max = '15px' #'30px'
+                           max_without_min_max = '20px' #'30px'
+                           ft_minMax_minFontSize = '6px'
+                           ft_minMax_maxFontSize = '10px'
+                           if view_widget.width.to_i <= 1
+                             ft_minMax_minFontSize = '4.5px'
+                             ft_minMax_maxFontSize = '10px'
+                           end
+                         end
+                       end
+                    %>
+
+                    <% view_widget.widget_type.in?(["table_effort_per_phase", "table_cost_per_phase", "effort_per_phases_profiles_table", "cost_per_phases_profiles_table"]) ? (effort_per_phase_class="effort_per_phase") : (effort_per_phase_class="") %>
+
+                    <li id="<%= "dashboard_widget_#{view_widget.id}" %>" data-row="<%= view_widget.position_y %>" data-col="<%= view_widget.position_x %>" data-sizex="<%=view_widget.width%>" data-sizey=<%="#{view_widget.height}"%> data-view_widget_id="<%= view_widget.id %>" data-container_id="<%="view_widgets_container_#{module_project.id}"%>" class="view_widget <%= "#{effort_per_phase_class}" %>" style="background-color: <%= view_widget.color %>; max-width: 100%;" title="<%= view_widget_title(view_widget) %>">
+                                <span class="row-fluid">
+                                  <span class="col-9">
+                                    <% unless view_widget.icon_class.nil? %>
+                                      <% if view_widget.icon_class.empty? %>
+                                        <span class="fa">
+                                          <% if view_widget.show_name? %>
+                                            <span id="<%= "widget_name_#{view_widget.id}" %>" style="font-size: 13px; margin-left: 10px;" class="widget_name"><%= view_widget.name %></span>
+                                          <% end %>
+                                        </span>
+                                      <% else %>
+                                        <!--<span id="<%# "icon_size_#{view_widget.id}" %>" class="fa <%# view_widget.icon_class %> icon_size" style="font-size: <%#view_widget_font_size%>em">-->
+                                        <span id="<%= "icon_size_#{view_widget.id}" %>" class="fa <%= view_widget.icon_class %> icon_size" style="font-size: 13px">
+                                          <% if view_widget.show_name? %>
+                                            <span id="<%= "widget_name_#{view_widget.id}" %>" class="widget_name"><%= view_widget.name %></span>
+                                          <% end %>
+                                        </span>
+                                      <% end %>
+                                    <% end %>
+
+                                    <!-- Show the selected Ratio name -->
+                                    <% if view_widget.show_wbs_activity_ratio %>
+                                      <% wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity,
+                                                                           wbs_activity_ratio_id: view_widget.module_project.wbs_activity_ratio_id,
+                                                                           module_project_id: view_widget.module_project_id,
+                                                                           pbs_project_element_id: current_component.id).first %>
+
+                                      <% selected_ratio = view_widget.module_project.get_wbs_activity_ratio(current_component.id) %>
+                                      <span class="widget_name" style="float: right; width: auto">
+                                        <%= "#{I18n.t(:ratio)}:" %>  <%= selected_ratio.nil? ? "-" : selected_ratio %>
+                                      </span>
+                                    <% end %>
+
+                                  </span>
+
+                                  <span id="show_view_widget_params_<%= view_widget.id %>" class="col-3 widget_icon_edit">
+                                    <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
+                                      <%= link_to('', main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
+                                      <%= link_to '', main_app.edit_views_widget_path(view_widget, module_project_id: module_project.id, view_id: module_project.view_id), class: 'icon-pencil icon_smaller', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
+                                    <% end %>
+                                    <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
+                                      <%= link_to '', main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: module_project.id), class: 'icon-download-alt icon_smaller', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                                    <% end %>
+                                  </span>
+                                </span>
+
+                      <span class="row-fluid widget_values">
+
+                                  <% if view_widget.show_min_max && effort_per_phase_class.empty? %>
+                                    <% one_height = "one_height" %>
+                          <span class="row-fluid">
+                                      <!--<span id="<%#= "widget_text_#{view_widget.id}" %>" class="widget_text with_min_max <%#= font_weight%>" style="font-size: <%#=view_widget_text_size%>em; margin-bottom: <%#= view_widget.height.to_i < 3 ? (view_widget_height-90) : 90 %>px">-->
+                            <span id="<%= "widget_text_#{view_widget.id}" %>" class="widget_text with_min_max <%= font_weight%>" style="font-size: <%=view_widget_text_size%>em;">
+                                        <%= value_to_show %>
+                                      </span>
+
+                                      <span>
+                                        <div id="<%= "min_max_#{view_widget.id}" %>" class="min_max" style="font-size: <%=view_widget_min_max_size%>em; position: absolute; bottom: 6px; right: -3px; font-size: 11px;"><%= view_widget_data[:max_value_text] %></div>
+                                        <div id="<%= "min_max_#{view_widget.id}" %>" class="min_max" style="font-size: <%=view_widget_min_max_size%>em; position: absolute; bottom: -8px; right: 0px; font-size: 11px;"><%= view_widget_data[:min_value_text] %></div>
+                                      </span>
+                                    </span>
+                                  <% else %>
+                                    <div contenteditable='true' id="<%= "widget_text_#{view_widget.id}" %>" class="widget_text without_min_max <%= font_weight%>" style="font-size: <%=view_widget_text_size%>em" >
+                                      <%= value_to_show %>
+                                    </div>
+                                  <% end %>
+
+                        <% unless view_widget.project_fields.empty? %>
+                                    <span class="fa fa-asterisk" style="position: absolute; bottom: 4px; left: 4px; font-size: 11px;"></span>
+                                  <% end %>
+                                </span>
+                    </li>
+                  <% end %>
+                <% end %>
+              </ul>
+            </div>
+          </div>  <!-- end widget content -->
+        </div>  <!-- END widget-box by module -->
+      </div>
+    <% end %>    <!-- Iteration for X position -->
+  </div>  <!-- END div for Y position -->
+<% end %>   <!-- Iteration for Y position -->
