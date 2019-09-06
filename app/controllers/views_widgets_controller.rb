@@ -348,6 +348,17 @@ class ViewsWidgetsController < ApplicationController
 
   #update the view_widget position (x,y)
   def update_view_widget_positions
+    view_widget_id = params[:view_widget_id]
+    unless view_widget_id.blank?
+      view_widget = ViewsWidget.find(view_widget_id)
+      if view_widget
+        # Update the View Widget positions (left = position_x, top = position_y)
+        view_widget.update_attributes(position_x: params[:x_position], position_y: params[:y_position], width: params[:item_width], height: params[:item_height])
+      end
+    end
+  end
+
+  def update_view_widget_positions_save
     views_widgets = params[:views_widgets]
     unless views_widgets.empty?
       views_widgets.each_with_index do |element, index|
