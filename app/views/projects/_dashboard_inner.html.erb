@@ -1,22 +1,17 @@
 <div class="collapse in" id="collapseProduct" style="height: 217px;">
-    <div class="widget-content resizableProduct">
-      <p>
-        <%= raw(@project.description.to_s.truncate(440)) %>
-        <% unless current_module_project.nil? %>
-          <% wbs_activity = current_module_project.wbs_activity %>
-          <% unless wbs_activity.nil? %>
-            <%= wbs_activity.description %>
-          <% end %>
+  <div class="widget-content resizableProduct">
+    <p>
+      <%= raw(@project.description.to_s.truncate(440)) %>
+      <% unless current_module_project.nil? %>
+        <% wbs_activity = current_module_project.wbs_activity %>
+        <% unless wbs_activity.nil? %>
+          <%= wbs_activity.description %>
         <% end %>
-      </p>
-    </div>
+      <% end %>
+    </p>
   </div>
 </div>
 
-</div>
-
-
-<%# end %>
 
 <!-- show selected view for each module project -->
 <!-- The results boxes will be arranged as in the estimation plan -->
