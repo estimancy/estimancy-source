@@ -647,12 +647,10 @@ class Project < ActiveRecord::Base
             end
 
             # if the module_project is nil
-            # unless old_mp.view.nil?
+            unless old_mp.view.nil?
               #Update the new project/estimation views and widgets
-              #update_views_and_widgets(new_prj, old_mp, new_mp)
-              # update_project_views_and_widgets(old_mp, new_mp)
-              # update_views_and_widgets(new_prj, old_mp, new_mp)
-            # end
+              new_prj.update_project_views_and_widgets(old_mp, new_mp)
+            end
 
 
             #Update the Unit of works's groups
