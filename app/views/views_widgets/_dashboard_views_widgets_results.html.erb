@@ -208,42 +208,26 @@
 
         $('.grid-stack').gridstack(options);
 
-        $('.grid-stack-item').on('dragstop', function(event, ui) {
-            //save_position();
-            var x_position, y_position, width, height;
-
-            //alert("test");
-            //alert("X " +  $(this).data("gs-x")); alert("Y "+ $(this).data("gs-y")); alert("Width " + $(this).data("gs-width")); alert("Height " + $(this).data("gs-height"));
+        $('.grid-stack').on('dragstop', function (event, ui) {
+            var element = $(event.target);
+            var node = element.data('_gridstack_node');
+            //console.log(node);
 
             $.ajax({
                 url: "/update_view_widget_positions",
                 method: "get",
                 data: {
-                    x_position: $(this).data("gs-x"),
-                    y_position: $(this).data("gs-y"),
-                    item_width: $(this).data("gs-width"),
-                    item_height: $(this).data("gs-height"),
-                    view_widget_id: $(this).data("view_widget_id")
+                    x_position: node['x'],
+                    y_position: node['y'],
+                    item_width: node['width'],
+                    item_height: node['height'],
+                    view_widget_id: element.data('view_widget_id')
                 }
             });
         });
 
     });
 
-    function save_position(){
-        var mygrid = $('.grid-stack-item').data('gridstack');
-        var items = mygrid.grid.nodes;
-        console.log(items);
-
-        $.ajax({
-            type: 'POST',
-            url: "/update_view_widget_positions",
-            data: {
-                view_id: items,
-                views_widgets: ""
-            }
-        });
-    }
 
      function save_position_save(){
          var mygrid = $('.grid-stack').data('gridstack');

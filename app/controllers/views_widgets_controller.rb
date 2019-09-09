@@ -358,7 +358,7 @@ class ViewsWidgetsController < ApplicationController
     end
   end
 
-  def update_view_widget_positions_save
+  def update_view_widget_positions_save_old
     views_widgets = params[:views_widgets]
     unless views_widgets.empty?
       views_widgets.each_with_index do |element, index|
