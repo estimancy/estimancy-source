@@ -9,7 +9,7 @@
 //= require cookies_eu
 //= require Chart.bundle
 //= require chartkick
-// require jquery
+//= require jquery
 //= require jquery_ujs
 //= require pager.js
 //= require select_list_move
@@ -20,7 +20,7 @@
 //= require spectrum.js
 //= require jscolor
 
-//= require jquery-min.js
+// require jquery-min.js
 //= require jquery-ui-min.js
 
 //= require gridstack.js
