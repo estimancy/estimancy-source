@@ -3470,6 +3470,13 @@ public
   #   build_footer
   # end
 
+  def user_search
+    @organization = @current_organization
+    @organization_users = User.where("first_name LIKE ? OR last_name LIKE ? OR login_name LIKE ? OR email LIKE ?", "%#{params[:advanced_search]}%", "%#{params[:advanced_search]}%", "%#{params[:advanced_search]}%", "%#{params[:advanced_search]}%")
+
+    render "organizations/user_search"
+  end
+
   def advanced_search
     search
   end

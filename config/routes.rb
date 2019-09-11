@@ -495,5 +495,6 @@ Projestimate::Application.routes.draw do
   get 'users/:id/confirm_user' => 'users#confirm_user', :as => 'confirm_user'
 
   get 'advanced_search' => 'projects#advanced_search', :as => 'advanced_search'
+  get 'user_search' => 'projects#user_search', :as => 'user_search'
 end
 
