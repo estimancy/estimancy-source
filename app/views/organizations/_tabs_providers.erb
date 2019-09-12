@@ -38,7 +38,7 @@
       </thead>
 
       <tbody>
-      <% @organization.providers.each do |pr| %>
+      <% @organization.providers.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |pr| %>
           <tr>
             <td><%= pr.name %></td>
             <td class="center">

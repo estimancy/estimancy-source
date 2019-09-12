@@ -59,7 +59,10 @@
             <% end %>
 
             <%= form_tag form_name, method: "GET", class: "form-inline my-2 my-lg-0" , id: "adv_search_form" do %>
-              <div class="input-group global-search-bar"   >
+
+              <%= hidden_field_tag :item_title, params[:item_title] %>
+
+              <div class="input-group global-search-bar">
                 <div class="input-group-prepend global-search-bar-prepend" >
                   <span class="input-group-text" id="search-icon" >
                     <i class="material-icons">search</i>
@@ -70,7 +73,7 @@
                        id="adv_search"
                        type="text"
                        name="advanced_search"
-                       placeholder="<%= placeholder %>"
+                       placeholder="<%= placeholder.blank? ?  params[:item_title] : placeholder %>"
                        class="form-control global-search-bar-input"
                        aria-label="search" aria-describedby="search-icon">
 
