@@ -50,7 +50,7 @@
 
           <% unless controller.action_name == "all_organizations" %>
 
-            <% if action_name.include?("user") %>
+            <% if action_name.include?("user") || (controller_name == "users" && action_name == "index") %>
               <% form_name = main_app.user_search_path %>
               <% placeholder = "Users search" %>
             <% else %>
