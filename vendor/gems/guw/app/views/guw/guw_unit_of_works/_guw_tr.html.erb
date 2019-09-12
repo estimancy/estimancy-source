@@ -75,6 +75,7 @@
 
 <td class="text_field_text_overflow span3 guw-cell-ajustment">
   <span class="pull-left">
+    <%= guow.display_order %>
     <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
   </span>
 </td>
@@ -551,8 +552,15 @@
               <%= link_to raw("<i class='material-icons'>file_copy</i> Suggest a correction"), guw.guw_unit_of_work_add_correction_path(guow), method: "post", class: "dropdown-item" %>
             <% end %>
             <%= link_to raw("<i class='material-icons'>file_copy</i> Duplicate"), guw.guw_unit_of_work_duplicate_path(guow), method: "post",  class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", class: "dropdown-item" %>
+
+            <% unless guow.display_order <= uowg.guw_unit_of_works.map(&:display_order).min %>
+              <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", class: "dropdown-item" %>
+            <% end %>
+
+            <% unless guow.display_order >= uowg.guw_unit_of_works.map(&:display_order).max %>
+              <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", class: "dropdown-item" %>
+            <% end %>
+
           <% else %>
             <%= link_to raw("<i class='material-icons'>check</i> Accept"), guw.guw_unit_of_work_accept_correction_path(guow), method: "post", class: "dropdown-item" %>
           <% end %>

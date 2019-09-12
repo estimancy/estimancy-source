@@ -152,9 +152,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def down
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @guw_unit_of_work_group = @guw_unit_of_work.guw_unit_of_work_group
+
+    @guw_unit_of_work2 = Guw::GuwUnitOfWork.where(display_order: @guw_unit_of_work.display_order.to_i + 1,
+                                                  guw_unit_of_work_group_id: @guw_unit_of_work_group.id).first
 
     @guw_unit_of_work.display_order = @guw_unit_of_work.display_order.to_i + 1
+    @guw_unit_of_work2.display_order = @guw_unit_of_work.display_order.to_i - 1
+
     @guw_unit_of_work.save
+    @guw_unit_of_work2.save
 
     reorder @guw_unit_of_work.guw_unit_of_work_group
 
