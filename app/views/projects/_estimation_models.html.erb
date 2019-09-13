@@ -14,7 +14,7 @@
   </thead>
 
   <tbody>
-    <% @estimation_models.each do |project| %>
+    <% @estimation_models.where("title LIKE ?", "%#{params[:advanced_search]}%").each do |project| %>
       <% if can_see_estimation?(project) %>
           <tr>
             <td>

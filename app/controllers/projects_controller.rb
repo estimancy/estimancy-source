@@ -3297,6 +3297,16 @@ public
                                             partial_name: 'tabs_project_areas',
                                             item_title: 'Project areas',
                                             advanced_search: params[:advanced_search])
+    elsif params[:item_title] == "Project categories"
+      redirect_to organization_setting_path(@current_organization,
+                                            partial_name: 'tabs_project_categories',
+                                            item_title: 'Project categories',
+                                            advanced_search: params[:advanced_search])
+    elsif params[:item_title] == "Business value"
+      redirect_to organization_setting_path(@current_organization,
+                                            partial_name: 'tabs_platform_categories',
+                                            item_title: 'Business values',
+                                            advanced_search: params[:advanced_search])
     elsif params[:item_title] == "Providers"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_providers',
@@ -3306,6 +3316,21 @@ public
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_profiles',
                                             item_title: 'Profiles',
+                                            advanced_search: params[:advanced_search])
+    elsif params[:item_title] == "Estimation models"
+      redirect_to organization_setting_path(@current_organization,
+                                            partial_name: 'tabs_estimation_models',
+                                            item_title: 'Estimation models',
+                                            advanced_search: params[:advanced_search])
+    elsif params[:item_title] == "Estimation models"
+      redirect_to organization_setting_path(@current_organization,
+                                            partial_name: 'tabs_estimation_models',
+                                            item_title: 'Estimation models',
+                                            advanced_search: params[:advanced_search])
+    elsif params[:item_title] == "Custom fields"
+      redirect_to organization_setting_path(@current_organization,
+                                            partial_name: 'tabs_fields',
+                                            item_title: 'Custom fields',
                                             advanced_search: params[:advanced_search])
 
     else

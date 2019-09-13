@@ -76,7 +76,7 @@
           <td><%= budget_type.name %></td>
           <td>
             <% begin %>
-                <%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name) %>
+                <%= budget_type.budget_type_statuses.collect(&:estimation_status).map(&:name).join(', ') %>
             <% rescue %>
                 -
             <% end %>
