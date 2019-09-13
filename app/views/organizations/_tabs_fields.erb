@@ -12,7 +12,7 @@
         <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
       </tr>
 
-      <% @fields.each do |field| %>
+      <% @fields.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |field| %>
           <tr>
             <td><%= field.name %></td>
             <td><%= field.coefficient %></td>

@@ -37,7 +37,7 @@
       </thead>
 
       <tbody>
-      <% @organization.acquisition_categories.each do |i| %>
+      <% @organization.acquisition_categories.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |i| %>
           <tr>
             <td><%= i.name %></td>
             <td><%= i.description %></td>
