@@ -1,0 +1,128 @@
+<section class="card card-content-bloc estimancy-form">
+    <% if can? :show_organization_users, User %>
+      <div class="mb-5">
+        <div class="effort-bloc">
+          <div class="card-body">
+
+            <div class="edition-bloc-left">
+              <div class="edition-bloc-title row" style="flex: 1">
+
+                <div class="col-6">
+                  <h1>
+                    <%= I18n.t(:user_list) %>
+                  </h1>
+                </div>
+
+                <div class="col-6">
+                  <div class="float-right">
+                    <% if can? :manage, User, :organization_id => @organization.id %>
+                        <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+                        <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
+                          <%= I18n.t(:import) %>
+                        </a>
+                    <% end %>
+                    <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn btn-primary btn-estimancy', method: "post" %>
+                  </div>
+
+                  <% if can?(:manage, User, :organization_id => @organization.id) %>
+                      <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
+                            <div class="modal-header modal-drag">
+                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                              <h3 id="myModalLabel"> <%= I18n.t(:Import_user_from_excel) %></h3>
+                            </div>
+                            <div class="modal-body">
+                              <%= file_field_tag :file %>
+                            </div>
+                            <div class="modal-footer">
+                              <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                              <%= submit_tag I18n.t(:import), :class => 'btn', :onclick => "$('.loading').show();" %>
+                            </div>
+                            <div class="loading span11 hide">
+                              <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+                            </div>
+                        <% end %>
+                      </div>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+
+            <div id="organization_users" style="width:100%;overflow:auto; white-space:nowrap;">
+              <table class="table tablesorter table-list table-sm" style="width:100%;overflow:auto;">
+                <thead>
+                  <tr>
+                    <th><%= I18n.t(:first_name) %></th>
+                    <th><%= I18n.t(:last_name) %></th>
+                    <th><%= I18n.t(:login_name) %></th>
+                    <th><%= I18n.t(:email) %></th>
+                    <th><%= I18n.t(:groups) %></th>
+
+                    <% if current_user.super_admin? %>
+                      <th><%= I18n.t(:Confirmed_at) %></th>
+                    <% end %>
+
+                    <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                <% @organization_users.each do |user| %>
+                  <tr>
+                    <% if user.super_admin? %>
+                      <td><strong><%= user.first_name %></strong></td>
+                      <td><strong><%= user.last_name %></strong></td>
+                    <% else %>
+                      <td><%= user.first_name %></td>
+                      <td><%= user.last_name %></td>
+                    <% end %>
+
+                    <td><%= user.login_name %></td>
+                    <td><%= user.email %></td>
+                    <td><%= user.groups.where(organization_id: @organization.id).join('; ') %></td>
+
+                    <% if current_user.super_admin? %>
+                      <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed')  : I18n.l(user.confirmed_at.to_date) %></td>
+                    <% end %>
+
+                    <td class="align-center">
+                      <% if can? :manage, User, :organization_id => @organization.id %>
+                        <% if user.locked_at.nil? %>
+                          <%= link_to(raw("<i class='material-icons'>lock_open</i>"), unlock_user_path(user), :title => I18n.t('lock')) %>
+                        <% else %>
+                          <%= link_to(raw("<i class='material-icons'>lock</i>"), unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
+                        <% end %>
+
+                        <% if user.confirmed_at.nil? %>
+                          <%= link_to(raw("<i class='material-icons'>check_circle_outline</i>"), confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
+                        <% else %>
+                          <%= link_to(raw("<i class='material-icons'>check_circle</i>"), confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
+                        <% end %>
+                      <% end %>
+                      <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
+                      <% if can? :manage, User, :organization_id => @organization.id %>
+                        <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                        <%= link_to raw("<i class='material-icons'>delete</i>"), destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+
+                <%= render :partial => 'layouts/footer_table' %>
+
+                </tbody>
+              </table>
+            </div>
+
+            <% else %>
+              <div class="red_color">
+                <%= I18n.t(:notice_cannot_view_organization_users) %>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+      <% end %>
+</section>

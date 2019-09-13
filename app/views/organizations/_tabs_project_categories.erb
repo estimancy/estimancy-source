@@ -39,7 +39,7 @@
       </thead>
 
       <tbody>
-      <% @organization.project_categories.each do |i| %>
+      <% @organization.project_categories.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |i| %>
           <tr>
             <td><%= i.name %></td>
             <td><%= i.description %></td>

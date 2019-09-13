@@ -61,6 +61,10 @@
   <div class="row">
     <div class="col-12 tools">
 
+      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+        <%= link_to raw("<i class='material-icons'>unarchive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
+      <% end %>
+
       <% if @guw_model.view_data == true %>
         <%= link_to image_tag("/assets/twotone-data-24px.svg", size: "24x24"), guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", target: :_blank, class: "float-right", title: I18n.t(:data_model) %>
       <% end %>
@@ -73,9 +77,13 @@
         <%= link_to raw("<i class='material-icons'>queue</i>"), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "float-right", title: "#{I18n.t :group}" %>
       <% end %>
 
+      <span class="float-right">
+        &nbsp;
+        &nbsp;
+      </span>
+
       <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
         <%= link_to image_tag("/assets/baseline-save2_alt-24px.svg", size: "24x24"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
-        <%= link_to raw("<i class='material-icons'>unarchive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
       <% else %>
         <%= link_to raw("<i class='material-icons'>archive</i> &nbsp;"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
       <% end %>
@@ -107,17 +115,13 @@
 
     <div class="card card-widget">
       <div class="card-body">
-        <div class="edition-bloc-title">
-          <%= uowg %>
-          <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link"><%= I18n.t :rename %></a>
-        </div>
+<!--        <div class="edition-bloc-title">-->
+<!--        </div>-->
         <div class="edition-bloc-content pb-4">
           <div class="guw-list">
             <table class="table requirements-table estimation-table group_<%= uowg.id %>" id="guw">
               <tr>
-                <th></th>
-                <th>#</th>
-                <th><%= I18n.t :name %></th>
+                <th colspan="2"><%= I18n.t :name %></th>
                 <th><%= I18n.t(:component) %></th>
 
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
@@ -173,10 +177,9 @@
               </tr>
 
               <tr style="height: 0px;">
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
+                <td colspan="3">
+                  <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link"><%= uowg %></a>
+                </td>
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% unless i[1].blank? %>
                     <% go = @hash_guw_outputs[i[0]] %>
@@ -189,6 +192,7 @@
                     <% end %>
                   <% end %>
                 <% end %>
+                <td></td>
               </tr>
 
               <% @hash_guw_complexities = {} %>

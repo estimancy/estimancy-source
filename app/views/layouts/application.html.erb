@@ -49,8 +49,20 @@
           </div>
 
           <% unless controller.action_name == "all_organizations" %>
-            <%= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" , id: "adv_search_form" do %>
-              <div class="input-group global-search-bar"   >
+
+            <% if action_name.include?("user") || (controller_name == "users" && action_name == "index") %>
+              <% form_name = main_app.user_search_path %>
+              <% placeholder = "Users search" %>
+            <% else %>
+              <% form_name = main_app.advanced_search_path %>
+              <% placeholder = I18n.t ('estimation_name, version_number, author...') %>
+            <% end %>
+
+            <%= form_tag form_name, method: "GET", class: "form-inline my-2 my-lg-0" , id: "adv_search_form" do %>
+
+              <%= hidden_field_tag :item_title, params[:item_title] %>
+
+              <div class="input-group global-search-bar">
                 <div class="input-group-prepend global-search-bar-prepend" >
                   <span class="input-group-text" id="search-icon" >
                     <i class="material-icons">search</i>
@@ -61,7 +73,7 @@
                        id="adv_search"
                        type="text"
                        name="advanced_search"
-                       placeholder="<%= I18n.t ('estimation_name, version_number, author...') %>"
+                       placeholder="<%= placeholder.blank? ?  params[:item_title] : placeholder %>"
                        class="form-control global-search-bar-input"
                        aria-label="search" aria-describedby="search-icon">
 
