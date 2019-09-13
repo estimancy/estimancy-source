@@ -160,9 +160,21 @@ table td.guw-cell-ajustment{
   margin-bottom: 0.3rem;
 }
 
-.grid-stack > .grid-stack-item.table_graph > .ui-resizable-se, .grid-stack > .grid-stack-item.table_graph > .ui-resizable-se {
-  margin-bottom: 19.5rem;
+.grid-stack > .grid-stack-item.table_graph > .ui-resizable-se {
+  //margin-bottom: 19.5rem;
+  margin-bottom: 5rem;
 }
+
+.grid-stack > .grid-stack-item.label_widget > .ui-resizable-se {
+  margin-bottom: 1rem;
+  margin-right: -1.5rem;
+}
+
+//.grid-stack > .grid-stack-item.table_graph{
+//  min-height: auto;
+//  height: auto;
+//  margin-top: -30px;
+//}
 
 //.grid-stack > .grid-stack-item > .card.card-indicator .card-body{
 //  padding: 1.5rem 1.3rem 1.5rem 0;
@@ -179,12 +191,21 @@ table td.guw-cell-ajustment{
 }
 
 .dragme {
-  display: none; /* Hide button */
+  display: none;
 }
 
 .grid-stack-item:hover .dragme {
-  display: block; /* On :hover of div show button */
+  display: block;
 }
+
+.label_widget_icon {
+  display: none;
+}
+
+.grid-stack-item.label_widget:hover .label_widget_icon {
+  display: block;
+}
+
 
 //.grid-stack .grid-stack-item .grid-stack-item-content,
 //.grid-stack .grid-stack-item .placeholder-content {
