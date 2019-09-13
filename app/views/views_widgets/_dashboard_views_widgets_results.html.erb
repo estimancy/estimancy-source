@@ -112,8 +112,6 @@
                     <div class="grid-stack-item" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="1">
                       <div class="grid-stack-item-content">
                         <div class="card card-widget card-indicator card-indicator-with-module">
-                          <!--<div><i class='material-icons grip' style="float: right;">drag_indicator</i></div>-->
-                          <!--<i class='material-icons grip' style="float: right; display: none">drag_indicator</i>-->
                           <div class="card-body">
                             <div class="card-indicator-type">
                               <% if view_widget.show_module_name == true %>
@@ -152,18 +150,19 @@
               <% project_graph_view_widgets = @project.views_widgets.where(widget_type: vw_graph_types) %>
 
               <% project_table_view_widgets.each_with_index do |view_widget, index| %>
-                  <div class="grid-stack-item" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="<%= view_widget.height.to_i %>">
+                  <div class="grid-stack-item table_graph" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="<%= view_widget.height.to_i %>">
                     <div class="grid-stack-item-content">
-                        <div class="card card-widget card-indicator card-indicator-with-module grip">
+                        <div class="card card-widget card-indicator card-indicator-with-module">
                           <div class="card-body">
                             <div class="row">
                               <div class="col"><%= view_widget.name %></div>
+                              <div class="col dragme"><i class='material-icons grip' style="float: right; margin-top: -1.5rem; margin-right: -1.5rem">drag_indicator</i></div>
+                            </div>
 
-                              <div class="col effort-bloc-tools d-flex justify-content-end mb-2">
-                                <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
-                                <a href="<%= main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
-                                <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
-                              </div>
+                            <div class="effort-bloc-tools d-flex justify-content-end mb-2">
+                              <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                              <a href="<%= main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
+                              <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
                             </div>
 
                             <div class="effort-table">

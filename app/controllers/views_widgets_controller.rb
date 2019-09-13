@@ -39,7 +39,9 @@ class ViewsWidgetsController < ApplicationController
   def recalculate_position
     widgets_name = ["abaque", "Localisation", "Charge RTU (jh)", "charge RIS (jh)", "Coût (€)", "Répartition des Charges", "Dire d'expert", "Charge (jh)", "Coût services (€)", "synthèse devis", "charge totale", "coût total", "prix moyen pondéré"]
     data = []
+    #ViewsWidget.first do |view_widget|
     ViewsWidget.all.each do |view_widget|
+
       case view_widget.name
 
         when "Abaque"
@@ -49,7 +51,7 @@ class ViewsWidgetsController < ApplicationController
           data = [0,1,5,1]
 
         when "Charge RTU (jh)", "charge RIS (jh)"
-          data = [0,2,2,1]
+          data = [0,2,3,1] #[0,2,2,1]
 
         when "Coût (€)"
           data = [3,2,2,1]
@@ -83,6 +85,8 @@ class ViewsWidgetsController < ApplicationController
         view_widget.update_attributes(position_x: data[0], position_y: data[1], width: data[2], height: data[3])
       end
     end
+    puts "Fini..."
+
   end
 
   def new
