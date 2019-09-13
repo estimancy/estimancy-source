@@ -10,6 +10,8 @@
               <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
               <%= f.input :position_x, :input_html => { value: @position_x } %>
               <%= f.input :position_y, :input_html => { value: @position_y } %>
+              <%= f.input :width, :input_html => { value: @views_widget.width } %>
+              <%= f.input :height, :input_html => { value: @views_widget.height } %>
               <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
 
               <div class="form-row">
@@ -70,7 +72,6 @@
                 </div>
               </div>
 
-
               <div class="form-row">
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -107,6 +108,14 @@
                   <label class="mdl-textfield__label" for="organization_effort_unit" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:organization_effort_unit, value: @current_organization) %></label>
                 </div>
               </div>
+
+              <div class="form-row">
+                <div class="col-12">
+                  <%= f.input :show_module_name, label: false, input_html: {class: 'mdl-checkbox__input' } %>
+                  <label class="mdl-textfield__label" for="show_module_name" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:show_module_name) %></label>
+                </div>
+              </div>
+
             </div>
 
             <br>

@@ -148,3 +148,65 @@ table td.guw-cell-ajustment{
 .text_center {
   text-align: center !important;
 }
+
+
+//.grid-stack-item-content {
+//  padding: 3px;
+//}
+
+
+.grid-stack > .grid-stack-item > .ui-resizable-se, .grid-stack > .grid-stack-item > .ui-resizable-sw {
+  //margin-bottom: 2rem;
+  margin-bottom: 2.3rem;
+}
+
+//.grid-stack > .grid-stack-item > .card.card-indicator .card-body{
+//  padding: 1.5rem 1.3rem 1.5rem 0;
+//}
+//
+//.grid-stack .card-body{
+//  padding: unset;
+//}
+
+
+.grid-stack > .grid-stack-item .card-body{
+  padding: 1.5rem 1.3rem 1.5rem 0 !important;
+  //padding: 0.25rem;
+}
+
+.dragme {
+  display: none; /* Hide button */
+}
+
+.grid-stack-item:hover .dragme {
+  display: block; /* On :hover of div show button */
+}
+
+//.grid-stack .grid-stack-item .grid-stack-item-content,
+//.grid-stack .grid-stack-item .placeholder-content {
+//  left: 2px;
+//  right: 2px;
+//  bottom: -4px;
+//  top: -6px;
+//}
+
+
+//.grid-stack .grid-stack-placeholder > .placeholder-content {
+//  left: 0;
+//  right: 0;
+//  top: 0;
+//  bottom: 0;
+//}
+//.grid-stack > .grid-stack-item > .grid-stack-item-content {
+//  left: 0;
+//  right: 0;
+//  top: 0;
+//  bottom: 0;
+//}
+//
+.grid {
+  border: 2px solid #ddd;
+  width: 50%;
+  min-height: 300px;
+  height: auto;
+}

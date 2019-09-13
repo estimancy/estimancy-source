@@ -35,6 +35,56 @@ class ViewsWidgetsController < ApplicationController
     #end
   end
 
+
+  def recalculate_position
+    widgets_name = ["abaque", "Localisation", "Charge RTU (jh)", "charge RIS (jh)", "Coût (€)", "Répartition des Charges", "Dire d'expert", "Charge (jh)", "Coût services (€)", "synthèse devis", "charge totale", "coût total", "prix moyen pondéré"]
+    data = []
+    ViewsWidget.all.each do |view_widget|
+      case view_widget.name
+
+        when "Abaque"
+          data = [0,0,5,1]
+
+        when "Localisation"
+          data = [0,1,5,1]
+
+        when "Charge RTU (jh)", "charge RIS (jh)"
+          data = [0,2,2,1]
+
+        when "Coût (€)"
+          data = [3,2,2,1]
+
+        when "Répartition des Charges"
+          data = [0,3,5,6]
+
+        when "Dire d'expert"
+          data = [6,0,6,1]
+
+        when "Charge (jh)"
+          data = [6,1,3,1]
+
+        when "Coût Services (€)"
+          data = [9,1,3,1]
+
+        when "Synthèse Devis"
+          data = [6,2,6,1]
+
+        when "Charge Totale (jh)"
+          data = [6,3,3,1]
+
+        when "Coût Total (€)"
+          data = [9,3,3,1]
+
+        when "Prix Moyen Pondéré (€/jh)"
+          data = [7,4,4,1]
+      end
+
+      unless data.empty?
+        view_widget.update_attributes(position_x: data[0], position_y: data[1], width: data[2], height: data[3])
+      end
+    end
+  end
+
   def new
     authorize! :manage_estimation_widgets, @project
 

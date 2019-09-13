@@ -2052,5 +2052,6 @@ es:
   default_estimations_sort_order: "Default sort order"
   asc_order: "Ascending"
   desc_order: "Descending"
+  show_module_name: "Show module name"
 
 
