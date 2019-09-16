@@ -195,7 +195,7 @@
     <br>
 
     <%# unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
-      <div class="card card-widget" style="visibility:hidden; position: absolute;">
+      <div class="card card-widget" style="<%= @wbs_activity.hide_wbs_header == 'show_all' ? '' : 'visibility:hidden; position: absolute;' %>">
         <div class="card-body">
           <div class="edition-bloc-title">
             Input Value
@@ -501,12 +501,12 @@
         <% @wbs_activity_ratio =  selected_ratio %>
 
         <% if selected_ratio.nil? %>
-           <%= render :text => "Aucun ratio sélectionné" %>
+          <%= render :text => "Aucun ratio sélectionné" %>
         <% else %>
-            <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
-                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
-                   locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
-         <% end %>
+          <%= render partial: 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
+                     object: [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
+                     locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+        <% end %>
       </div>
     </div>
 

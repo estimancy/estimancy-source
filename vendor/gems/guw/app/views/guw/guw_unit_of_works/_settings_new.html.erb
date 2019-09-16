@@ -115,8 +115,6 @@
 
     <div class="card card-widget">
       <div class="card-body">
-<!--        <div class="edition-bloc-title">-->
-<!--        </div>-->
         <div class="edition-bloc-content pb-4">
           <div class="guw-list">
             <table class="table requirements-table estimation-table group_<%= uowg.id %>" id="guw">
@@ -185,7 +183,7 @@
                     <% go = @hash_guw_outputs[i[0]] %>
                     <% if go.class == Guw::GuwOutput %>
                       <td>
-                        <strong class="center" id="total_<%= go.id %>"></strong>
+                        <strong class="center" id="total_<%= uowg.id %>_<%= go.id %>" style="padding-left: 5%;"></strong>
                       </td>
                     <% else %>
                       <td></td>
@@ -267,6 +265,12 @@
             my_array.push(new_line);
             $("#modified_guw_line_ids").val(my_array);
         });
+
+        $(".selected").on("change", function(e) {
+            var new_line = $(this).closest("tr").data("guw-id");
+            my_array.push(new_line);
+            $("#modified_guw_line_ids").val(my_array);
+        });
     });
   </script>
 
@@ -308,7 +312,7 @@
         return false; // prevent default click action from happening!
         e.preventDefault();
     }
-"Coefficient"
+
     function raz_line(uo){
         $('.retained-guw-' + uo).val('');
         return false; // prevent default click action from happening!
@@ -346,12 +350,12 @@
 
     $(document).ready(function () {
 
-        $('.selected').change(function(){
-            $.ajax({
-                url: "<%= guw.change_selected_state_path %>",
-                data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
-            });
-        });
+<!--        $('.selected').change(function(){-->
+<!--            $.ajax({-->
+<!--                url: "<%# guw.change_selected_state_path %>",-->
+<!--                data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()-->
+<!--            });-->
+<!--        });-->
 
         $('.guw_type').change(function(){
             reset($(this).attr("guw"));
@@ -814,16 +818,18 @@
 
 <script>
   $(document).ready(function(){
-    <% @guw_model.guw_outputs.each do |go| %>
-      var sum = 0;
-      $(".total_<%= go.id %>").each(function() {
-          var value = $(this).val();
-          if(!isNaN(value) && value.length != 0) {
-              sum += parseFloat(value);
-          }
-      });
+    <% current_module_project.guw_unit_of_work_groups.each do |uowg| %>
+      <% @guw_model.guw_outputs.each do |go| %>
+        var sum = 0;
+        $(".total_<%= uowg.id %>_<%= go.id %>").each(function() {
+            var value = $(this).val();
+            if(!isNaN(value) && value.length != 0) {
+                sum += parseFloat(value);
+            }
+        });
 
-      $("#total_<%= go.id %>").html(sum);
+        $("#total_<%= uowg.id %>_<%= go.id %>").html(sum + " <%= go.unit %>");
+      <% end %>
     <% end %>
   });
 </script>
