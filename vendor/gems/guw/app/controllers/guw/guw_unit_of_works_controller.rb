@@ -125,6 +125,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def destroy
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:id])
+    @module_project = @guw_unit_of_work.module_project
     @guw_model = @guw_unit_of_work.guw_model
     group = @guw_unit_of_work.guw_unit_of_work_group
     @guw_unit_of_work.delete
