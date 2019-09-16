@@ -33186,7 +33186,7 @@ $( document ).ready(function() {
     });
 
     // Table des estimations
-    $('.estimation-table tbody').on( 'click', 'tr', function (e) {
+    $('.main-estimation-table tbody').on( 'click', 'tr', function (e) {
         if(!$(e.target).parents('.tools').length) {
             if ( $(this).hasClass('selected') ) {
                 $(this).removeClass('selected');
@@ -33196,7 +33196,6 @@ $( document ).ready(function() {
                 $(this).addClass('selected');
                 setOverviewSticky($(this).find('.estimation-overview'));
 
-                console.log($(this).data("project_id"));
                 return $.ajax({
                     url: "/load_overview",
                     method: "GET",

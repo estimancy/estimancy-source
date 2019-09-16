@@ -4017,7 +4017,10 @@ public
   end
 
   def load_overview
-    @project = Project.find(params[:project_id])
+    begin
+      @project = Project.find(params[:project_id])
+    rescue
+    end
   end
 
   #Function that manage link_to from project history graphical view
