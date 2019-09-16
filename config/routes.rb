@@ -204,7 +204,7 @@ Projestimate::Application.routes.draw do
   get 'selected_balancing_attribute' => 'module_projects#selected_balancing_attribute', :as => 'selected_balancing_attribute'
   get 'show_module_project_results_view' => 'module_projects#show_module_project_results_view', :as => 'show_module_project_results_view'
   get 'edit_module_project_view_config' => 'module_projects#edit_module_project_view_config', as: 'edit_module_project_view_config'
-  post 'update_module_project_view_config' => 'module_projects#update_module_project_view_config', as: 'update_module_project_view_config'
+  # post 'update_module_project_view_config' => 'module_projects#update_module_project_view_config', as: 'update_module_project_view_config'
   post 'module_projects_reassign' => 'module_projects#module_projects_reassign', as: 'module_projects_reassign'
   post 'associate_module_projects_inputs_outputs' => 'module_projects#associate_module_projects_inputs_outputs', as: 'associate_module_projects_inputs_outputs'
   get 'update_module_project_dynamic_connections' => 'module_projects#update_module_project_dynamic_connections', as: 'update_module_project_dynamic_connections'
