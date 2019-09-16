@@ -115,8 +115,6 @@
 
     <div class="card card-widget">
       <div class="card-body">
-<!--        <div class="edition-bloc-title">-->
-<!--        </div>-->
         <div class="edition-bloc-content pb-4">
           <div class="guw-list">
             <table class="table requirements-table estimation-table group_<%= uowg.id %>" id="guw">
@@ -185,7 +183,7 @@
                     <% go = @hash_guw_outputs[i[0]] %>
                     <% if go.class == Guw::GuwOutput %>
                       <td>
-                        <strong class="center" id="total_<%= go.id %>"></strong>
+                        <strong class="center" id="total_<%= uowg.id %>_<%= go.id %>" style="padding-left: 5%;"></strong>
                       </td>
                     <% else %>
                       <td></td>
@@ -814,16 +812,18 @@
 
 <script>
   $(document).ready(function(){
-    <% @guw_model.guw_outputs.each do |go| %>
-      var sum = 0;
-      $(".total_<%= go.id %>").each(function() {
-          var value = $(this).val();
-          if(!isNaN(value) && value.length != 0) {
-              sum += parseFloat(value);
-          }
-      });
+    <% current_module_project.guw_unit_of_work_groups.each do |uowg| %>
+      <% @guw_model.guw_outputs.each do |go| %>
+        var sum = 0;
+        $(".total_<%= uowg.id %>_<%= go.id %>").each(function() {
+            var value = $(this).val();
+            if(!isNaN(value) && value.length != 0) {
+                sum += parseFloat(value);
+            }
+        });
 
-      $("#total_<%= go.id %>").html(sum);
+        $("#total_<%= uowg.id %>_<%= go.id %>").html(sum + " <%= go.unit %>");
+      <% end %>
     <% end %>
   });
 </script>
