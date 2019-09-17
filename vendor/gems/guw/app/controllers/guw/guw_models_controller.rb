@@ -2017,10 +2017,10 @@ class Guw::GuwModelsController < ApplicationController
                                                                     guw_unit_of_work_id: guow.id).last
                 end
 
-                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
-                # worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
+                worksheet.add_cell(ind, 19 + j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
+                # worksheet.add_hint(ind, 19+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
               else
-                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                worksheet.add_cell(ind, 19 + j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
@@ -2029,7 +2029,7 @@ class Guw::GuwModelsController < ApplicationController
           unless guow.guw_type.nil?
             unless guw_output.nil?
               v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f))
-              worksheet.add_cell(ind, 20 + j, v.to_s)
+              worksheet.add_cell(ind, 19 + j, v.to_s)
             end
           end
         end
