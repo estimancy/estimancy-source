@@ -86,6 +86,7 @@
         <div class="widget-list-content">
           <div class="widget-group">
             <div class="grid-stack">
+
               <!-- TEXT WIDGETS -->
               <% @widgets.keys.each_with_index do |k, index| %>
                 <% view_widget = @widgets[k].first %>
@@ -93,23 +94,20 @@
                   <% value = @widgets[k].last %>
                   <% unless value.is_a?(Hash) %>
 
-                    <% item_margin_top = ((view_widget.is_label_widget || view_widget.position_y.to_i==0) ? '0' : '-30px') %>
-                    <!--<div class="grid-stack-item" data-view_widget_id="<%#= view_widget.id %>" data-gs-x="<%#= view_widget.position_x %>" data-gs-y="<%#= view_widget.position_y %>" data-gs-width="<%#= view_widget.width.to_i %>" data-gs-height="1" style="margin-top: <%#= item_margin_top %> ">-->
-
                     <% if view_widget.is_label_widget? %>
 
                       <div class="grid-stack-item label_widget" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="1">
                         <!--<div class="grid-stack-item-content">-->
-                          <div class="widget-group-label row" style="padding-top: 5rem; width: 93%;">
-                            <div class="col-10"><span class="grip"><%= view_widget.name %></span></div>
+                          <div class=" row" style="padding-top: 4.5rem;">
+                            <div class="col-10 widget-group-label">
+                              <span class="label_widget_title"><%= view_widget.name %></span>
+                            </div>
 
                             <div class="col-2 label_widget_icon">
                                 <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
-                                    <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
-                                    <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
-                                <% end %>
-                                <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
-                                    <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                                  <i class='material-icons float-right grip'>drag_indicator</i>
+                                  <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
+                                  <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
                                 <% end %>
                             </div>
                           </div>
@@ -128,20 +126,22 @@
                                 <% end %>
                               </div>
                               <div class="card-indicator-text">
-                                <div class="dragme"><i class='material-icons grip' style="float: right; margin-top: -1.5rem; margin-right: -1.5rem">drag_indicator</i></div>
+                                <div class="dragme">
+                                  <i class='material-icons grip' style="float: right;  margin-right: -1.5rem">drag_indicator</i>
+
+                                  <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
+                                      <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
+                                      <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                                  <% end %>
+                                  <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
+                                      <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                                  <% end %>
+                                </div>
+
                                 <%= k %>
                               </div>
                               <div class="card-indicator-label">
-                                  <span>
-                                    <%= value.nil? ? '-' : value %>
-                                  </span>
-                                <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
-                                    <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
-                                    <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
-                                <% end %>
-                                <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>
-                                    <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
-                                <% end %>
+                                  <span style="margin-top: 0.9rem"><%= value.nil? ? '-' : value %></span>
                               </div>
                             </div>
                           </div>
@@ -156,7 +156,6 @@
 
               <!-- Les Vignettes de type Tableau -->
               <% project_table_view_widgets = @project.views_widgets.where(widget_type: [vw_table_types, vw_graph_types]) %>
-
               <!-- Les Vignettes graphiques -->
               <% project_graph_view_widgets = @project.views_widgets.where(widget_type: vw_graph_types) %>
 
@@ -165,18 +164,24 @@
                     <div class="grid-stack-item-content">
                         <div class="card card-widget card-indicator card-indicator-with-module">
                           <div class="card-body">
-                            <div class="row">
-                              <div class="col"><%= view_widget.name %></div>
-                              <div class="col dragme"><i class='material-icons grip' style="float: right; margin-top: -1.5rem; margin-right: -1.5rem">drag_indicator</i></div>
+                            <div class="card-indicator-type">
+                              <% if view_widget.show_module_name == true %>
+                                  <%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %>
+                              <% end %>
+                            </div>
+                            <div class="card-indicator-text">
+                              <div class="dragme">
+                                <i class='material-icons grip' style="float:right; margin-right: -1.5rem">drag_indicator</i>
+
+                                <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
+                                <a href="<%= main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons float-right">edit</i></a>
+                                <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                              </div>
+
+                              <%= view_widget.name %>
                             </div>
 
-                            <div class="effort-bloc-tools d-flex justify-content-end mb-2">
-                              <%= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(view_widget_id: view_widget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => view_widget.name) %>
-                              <a href="<%= main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons">edit</i></a>
-                              <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
-                            </div>
-
-                            <div class="effort-table">
+                            <div class="effort-table" style="margin-top: 0.9rem">
                               <%= get_view_widget_data(view_widget.module_project_id, view_widget.id)[:value_to_show] %>
                             </div>
                           </div>

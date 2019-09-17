@@ -149,25 +149,43 @@ table td.guw-cell-ajustment{
   text-align: center !important;
 }
 
-
-//.grid-stack-item-content {
-//  padding: 3px;
-//}
-
-
 .grid-stack > .grid-stack-item > .ui-resizable-se, .grid-stack > .grid-stack-item > .ui-resizable-sw {
-  //margin-bottom: 2rem;
-  margin-bottom: 0.3rem;
+  margin-bottom: 0.3rem;   //margin-bottom: 2rem;
 }
 
 .grid-stack > .grid-stack-item.table_graph > .ui-resizable-se {
   //margin-bottom: 19.5rem;
-  margin-bottom: 5rem;
+  //margin-bottom: 67%;
+  margin-bottom: 7rem; //5rem;
 }
 
 .grid-stack > .grid-stack-item.label_widget > .ui-resizable-se {
-  margin-bottom: 1rem;
-  margin-right: -1.5rem;
+  margin-bottom: 1.5rem;  //1rem;
+  margin-right: -3.5rem; //-1.5rem;
+}
+
+.grid-stack > .grid-stack-item .card-body{
+  padding: 1.5rem 1.3rem 1.5rem 0 !important;
+}
+
+.dragme {
+  display: none;
+  margin-top: -1.5rem;
+}
+
+.grid-stack-item:hover .dragme {
+  display: inline-block;
+  margin-top: -1.5rem;
+  float: right;
+}
+
+.label_widget_icon {
+  display: none;
+  float: right; margin-top: -0.5rem; margin-right: -1.5rem
+}
+
+.grid-stack-item.label_widget:hover .label_widget_icon {
+  display: inline-block;
 }
 
 //.grid-stack > .grid-stack-item.table_graph{
@@ -183,28 +201,6 @@ table td.guw-cell-ajustment{
 //.grid-stack .card-body{
 //  padding: unset;
 //}
-
-
-.grid-stack > .grid-stack-item .card-body{
-  padding: 1.5rem 1.3rem 1.5rem 0 !important;
-  //padding: 0.25rem;
-}
-
-.dragme {
-  display: none;
-}
-
-.grid-stack-item:hover .dragme {
-  display: block;
-}
-
-.label_widget_icon {
-  display: none;
-}
-
-.grid-stack-item.label_widget:hover .label_widget_icon {
-  display: block;
-}
 
 
 //.grid-stack .grid-stack-item .grid-stack-item-content,
@@ -234,4 +230,10 @@ table td.guw-cell-ajustment{
   width: 50%;
   min-height: 300px;
   height: auto;
+}
+
+.label_widget_title{
+  font-weight: bold;
+  font-size: 18px;
+  margin-left: -15rem;
 }
