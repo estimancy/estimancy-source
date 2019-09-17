@@ -56,7 +56,8 @@
           <% module_project_view_widgets.each do |view_widget| %>
             <% if view_widget.is_label_widget? %>
               <% view_widget_data = get_label_widget_data(view_widget.id) %>
-              <% @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
+              <%# @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
+              <% @widgets[view_widget.name] = [view_widget, view_widget_data[:value_to_show]] %>
               <% @label_widget_ids << view_widget.id %>
             <% elsif view_widget.is_kpi_widget? %>
               <% view_widget_data = get_kpi_value(view_widget) %>
@@ -91,7 +92,7 @@
               <% @widgets.keys.each_with_index do |k, index| %>
                 <% view_widget = @widgets[k].first %>
                 <% if (view_widget.estimation_status_id == @project.estimation_status_id) || view_widget.estimation_status_id.nil? || @project.is_model == true %>
-                  <% value = @widgets[k].last %>
+                  <% value = view_widget.comment #@widgets[k].last %>
                   <% unless value.is_a?(Hash) %>
 
                     <% if view_widget.is_label_widget? %>
@@ -100,7 +101,7 @@
                         <!--<div class="grid-stack-item-content">-->
                           <div class=" row" style="padding-top: 4.5rem;">
                             <div class="col-10 widget-group-label">
-                              <span class="label_widget_title"><%= view_widget.name %></span>
+                              <span class="label_widget_title"><%= value.nil? ? '-' : value %><%#= view_widget.name %></span>
                             </div>
 
                             <div class="col-2 label_widget_icon">
@@ -120,11 +121,12 @@
 
                           <div class="card card-widget card-indicator card-indicator-with-module">
                             <div class="card-body">
-                              <div class="card-indicator-type">
                                 <% if view_widget.show_module_name == true %>
+                                  <div class="card-indicator-type" style="margin-top: -1rem;">
                                     <%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %>
+                                  </div>
                                 <% end %>
-                              </div>
+
                               <div class="card-indicator-text">
                                 <div class="dragme">
                                   <i class='material-icons grip' style="float: right;  margin-right: -1.5rem">drag_indicator</i>
@@ -147,8 +149,8 @@
                           </div>
                         </div>
                       </div>
-
                     <% end %>
+
                   <% end %>
                 <% end %>
               <% end %>
@@ -164,11 +166,12 @@
                     <div class="grid-stack-item-content">
                         <div class="card card-widget card-indicator card-indicator-with-module">
                           <div class="card-body">
-                            <div class="card-indicator-type">
                               <% if view_widget.show_module_name == true %>
+                                <div class="card-indicator-type" style="margin-top: -1rem;">
                                   <%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %>
+                                </div>
                               <% end %>
-                            </div>
+
                             <div class="card-indicator-text">
                               <div class="dragme">
                                 <i class='material-icons grip' style="float:right; margin-right: -1.5rem">drag_indicator</i>

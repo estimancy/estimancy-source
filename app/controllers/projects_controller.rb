@@ -25,7 +25,9 @@ class ProjectsController < ApplicationController
 
   include WbsActivityElementsHelper
   include ModuleProjectsHelper
-  include ProjectsHelper
+  # include ProjectsHelper
+  # include ViewsWidgetsHelper
+  # include ActionView::Helpers::TextHelper
   include PemoduleEstimationMethods
 
   load_resource
@@ -393,6 +395,46 @@ class ProjectsController < ApplicationController
     if @module_project.id == @initialization_module_project.id
       session[:active_nav_link] = "activate_init_module_project"
     end
+
+    # Pour les vignettes
+    # @widgets = {}
+    # @label_widget_ids = []
+    # @project_module_projects = @project.module_projects
+    # @project_module_projects.each do |module_project|
+    #     module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil?
+    #     module_project_view = module_project.view
+    #     unless module_project_view.nil?
+    #       module_project_view_widgets = module_project_view.views_widgets.order('position').all
+    #       module_project_view_widgets.each do |view_widget|
+    #         if view_widget.is_label_widget?
+    #           view_widget_data = get_label_widget_data(view_widget.id)
+    #           @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]]
+    #           @label_widget_ids << view_widget.id
+    #         elsif view_widget.is_kpi_widget?
+    #           view_widget_data = get_kpi_value(view_widget)
+    #           @widgets[view_widget.name] = [view_widget, view_widget_data]
+    #         else
+    #           if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION
+    #              if view_widget.widget_type == "text"
+    #                view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id)
+    #                value_to_show = view_widget_data[:value_to_show]
+    #                @widgets[view_widget.name] = [view_widget, value_to_show]
+    #             #<%# else %>
+    #                 #<!-- Vignettes de types tableau et graphe -->
+    #             #<%# view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id)[:value_to_show]
+    #              #   <%# value_to_show = view_widget_data[:value_to_show]
+    #           #%# @widgets[view_widget.name] = [view_widget, value_to_show]
+    #              end
+    #            else
+    #              view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id)
+    #              @widgets[view_widget.name] = [view_widget, view_widget_data]
+    #            end
+    #          end
+    #        end
+    #      end
+    # end
+
+    #Fin vignettes
 
     check_module_project
 

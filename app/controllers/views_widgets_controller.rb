@@ -37,47 +37,51 @@ class ViewsWidgetsController < ApplicationController
 
 
   def recalculate_position
-    widgets_name = ["abaque", "Localisation", "Charge RTU (jh)", "charge RIS (jh)", "Coût (€)", "Répartition des Charges", "Dire d'expert", "Charge (jh)", "Coût services (€)", "synthèse devis", "charge totale", "coût total", "prix moyen pondéré"]
+    widgets_name = ["Abaque", "Localisation", "Charge RTU (jh)", "Charge RIS (jh)", "Coût (€)", "Répartition des Charges", "Dire d'expert", "Charge (jh)", "Coût services (€)", "Synthèse devis", "Synthese devis", "Charge totale", "coût total", "Prix Moyen Pondéré (€/jh)", "prix moyen pondéré"]
     data = []
     #ViewsWidget.first do |view_widget|
     ViewsWidget.all.each do |view_widget|
 
-      case view_widget.name
+      puts "#{view_widget.id}"
+      case view_widget.name.to_s.downcase
 
-        when "Abaque"
+        when "abaque", ""
           data = [0,0,5,1]
 
-        when "Localisation"
+        when "localisation"
           data = [0,1,5,1]
 
-        when "Charge RTU (jh)", "charge RIS (jh)"
+        when "charge rtu (jh)"
           data = [0,2,3,1] #[0,2,2,1]
 
-        when "Coût (€)"
+        when "charge ris (jh)"
+          data = [0,2,3,1]
+
+        when "coût (€)"
           data = [3,2,2,1]
 
-        when "Répartition des Charges"
+        when "répartition des charges", "répartion des charges", "repartion des charges"
           data = [0,3,5,6]
 
-        when "Dire d'expert"
+        when "dire d'expert"
           data = [6,0,6,1]
 
-        when "Charge (jh)"
+        when "charge (jh)"
           data = [6,1,3,1]
 
-        when "Coût Services (€)"
+        when "coût services (€)"
           data = [9,1,3,1]
 
-        when "Synthèse Devis"
+        when "synthèse devis", "synthese devis"
           data = [6,2,6,1]
 
-        when "Charge Totale (jh)"
+        when "charge totale (jh)"
           data = [6,3,3,1]
 
-        when "Coût Total (€)"
+        when "coût total (€)"
           data = [9,3,3,1]
 
-        when "Prix Moyen Pondéré (€/jh)"
+        when "prix moyen pondéré (€/jh)"
           data = [7,4,4,1]
       end
 

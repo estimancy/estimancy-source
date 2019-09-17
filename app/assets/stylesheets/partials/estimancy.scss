@@ -188,6 +188,27 @@ table td.guw-cell-ajustment{
   display: inline-block;
 }
 
+.overview-value {
+  font-family: "Roboto";
+  font-size: 17px;
+  line-height: normal;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #007DAB;
+  margin-right: 10px;
+}
+
+.overview-margin{
+  margin-bottom: 2rem;
+}
+
+.grip{
+  cursor: all-scroll;
+}
+
+table .table .table_effort_per_phase tr td {
+  font-weight: normal;
+}
 //.grid-stack > .grid-stack-item.table_graph{
 //  min-height: auto;
 //  height: auto;

@@ -275,3 +275,5 @@ gem 'bootstrap-datepicker-rails'
 gem 'jscolor-rails'
 
 gem 'selectize-rails'
+
+gem 'order_as_specified'
