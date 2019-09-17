@@ -1706,17 +1706,6 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
-    tab_size = [I18n.t(:estimation).length, I18n.t(:version_number).length,
-                I18n.t(:group).length, I18n.t(:selected).length,
-                I18n.t(:name).length, I18n.t(:description).length,
-                20,
-                20,
-                20,
-                I18n.t(:organization_technology).length, I18n.t(:quantity).length,
-                I18n.t(:tracability).length, I18n.t(:cotation).length,
-                I18n.t(:results).length, I18n.t(:retained_result).length,
-                I18n.t(:pe_attribute_name).length, I18n.t(:low).length,
-                I18n.t(:likely).length, I18n.t(:high).length]
 
     header = [
         "Nom du CDS",
@@ -1939,28 +1928,15 @@ class Guw::GuwModelsController < ApplicationController
     vals = RubyXL::DataValidations.new
     worksheet.data_validations = vals
 
-    tab_size = [I18n.t(:estimation).length, I18n.t(:version_number).length,
-                I18n.t(:group).length, I18n.t(:selected).length,
-                I18n.t(:name).length, I18n.t(:description).length,
-                20,
-                20,
-                20,
-                I18n.t(:organization_technology).length, I18n.t(:quantity).length,
-                I18n.t(:tracability).length, I18n.t(:cotation).length,
-                I18n.t(:results).length, I18n.t(:retained_result).length,
-                I18n.t(:pe_attribute_name).length, I18n.t(:low).length,
-                I18n.t(:likely).length, I18n.t(:high).length]
-
     ([
         "Nom du CDS",
         "Nom du fournisseur",
         "Nom de l'application",
-        "Numéro de devis",
-        "Numéro de demande",
+        "Besoin métier",
         "Statut du devis",
         "Service",
         "Prestation",
-        "Localication",
+        "Localisation",
         I18n.t(:estimation),
         I18n.t(:version_number),
         I18n.t(:group),
@@ -1981,6 +1957,8 @@ class Guw::GuwModelsController < ApplicationController
 
     @guw_unit_of_works.each_with_index do |guow, i|
 
+      current_mp_project = current_mp.project
+
       ind = i + 1
 
       if guow.off_line
@@ -1993,26 +1971,25 @@ class Guw::GuwModelsController < ApplicationController
         cplx = guow.guw_complexity.name
       end
 
-      worksheet.add_cell(ind, 0, current_mp.project.organization)
-      worksheet.add_cell(ind, 1, current_mp.project.provider)
-      worksheet.add_cell(ind, 2, current_mp.project.application)
-      worksheet.add_cell(ind, 3, current_mp.project.application)
-      worksheet.add_cell(ind, 4, current_mp.project.title)
-      worksheet.add_cell(ind, 5, current_mp.project.estimation_status)
-      worksheet.add_cell(ind, 6, current_mp.project.project_area)
-      worksheet.add_cell(ind, 7, current_mp.project.acquisition_category)
-      worksheet.add_cell(ind, 8, current_mp.project.platform_category)
-      worksheet.add_cell(ind, 9, current_mp.project.title)
-      worksheet.add_cell(ind, 10, current_mp.project.version_number)
-      worksheet.add_cell(ind, 11, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
-      worksheet.add_cell(ind, 12, guow.selected ? 1 : 0)
-      worksheet.add_cell(ind, 13, guow.name)
-      worksheet.add_cell(ind, 14, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
-      worksheet.add_cell(ind, 15, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
-      worksheet.add_cell(ind, 16, guow.quantity)
-      worksheet.add_cell(ind, 17, guow.tracking)
-      worksheet.add_cell(ind, 18, cplx)
-      worksheet.add_cell(ind, 19, guow.intermediate_weight)
+      worksheet.add_cell(ind, 0, current_mp_project.organization.name)
+      worksheet.add_cell(ind, 1, current_mp_project.provider.name)
+      worksheet.add_cell(ind, 2, current_mp_project.application.name)
+      worksheet.add_cell(ind, 3, current_mp_project.business_need)
+      worksheet.add_cell(ind, 4, current_mp_project.estimation_status.nil? ? nil : current_mp_project.estimation_status.name)
+      worksheet.add_cell(ind, 5, current_mp_project.project_area.nil? ? nil : current_mp_project.project_area.name)
+      worksheet.add_cell(ind, 6, current_mp_project.acquisition_category.nil? ? nil : current_mp_project.acquisition_category.name)
+      worksheet.add_cell(ind, 7, current_mp_project.platform_category.nil? ? nil : current_mp_project.platform_category.name)
+      worksheet.add_cell(ind, 8, current_mp_project.title)
+      worksheet.add_cell(ind, 9, current_mp_project.version_number)
+      worksheet.add_cell(ind, 10, guow.guw_unit_of_work_group.nil? ? '-' : guow.guw_unit_of_work_group.name)
+      worksheet.add_cell(ind, 11, guow.selected ? 1 : 0)
+      worksheet.add_cell(ind, 12, guow.name)
+      worksheet.add_cell(ind, 13, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
+      worksheet.add_cell(ind, 14, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+      worksheet.add_cell(ind, 15, guow.quantity)
+      worksheet.add_cell(ind, 16, guow.tracking)
+      worksheet.add_cell(ind, 17, cplx)
+      worksheet.add_cell(ind, 18, guow.intermediate_weight)
 
 
       hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
