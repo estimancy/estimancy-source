@@ -162,7 +162,7 @@
 
         <% end %>
       <% end %>
-    <% elsif i[0] == "Criteria" %>
+    <% elsif i[0] == "Criteria" || i[0] == "Critères" %>
       <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
         <td class="guw-cell-ajustment">
           <% unless @guw_type.nil? %>
@@ -170,9 +170,9 @@
               <span class="text-center criteria_label_<%= guow.id %>">
                 <% counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
                 <% if counting.empty? %>
-                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{ (guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
                 <% else %>
-                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{ (guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
                 <% end %>
               </span>
             <% else %>
@@ -183,7 +183,7 @@
           <% end %>
         </td>
       <% end %>
-    <% elsif i[0] == "Coeff. complexity" %>
+    <% elsif i[0] == "Coeff. complexity" || i[0] == "Coeff. de Complexité" %>
       <% unless @guw_type.nil? %>
         <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
       <% end %>
