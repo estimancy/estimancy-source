@@ -25,9 +25,9 @@ class ProjectsController < ApplicationController
 
   include WbsActivityElementsHelper
   include ModuleProjectsHelper
-  # include ProjectsHelper
-  # include ViewsWidgetsHelper
-  # include ActionView::Helpers::TextHelper
+  include ProjectsHelper
+  #include ViewsWidgetsHelper
+  #include ActionView::Helpers::TextHelper
   include PemoduleEstimationMethods
 
   load_resource
