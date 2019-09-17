@@ -259,6 +259,9 @@ class ProjectsController < ApplicationController
                 guw_output_cost_value = guow.ajusted_size.nil? ? 0 : guow.ajusted_size["#{guw_output_cost.id}"].to_f.round(2)
               end
 
+              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, "EFFORT")
+              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 2, "COUT")
+
               @total_effort[project.id] << guw_output_effort_value.to_f
               @total_cost[project.id] << guw_output_cost_value.to_f
             end
