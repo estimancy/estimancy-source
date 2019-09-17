@@ -117,7 +117,7 @@
       <div class="card-body">
         <div class="edition-bloc-content pb-4">
           <div class="guw-list">
-            <table class="table requirements-table estimation-table group_<%= uowg.id %>" id="guw">
+            <table class="table table-sm requirements-table estimation-table group_<%= uowg.id %>" id="guw">
               <tr>
                 <th colspan="2"><%= I18n.t :name %></th>
                 <th><%= I18n.t(:component) %></th>
@@ -429,7 +429,7 @@
           <%# raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
         <% rescue %>
           <%= I18n.t(:data_model_display_error) %>
-        <% end %>
+        <% end %>y
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %></button>
