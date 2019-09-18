@@ -35,9 +35,10 @@
         <% module_project_view.views_widgets.where(widget_type: "text").order_as_specified(name: widgets_name).all.each do |view_widget| %>
             <% view_widget_name = view_widget.name %>
             <% if view_widget.is_label_widget? %>
-                <% view_widget_data = get_label_widget_data(view_widget.id) %>
+                <%# view_widget_data = get_label_widget_data(view_widget.id) %>
                 <%# @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
-                <% @widgets[view_widget_name] = [view_widget, view_widget_data[:value_to_show]] %>
+                <%# @widgets[view_widget_name] = [view_widget, view_widget_data[:value_to_show]] %>
+                <% @widgets[view_widget_name] = [view_widget, view_widget.comment] %>
                 <% @label_widget_ids << view_widget.id %>
             <% elsif view_widget.is_kpi_widget? %>
                 <% view_widget_data = get_kpi_value(view_widget) %>
@@ -72,7 +73,7 @@
                 <% unless value.is_a?(Hash) %>
                     <div class="col">
                       <div class="card-man-day">
-                        <div class="" style="margin-bottom: 2rem;">
+                        <div class="card-body" style="margin-bottom: 2rem;">
                           <span><%= k %></span>
                           <div class="quantity overview-value">
                             <span><%= value.nil? ? '-' : value %></span>
@@ -83,7 +84,7 @@
                 <% else %>
                     <div class="col">
                       <div class=" card-man-day">
-                        <div class="" style="margin-bottom: 2rem;">
+                        <div class="card-body" style="margin-bottom: 2rem;">
                           <span><%= k %></span>
                           <div class="quantity overview-value">
                                 <span>
