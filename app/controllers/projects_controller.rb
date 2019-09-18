@@ -106,9 +106,9 @@ class ProjectsController < ApplicationController
                                                :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
 
         worksheet_cf = workbook.worksheets[0]
-        worksheet_cf.sheet_name = 'Composants Fonctionnels'
+        worksheet_cf.sheet_name = 'Composants Abaques & Services Dire Expert'
 
-        worksheet_wbs = workbook.add_worksheet('Activités')
+        worksheet_wbs = workbook.add_worksheet('Services avec ratio')
         worksheet_synt = workbook.add_worksheet('Synthèse')
 
         worksheet_cf.add_cell(0, 0, "Devis")
