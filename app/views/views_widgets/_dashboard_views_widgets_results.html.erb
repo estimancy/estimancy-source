@@ -69,6 +69,7 @@
                   <% value_to_show = view_widget_data[:value_to_show] %>
                   <% @widgets[view_widget.name] = [view_widget, value_to_show] %>
                 <%# else %>
+                    <%# puts "Vignettes de types tableau et graphe" %>
                     <!-- Vignettes de types tableau et graphe -->
                     <%# view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id)[:value_to_show] %>
                     <%# value_to_show = view_widget_data[:value_to_show] %>
@@ -92,7 +93,7 @@
               <% @widgets.keys.each_with_index do |k, index| %>
                 <% view_widget = @widgets[k].first %>
                 <% if (view_widget.estimation_status_id == @project.estimation_status_id) || view_widget.estimation_status_id.nil? || @project.is_model == true %>
-                  <% value = view_widget.comment #@widgets[k].last %>
+                  <% value = @widgets[k].last %>
                   <% unless value.is_a?(Hash) %>
 
                     <% if view_widget.is_label_widget? %>
