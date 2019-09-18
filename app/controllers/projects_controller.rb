@@ -107,7 +107,6 @@ class ProjectsController < ApplicationController
 
         worksheet_cf = workbook.worksheets[0]
         worksheet_cf.sheet_name = 'Composants Abaques & Services Dire Expert'
-
         worksheet_wbs = workbook.add_worksheet('Services avec ratio')
         worksheet_synt = workbook.add_worksheet('Synthèse')
 
@@ -173,8 +172,8 @@ class ProjectsController < ApplicationController
             @guw_coefficient_elements = @guw_coefficients.flat_map(&:guw_coefficient_elements)
 
             guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
+            guw_output_charge_ss_prod = Guw::GuwOutput.where(name: ["Charge ss prod. (jh)", "Charge (jh)", "Charge sans prod. (jh)"], guw_model_id: @guw_model.id).first
             guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
-            guw_output_charge_ss_prod = Guw::GuwOutput.where(name: ["Charge ss prod. (jh)"], guw_model_id: @guw_model.id).first
 
             pf = project.project_fields.select{ |i| i.field_id == field.id }.first
 
@@ -188,7 +187,7 @@ class ProjectsController < ApplicationController
 
             @guow_guw_types = Hash.new
 
-            project.guw_unit_of_works.each do |guow|
+            project.guw_unit_of_works.order('display_order asc').each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application.to_s)
@@ -256,18 +255,20 @@ class ProjectsController < ApplicationController
                 guw_output_effort_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
               end
 
-              #On recuperer les sorties avec " Coût Services (€) "
-              unless guw_output_cost.nil?
-                guw_output_cost_value = guow.ajusted_size.nil? ? 0 : guow.ajusted_size["#{guw_output_cost.id}"].to_f.round(2)
-              end
+              worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod.name)
+              worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost.name)
 
               #On recuperer les sorties avec "Charge ss prod. (jh)"
               unless guw_output_charge_ss_prod.nil?
-                guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"].to_f.round(2))
-
+                guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
+                worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod_value.nil? ? nil : guw_output_charge_ss_prod_value.to_f.round(2))  # « Charge ss prod. (jh) » en colonne AI
               end
-              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
-              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost_value)  # « Coût Services (€) » en colonne AJ
+
+              #On recuperer les sorties avec " Coût Services (€) "
+              unless guw_output_cost.nil?
+                guw_output_cost_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size["#{guw_output_cost.id}"])
+                worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost_value.nil? ? nil : guw_output_cost_value.to_f.round(2))  # « Coût Services (€) » en colonne AJ
+              end
 
               @total_effort[project.id] << guw_output_effort_value.to_f
               @total_cost[project.id] << guw_output_cost_value.to_f
