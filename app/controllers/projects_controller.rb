@@ -249,6 +249,7 @@ class ProjectsController < ApplicationController
                 worksheet_cf.add_cell(0, 20+ii, guw_attribute.name)
               end
 
+              i = i + 1
 
               unless guw_output_effort.nil?
                 guw_output_effort_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
@@ -268,8 +269,6 @@ class ProjectsController < ApplicationController
                 guw_output_cost_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size["#{guw_output_cost.id}"])
                 worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost_value.nil? ? nil : guw_output_cost_value.to_f.round(2))  # « Coût Services (€) » en colonne AJ
               end
-
-              i = i + 1
 
               @total_effort[project.id] << guw_output_effort_value.to_f
               @total_cost[project.id] << guw_output_cost_value.to_f
