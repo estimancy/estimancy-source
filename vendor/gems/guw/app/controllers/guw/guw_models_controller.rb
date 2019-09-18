@@ -1502,6 +1502,7 @@ class Guw::GuwModelsController < ApplicationController
     @guw_factors = @guw_model.guw_factors
     @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
     @guw_coefficients = @guw_model.guw_coefficients
+    @guw_coefficient = @guw_coefficients.first
 
     set_page_title I18n.t(:edit_project_element_name, parameter: @guw_model.name)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @guw_model.name => ""
@@ -2136,4 +2137,5 @@ class Guw::GuwModelsController < ApplicationController
 
     @word_trees_data_model
   end
+
 end

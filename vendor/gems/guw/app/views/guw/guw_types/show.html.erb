@@ -248,7 +248,6 @@
             </div>
           <% end %>
 
-
           <%= form_tag guw_model_guw_type_guw_attribute_complexities_save_attributs_complexities_path(@guw_model, guw_type.id), method: "POST" do %>
             <table class="table table-list">
               <tr>
@@ -339,7 +338,7 @@
       <ul class="nav" style="display: block;">
         <% guw_model_guw_types.each do |guw_type| %>
           <li class="nav-item">
-            <a class="nav-link group" href="<%= guw.guw_type_path(guw_type) %>">
+            <a class="nav-link group" href="<%= guw_type_path(guw_type) %>">
               <span>
                 <%= guw_type %>
               </span>

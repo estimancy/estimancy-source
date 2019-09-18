@@ -1924,3 +1924,5 @@ en-gb:
   default_estimations_sort_order: "Default sort order"
   asc_order: "Ascending"
   desc_order: "Descending"
+
+  coefficients_list: "Coefficients List"

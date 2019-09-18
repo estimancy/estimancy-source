@@ -1,33 +1,95 @@
-<div class="tabs">
+<section class="card card-content-bloc estimancy-form">
 
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        Configuration du coefficient
-      </a>
-    </li>
-  </ul>
+  <div class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1>Configuration du coefficient</h1>
+      </div>
+    </div>
 
-  <div id="tabs-1">
-    <%= simple_form_for([@guw_model, @guw_coefficient]) do |f| %>
-      <%= f.error_notification %>
+    <div class="edition-bloc-content">
+      <div class="edition-bloc-form">
+        <%= simple_form_for([@guw_model, @guw_coefficient]) do |f| %>
+          <%= f.error_notification %>
 
-      <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+          <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
 
-      <div class="form-inputs">
-        <%= f.input :name, label: I18n.t(:name) %>
-        <%= f.input :description, label: I18n.t(:description), input_html: { class: "input-xxlarge", rows: "5" } %>
-        <%= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient"], label: "Type de Coefficient", include_blank: false %>
-        <%= f.input :allow_comments, label: "Autoriser les commentaires" %>
-        <%= f.input :allow_intermediate_value, label: "Autoriser la modification" %>
-        <%= f.input :deported, label: "Coefficient déporté" %>
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label:false,
+                            :input_html => {:class => 'mdl-textfield__input',
+                            :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, :input_html => { class: "mdl-textfield__input", rows: "5" } %>
+                <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient"],
+                          :label => false,
+                          :input_html => {:class => 'mdl-textfield__input'},
+                          :include_blank => false %>
+                <label class="mdl-textfield__label" for="coefficient_type">
+                  <%= "Type de Coefficient" %>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :allow_comments, label: false,
+                            as: :boolean,
+                    :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                <label class="mdl-textfield__label" for="allow_comments" style="padding-left: 20px; margin-top: -7px;"><%=  "Autoriser les commentaires" %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :allow_intermediate_value, label: false,
+                            as: :boolean,
+                            :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                <label class="mdl-textfield__label" for="allow_intermediate_value" style="padding-left: 20px; margin-top: -7px;"><%= "Autoriser la modification" %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :deported, label: false,
+                            as: :boolean,
+                            :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                <label class="mdl-textfield__label" for="deported" style="padding-left: 20px; margin-top: -7px;"><%= "Coefficient déporté" %></label>
+              </div>
+            </div>
+          </div>
+
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+          <% end %>
+          <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
+        <% end %>
+
+        </div>
       </div>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-      <% end %>
-      <%= link_to I18n.t(:back), :back, class: "btn" %>
-    <% end %>
-
   </div>
-</div>
+
+</section>

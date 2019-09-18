@@ -7,70 +7,69 @@
       </div>
     </div>
 
-
-
     <%= simple_form_for([@guw_model, @guw_output]) do |f| %>
       <%= f.error_notification %>
-    <div class="edition-bloc-content">
-      <div class="edition-bloc-form">
-        <div class="form-row">
-          <div class="col-5">
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
 
-            <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+              <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
 
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
-                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                  <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :output_type, as: :select, label: false , collection: ["Effort", "Taille", "Cout"], :input_html => {:class => 'mdl-textfield__input'} %>
+                  <label class="mdl-textfield__label" for="output_type"> Type de Sortie </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :unit, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                  <label class="mdl-textfield__label" for="unit"> Unité de sortie </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :allow_subtotal, label: "Calculer les sous-totaux " %>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :color_code, label: "Color Code", :input_html => {:class => 'color'} %>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :color_priority, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                  <label class="mdl-textfield__label" for="color_priority"> Color Priority </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :standard_coefficient, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                  <label class="mdl-textfield__label" for="standard_coefficient"> Coefficient Standard de Conversion (Effort uniquement) </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :display_order, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
+                  <label class="mdl-textfield__label" for="display_order"> Ordre de calcul </label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :estimation_status_id, as: :select, label: "Allowed Statuses", collection: @current_organization.estimation_statuses %>
+                </div>
+
               </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :output_type, as: :select, label: false , collection: ["Effort", "Taille", "Cout"], :input_html => {:class => 'mdl-textfield__input'} %>
-                <label class="mdl-textfield__label" for="output_type"> Type de Sortie </label>
-              </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :unit, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
-                <label class="mdl-textfield__label" for="unit"> Unité de sortie </label>
-              </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :allow_subtotal, label: "Calculer les sous-totaux " %>
-              </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :color_code, label: "Color Code", :input_html => {:class => 'color'} %>
-              </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :color_priority, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
-                <label class="mdl-textfield__label" for="color_priority"> Color Priority </label>
-              </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :standard_coefficient, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
-                <label class="mdl-textfield__label" for="standard_coefficient"> Coefficient Standard de Conversion (Effort uniquement) </label>
-              </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :display_order, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
-                <label class="mdl-textfield__label" for="display_order"> Ordre de calcul </label>
-              </div>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :estimation_status_id, as: :select, label: "Allowed Statuses", collection: @current_organization.estimation_statuses %>
-              </div>
-
             </div>
           </div>
         </div>
-      </div>
 
-      <div class="actions-tabs">
-        <% if can? :manage_modules_instances, ModuleProject %>
-          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-        <% end %>
-        <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
-      </div>
+        <div class="actions-tabs">
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+          <% end %>
+          <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
+        </div>
+
     <% end %>
   </div>
 </section>

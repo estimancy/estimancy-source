@@ -1937,3 +1937,5 @@ it:
   default_estimations_sort_order: "Ordre de tri par défaut"
   asc_order: "Croissant"
   desc_order: "Décroissant"
+
+  coefficients_list: "Liste des coefficients"

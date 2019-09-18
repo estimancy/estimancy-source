@@ -22,6 +22,21 @@
 
 class Guw::GuwCoefficientsController < ApplicationController
 
+
+  def show
+    @guw_coefficient = Guw::GuwCoefficient.find(params[:id])
+    @guw_model = @guw_coefficient.guw_model
+    @organization = @guw_model.organization
+
+    #set_page_title "#{@guw_coefficient}"
+    set_page_title I18n.t(:edit_project_element_name, parameter: @guw_model.name)
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}",
+                    @organization.to_s => main_app.organization_estimations_path(@organization),
+                    I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"),
+                    @guw_model.name => @guw_model.name,
+                    @guw_coefficient.name => ""
+  end
+
   def index
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     @guw_coefficients = @guw_model.guw_coefficients

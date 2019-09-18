@@ -2416,3 +2416,5 @@ frsncf_amoa_infra:
   desc_order: "Décroissant"
 
   add_to_kb: "Ajouter à la base de connaissance"
+
+  coefficients_list: "Liste des coefficients"

@@ -147,7 +147,7 @@ class WbsActivityElementsController < ApplicationController
     @organization = @wbs_activity_element.organization
 
     respond_to do |format|
-      format.html # show.html.erb
+      format.html # show.js.erb
       format.json { render json: @wbs_activity_element }
       format.js
     end

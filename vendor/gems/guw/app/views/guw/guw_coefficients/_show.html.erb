@@ -1,0 +1,75 @@
+<%# @guw_coefficients.each do |guw_coefficient| %>
+<% guw_coefficient = @guw_coefficient %>
+  <div class="row-fluid">
+    <div class="span9">
+      <b>
+        <%= guw_coefficient.name %> (<%= guw_coefficient.coefficient_type %>)
+      </b>
+      <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), :class => 'material-icons', :title => I18n.t('edit') %>
+      <% if can? :manage_modules_instances, ModuleProject %>
+        <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+      <% end %>
+
+      <br>
+
+      <% if can? :manage_modules_instances, ModuleProject %>
+        <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient), class: "btn btn-primary float-md-right" %>
+      <% end %>
+
+      <table class="table table-sm table-bordered table-list" %>
+        <tr>
+          <th class="span2">Nom</th>
+          <th class="span2">Description</th>
+          <th class="span2">Min</th>
+          <th class="span2">Max</th>
+          <th class="span2">Valeur</th>
+          <th class="span2">Code Couleur</th>
+          <th class="span2">Priorité de la couleur</th>
+          <th class="span2">Valeur par défaut</th>
+          <th class="span2">Ordre d'affichage</th>
+          <th>Actions</th>
+        </tr>
+        <% guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
+          <tr>
+            <td class="align-center">
+              <%= guw_coefficient_element.name %>
+            </td>
+            <td class="align-center">
+              <%= guw_coefficient_element.description %>
+            </td>
+            <td class="align-center">
+              <%= guw_coefficient_element.min_value %>
+            </td>
+            <td class="align-center">
+              <%= guw_coefficient_element.max_value %>
+            </td>
+            <td class="align-center">
+              <%= guw_coefficient_element.value %>
+            </td>
+            <td class="align-center" style='width: 10%; background-color: <%= "##{guw_coefficient_element.color_code}" %>'>
+              <%= guw_coefficient_element.color_code %>
+            </td>
+            <td class="align-center">
+              <%= guw_coefficient_element.color_priority %>
+            </td>
+            <td class="align-center">
+              <%= (guw_coefficient_element.default == true) ? "Oui" : "Non" %>
+            </td>
+            <td class="align-center">
+              <%= guw_coefficient_element.display_order %>
+            </td>
+            <td class="align-center">
+              <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), :class => 'material-icons', :title => I18n.t('edit') %>
+              <% if can? :manage_modules_instances, ModuleProject %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </table>
+
+    </div>
+  </div>
+  <br>
+  <br>
+<%# end %>
