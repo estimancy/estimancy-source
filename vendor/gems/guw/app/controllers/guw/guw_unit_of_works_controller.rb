@@ -3181,6 +3181,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     #we save the effort now in estimation values
     @project = @module_project.project
     @guw_model = @module_project.guw_model
+    @module_project = current_module_project
     organization_id = @module_project.organization_id
 
     component = current_component
