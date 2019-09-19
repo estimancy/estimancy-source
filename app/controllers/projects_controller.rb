@@ -251,52 +251,43 @@ class ProjectsController < ApplicationController
               end
 
               #i = i + 1
-
-              unless guw_output_effort.nil?
-                guw_output_effort_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
-              end
-
-
-              #On recuperer les sorties avec "Charge ss prod. (jh)"
-              unless guw_output_charge_ss_prod.nil?
-                worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod.name)
-                guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
-                worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, (guw_output_charge_ss_prod_value.nil? ? nil : guw_output_charge_ss_prod_value.to_f.round(2) ))  # « Charge ss prod. (jh) » en colonne AI
-              end
-
-              #On recuperer les sorties avec " Coût Services (€) "
-              unless guw_output_cost.nil?
-                worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost.name)
-                guw_output_cost_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size["#{guw_output_cost.id}"])
-                worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, (guw_output_cost_value.nil? ? nil : guw_output_cost_value.to_f.round(2) )) # « Coût Services (€) » en colonne AJ
-              end
-
-              i = i + 1
-
-              # test
-
-              # i = i + 1
-              #
               # unless guw_output_effort.nil?
               #   guw_output_effort_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
-              # end
-              #
-              # #On recuperer les sorties avec " Coût Services (€) "
-              # unless guw_output_cost.nil?
-              #   worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost.name)
-              #   guw_output_cost_value = guow.ajusted_size.nil? ? 0 : guow.ajusted_size["#{guw_output_cost.id}"].to_f.round(2)
-              #   worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost_value)  # « Coût Services (€) » en colonne AJ
-              #
               # end
               #
               # #On recuperer les sorties avec "Charge ss prod. (jh)"
               # unless guw_output_charge_ss_prod.nil?
               #   worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod.name)
-              #   guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"].to_f.round(2))
-              #   worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
+              #   guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
+              #   worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, (guw_output_charge_ss_prod_value.nil? ? nil : guw_output_charge_ss_prod_value.to_f.round(2) ))  # « Charge ss prod. (jh) » en colonne AI
+              # end
+              #
+              # #On recuperer les sorties avec " Coût Services (€) "
+              # unless guw_output_cost.nil?
+              #   worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost.name)
+              #   guw_output_cost_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size["#{guw_output_cost.id}"])
+              #   worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, (guw_output_cost_value.nil? ? nil : guw_output_cost_value.to_f.round(2) )) # « Coût Services (€) » en colonne AJ
               # end
 
-              # fin test
+              i = i + 1
+
+              unless guw_output_effort.nil?
+                guw_output_effort_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
+              end
+
+              #On recuperer les sorties avec " Coût Services (€) "
+              unless guw_output_cost.nil?
+                guw_output_cost_value = guow.ajusted_size.nil? ? 0 : guow.ajusted_size["#{guw_output_cost.id}"].to_f.round(2)
+              end
+
+              #On recuperer les sorties avec "Charge ss prod. (jh)"
+              unless guw_output_charge_ss_prod.nil?
+                guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"].to_f.round(2))
+
+              end
+              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
+              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost_value)  # « Coût Services (€) » en colonne AJ
+
 
               @total_effort[project.id] << guw_output_effort_value.to_f
               @total_cost[project.id] << guw_output_cost_value.to_f
@@ -473,15 +464,14 @@ class ProjectsController < ApplicationController
         end
 
         workbook.write("#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx")
-        send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
-
         UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
 
       end
     end
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
-    redirect_to :back
+    #redirect_to :back
+    send_data(workbook.stream.string, filename: "RAW_DATA.xlsx", type: "application/vnd.ms-excel")
   end
 
   def download
