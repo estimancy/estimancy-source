@@ -276,11 +276,13 @@ class ProjectsController < ApplicationController
 
               #On recuperer les sorties avec " Coût Services (€) "
               unless guw_output_cost.nil?
+                worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost.name)
                 guw_output_cost_value = guow.ajusted_size.nil? ? 0 : guow.ajusted_size["#{guw_output_cost.id}"]#.to_f.round(2)
               end
 
               #On recuperer les sorties avec "Charge ss prod. (jh)"
               unless guw_output_charge_ss_prod.nil?
+                worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod.name)
                 guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
 
               end
