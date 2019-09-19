@@ -276,17 +276,16 @@ class ProjectsController < ApplicationController
 
               #On recuperer les sorties avec " Coût Services (€) "
               unless guw_output_cost.nil?
-                guw_output_cost_value = guow.ajusted_size.nil? ? 0 : guow.ajusted_size["#{guw_output_cost.id}"].to_f.round(2)
+                guw_output_cost_value = guow.ajusted_size.nil? ? 0 : guow.ajusted_size["#{guw_output_cost.id}"]#.to_f.round(2)
               end
 
               #On recuperer les sorties avec "Charge ss prod. (jh)"
               unless guw_output_charge_ss_prod.nil?
-                guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"].to_f.round(2))
+                guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
 
               end
-              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
-              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost_value)  # « Coût Services (€) » en colonne AJ
-
+              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, (guw_output_charge_ss_prod_value.nil? ? nil : guw_output_charge_ss_prod_value.to_f.round(2)))  # « Charge ss prod. (jh) » en colonne AI
+              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, (guw_output_cost_value.nil? ? nil : guw_output_cost_value.to_f.round(2)))  # « Coût Services (€) » en colonne AJ
 
               i = i + 1
 
