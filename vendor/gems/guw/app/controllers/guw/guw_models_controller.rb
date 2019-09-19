@@ -1706,6 +1706,17 @@ class Guw::GuwModelsController < ApplicationController
 
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
+    tab_size = [I18n.t(:estimation).length, I18n.t(:version_number).length,
+                I18n.t(:group).length, I18n.t(:selected).length,
+                I18n.t(:name).length, I18n.t(:description).length,
+                20,
+                20,
+                20,
+                I18n.t(:organization_technology).length, I18n.t(:quantity).length,
+                I18n.t(:tracability).length, I18n.t(:cotation).length,
+                I18n.t(:results).length, I18n.t(:retained_result).length,
+                I18n.t(:pe_attribute_name).length, I18n.t(:low).length,
+                I18n.t(:likely).length, I18n.t(:high).length]
 
     header = [
         "Nom du CDS",
@@ -1928,15 +1939,28 @@ class Guw::GuwModelsController < ApplicationController
     vals = RubyXL::DataValidations.new
     worksheet.data_validations = vals
 
+    tab_size = [I18n.t(:estimation).length, I18n.t(:version_number).length,
+                I18n.t(:group).length, I18n.t(:selected).length,
+                I18n.t(:name).length, I18n.t(:description).length,
+                20,
+                20,
+                20,
+                I18n.t(:organization_technology).length, I18n.t(:quantity).length,
+                I18n.t(:tracability).length, I18n.t(:cotation).length,
+                I18n.t(:results).length, I18n.t(:retained_result).length,
+                I18n.t(:pe_attribute_name).length, I18n.t(:low).length,
+                I18n.t(:likely).length, I18n.t(:high).length]
+
     ([
         "Nom du CDS",
         "Nom du fournisseur",
         "Nom de l'application",
-        "Besoin métier",
+        "Numéro de devis",
+        "Numéro de demande",
         "Statut du devis",
         "Service",
         "Prestation",
-        "Localisation",
+        "Localication",
         I18n.t(:estimation),
         I18n.t(:version_number),
         I18n.t(:group),
@@ -1956,8 +1980,6 @@ class Guw::GuwModelsController < ApplicationController
     jj = 21 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
 
     @guw_unit_of_works.each_with_index do |guow, i|
-
-      current_mp_project = current_mp.project
 
       ind = i + 1
 
@@ -2017,10 +2039,10 @@ class Guw::GuwModelsController < ApplicationController
                                                                     guw_unit_of_work_id: guow.id).last
                 end
 
-                worksheet.add_cell(ind, 19 + j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
-                # worksheet.add_hint(ind, 19+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
+                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
+                # worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
               else
-                worksheet.add_cell(ind, 19 + j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
@@ -2029,7 +2051,7 @@ class Guw::GuwModelsController < ApplicationController
           unless guow.guw_type.nil?
             unless guw_output.nil?
               v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f))
-              worksheet.add_cell(ind, 19 + j, v.to_s)
+              worksheet.add_cell(ind, 20 + j, v.to_s)
             end
           end
         end
