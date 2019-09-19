@@ -125,7 +125,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def destroy
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:id])
-    @module_project = @guw_unit_of_work.module_project
     @guw_model = @guw_unit_of_work.guw_model
     group = @guw_unit_of_work.guw_unit_of_work_group
     @guw_unit_of_work.delete
@@ -283,203 +282,203 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.save
   end
 
-  # def save_uo
-  #
-  #   guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-  #   @module_project = guw_unit_of_work.module_project
-  #   @organization = @module_project.organization
-  #   @project = @module_project.project
-  #   @guw_model = @module_project.guw_model
-  #   @component = current_component
-  #
-  #   begin
-  #     guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
-  #   rescue
-  #     guw_type = guw_unit_of_work.guw_type
-  #   end
-  #
-  #   @lows = Array.new
-  #   @mls = Array.new
-  #   @highs = Array.new
-  #   array_pert = Array.new
-  #
-  #   guw_unit_of_work.off_line = false
-  #   guw_unit_of_work.off_line_uo = false
-  #
-  #   guw_unit_of_work.guw_unit_of_work_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |guowa|
-  #     calculate_guowa(guowa, guw_unit_of_work, guw_type)
-  #   end
-  #
-  #   if @lows.empty?
-  #     guw_unit_of_work.guw_complexity_id = nil
-  #     guw_unit_of_work.guw_original_complexity_id = nil
-  #     guw_unit_of_work.result_low = nil
-  #   else
-  #     guw_unit_of_work.result_low = @lows.sum
-  #   end
-  #
-  #   if @mls.empty?
-  #     guw_unit_of_work.guw_complexity_id = nil
-  #     guw_unit_of_work.guw_original_complexity_id = nil
-  #     guw_unit_of_work.result_most_likely = nil
-  #   else
-  #     guw_unit_of_work.result_most_likely = @mls.sum
-  #   end
-  #
-  #   if @highs.empty?
-  #     guw_unit_of_work.guw_complexity_id = nil
-  #     guw_unit_of_work.guw_original_complexity_id = nil
-  #     guw_unit_of_work.result_high = nil
-  #   else
-  #     guw_unit_of_work.result_high = @highs.sum
-  #   end
-  #
-  #   begin
-  #     guw_work_unit = Guw::GuwWorkUnit.find(params[:guw_work_unit]["#{guw_unit_of_work.id}"])
-  #   rescue
-  #     guw_work_unit = guw_unit_of_work.guw_work_unit
-  #   end
-  #
-  #   begin
-  #     guw_weighting = Guw::GuwWeighting.find(params[:guw_weighting]["#{guw_unit_of_work.id}"])
-  #   rescue
-  #     guw_weighting = guw_unit_of_work.guw_weighting
-  #   end
-  #
-  #   begin
-  #     guw_factor = Guw::GuwFactor.find(params[:guw_factor]["#{guw_unit_of_work.id}"])
-  #   rescue
-  #     guw_factor = guw_unit_of_work.guw_factor
-  #   end
-  #
-  #   guw_unit_of_work.guw_type_id ||= guw_type.id
-  #   guw_unit_of_work.guw_work_unit_id = guw_work_unit.nil? ? nil : guw_work_unit.id
-  #   guw_unit_of_work.guw_weighting_id = guw_weighting.nil? ? nil : guw_weighting.id
-  #   guw_unit_of_work.guw_factor_id = guw_factor.nil? ? nil : guw_factor.id
-  #   guw_unit_of_work.save
-  #
-  #   unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
-  #     guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
-  #     guw_unit_of_work.guw_complexity_id = guw_complexity_id
-  #     guw_unit_of_work.guw_original_complexity_id = guw_complexity_id
-  #     guw_unit_of_work.save
-  #   else
-  #     guw_complexity_id = guw_unit_of_work.guw_complexity_id
-  #   end
-  #
-  #   if (guw_unit_of_work.guw_type.allow_complexity == true && guw_unit_of_work.guw_type.allow_criteria == false)
-  #
-  #     tcplx = Guw::GuwComplexityTechnology.where(organization_id: @organization.id,
-  #                                                guw_model_id: @guw_model.id,
-  #                                                organization_technology_id: guw_unit_of_work.organization_technology_id,
-  #                                                guw_complexity_id: guw_complexity_id).first
-  #
-  #     if guw_unit_of_work.guw_complexity.nil?
-  #       array_pert << 0
-  #     else
-  #       array_pert << (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
-  #     end
-  #     guw_unit_of_work.save
-  #   else
-  #     if guw_unit_of_work.result_low.nil? or guw_unit_of_work.result_most_likely.nil? or guw_unit_of_work.result_high.nil?
-  #       guw_unit_of_work.off_line_uo = nil
-  #     else
-  #       #Save if uo is simple/ml/high
-  #       value_pert = compute_probable_value(guw_unit_of_work.result_low, guw_unit_of_work.result_most_likely, guw_unit_of_work.result_high)[:value]
-  #       if (value_pert < guw_type.guw_complexities.map(&:bottom_range).min.to_f)
-  #         guw_unit_of_work.off_line_uo = true
-  #       elsif (value_pert >= guw_type.guw_complexities.map(&:top_range).max.to_f)
-  #         guw_unit_of_work.off_line_uo = true
-  #         cplx = guw_type.guw_complexities.last
-  #         if cplx.nil?
-  #           guw_unit_of_work.guw_complexity_id = nil
-  #           guw_unit_of_work.guw_original_complexity_id = nil
-  #         else
-  #           guw_unit_of_work.guw_complexity_id = cplx.id
-  #           guw_unit_of_work.guw_original_complexity_id = cplx.id
-  #           array_pert << calculate_seuil(guw_unit_of_work, guw_type.guw_complexities.where(organization_id: @organization.id, guw_model_id: @guw_model.id).last, value_pert)
-  #         end
-  #       else
-  #         guw_type.guw_complexities.each do |guw_c|
-  #           array_pert << calculate_seuil(guw_unit_of_work, guw_c, value_pert)
-  #         end
-  #       end
-  #     end
-  #   end
-  #
-  #   guw_unit_of_work.quantity = params["hidden_quantity"]["#{guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{guw_unit_of_work.id}"].to_f
-  #   guw_unit_of_work.save
-  #
-  #   final_value = (guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
-  #   # calculate_attributes(guw_unit_of_work, guw_factor, guw_weighting, guw_work_unit, tcplx, final_value, @guw_model)
-  #
-  #   complexity_work_unit = Guw::GuwComplexityWorkUnit.where(organization_id: @organization.id,
-  #                                                           guw_model_id: @guw_model.id,
-  #                                                           guw_work_unit_id: guw_work_unit,
-  #                                                           guw_complexity_id: guw_unit_of_work.guw_complexity).first
-  #
-  #   complexity_weighting = Guw::GuwComplexityWeighting.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
-  #                                                            guw_weighting_id: guw_weighting).first
-  #
-  #   complexity_factor = Guw::GuwComplexityFactor.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
-  #                                                      guw_factor_id: guw_factor).first
-  #
-  #   type_attribute_array = []
-  #   effort_array_value = []
-  #   cost_array_value = []
-  #   size_array_value = []
-  #
-  #   ["effort", "size", "cost"].each do |ta|
-  #     Guw::GuwScaleModuleAttribute.where(guw_model_id: @guw_model, type_attribute: ta).each do |gsma|
-  #       type_attribute_array << gsma
-  #     end
-  #   end
-  #
-  #   type_attribute_array.each do |taa|
-  #     cts = eval("complexity_#{taa.type_scale}")
-  #     sv = eval("guw_#{taa.type_scale}")
-  #
-  #     eval("#{taa.type_attribute}_array_value") << (cts.nil? ? 1 : (cts.value.nil? ? 1 : cts.value)) * (sv.nil? ? 1 : (sv.value.nil? ? 1 : sv.value))
-  #   end
-  #
-  #   guw_unit_of_work.size = final_value.to_f *
-  #       (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
-  #       (size_array_value.inject(&:*).nil? ? 1 : size_array_value.inject(&:*))
-  #
-  #   if guw_unit_of_work.guw_type.allow_retained == false
-  #     guw_unit_of_work.size == guw_unit_of_work.ajusted_size
-  #     guw_unit_of_work.save
-  #   end
-  #
-  #   if params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].blank?
-  #     guw_unit_of_work.ajusted_size = final_value
-  #   elsif params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"] != array_pert.sum
-  #     guw_unit_of_work.ajusted_size = params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].to_f
-  #   end
-  #
-  #   guw_unit_of_work.flagged = false
-  #
-  #   guw_unit_of_work.save
-  #
-  #   if guw_unit_of_work.guw_type.allow_retained == false
-  #     guw_unit_of_work.ajusted_size = guw_unit_of_work.size
-  #   end
-  #
-  #   guw_unit_of_work.save
-  #
-  #   guw_unit_of_work.effort =  guw_unit_of_work.ajusted_size.nil? ? 1 : guw_unit_of_work.ajusted_size *
-  #       (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
-  #
-  #   guw_unit_of_work.cost = guw_unit_of_work.ajusted_size.nil? ? 1 : guw_unit_of_work.ajusted_size *
-  #       (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
-  #
-  #   guw_unit_of_work.save
-  #
-  #   update_estimation_values
-  #   update_view_widgets_and_project_fields
-  #
-  #   redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
-  # end
+  def save_uo
+
+    guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @module_project = guw_unit_of_work.module_project
+    @organization = @module_project.organization
+    @project = @module_project.project
+    @guw_model = @module_project.guw_model
+    @component = current_component
+
+    begin
+      guw_type = Guw::GuwType.find(params[:guw_type]["#{guw_unit_of_work.id}"])
+    rescue
+      guw_type = guw_unit_of_work.guw_type
+    end
+
+    @lows = Array.new
+    @mls = Array.new
+    @highs = Array.new
+    array_pert = Array.new
+
+    guw_unit_of_work.off_line = false
+    guw_unit_of_work.off_line_uo = false
+
+    guw_unit_of_work.guw_unit_of_work_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |guowa|
+      calculate_guowa(guowa, guw_unit_of_work, guw_type)
+    end
+
+    if @lows.empty?
+      guw_unit_of_work.guw_complexity_id = nil
+      guw_unit_of_work.guw_original_complexity_id = nil
+      guw_unit_of_work.result_low = nil
+    else
+      guw_unit_of_work.result_low = @lows.sum
+    end
+
+    if @mls.empty?
+      guw_unit_of_work.guw_complexity_id = nil
+      guw_unit_of_work.guw_original_complexity_id = nil
+      guw_unit_of_work.result_most_likely = nil
+    else
+      guw_unit_of_work.result_most_likely = @mls.sum
+    end
+
+    if @highs.empty?
+      guw_unit_of_work.guw_complexity_id = nil
+      guw_unit_of_work.guw_original_complexity_id = nil
+      guw_unit_of_work.result_high = nil
+    else
+      guw_unit_of_work.result_high = @highs.sum
+    end
+
+    begin
+      guw_work_unit = Guw::GuwWorkUnit.find(params[:guw_work_unit]["#{guw_unit_of_work.id}"])
+    rescue
+      guw_work_unit = guw_unit_of_work.guw_work_unit
+    end
+
+    begin
+      guw_weighting = Guw::GuwWeighting.find(params[:guw_weighting]["#{guw_unit_of_work.id}"])
+    rescue
+      guw_weighting = guw_unit_of_work.guw_weighting
+    end
+
+    begin
+      guw_factor = Guw::GuwFactor.find(params[:guw_factor]["#{guw_unit_of_work.id}"])
+    rescue
+      guw_factor = guw_unit_of_work.guw_factor
+    end
+
+    guw_unit_of_work.guw_type_id ||= guw_type.id
+    guw_unit_of_work.guw_work_unit_id = guw_work_unit.nil? ? nil : guw_work_unit.id
+    guw_unit_of_work.guw_weighting_id = guw_weighting.nil? ? nil : guw_weighting.id
+    guw_unit_of_work.guw_factor_id = guw_factor.nil? ? nil : guw_factor.id
+    guw_unit_of_work.save
+
+    unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
+      guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
+      guw_unit_of_work.guw_complexity_id = guw_complexity_id
+      guw_unit_of_work.guw_original_complexity_id = guw_complexity_id
+      guw_unit_of_work.save
+    else
+      guw_complexity_id = guw_unit_of_work.guw_complexity_id
+    end
+
+    if (guw_unit_of_work.guw_type.allow_complexity == true && guw_unit_of_work.guw_type.allow_criteria == false)
+
+      tcplx = Guw::GuwComplexityTechnology.where(organization_id: @organization.id,
+                                                 guw_model_id: @guw_model.id,
+                                                 organization_technology_id: guw_unit_of_work.organization_technology_id,
+                                                 guw_complexity_id: guw_complexity_id).first
+
+      if guw_unit_of_work.guw_complexity.nil?
+        array_pert << 0
+      else
+        array_pert << (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
+      end
+      guw_unit_of_work.save
+    else
+      if guw_unit_of_work.result_low.nil? or guw_unit_of_work.result_most_likely.nil? or guw_unit_of_work.result_high.nil?
+        guw_unit_of_work.off_line_uo = nil
+      else
+        #Save if uo is simple/ml/high
+        value_pert = compute_probable_value(guw_unit_of_work.result_low, guw_unit_of_work.result_most_likely, guw_unit_of_work.result_high)[:value]
+        if (value_pert < guw_type.guw_complexities.map(&:bottom_range).min.to_f)
+          guw_unit_of_work.off_line_uo = true
+        elsif (value_pert >= guw_type.guw_complexities.map(&:top_range).max.to_f)
+          guw_unit_of_work.off_line_uo = true
+          cplx = guw_type.guw_complexities.last
+          if cplx.nil?
+            guw_unit_of_work.guw_complexity_id = nil
+            guw_unit_of_work.guw_original_complexity_id = nil
+          else
+            guw_unit_of_work.guw_complexity_id = cplx.id
+            guw_unit_of_work.guw_original_complexity_id = cplx.id
+            array_pert << calculate_seuil(guw_unit_of_work, guw_type.guw_complexities.where(organization_id: @organization.id, guw_model_id: @guw_model.id).last, value_pert)
+          end
+        else
+          guw_type.guw_complexities.each do |guw_c|
+            array_pert << calculate_seuil(guw_unit_of_work, guw_c, value_pert)
+          end
+        end
+      end
+    end
+
+    guw_unit_of_work.quantity = params["hidden_quantity"]["#{guw_unit_of_work.id}"].blank? ? 1 : params["hidden_quantity"]["#{guw_unit_of_work.id}"].to_f
+    guw_unit_of_work.save
+
+    final_value = (guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
+    # calculate_attributes(guw_unit_of_work, guw_factor, guw_weighting, guw_work_unit, tcplx, final_value, @guw_model)
+
+    complexity_work_unit = Guw::GuwComplexityWorkUnit.where(organization_id: @organization.id,
+                                                            guw_model_id: @guw_model.id,
+                                                            guw_work_unit_id: guw_work_unit,
+                                                            guw_complexity_id: guw_unit_of_work.guw_complexity).first
+
+    complexity_weighting = Guw::GuwComplexityWeighting.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
+                                                             guw_weighting_id: guw_weighting).first
+
+    complexity_factor = Guw::GuwComplexityFactor.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
+                                                       guw_factor_id: guw_factor).first
+
+    type_attribute_array = []
+    effort_array_value = []
+    cost_array_value = []
+    size_array_value = []
+
+    ["effort", "size", "cost"].each do |ta|
+      Guw::GuwScaleModuleAttribute.where(guw_model_id: @guw_model, type_attribute: ta).each do |gsma|
+        type_attribute_array << gsma
+      end
+    end
+
+    type_attribute_array.each do |taa|
+      cts = eval("complexity_#{taa.type_scale}")
+      sv = eval("guw_#{taa.type_scale}")
+
+      eval("#{taa.type_attribute}_array_value") << (cts.nil? ? 1 : (cts.value.nil? ? 1 : cts.value)) * (sv.nil? ? 1 : (sv.value.nil? ? 1 : sv.value))
+    end
+
+    guw_unit_of_work.size = final_value.to_f *
+        (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
+        (size_array_value.inject(&:*).nil? ? 1 : size_array_value.inject(&:*))
+
+    if guw_unit_of_work.guw_type.allow_retained == false
+      guw_unit_of_work.size == guw_unit_of_work.ajusted_size
+      guw_unit_of_work.save
+    end
+
+    if params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].blank?
+      guw_unit_of_work.ajusted_size = final_value
+    elsif params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"] != array_pert.sum
+      guw_unit_of_work.ajusted_size = params["hidden_ajusted_size"]["#{guw_unit_of_work.id}"].to_f
+    end
+
+    guw_unit_of_work.flagged = false
+
+    guw_unit_of_work.save
+
+    if guw_unit_of_work.guw_type.allow_retained == false
+      guw_unit_of_work.ajusted_size = guw_unit_of_work.size
+    end
+
+    guw_unit_of_work.save
+
+    guw_unit_of_work.effort =  guw_unit_of_work.ajusted_size.nil? ? 1 : guw_unit_of_work.ajusted_size *
+        (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
+
+    guw_unit_of_work.cost = guw_unit_of_work.ajusted_size.nil? ? 1 : guw_unit_of_work.ajusted_size *
+        (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
+
+    guw_unit_of_work.save
+
+    update_estimation_values
+    update_view_widgets_and_project_fields
+
+    redirect_to main_app.dashboard_path(@project, anchor: "accordion#{guw_unit_of_work.guw_unit_of_work_group.id}")
+  end
 
   def duplicate
     @old_guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
@@ -492,218 +491,218 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_outputs = @guw_model.guw_outputs.where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id)
   end
 
-  # def save_guw_unit_of_works
-  #   @module_project = current_module_project
-  #   @organization = @module_project.organization
-  #   @project = @module_project.project
-  #   @guw_model = @module_project.guw_model
-  #   @component = current_component
-  #   @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization.id,
-  #                                                 guw_model_id: @guw_model.id,
-  #                                                 project_id: @project.id,
-  #                                                 module_project_id: @module_project.id,
-  #                                                 pbs_project_element_id: @component.id).order("name ASC")
-  #
-  #   @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
-  #     array_pert = Array.new
-  #     if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
-  #       guw_unit_of_work.selected = true
-  #     else
-  #       guw_unit_of_work.selected = false
-  #     end
-  #
-  #     #reorder to keep good order
-  #     # reorder guw_unit_of_work.guw_unit_of_work_group
-  #
-  #     begin
-  #       guw_type = Guw::GuwType.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_type]["#{guw_unit_of_work.id}"]).first  #.find(params[:guw_type]["#{guw_unit_of_work.id}"])
-  #     rescue
-  #       guw_type = guw_unit_of_work.guw_type
-  #     end
-  #
-  #     begin
-  #       guw_work_unit = Guw::GuwWorkUnit.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_work_unit]["#{guw_unit_of_work.id}"]).first #.find(params[:guw_work_unit]["#{guw_unit_of_work.id}"])
-  #     rescue
-  #       guw_work_unit = guw_unit_of_work.guw_work_unit
-  #     end
-  #
-  #     begin
-  #       guw_weighting = Guw::GuwWeighting.find(params[:guw_weighting]["#{guw_unit_of_work.id}"])
-  #     rescue
-  #       guw_weighting = guw_unit_of_work.guw_weighting
-  #     end
-  #
-  #     begin
-  #       guw_factor = Guw::GuwFactor.find(params[:guw_factor]["#{guw_unit_of_work.id}"])
-  #     rescue
-  #       guw_factor = guw_unit_of_work.guw_factor
-  #     end
-  #
-  #     if params[:guw_technology].present?
-  #       guw_unit_of_work.organization_technology_id = params[:guw_technology]["#{guw_unit_of_work.id}"].to_i
-  #     end
-  #
-  #     guw_unit_of_work.guw_type_id = guw_type.id
-  #     guw_unit_of_work.guw_work_unit = guw_work_unit
-  #     guw_unit_of_work.guw_weighting = guw_weighting
-  #     guw_unit_of_work.guw_factor = guw_factor
-  #
-  #     @guw_model.guw_attributes.all.each do |gac|
-  #       guw_unit_of_work.save
-  #       finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @organization.id,
-  #                                                  guw_model_id: @guw_model.id,
-  #                                                  guw_attribute_id: gac.id,
-  #                                                  guw_type_id: guw_type.id,
-  #                                                  project_id: @project.id,
-  #                                                  module_project_id: @module_project.id,
-  #                                                  guw_unit_of_work_id: guw_unit_of_work.id).first_or_create
-  #       finder.save
-  #     end
-  #
-  #     if params["quantity"].present?
-  #       guw_unit_of_work.quantity = params["quantity"]["#{guw_unit_of_work.id}"].nil? ? 1 : params["quantity"]["#{guw_unit_of_work.id}"].to_f
-  #     else
-  #       guw_unit_of_work.quantity = 1
-  #     end
-  #
-  #     if guw_unit_of_work.guw_type.allow_complexity == true
-  #       unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
-  #         guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
-  #         guw_unit_of_work.guw_complexity_id = guw_complexity_id
-  #         guw_unit_of_work.save
-  #       else
-  #         guw_complexity_id = guw_unit_of_work.guw_complexity_id
-  #       end
-  #
-  #       complexity_work_unit = Guw::GuwComplexityWorkUnit.where(organization_id: @organization.id,
-  #                                                               guw_model_id: @guw_model.id,
-  #                                                               guw_work_unit_id: guw_work_unit,
-  #                                                               guw_complexity_id: guw_complexity_id).first
-  #
-  #       complexity_weighting = Guw::GuwComplexityWeighting.where(guw_complexity_id: guw_complexity_id,
-  #                                                                guw_weighting_id: guw_weighting).first
-  #
-  #       complexity_factor = Guw::GuwComplexityFactor.where(guw_complexity_id: guw_complexity_id,
-  #                                                          guw_factor_id: guw_factor).first
-  #
-  #       tcplx = Guw::GuwComplexityTechnology.where(organization_id: @organization.id,
-  #                                                  guw_model_id: @guw_model.id,
-  #                                                  organization_technology_id: guw_unit_of_work.organization_technology_id,
-  #                                                  guw_complexity_id: guw_complexity_id,
-  #                                                  guw_type_id: guw_unit_of_work.guw_type_id).first
-  #
-  #       guw_unit_of_work.save
-  #     else
-  #       unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
-  #         guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
-  #         guw_unit_of_work.guw_complexity_id = guw_complexity_id
-  #         guw_unit_of_work.save
-  #       else
-  #         guw_complexity_id = guw_unit_of_work.guw_complexity_id
-  #       end
-  #     end
-  #
-  #     if guw_unit_of_work.guw_complexity.nil?
-  #       final_value = nil
-  #     else
-  #       weight = (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
-  #       if guw_unit_of_work.guw_complexity.enable_value == false
-  #         final_value = weight
-  #       else
-  #         result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
-  #         result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
-  #         result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
-  #
-  #         final_value = ((result_low + 4 * result_most_likely +  result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
-  #       end
-  #     end
-  #
-  #     complexity_work_unit = Guw::GuwComplexityWorkUnit.where(organization_id: @organization.id,
-  #                                                             guw_model_id: @guw_model.id,
-  #                                                             guw_work_unit_id: guw_work_unit,
-  #                                                             guw_complexity_id: guw_unit_of_work.guw_complexity).first
-  #
-  #     complexity_weighting = Guw::GuwComplexityWeighting.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
-  #                                                              guw_weighting_id: guw_weighting).first
-  #
-  #     complexity_factor = Guw::GuwComplexityFactor.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
-  #                                                        guw_factor_id: guw_factor).first
-  #
-  #     type_attribute_array = []
-  #     effort_array_value = []
-  #     cost_array_value = []
-  #     size_array_value = []
-  #
-  #     ["effort", "size", "cost"].each do |ta|
-  #       Guw::GuwScaleModuleAttribute.where(guw_model_id: @guw_model, type_attribute: ta).each do |gsma|
-  #         type_attribute_array << gsma
-  #       end
-  #     end
-  #
-  #     type_attribute_array.each do |taa|
-  #       cts = eval("complexity_#{taa.type_scale}")
-  #       sv = eval("guw_#{taa.type_scale}")
-  #
-  #       eval("#{taa.type_attribute}_array_value") << (cts.nil? ? 1 : (cts.value.nil? ? 1 : cts.value)) * (sv.nil? ? 1 : (sv.value.nil? ? 1 : sv.value))
-  #     end
-  #
-  #     if final_value.nil?
-  #       guw_unit_of_work.size = nil
-  #       if params["ajusted_size"].nil?
-  #         guw_unit_of_work.ajusted_size = nil
-  #       else
-  #         guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f
-  #       end
-  #     else
-  #       guw_unit_of_work.size = final_value.to_f *
-  #           (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
-  #           (size_array_value.inject(&:*).nil? ? 1 : size_array_value.inject(&:*))
-  #
-  #       if guw_unit_of_work.guw_type.allow_retained == false
-  #         guw_unit_of_work.ajusted_size = guw_unit_of_work.size.to_f
-  #       else
-  #         if params["ajusted_size"]["#{guw_unit_of_work.id}"].blank?
-  #           guw_unit_of_work.ajusted_size = guw_unit_of_work.size.to_f
-  #         else
-  #           guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f
-  #         end
-  #       end
-  #     end
-  #
-  #     guw_unit_of_work.save
-  #
-  #     unless guw_unit_of_work.ajusted_size.nil?
-  #       guw_unit_of_work.effort = guw_unit_of_work.ajusted_size *
-  #           (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
-  #
-  #       guw_unit_of_work.cost = guw_unit_of_work.ajusted_size *
-  #           (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
-  #     end
-  #
-  #     if guw_unit_of_work.size.nil? || guw_unit_of_work.ajusted_size.nil?
-  #       guw_unit_of_work.flagged = false
-  #     else
-  #       if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
-  #         guw_unit_of_work.flagged = true
-  #       elsif guw_unit_of_work.size.to_f != guw_unit_of_work.ajusted_size.to_f
-  #         guw_unit_of_work.flagged = true
-  #       else
-  #         guw_unit_of_work.flagged = false
-  #       end
-  #     end
-  #
-  #     guw_unit_of_work.save
-  #   end
-  #
-  #   update_estimation_values
-  #   update_view_widgets_and_project_fields
-  #
-  #   if @guw_unit_of_works.last.nil?
-  #     redirect_to main_app.dashboard_path(@project)
-  #   else
-  #     redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_works.last.guw_unit_of_work_group.id}")
-  #   end
-  # end
+  def save_guw_unit_of_works
+    @module_project = current_module_project
+    @organization = @module_project.organization
+    @project = @module_project.project
+    @guw_model = @module_project.guw_model
+    @component = current_component
+    @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  project_id: @project.id,
+                                                  module_project_id: @module_project.id,
+                                                  pbs_project_element_id: @component.id).order("name ASC")
+
+    @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
+      array_pert = Array.new
+      if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
+        guw_unit_of_work.selected = true
+      else
+        guw_unit_of_work.selected = false
+      end
+
+      #reorder to keep good order
+      # reorder guw_unit_of_work.guw_unit_of_work_group
+
+      begin
+        guw_type = Guw::GuwType.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_type]["#{guw_unit_of_work.id}"]).first  #.find(params[:guw_type]["#{guw_unit_of_work.id}"])
+      rescue
+        guw_type = guw_unit_of_work.guw_type
+      end
+
+      begin
+        guw_work_unit = Guw::GuwWorkUnit.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_work_unit]["#{guw_unit_of_work.id}"]).first #.find(params[:guw_work_unit]["#{guw_unit_of_work.id}"])
+      rescue
+        guw_work_unit = guw_unit_of_work.guw_work_unit
+      end
+
+      begin
+        guw_weighting = Guw::GuwWeighting.find(params[:guw_weighting]["#{guw_unit_of_work.id}"])
+      rescue
+        guw_weighting = guw_unit_of_work.guw_weighting
+      end
+
+      begin
+        guw_factor = Guw::GuwFactor.find(params[:guw_factor]["#{guw_unit_of_work.id}"])
+      rescue
+        guw_factor = guw_unit_of_work.guw_factor
+      end
+
+      if params[:guw_technology].present?
+        guw_unit_of_work.organization_technology_id = params[:guw_technology]["#{guw_unit_of_work.id}"].to_i
+      end
+
+      guw_unit_of_work.guw_type_id = guw_type.id
+      guw_unit_of_work.guw_work_unit = guw_work_unit
+      guw_unit_of_work.guw_weighting = guw_weighting
+      guw_unit_of_work.guw_factor = guw_factor
+
+      @guw_model.guw_attributes.all.each do |gac|
+        guw_unit_of_work.save
+        finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @organization.id,
+                                                   guw_model_id: @guw_model.id,
+                                                   guw_attribute_id: gac.id,
+                                                   guw_type_id: guw_type.id,
+                                                   project_id: @project.id,
+                                                   module_project_id: @module_project.id,
+                                                   guw_unit_of_work_id: guw_unit_of_work.id).first_or_create
+        finder.save
+      end
+
+      if params["quantity"].present?
+        guw_unit_of_work.quantity = params["quantity"]["#{guw_unit_of_work.id}"].nil? ? 1 : params["quantity"]["#{guw_unit_of_work.id}"].to_f
+      else
+        guw_unit_of_work.quantity = 1
+      end
+
+      if guw_unit_of_work.guw_type.allow_complexity == true
+        unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
+          guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
+          guw_unit_of_work.guw_complexity_id = guw_complexity_id
+          guw_unit_of_work.save
+        else
+          guw_complexity_id = guw_unit_of_work.guw_complexity_id
+        end
+
+        complexity_work_unit = Guw::GuwComplexityWorkUnit.where(organization_id: @organization.id,
+                                                                guw_model_id: @guw_model.id,
+                                                                guw_work_unit_id: guw_work_unit,
+                                                                guw_complexity_id: guw_complexity_id).first
+
+        complexity_weighting = Guw::GuwComplexityWeighting.where(guw_complexity_id: guw_complexity_id,
+                                                                 guw_weighting_id: guw_weighting).first
+
+        complexity_factor = Guw::GuwComplexityFactor.where(guw_complexity_id: guw_complexity_id,
+                                                           guw_factor_id: guw_factor).first
+
+        tcplx = Guw::GuwComplexityTechnology.where(organization_id: @organization.id,
+                                                   guw_model_id: @guw_model.id,
+                                                   organization_technology_id: guw_unit_of_work.organization_technology_id,
+                                                   guw_complexity_id: guw_complexity_id,
+                                                   guw_type_id: guw_unit_of_work.guw_type_id).first
+
+        guw_unit_of_work.save
+      else
+        unless params["guw_complexity_#{guw_unit_of_work.id}"].nil?
+          guw_complexity_id = params["guw_complexity_#{guw_unit_of_work.id}"].to_i
+          guw_unit_of_work.guw_complexity_id = guw_complexity_id
+          guw_unit_of_work.save
+        else
+          guw_complexity_id = guw_unit_of_work.guw_complexity_id
+        end
+      end
+
+      if guw_unit_of_work.guw_complexity.nil?
+        final_value = nil
+      else
+        weight = (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
+        if guw_unit_of_work.guw_complexity.enable_value == false
+          final_value = weight
+        else
+          result_low = guw_unit_of_work.result_low.nil? ? 1 : guw_unit_of_work.result_low
+          result_most_likely = guw_unit_of_work.result_most_likely.nil? ? 1 : guw_unit_of_work.result_most_likely
+          result_high = guw_unit_of_work.result_high.nil? ? 1 : guw_unit_of_work.result_high
+
+          final_value = ((result_low + 4 * result_most_likely +  result_high) / 6) * (weight.nil? ? 1 : weight.to_f)
+        end
+      end
+
+      complexity_work_unit = Guw::GuwComplexityWorkUnit.where(organization_id: @organization.id,
+                                                              guw_model_id: @guw_model.id,
+                                                              guw_work_unit_id: guw_work_unit,
+                                                              guw_complexity_id: guw_unit_of_work.guw_complexity).first
+
+      complexity_weighting = Guw::GuwComplexityWeighting.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
+                                                               guw_weighting_id: guw_weighting).first
+
+      complexity_factor = Guw::GuwComplexityFactor.where(guw_complexity_id: guw_unit_of_work.guw_complexity,
+                                                         guw_factor_id: guw_factor).first
+
+      type_attribute_array = []
+      effort_array_value = []
+      cost_array_value = []
+      size_array_value = []
+
+      ["effort", "size", "cost"].each do |ta|
+        Guw::GuwScaleModuleAttribute.where(guw_model_id: @guw_model, type_attribute: ta).each do |gsma|
+          type_attribute_array << gsma
+        end
+      end
+
+      type_attribute_array.each do |taa|
+        cts = eval("complexity_#{taa.type_scale}")
+        sv = eval("guw_#{taa.type_scale}")
+
+        eval("#{taa.type_attribute}_array_value") << (cts.nil? ? 1 : (cts.value.nil? ? 1 : cts.value)) * (sv.nil? ? 1 : (sv.value.nil? ? 1 : sv.value))
+      end
+
+      if final_value.nil?
+        guw_unit_of_work.size = nil
+        if params["ajusted_size"].nil?
+          guw_unit_of_work.ajusted_size = nil
+        else
+          guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f
+        end
+      else
+        guw_unit_of_work.size = final_value.to_f *
+            (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) *
+            (size_array_value.inject(&:*).nil? ? 1 : size_array_value.inject(&:*))
+
+        if guw_unit_of_work.guw_type.allow_retained == false
+          guw_unit_of_work.ajusted_size = guw_unit_of_work.size.to_f
+        else
+          if params["ajusted_size"]["#{guw_unit_of_work.id}"].blank?
+            guw_unit_of_work.ajusted_size = guw_unit_of_work.size.to_f
+          else
+            guw_unit_of_work.ajusted_size = params["ajusted_size"]["#{guw_unit_of_work.id}"].to_f
+          end
+        end
+      end
+
+      guw_unit_of_work.save
+
+      unless guw_unit_of_work.ajusted_size.nil?
+        guw_unit_of_work.effort = guw_unit_of_work.ajusted_size *
+            (effort_array_value.inject(&:*).nil? ? 1 : effort_array_value.inject(&:*))
+
+        guw_unit_of_work.cost = guw_unit_of_work.ajusted_size *
+            (cost_array_value.inject(&:*).nil? ? 1 : cost_array_value.inject(&:*))
+      end
+
+      if guw_unit_of_work.size.nil? || guw_unit_of_work.ajusted_size.nil?
+        guw_unit_of_work.flagged = false
+      else
+        if guw_unit_of_work.off_line == true || guw_unit_of_work.off_line_uo == true
+          guw_unit_of_work.flagged = true
+        elsif guw_unit_of_work.size.to_f != guw_unit_of_work.ajusted_size.to_f
+          guw_unit_of_work.flagged = true
+        else
+          guw_unit_of_work.flagged = false
+        end
+      end
+
+      guw_unit_of_work.save
+    end
+
+    update_estimation_values
+    update_view_widgets_and_project_fields
+
+    if @guw_unit_of_works.last.nil?
+      redirect_to main_app.dashboard_path(@project)
+    else
+      redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_works.last.guw_unit_of_work_group.id}")
+    end
+  end
 
   def change_cotation
     authorize! :execute_estimation_plan, @project
@@ -755,6 +754,80 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @technologies = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq
   end
 
+  # Voir utlisation de la Vue
+  def change_selected_state_save
+    authorize! :execute_estimation_plan, @project
+
+    module_project = current_module_project
+    component = current_component
+    number_precision = user_number_precision
+
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+
+    if @guw_unit_of_work.selected == false
+      @guw_unit_of_work.selected = true
+    else
+      @guw_unit_of_work.selected = false
+    end
+
+    @guw_unit_of_work.save
+
+    @group = Guw::GuwUnitOfWorkGroup.find(params[:guw_unit_of_work_group_id])
+    @mp_guw_group = ModuleProjectGuwUnitOfWorkGroup.where(guw_unit_of_work_group_id: :@group.id, pbs_project_element_id: component.id)
+    @group_module_project_guw_unit_of_works = @group.module_project_guw_unit_of_works.where(pbs_project_element_id: component.id,
+                                                                                            guw_model_id: @guw_unit_of_work.guw_model.id)
+    @group_number_of_unit_of_works = @group.number_of_uow_lines.to_f.round(number_precision)
+    @group_selected_of_unit_of_works = @group.number_of_uow_selected_lines.to_f.round(number_precision)
+
+    #For grouped unit of work
+    @group_size_ajusted = @group_module_project_guw_unit_of_works.where(selected: true).map{ |i| (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : i.ajusted_size["#{guw_output.id}"].to_f) }.sum.to_f.round(number_precision)
+
+    @group_size_theorical = @group_module_project_guw_unit_of_works.where(selected: true).map{|i| (i.size.is_a?(Numeric) ? i.size.to_f : i.size["#{guw_output.id}"].to_f)}.sum.to_f.round(number_precision)
+
+    #For all unit of work
+    @ajusted_size = Guw::GuwUnitOfWork.where(selected: true,
+                                             organization_id: @project.organization_id,
+                                             project_id: @project.id,
+                                             module_project_id: module_project.id,
+                                             pbs_project_element_id: component.id,
+                                             guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
+
+    @theorical_size = Guw::GuwUnitOfWork.where(selected: true,
+                                               pbs_project_element_id: component.id,
+                                               module_project_id: module_project.id,
+                                               guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
+
+    @effort = Guw::GuwUnitOfWork.where(selected: true,
+                                       organization_id: @project.organization_id,
+                                       project_id: @project.id,
+                                       module_project_id: module_project.id,
+                                       pbs_project_element_id: component.id,
+                                       guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.effort.to_f }.sum.to_f.round(user_number_precision)
+
+    @cost = Guw::GuwUnitOfWork.where(selected: true,
+                                     organization_id: @project.organization_id,
+                                     project_id: @project.id,
+                                     module_project_id: module_project.id,
+                                     pbs_project_element_id: component.id,
+                                     guw_model_id: @guw_unit_of_work.guw_model.id).map{|i| i.cost.to_f }.sum.to_f.round(number_precision)
+
+    @number_of_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @project.organization_id,
+                                                        project_id: @project.id,
+                                                        module_project_id: module_project.id,
+                                                        pbs_project_element_id: component.id,
+                                                        guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(number_precision)
+
+    @selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
+                                                          organization_id: @project.organization_id,
+                                                          project_id: @project.id,
+                                                          module_project_id: module_project.id,
+                                                          pbs_project_element_id: component.id,
+                                                          guw_model_id: @guw_unit_of_work.guw_model.id).map(&:quantity).sum.to_f.round(number_precision)
+
+    update_estimation_values
+    update_view_widgets_and_project_fields
+  end
+
   def change_selected_state
     authorize! :execute_estimation_plan, @project
 
@@ -774,7 +847,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_unit_of_work.save
 
-    current_module_project_guw_unit_of_works = @module_project.guw_unit_of_works
+    current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
     @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
 
     @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
@@ -1579,6 +1652,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     end
 
+    # update_estimation_values
+    # update_view_widgets_and_project_fields
+
+    # if @guw_unit_of_works.last.nil?
+    #   redirect_to main_app.dashboard_path(@project)
+    # else
+    #   redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_works.last.guw_unit_of_work_group.id}")
+    # end
   end
 
   def save_uo_with_multiple_outputs
@@ -3179,9 +3260,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   private
   def update_estimation_values
     #we save the effort now in estimation values
+    @module_project = current_module_project
     @project = @module_project.project
     @guw_model = @module_project.guw_model
-    @module_project = current_module_project
     organization_id = @module_project.organization_id
 
     component = current_component

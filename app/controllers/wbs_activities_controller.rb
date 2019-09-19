@@ -340,9 +340,7 @@ class WbsActivitiesController < ApplicationController
     @pbs_project_element = current_component
     current_component_id = @pbs_project_element.id
 
-    # @module_project = ModuleProject.find(params[:module_project_id])
     @module_project = current_module_project
-
     @project = @module_project.project
     @organization = @project.organization
     @wbs_activity = @module_project.wbs_activity
