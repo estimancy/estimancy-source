@@ -245,7 +245,7 @@ class ProjectsController < ApplicationController
 
               j = 0
               @guw_coefficients.each do |gc|
-                if (gc.coefficient_type == "Pourcentage") || (guw_charge_ss_prod_coefficient && gc.id == guw_charge_ss_prod_coefficient.id)
+                if gc.coefficient_type == "Pourcentage"
 
                   default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
                   ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
@@ -254,13 +254,14 @@ class ProjectsController < ApplicationController
                   worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
                   j = j + 2
 
+                elsif !guw_charge_ss_prod_coefficient.nil? && gc.id == guw_charge_ss_prod_coefficient.id
+                  ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
                   # Charge sans prod en colonne AI
                   if gc.id == guw_charge_ss_prod_coefficient.id
                     worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.percent.nil? ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
                   end
                 end
               end
-
 
               guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
                 worksheet_cf.add_cell(i, 20 + j, uowa.most_likely)
