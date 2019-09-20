@@ -201,8 +201,8 @@ class ProjectsController < ApplicationController
 
             @guow_guw_types = Hash.new
 
-            #project.guw_unit_of_works.each do |guow|
-            project.guw_unit_of_works.order("display_order ASC").each do |guow|
+            #project.guw_unit_of_works.order("display_order ASC").each do |guow|
+            project.guw_unit_of_works.each do |guow|
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application.to_s)
