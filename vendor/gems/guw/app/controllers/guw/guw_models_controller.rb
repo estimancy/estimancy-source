@@ -1905,6 +1905,7 @@ class Guw::GuwModelsController < ApplicationController
 
   def export
     current_mp = current_module_project
+    current_mp_project = current_mp.project
     project_id = current_mp.project_id
     @guw_model = current_mp.guw_model
     organization_id = @guw_model.organization_id
