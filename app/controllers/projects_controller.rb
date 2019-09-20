@@ -152,7 +152,7 @@ class ProjectsController < ApplicationController
         @pf_hash_2 = Hash.new
         @statuses_hash = Hash.new
         @guw_hash = Hash.new {|h,k| h[k] = [] }
-        @max_guw_model_attributes_size = 0
+        @max_guw_model_attributes_size = 1
 
         field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
@@ -165,7 +165,7 @@ class ProjectsController < ApplicationController
           pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
           unless pmp.nil?
             guw_model = pmp.guw_model
-            guw_model_attributes_size = @guw_model.guw_attributes.all.size
+            guw_model_attributes_size = guw_model.guw_attributes.all.size
             if guw_model_attributes_size > @max_guw_model_attributes_size
               @max_guw_model_attributes_size = guw_model_attributes_size
             end
