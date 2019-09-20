@@ -254,13 +254,11 @@ class ProjectsController < ApplicationController
                   worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
                   j = j + 2
 
+                  # Charge sans prod en colonne AI
                 elsif guw_charge_ss_prod_coefficient
                   if gc.id == guw_charge_ss_prod_coefficient.id
                       ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
-                    #   # Charge sans prod en colonne AI
-                    #   if gc.id == guw_charge_ss_prod_coefficient.id
-                    #     worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.percent.nil? ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
-                    #   end
+                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, ceuw.percent.to_f)  # « Charge ss prod. (jh) » en colonne AI
                   end
                 end
               end
