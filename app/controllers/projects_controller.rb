@@ -152,6 +152,7 @@ class ProjectsController < ApplicationController
         @pf_hash_2 = Hash.new
         @statuses_hash = Hash.new
         @guw_hash = Hash.new {|h,k| h[k] = [] }
+        @max_guw_model_attributes_size = 0
 
         field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
@@ -159,6 +160,17 @@ class ProjectsController < ApplicationController
           project.project_fields.each do |pf|
             @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
           end
+
+          #on calcule la taille maximale des attributs de tous les projets
+          pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
+          unless pmp.nil?
+            guw_model = pmp.guw_model
+            guw_model_attributes_size = @guw_model.guw_attributes.all.size
+            if guw_model_attributes_size > @max_guw_model_attributes_size
+              @max_guw_model_attributes_size = guw_model_attributes_size
+            end
+          end
+
         end
 
         @organization_projects.each do |project|
@@ -273,9 +285,10 @@ class ProjectsController < ApplicationController
               #on met à jour les entete
               #worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod.name)
               #worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost.name)
-              worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size, "Charge ss prod. (jh)")
-              worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, "Charge avec prod. (jh)")
-              worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 2, "Coût Services (€)")
+
+              worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size, "Charge ss prod. (jh)")
+              worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 1, "Charge avec prod. (jh)")
+              worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 2, "Coût Services (€)")
 
               #On recuperer les sorties "Charge ss prod. (jh)"
               unless guw_output_charge_ss_prod.nil?
@@ -295,9 +308,9 @@ class ProjectsController < ApplicationController
                 guw_output_cost_value = (guw_output_cost_value_tmp.nil? ? nil : guw_output_cost_value_tmp.to_f.round(2))
               end
 
-              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
-              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, guw_output_effort_value)  # « Charge avec prod. (jh) » en colonne AJ
-              worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 2, guw_output_cost_value)  # « Coût Services (€) » en colonne AK
+              worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
+              worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 1, guw_output_effort_value)  # « Charge avec prod. (jh) » en colonne AJ
+              worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 2, guw_output_cost_value)  # « Coût Services (€) » en colonne AK
 
               i = i + 1
 
