@@ -249,7 +249,6 @@ class ProjectsController < ApplicationController
 
                   default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
                   ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
-
                   worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
                   worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
                   j = j + 2
@@ -257,7 +256,18 @@ class ProjectsController < ApplicationController
                   # Charge sans prod en colonne AI
                 elsif guw_charge_ss_prod_coefficient
                   if gc.id == guw_charge_ss_prod_coefficient.id
-                      ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+                      #ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+                      #ceuw = project.guw_coefficient_element_unit_of_works.where(guw_model_id: @guw_model.id, module_project_id: guow.module_project_id, guw_coefficient_id: gc.id, guw_unit_of_work_id: guow.id)
+                     ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                       guw_model_id: @guw_model.id,
+                                                                       guw_coefficient_id: gc.id,
+                                                                       project_id: project.id,
+                                                                       module_project_id: pmp.id,
+                                                                       guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+                      #####################
+                      # project = Project.find(2077)
+                      # project.guw_coefficient_element_unit_of_works.where(guw_model_id: 494, module_project_id: 5053, guw_unit_of_work_id: 18608, guw_coefficient_id: 637).first
+                      #####################
                       worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
                   end
                 end
