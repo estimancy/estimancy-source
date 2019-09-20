@@ -184,7 +184,6 @@ class ProjectsController < ApplicationController
             @guw_coefficient_elements = @guw_coefficients.flat_map(&:guw_coefficient_elements)
             guw_charge_ss_prod_coefficient = @guw_coefficients.where( name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"]).first
 
-
             guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
             #guw_output_charge_ss_prod = Guw::GuwOutput.where(name: ["Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
             guw_output_charge_ss_prod = Guw::GuwOutput.where(output_type: "Effort", name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
@@ -246,7 +245,7 @@ class ProjectsController < ApplicationController
 
               j = 0
               @guw_coefficients.each do |gc|
-                if gc.coefficient_type == "Pourcentage"
+                if gc.coefficient_type == "Pourcentage" || (gc.id == guw_charge_ss_prod_coefficient.id)
 
                   default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
                   ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
@@ -256,7 +255,7 @@ class ProjectsController < ApplicationController
                   j = j + 2
 
                   # Charge sans prod en colonne AI
-                  if guw_charge_ss_prod_coefficient && gc.id == guw_charge_ss_prod_coefficient.id
+                  if guw_charge_ss_prod_coefficient && (gc.id == guw_charge_ss_prod_coefficient.id)
                     worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.percent.blank? ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
                   end
                 end
