@@ -256,7 +256,7 @@ class ProjectsController < ApplicationController
 
                   # Charge sans prod en colonne AI
                   if guw_charge_ss_prod_coefficient && gc.id == guw_charge_ss_prod_coefficient.id
-                    worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.percent.nil ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
+                    worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.percent.nil? ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
                   end
                 end
               end
