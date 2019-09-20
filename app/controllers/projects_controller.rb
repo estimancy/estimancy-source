@@ -258,7 +258,7 @@ class ProjectsController < ApplicationController
                 elsif guw_charge_ss_prod_coefficient
                   if gc.id == guw_charge_ss_prod_coefficient.id
                       ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
-                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, ceuw.percent.to_f)  # « Charge ss prod. (jh) » en colonne AI
+                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
                   end
                 end
               end
