@@ -254,6 +254,11 @@ class ProjectsController < ApplicationController
                   worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
                   worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
                   j = j + 2
+
+                  # Charge sans prod en colonne AI
+                  if guw_charge_ss_prod_coefficient && gc.id == guw_charge_ss_prod_coefficient.id
+                    worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.percent.blank? ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
+                  end
                 end
               end
 
@@ -265,28 +270,6 @@ class ProjectsController < ApplicationController
                 worksheet_cf.add_cell(0, 20+ii, guw_attribute.name)
               end
 
-              #i = i + 1
-              # unless guw_output_effort.nil?
-              #   guw_output_effort_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2))
-              # end
-              #
-              # #On recuperer les sorties avec "Charge ss prod. (jh)"
-              # unless guw_output_charge_ss_prod.nil?
-              #   worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod.name)
-              #   guw_output_charge_ss_prod_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
-              #   worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size, (guw_output_charge_ss_prod_value.nil? ? nil : guw_output_charge_ss_prod_value.to_f.round(2) ))  # « Charge ss prod. (jh) » en colonne AI
-              # end
-              #
-              # #On recuperer les sorties avec " Coût Services (€) "
-              # unless guw_output_cost.nil?
-              #   worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost.name)
-              #   guw_output_cost_value = guow.ajusted_size.nil? ? 0 : (guow.ajusted_size["#{guw_output_cost.id}"])
-              #   worksheet_cf.add_cell(i, 20 + @guw_model_guw_attributes.size + 1, (guw_output_cost_value.nil? ? nil : guw_output_cost_value.to_f.round(2) )) # « Coût Services (€) » en colonne AJ
-              # end
-
-              #on met à jour les entete
-              #worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size, guw_output_charge_ss_prod.name)
-              #worksheet_cf.add_cell(0, 20 + @guw_model_guw_attributes.size + 1, guw_output_cost.name)
 
               worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size, "Charge ss prod. (jh)")
               worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 1, "Charge avec prod. (jh)")
@@ -294,33 +277,33 @@ class ProjectsController < ApplicationController
 
 
               #On recuperer les sorties "Charge ss prod. (jh)"
-              if guw_output_charge_ss_prod.nil?
-                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                                  guw_model_id: @guw_model.id,
-                                                                  guw_coefficient_id: guw_charge_ss_prod_coefficient.id,
-                                                                  project_id: project.id,
-                                                                  module_project_id: pmp.id,
-                                                                  guw_unit_of_work_id: guow.id).order("updated_at ASC").last
-                ceuw_percent = ceuw.percent
-                guw_output_charge_ss_prod_value = ceuw_percent.blank? ? nil : ceuw_percent.to_f.round(2)
-              else
-                guw_output_charge_ss_prod_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
-                guw_output_charge_ss_prod_value = (guw_output_charge_ss_prod_value_tmp.nil? ? nil : guw_output_charge_ss_prod_value_tmp.to_f.round(2))
-              end
+              # if guw_output_charge_ss_prod.nil?
+              #   ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+              #                                                     guw_model_id: @guw_model.id,
+              #                                                     guw_coefficient_id: guw_charge_ss_prod_coefficient.id,
+              #                                                     project_id: project.id,
+              #                                                     module_project_id: pmp.id,
+              #                                                     guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+              #   ceuw_percent = ceuw.percent
+              #   guw_output_charge_ss_prod_value = ceuw_percent.blank? ? nil : ceuw_percent.to_f.round(2)
+              # else
+              #   guw_output_charge_ss_prod_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
+              #   guw_output_charge_ss_prod_value = (guw_output_charge_ss_prod_value_tmp.blank? ? nil : guw_output_charge_ss_prod_value_tmp.to_f.round(2))
+              # end
 
               #On recuperer les sorties avec "Charge (jh)" avec productivité
               unless guw_output_effort.nil?
                 guw_output_effort_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"])
-                guw_output_effort_value = (guw_output_effort_value_tmp.nil? ? nil : guw_output_effort_value_tmp.to_f.round(2))
+                guw_output_effort_value = (guw_output_effort_value_tmp.blank? ? nil : guw_output_effort_value_tmp.to_f.round(2))
               end
 
               #On recuperer les sorties avec " Coût Services (€) "
               unless guw_output_cost.nil?
                 guw_output_cost_value_tmp = guow.ajusted_size.nil? ? nil : guow.ajusted_size["#{guw_output_cost.id}"]#.to_f.round(2)
-                guw_output_cost_value = (guw_output_cost_value_tmp.nil? ? nil : guw_output_cost_value_tmp.to_f.round(2))
+                guw_output_cost_value = (guw_output_cost_value_tmp.blank? ? nil : guw_output_cost_value_tmp.to_f.round(2))
               end
 
-              worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
+              #worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
               worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 1, guw_output_effort_value)  # « Charge avec prod. (jh) » en colonne AJ
               worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 2, guw_output_cost_value)  # « Coût Services (€) » en colonne AK
 
