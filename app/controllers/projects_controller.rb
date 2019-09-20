@@ -185,8 +185,8 @@ class ProjectsController < ApplicationController
 
             guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
             #guw_output_charge_ss_prod = Guw::GuwOutput.where(name: ["Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
-            guw_output_charge_ss_prod = Guw::GuwOutput.where(name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
-            guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)"], guw_model_id: @guw_model.id).first
+            guw_output_charge_ss_prod = Guw::GuwOutput.where(output_type: "Effort", name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
+            guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first
 
             pf = project.project_fields.select{ |i| i.field_id == field.id }.first
 
