@@ -91,8 +91,8 @@ class ProjectsController < ApplicationController
   end
 
   def raw_data_extraction
-    # Thread.new do
-    #   ActiveRecord::Base.connection_pool.with_connection do
+    Thread.new do
+      ActiveRecord::Base.connection_pool.with_connection do
 
         workbook = RubyXL::Workbook.new
 
@@ -157,6 +157,7 @@ class ProjectsController < ApplicationController
         field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
         @organization_projects.each do |project|
+
           project.project_fields.each do |pf|
             @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
           end
@@ -179,6 +180,18 @@ class ProjectsController < ApplicationController
 
           unless pmp.nil?
             @guw_model = pmp.guw_model
+
+            @guow_guw_coefficient_element_unit_of_works_with_coefficients = {}
+
+            coeff_elt_uow = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                       guw_model_id: @guw_model.id,
+                                                                       project_id: project.id,
+                                                                       module_project_id: pmp.id)
+
+            coeff_elt_uow.order("updated_at ASC").each do |gceuw|
+              @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw
+            end
+
             @guw_model_guw_attributes = @guw_model.guw_attributes
             @guw_coefficients = @guw_model.guw_coefficients.includes(:guw_coefficient_elements)
             @guw_coefficient_elements = @guw_coefficients.flat_map(&:guw_coefficient_elements)
@@ -262,12 +275,16 @@ class ProjectsController < ApplicationController
                      #                                                            guw_coefficient_id: gc.id,
                      #                                                            guw_unit_of_work_id: guow.id).order("updated_at ASC").last
 
-                     ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                                      guw_model_id: @guw_model.id,
-                                                                      guw_coefficient_id: gc.id,
-                                                                      project_id: project.id,
-                                                                      module_project_id: pmp.id,
-                                                                      guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+                    begin
+                      ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{gc.id}"]
+                    rescue
+                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                        guw_model_id: @guw_model.id,
+                                                                        guw_coefficient_id: gc.id,
+                                                                        project_id: project.id,
+                                                                        module_project_id: pmp.id,
+                                                                        guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+                    end
 
                      # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                      #                                                   guw_model_id: @guw_model.id,
@@ -506,9 +523,9 @@ class ProjectsController < ApplicationController
         end
 
         workbook.write("#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx")
-        # UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
-    #   end
-    # end
+        UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
+      end
+    end
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
     redirect_to :back
