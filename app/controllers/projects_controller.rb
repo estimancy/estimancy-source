@@ -91,8 +91,8 @@ class ProjectsController < ApplicationController
   end
 
   def raw_data_extraction
-    Thread.new do
-      ActiveRecord::Base.connection_pool.with_connection do
+    # Thread.new do
+    #   ActiveRecord::Base.connection_pool.with_connection do
 
         workbook = RubyXL::Workbook.new
 
@@ -256,11 +256,19 @@ class ProjectsController < ApplicationController
                   # Charge sans prod en colonne AI
                 elsif guw_charge_ss_prod_coefficient
                   if gc.id == guw_charge_ss_prod_coefficient.id
-                      #ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
-                     ceuw = project.guw_coefficient_element_unit_of_works.where(guw_model_id: @guw_model.id,
-                                                                                module_project_id: pmp.id,
-                                                                                guw_coefficient_id: gc.id,
-                                                                                guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+                     # ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+                     # ceuw = project.guw_coefficient_element_unit_of_works.where(guw_model_id: @guw_model.id,
+                     #                                                            module_project_id: pmp.id,
+                     #                                                            guw_coefficient_id: gc.id,
+                     #                                                            guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
+                     ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                      guw_model_id: @guw_model.id,
+                                                                      guw_coefficient_id: gc.id,
+                                                                      project_id: project.id,
+                                                                      module_project_id: pmp.id,
+                                                                      guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
                      # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                      #                                                   guw_model_id: @guw_model.id,
                      #                                                   guw_coefficient_id: gc.id,
@@ -498,9 +506,9 @@ class ProjectsController < ApplicationController
         end
 
         workbook.write("#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx")
-        UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
-      end
-    end
+        # UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
+    #   end
+    # end
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
     redirect_to :back
