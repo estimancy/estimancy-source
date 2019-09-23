@@ -260,7 +260,7 @@ class ProjectsController < ApplicationController
                      ceuw = project.guw_coefficient_element_unit_of_works.where(guw_model_id: @guw_model.id,
                                                                                 module_project_id: pmp.id,
                                                                                 guw_coefficient_id: gc.id,
-                                                                                guw_unit_of_work_id: guow.id).order("updated_at DESC").last
+                                                                                guw_unit_of_work_id: guow.id).order("updated_at ASC").last
                      # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                      #                                                   guw_model_id: @guw_model.id,
                      #                                                   guw_coefficient_id: gc.id,
