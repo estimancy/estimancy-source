@@ -2451,3 +2451,4 @@ fr_bnp:
   desc_order: "Décroissant"
 
   coefficients_list: "Liste des coefficients"
+  hide_all: "Masquer l'entête de la WBS"

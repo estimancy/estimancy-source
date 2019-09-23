@@ -2482,3 +2482,7 @@ frsncf:
   add_to_kb: "Ajouter à la base de connaissance"
 
   coefficients_list: "Liste des coefficients"
+  hide_all: "Masquer l'entête de la WBS"
+  phase_short_name: "Nom court de la phase"
+  variable_name: "Nom de la variable"
+  percentage_of_input: "Pourcentage de l'entrée"

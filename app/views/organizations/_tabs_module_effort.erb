@@ -5,8 +5,10 @@
 
     <% if can? :show_modules_instances, ModuleProject %>
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:create_button), ge.new_ge_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+        <%= link_to I18n.t(:create_button), ge.new_ge_model_path(organization_id: @organization.id), :class => 'btn btn-primary float-md-right', style: 'margin-bottom:1rem;' %>
       <% end %>
+
+      <br>
 
       <table class="table table-list">
         <tr>
@@ -48,11 +50,11 @@
 
 <div class="row">
   <div class="col-12">
-    <h5 class="blue"><%= I18n.t(:knowledge_base_module)%></h5>
+    <h5><%= I18n.t(:knowledge_base_module)%></h5>
 
     <% if can? :show_modules_instances, ModuleProject %>
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:create_button), kb.new_kb_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+        <%= link_to I18n.t(:create_button), kb.new_kb_model_path(organization_id: @organization.id), :class => 'btn btn-primary float-md-right', style: 'margin-bottom:1rem;' %>
       <% end %>
 
       <table class="table table-list">
@@ -97,12 +99,15 @@
 
 <div class="row">
   <div class="col-12">
-    <h5 class="blue"><%= I18n.t(:operation_module) %></h5>
 
-    <% if can? :show_modules_instances, ModuleProject %>
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:create_button), operation.new_operation_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
-      <% end %>
+      <h5><%= I18n.t(:operation_module) %></h5>
+
+      <% if can? :show_modules_instances, ModuleProject %>
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= link_to I18n.t(:create_button), operation.new_operation_model_path(organization_id: @organization.id), :class => 'btn btn-primary float-md-right', style: 'margin-bottom:1rem;' %>
+        <% end %>
+
+      <br/>
 
       <table class="table table-list">
         <tr>
@@ -146,7 +151,7 @@
   <div class="col-12">
     <h5 class="blue"><%= I18n.t(:Judgment_Expert_module) %></h5>
     <% if can? :manage_modules_instances, ModuleProject %>
-      <%= link_to I18n.t(:create_button), expert_judgement.new_instance_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+      <%= link_to I18n.t(:create_button), expert_judgement.new_instance_path(organization_id: @organization.id), :class => 'btn btn-primary float-md-right', style: 'margin-bottom:1rem;' %>
     <% end %>
 
     <table class="table table-list">
