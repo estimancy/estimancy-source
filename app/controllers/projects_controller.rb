@@ -106,7 +106,7 @@ class ProjectsController < ApplicationController
                                                :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
 
         worksheet_cf = workbook.worksheets[0]
-        worksheet_cf.sheet_name = 'Composants Abaques & Services Dire Expert'
+        worksheet_cf.sheet_name = 'Comp. Abaques & Serv. Dire Exp'
         worksheet_wbs = workbook.add_worksheet('Services avec ratio')
         worksheet_synt = workbook.add_worksheet('Synthèse')
 
@@ -197,7 +197,7 @@ class ProjectsController < ApplicationController
             @guw_coefficient_elements = @guw_coefficients.flat_map(&:guw_coefficient_elements)
             guw_charge_ss_prod_coefficient = @guw_coefficients.where(coefficient_type: "Coefficient", name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"]).first
 
-            guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)"], guw_model_id: @guw_model.id).first
+            guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)", "Charge Services (jh)", "Charge (jh)"], guw_model_id: @guw_model.id).first
             #guw_output_charge_ss_prod = Guw::GuwOutput.where(name: ["Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
             guw_output_charge_ss_prod = Guw::GuwOutput.where(output_type: "Effort", name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
             guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first
@@ -269,12 +269,6 @@ class ProjectsController < ApplicationController
                   # Charge sans prod en colonne AI
                 elsif guw_charge_ss_prod_coefficient
                   if gc.id == guw_charge_ss_prod_coefficient.id
-                     # ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
-                     # ceuw = project.guw_coefficient_element_unit_of_works.where(guw_model_id: @guw_model.id,
-                     #                                                            module_project_id: pmp.id,
-                     #                                                            guw_coefficient_id: gc.id,
-                     #                                                            guw_unit_of_work_id: guow.id).order("updated_at ASC").last
-
                     begin
                       ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{gc.id}"]
                     rescue
@@ -285,18 +279,10 @@ class ProjectsController < ApplicationController
                                                                         module_project_id: pmp.id,
                                                                         guw_unit_of_work_id: guow.id).order("updated_at ASC").last
                     end
-
-                     # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                     #                                                   guw_model_id: @guw_model.id,
-                     #                                                   guw_coefficient_id: gc.id,
-                     #                                                   project_id: project.id,
-                     #                                                   module_project_id: pmp.id,
-                     #                                                   guw_unit_of_work_id: guow.id).order("updated_at ASC").last
-                      #####################
                       # project = Project.find(2077)
                       # project.guw_coefficient_element_unit_of_works.where(guw_model_id: 494, module_project_id: 5053, guw_unit_of_work_id: 18606, guw_coefficient_id: 637).first
                       #####################
-                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent.to_f))  # « Charge ss prod. (jh) » en colonne AI
+                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent))  # « Charge ss prod. (jh) » en colonne AI
                   end
                 end
               end
@@ -316,19 +302,12 @@ class ProjectsController < ApplicationController
 
 
               #On recuperer les sorties "Charge ss prod. (jh)"
-              # if guw_output_charge_ss_prod.nil?
-              #   ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-              #                                                     guw_model_id: @guw_model.id,
-              #                                                     guw_coefficient_id: guw_charge_ss_prod_coefficient.id,
-              #                                                     project_id: project.id,
-              #                                                     module_project_id: pmp.id,
-              #                                                     guw_unit_of_work_id: guow.id).order("updated_at ASC").last
-              #   ceuw_percent = ceuw.percent
-              #   guw_output_charge_ss_prod_value = ceuw_percent.blank? ? nil : ceuw_percent.to_f.round(2)
-              # else
-              #   guw_output_charge_ss_prod_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
-              #   guw_output_charge_ss_prod_value = (guw_output_charge_ss_prod_value_tmp.blank? ? nil : guw_output_charge_ss_prod_value_tmp.to_f.round(2))
-              # end
+              unless guw_output_charge_ss_prod.nil?
+                guw_output_charge_ss_prod_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
+                guw_output_charge_ss_prod_value = (guw_output_charge_ss_prod_value_tmp.blank? ? nil : guw_output_charge_ss_prod_value_tmp.to_f.round(2))
+                worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
+
+              end
 
               #On recuperer les sorties avec "Charge (jh)" avec productivité
               unless guw_output_effort.nil?
@@ -342,7 +321,6 @@ class ProjectsController < ApplicationController
                 guw_output_cost_value = (guw_output_cost_value_tmp.blank? ? nil : guw_output_cost_value_tmp.to_f.round(2))
               end
 
-              #worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, guw_output_charge_ss_prod_value)  # « Charge ss prod. (jh) » en colonne AI
               worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 1, guw_output_effort_value)  # « Charge avec prod. (jh) » en colonne AJ
               worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 2, guw_output_cost_value)  # « Coût Services (€) » en colonne AK
 
