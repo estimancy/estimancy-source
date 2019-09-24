@@ -117,6 +117,9 @@
       <div class="card-body">
         <div class="edition-bloc-content pb-4">
           <div class="guw-list">
+
+            <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link"><%= uowg %></a>
+
             <table class="table table-sm requirements-table estimation-table group_<%= uowg.id %>" id="guw">
               <tr>
                 <th colspan="2"><%= I18n.t :name %></th>
@@ -174,25 +177,6 @@
                 <th class=""><%= I18n.t :actions %></th>
               </tr>
 
-              <tr style="height: 0px;">
-                <td colspan="3">
-                  <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link"><%= uowg %></a>
-                </td>
-                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
-                  <% unless i[1].blank? %>
-                    <% go = @hash_guw_outputs[i[0]] %>
-                    <% if go.class == Guw::GuwOutput %>
-                      <td>
-                        <strong class="center" id="total_<%= uowg.id %>_<%= go.id %>" style="padding-left: 5%;"></strong>
-                      </td>
-                    <% else %>
-                      <td></td>
-                    <% end %>
-                  <% end %>
-                <% end %>
-                <td></td>
-              </tr>
-
               <% @hash_guw_complexities = {} %>
               <% Guw::GuwComplexity.all.each do |guw_complexity| %>
                 <% @hash_guw_complexities[guw_complexity.guw_type_id] = guw_complexity %>
@@ -218,6 +202,25 @@
                 <tr style="background-color: <%= color %>" id="<%= guow.id %>" data-guw-id="<%= guow.id %>">
                   <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
                 </tr>
+
+                <tr style="height: 0px;">
+                  <td colspan="3">
+                  </td>
+                  <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                    <% unless i[1].blank? %>
+                      <% go = @hash_guw_outputs[i[0]] %>
+                      <% if go.class == Guw::GuwOutput %>
+                        <td>
+                          <strong class="center" id="total_<%= uowg.id %>_<%= go.id %>" style="padding-left: 5%;"></strong>
+                        </td>
+                      <% else %>
+                        <td></td>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                  <td></td>
+                </tr>
+
               <% end %>
             </table>
           </div>
@@ -824,7 +827,7 @@
         $(".total_<%= uowg.id %>_<%= go.id %>").each(function() {
             var value = $(this).val();
             if(!isNaN(value) && value.length != 0) {
-                sum += parseFloat(value);
+                sum += Math.round(parseFloat(value));
             }
         });
 
