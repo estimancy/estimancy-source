@@ -2398,6 +2398,7 @@ fral:
   default_estimations_sort_order: "Ordre de tri par défaut"
   asc_order: "Croissant"
   desc_order: "Décroissant"
+  show_module_name: "Afficher le nom du module"
 
   coefficients_list: "Liste des coefficients"
   hide_all: "Masquer l'entête de la WBS"

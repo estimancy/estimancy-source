@@ -17,11 +17,42 @@
       <li class="nav-item">
         <a class="nav-link"  data-toggle="pill" id="pills-technical_informations-tab" href="#pills-technical_informations" role="tab" aria-selected="false"><%= I18n.t(:technical_informations) %></a>
       </li>
+
+      <li class="nav-item">
+        <a class="nav-link"  data-toggle="pill" id="pills-kpi-tab" href="#pills-technical_informations" role="tab" aria-selected="false">
+          KPI Configuration
+        </a>
+      </li>
     </ul>
 
     <%= simple_form_for(@organization) do |f| %>
 
         <div class="tab-content" id="pills-tabContent">
+
+          <div class="tab-pane fade show active" id="pills-global_properties" role="tabpanel" aria-labelledby="pills-kpi-tab">
+            <div class="card-body">
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h1>
+                    KPI Configuration
+                  </h1>
+                </div>
+              </div>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  <div class="form-row">
+
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
 
           <div class="tab-pane fade show active" id="pills-global_properties" role="tabpanel" aria-labelledby="pills-global_properties-tab">
             <div class="card-body">

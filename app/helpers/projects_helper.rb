@@ -1196,7 +1196,11 @@ module ProjectsHelper
           effort_unit = ge_model.input_effort_unit
         end
 
-        "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)} #{effort_unit}"
+        if current_user.locale == "en"
+          "#{effort_unit} #{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)}"
+        else
+          "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)} #{effort_unit}"
+        end
 
       elsif module_project.pemodule.alias == "effort_breakdown"
         wbs_activity = module_project.wbs_activity
@@ -1207,13 +1211,25 @@ module ProjectsHelper
           if use_organization_effort_unit == true
             # Use orgnization effort unit
             organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, project.organization)
-            "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
+            if current_user.locale == "en"
+              "#{organization_effort_unit} #{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)}"
+            else
+              "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)} #{organization_effort_unit}"
+            end
           else
-            # Use orgnization effort unit
-            "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
+            # Use wbs effort unit
+            if current_user.locale == "en"
+              "#{wbs_activity.effort_unit} #{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)}"
+            else
+              "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)} #{wbs_activity.effort_unit}"
+            end
           end
         else
-          "#{convert_with_precision(convert(value, project.organization), precision, true)} #{convert_label(value, project.organization)}"
+          if current_user.locale == "en"
+            "#{convert_label(value, project.organization)} #{convert_with_precision(convert(value, project.organization), precision, true)} "
+          else
+            "#{convert_with_precision(convert(value, project.organization), precision, true)} #{convert_label(value, project.organization)}"
+          end
         end
 
       elsif module_project.pemodule.alias == "staffing"

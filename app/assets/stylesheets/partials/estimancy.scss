@@ -144,3 +144,117 @@ table td.guw-cell-ajustment{
   float: right;
   display: block;
 }
+
+.text_center {
+  text-align: center !important;
+}
+
+.grid-stack > .grid-stack-item > .ui-resizable-se, .grid-stack > .grid-stack-item > .ui-resizable-sw {
+  margin-bottom: 0.3rem;   //margin-bottom: 2rem;
+}
+
+.grid-stack > .grid-stack-item.table_graph > .ui-resizable-se {
+  //margin-bottom: 19.5rem;
+  //margin-bottom: 67%;
+  margin-bottom: 7rem; //5rem;
+}
+
+.grid-stack > .grid-stack-item.label_widget > .ui-resizable-se {
+  margin-bottom: 1.5rem;  //1rem;
+  margin-right: -3.5rem; //-1.5rem;
+}
+
+.grid-stack > .grid-stack-item .card-body{
+  padding: 1.5rem 1.3rem 1.5rem 0 !important;
+}
+
+.dragme {
+  display: none;
+  margin-top: -1.5rem;
+}
+
+.grid-stack-item:hover .dragme {
+  display: inline-block;
+  margin-top: -1.5rem;
+  float: right;
+}
+
+.label_widget_icon {
+  display: none;
+  float: right; margin-top: -0.5rem; margin-right: -1.5rem
+}
+
+.grid-stack-item.label_widget:hover .label_widget_icon {
+  display: inline-block;
+}
+
+.overview-value {
+  font-family: "Roboto";
+  font-size: 17px;
+  line-height: normal;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+  color: #007DAB;
+  margin-right: 10px;
+}
+
+.overview-margin{
+  margin-bottom: 2rem;
+}
+
+.grip{
+  cursor: all-scroll;
+}
+
+table .table .table_effort_per_phase tr td {
+  font-weight: normal;
+}
+//.grid-stack > .grid-stack-item.table_graph{
+//  min-height: auto;
+//  height: auto;
+//  margin-top: -30px;
+//}
+
+//.grid-stack > .grid-stack-item > .card.card-indicator .card-body{
+//  padding: 1.5rem 1.3rem 1.5rem 0;
+//}
+//
+//.grid-stack .card-body{
+//  padding: unset;
+//}
+
+
+//.grid-stack .grid-stack-item .grid-stack-item-content,
+//.grid-stack .grid-stack-item .placeholder-content {
+//  left: 2px;
+//  right: 2px;
+//  bottom: -4px;
+//  top: -6px;
+//}
+
+
+//.grid-stack .grid-stack-placeholder > .placeholder-content {
+//  left: 0;
+//  right: 0;
+//  top: 0;
+//  bottom: 0;
+//}
+//.grid-stack > .grid-stack-item > .grid-stack-item-content {
+//  left: 0;
+//  right: 0;
+//  top: 0;
+//  bottom: 0;
+//}
+//
+.grid {
+  border: 2px solid #ddd;
+  width: 50%;
+  min-height: 300px;
+  height: auto;
+}
+
+.label_widget_title{
+  font-weight: bold;
+  font-size: 18px;
+  margin-left: -15rem;
+}

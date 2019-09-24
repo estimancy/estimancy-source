@@ -152,9 +152,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def down
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    @guw_unit_of_work_group = @guw_unit_of_work.guw_unit_of_work_group
+
+    @guw_unit_of_work2 = Guw::GuwUnitOfWork.where(display_order: @guw_unit_of_work.display_order.to_i + 1,
+                                                  guw_unit_of_work_group_id: @guw_unit_of_work_group.id).first
 
     @guw_unit_of_work.display_order = @guw_unit_of_work.display_order.to_i + 1
+    @guw_unit_of_work2.display_order = @guw_unit_of_work.display_order.to_i - 1
+
     @guw_unit_of_work.save
+    @guw_unit_of_work2.save
 
     reorder @guw_unit_of_work.guw_unit_of_work_group
 
@@ -361,85 +368,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @technologies = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq
   end
 
-  # Voir utlisation de la Vue
-  def change_selected_state_save
-    authorize! :execute_estimation_plan, @project
-
-    module_project = current_module_project
-    component = current_component
-    number_precision = user_number_precision
-
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-
-    if @guw_unit_of_work.selected == false
-      @guw_unit_of_work.selected = true
-    else
-      @guw_unit_of_work.selected = false
-    end
-
-    @guw_unit_of_work.save
-
-    @group = Guw::GuwUnitOfWorkGroup.find(params[:guw_unit_of_work_group_id])
-    @mp_guw_group = ModuleProjectGuwUnitOfWorkGroup.where(guw_unit_of_work_group_id: :@group.id, pbs_project_element_id: component.id)
-    @group_module_project_guw_unit_of_works = @group.module_project_guw_unit_of_works.where(pbs_project_element_id: component.id,
-                                                                                            guw_model_id: @guw_unit_of_work.guw_model.id)
-    @group_number_of_unit_of_works = @group.number_of_uow_lines.to_f.round(number_precision)
-    @group_selected_of_unit_of_works = @group.number_of_uow_selected_lines.to_f.round(number_precision)
-
-    #For grouped unit of work
-    @group_size_ajusted = @group_module_project_guw_unit_of_works.where(selected: true).map{ |i| (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : i.ajusted_size["#{guw_output.id}"].to_f) }.sum.to_f.round(number_precision)
-
-    @group_size_theorical = @group_module_project_guw_unit_of_works.where(selected: true).map{|i| (i.size.is_a?(Numeric) ? i.size.to_f : i.size["#{guw_output.id}"].to_f)}.sum.to_f.round(number_precision)
-
-    #For all unit of work
-    @ajusted_size = Guw::GuwUnitOfWork.where(selected: true,
-                                             organization_id: @project.organization_id,
-                                             project_id: @project.id,
-                                             module_project_id: module_project.id,
-                                             pbs_project_element_id: component.id,
-                                             guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map{|i| i.ajusted_size.to_f }.sum.to_f.round(user_number_precision)
-
-    @theorical_size = Guw::GuwUnitOfWork.where(selected: true,
-                                               pbs_project_element_id: component.id,
-                                               module_project_id: module_project.id,
-                                               guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map{|i| i.size.to_f }.sum.to_f.round(user_number_precision)
-
-    @effort = Guw::GuwUnitOfWork.where(selected: true,
-                                       organization_id: @project.organization_id,
-                                       project_id: @project.id,
-                                       module_project_id: module_project.id,
-                                       pbs_project_element_id: component.id,
-                                       guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map{|i| i.effort.to_f }.sum.to_f.round(user_number_precision)
-
-    @cost = Guw::GuwUnitOfWork.where(selected: true,
-                                     organization_id: @project.organization_id,
-                                     project_id: @project.id,
-                                     module_project_id: module_project.id,
-                                     pbs_project_element_id: component.id,
-                                     guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map{|i| i.cost.to_f }.sum.to_f.round(number_precision)
-
-    @number_of_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @project.organization_id,
-                                                        project_id: @project.id,
-                                                        module_project_id: module_project.id,
-                                                        pbs_project_element_id: component.id,
-                                                        guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map(&:quantity).sum.to_f.round(number_precision)
-
-    @selected_of_unit_of_works = Guw::GuwUnitOfWork.where(selected: true,
-                                                          organization_id: @project.organization_id,
-                                                          project_id: @project.id,
-                                                          module_project_id: module_project.id,
-                                                          pbs_project_element_id: component.id,
-                                                          guw_model_id: @guw_unit_of_work.guw_model.id, guw_unit_of_work_id: nil).map(&:quantity).sum.to_f.round(number_precision)
-
-    update_estimation_values
-    update_view_widgets_and_project_fields
-  end
-
-
   def change_selected_state
-    authorize! :execute_estimation_plan, @project
+    # authorize! :execute_estimation_plan, @project
 
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    # @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     # @module_project = @guw_unit_of_work.module_project
     #
     # @organization = @module_project.organization
@@ -447,13 +379,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     # @component = current_component
     # @group = @guw_unit_of_work.guw_unit_of_work_group
 
-    if @guw_unit_of_work.selected == false
-      @guw_unit_of_work.selected = true
-    else
-      @guw_unit_of_work.selected = false
-    end
-
-    @guw_unit_of_work.save
+    # if @guw_unit_of_work.selected == false
+    #   @guw_unit_of_work.selected = true
+    # else
+    #   @guw_unit_of_work.selected = false
+    # end
+    #
+    # @guw_unit_of_work.save
 
     # current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works
     # @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
@@ -720,6 +652,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
 
       @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
+
+        if guw_unit_of_work.selected == false
+          guw_unit_of_work.selected = true
+        else
+          guw_unit_of_work.selected = false
+        end
+
+        guw_unit_of_work.save
 
         guw_unit_of_work.ajusted_size = nil
         guw_unit_of_work.size = nil

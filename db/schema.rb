@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190828082147) do
+ActiveRecord::Schema.define(version: 20190910135616) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -2044,7 +2044,7 @@ ActiveRecord::Schema.define(version: 20190828082147) do
     t.boolean  "allow_export_pdf"
     t.integer  "demand_id",                      limit: 4
     t.boolean  "urgent_project"
-    t.boolean  "is_valid",                                     default: true
+    t.boolean  "is_valid"
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
@@ -2522,6 +2522,7 @@ ActiveRecord::Schema.define(version: 20190828082147) do
     t.integer  "max_value",                    limit: 4
     t.string   "validation_text",              limit: 255
     t.integer  "estimation_status_id",         limit: 4
+    t.boolean  "show_module_name"
   end
 
   add_index "views_widgets", ["module_project_id", "pe_attribute_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree

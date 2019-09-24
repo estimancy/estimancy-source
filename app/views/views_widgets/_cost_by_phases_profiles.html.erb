@@ -20,14 +20,14 @@
 
 <div>
   <div class="pull-left">
-    <table id="profiles_per_activity" class="table table-bordered table-condensed table_effort_per_phase" style="margin-left:20px;">
+    <table id="profiles_per_activity" class="table table-sm" style="margin-left:20px;">
       <tr>
-        <th><%= I18n.t(:phases) %></th>
+        <th style="text-align: left"><%= I18n.t(:phases) %></th>
         <% if view_widget.show_tjm %>
             <th><%= tjm_taux_moyen %></th>
         <% end %>
 
-        <th colspan="<%= project_organization_profiles.length %>"><%= I18n.t(:profiles) %></th>
+        <th colspan="<%= project_organization_profiles.length %>" class="text_center"><%= I18n.t(:profiles) %></th>
         <th rowspan="2">
           <%= I18n.t(:total_per_phase) %> <br>
           <span>
@@ -42,7 +42,7 @@
         <% if project_organization_profiles.length > 0 %>
             <% mp_profiles_length = project_organization_profiles.length+1 %>
             <% project_organization_profiles.each do |profile| %>
-                <th><%= profile.name %></th>
+                <th class="text_center"><%= profile.name %></th>
             <% end %>
         <% else %>
             <% mp_profiles_length = 2 %>
@@ -153,15 +153,15 @@
                                             <% end %>
                                         <% end %>
                                         <% if wbs_activity_elt.is_root? %>
-                                            <td style="text-align: right">
+                                            <td class="text_center">
                                               -
                                             </td>
                                         <% elsif  wbs_profiles_value.nil? %>
-                                            <td style="text-align: right">
+                                            <td class="text_center">
                                               -
                                             </td>
                                         <% else %>
-                                            <td style="text-align: right">
+                                            <td class="text_center">
                                               <% effort_per_phase = effort_per_phase.nil? ? nil : effort_per_phase.to_f %>
                                               <% if wbs_profiles_value.class == Hash %>
                                                   <% wbs_profiles_value = (wbs_profiles_value[wbs_activity_elt.id].nil? ? nil : wbs_profiles_value[wbs_activity_elt.id][profile.id]) %>
@@ -189,7 +189,7 @@
                                             </td>
                                         <% end %>
                                     <% else %>
-                                        <td style="text-align: right"> - </td>
+                                        <td class="text_center"> - </td>
                                     <% end %>
                                 <% end %>
 
@@ -201,7 +201,7 @@
                             <% if wbs_activity_elt.parent_id == wbs_activity_element_root.id %>
                                 <% total_per_phase_to_sum << effort_per_phase %>
                             <% end %>
-                            <td style="text-align: right">
+                            <td class="text_center">
                               <% if wbs_unit == "€" %>
                                 <%= effort_per_phase.nil? ? "-" :  "#{convert_with_precision(effort_per_phase, user_number_precision, true)} #{wbs_unit}" %>
                               <% else %>
@@ -236,7 +236,7 @@
                     </td>
                     <% if project_organization_profiles.length > 0 %>
                         <% project_organization_profiles.each do |profile| %>
-                            <td style="text-align: right">
+                            <td class="text_center">
                               <% unless  array_root[profile.id].empty? %>
                                   <%# root_effort_per_profile = array_root[profile.id].map(&:to_f).sum.to_f %>
                                   <% root_effort_per_profile = array_root[profile.id].map(&:to_f).sum %>
@@ -263,9 +263,16 @@
                     <% end %>
 
                     <td>
-                      <div class="pull-right"><strong><%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} #{wbs_unit}" %></strong></div>
-                      <br />
-                      <div class="pull-left"><strong><%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(root_effort_per_phase, user_number_precision, true)} #{wbs_unit}" %></strong></div>
+                      <% if wbs_unit == "€" %>
+                          <div class="text_center"><strong><%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} #{wbs_unit}" %></strong></div>
+                          <br />
+                          <div class="text_center"><strong><%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(root_effort_per_phase, user_number_precision, true)} #{wbs_unit}" %></strong></div>
+                      <% else %>
+
+                          <div class="text_center"><strong><%= total_per_phase_to_sum.compact.empty? ? "-" : "#{wbs_unit} #{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)}" %></strong></div>
+                          <br />
+                          <div class="text_center"><strong><%= root_effort_per_phase.nil? ? "-" : " #{wbs_unit} #{convert_with_precision(root_effort_per_phase, user_number_precision, true)}" %></strong></div>
+                      <% end %>
                     </td>
 
                 <% end %>

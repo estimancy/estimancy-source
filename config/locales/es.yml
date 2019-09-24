@@ -2052,6 +2052,7 @@ es:
   default_estimations_sort_order: "Default sort order"
   asc_order: "Ascending"
   desc_order: "Descending"
+  show_module_name: "Show module name"
 
   coefficients_list: "Coefficients List"
   hide_all: "Hide All"

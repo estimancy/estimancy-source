@@ -43,7 +43,8 @@
       </thead>
 
       <tbody>
-      <% @organization.applications.each do |app| %>
+
+      <% @organization.applications.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |app| %>
           <tr>
             <td><%= app.name %></td>
             <td>

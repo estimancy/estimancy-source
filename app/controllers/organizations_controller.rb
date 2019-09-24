@@ -1976,7 +1976,7 @@ class OrganizationsController < ApplicationController
     @fields = @organization.fields
     @work_element_types = @organization.work_element_types
 
-    @organization_profiles = @organization.organization_profiles
+    @organization_profiles = @organization.organization_profiles.where("name LIKE ?", "%#{params[:advanced_search]}%")
 
     @organization_group = @organization.groups
     @estimation_models = Project.where(organization_id: @organization.id, :is_model => true) #@organization.projects.where(:is_model => true)

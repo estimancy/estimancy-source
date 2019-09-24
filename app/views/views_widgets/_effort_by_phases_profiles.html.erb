@@ -1,8 +1,8 @@
 <div>
   <div class="pull-left">
-    <table id="profiles_per_activity" class="table">
+    <table id="profiles_per_activity" class="table table-sm">
       <tr>
-        <th><%= I18n.t(:phases) %></th>
+        <th style="text-align: left"><%= I18n.t(:phases) %></th>
         <th colspan="<%= project_organization_profiles.length %>"><%= I18n.t(:profiles) %></th>
         <th rowspan="2">
           <%= I18n.t(:total_per_phase) %><br>
@@ -19,7 +19,7 @@
         <% if project_organization_profiles.length > 0 %>
           <% mp_profiles_length = project_organization_profiles.length+1 %>
           <% project_organization_profiles.each do |profile| %>
-            <th><%= profile.name %></th>
+            <th class="text_center"><%= profile.name %></th>
           <% end %>
         <% else %>
             <% mp_profiles_length = 2 %>
@@ -112,15 +112,15 @@
                                   <% end %>
                                 <% end %>
                                   <% if wbs_activity_elt.is_root? %>
-                                    <td style="text-align: right">
+                                    <td class="text_center">
                                       -
                                     </td>
                                   <% elsif  wbs_profiles_value.nil? %>
-                                    <td style="text-align: right">
+                                    <td class="text_center">
                                       -
                                     </td>
                                   <% else %>
-                                    <td style="text-align: right">
+                                    <td class="text_center">
                                       <% effort_per_phase = effort_per_phase.nil? ? effort_per_phase.to_f : effort_per_phase %>
                                       <% if wbs_profiles_value.class == Hash %>
                                         <% wbs_profiles_value = wbs_profiles_value[wbs_activity_elt.id][profile.id].to_f %>
@@ -133,20 +133,24 @@
                                       <% unless wbs_profiles_value.nil? %>
                                         <% effort_per_phase +=  wbs_profiles_value %>
                                       <% end %>
-                                      <% if view_widget.use_organization_effort_unit == true %>
-                                          <%= "#{convert_with_precision(convert_effort_with_organization_unit(wbs_profiles_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                                      <% if current_user.locale == "en" %>
+                                          <% if view_widget.use_organization_effort_unit == true %>
+                                              <%= " #{organization_effort_unit} #{convert_with_precision(convert_effort_with_organization_unit(wbs_profiles_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)}" %>
+                                          <% else %>
+                                              <%= "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(wbs_profiles_value, effort_unit_coefficient), user_number_precision, true)}" %>
+                                          <% end %>
                                       <% else %>
-                                        <% if wbs_unit == "€" %>
-                                          <%= "#{convert_with_precision(convert_wbs_activity_value(wbs_profiles_value, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
-                                        <% else %>
-                                          <%= "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(wbs_profiles_value, effort_unit_coefficient), user_number_precision, true)}" %>
-                                        <% end %>
+                                          <% if view_widget.use_organization_effort_unit == true %>
+                                              <%= "#{convert_with_precision(convert_effort_with_organization_unit(wbs_profiles_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                                          <% else %>
+                                              <%= "#{convert_with_precision(convert_wbs_activity_value(wbs_profiles_value, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit} " %>
+                                          <% end %>
                                       <% end %>
 
                                     </td>
                                   <% end %>
                              <% else %>
-                                <td style="text-align: right"> - </td>
+                                <td class="text_center"> - </td>
                              <% end %>
                           <% end %>
 
@@ -158,11 +162,20 @@
                         <% if wbs_activity_elt.parent_id == wbs_activity_element_root.id %>
                             <% total_per_phase_to_sum <<  effort_per_phase %>
                         <% end %>
-                        <td style="text-align: right">
+                        <td class="text_center">
                           <% if view_widget.use_organization_effort_unit == true %>
-                              <%= effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(effort_per_phase, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                              <% if current_user.locale == "en" %>
+                                <%= effort_per_phase.nil? ? "-" : "#{organization_effort_unit} #{convert_with_precision(convert_effort_with_organization_unit(effort_per_phase, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)}" %>
+                              <% else %>
+                                  <%= effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(effort_per_phase, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                              <% end %>
+
                           <% else %>
-                              <%= effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(effort_per_phase, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
+                              <% if current_user.locale == "en" %>
+                                <%= effort_per_phase.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(effort_per_phase, effort_unit_coefficient), user_number_precision, true)}" %>
+                              <% else %>
+                                  <%= effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(effort_per_phase, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
+                              <% end %>
                           <% end %>
                         </td>
                       </tr>
@@ -182,22 +195,25 @@
                 </td>
                 <% if project_organization_profiles.length > 0 %>
                     <% project_organization_profiles.each do |profile| %>
-                      <td style="text-align: right">
+                      <td class="text_center">
                         <% unless  array_root[profile.id].empty? %>
                             <% root_effort_per_profile = array_root[profile.id].map(&:to_f).sum %>
                             <% root_effort_per_phase = root_effort_per_phase.nil? ? root_effort_per_phase.to_f : root_effort_per_phase %>
                             <% root_effort_per_phase +=  root_effort_per_profile %>
                         <% end %>
                         <br />
-                        <% if view_widget.use_organization_effort_unit == true %>
-                            <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(root_effort_per_profile, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                        <% if current_user.locale == "en" %>
+                            <% if view_widget.use_organization_effort_unit == true %>
+                                <%= root_effort_per_profile.nil? ? "-" : "#{organization_effort_unit} #{convert_with_precision(convert_effort_with_organization_unit(root_effort_per_profile, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)}" %>
+                            <% else %>
+                                <%= root_effort_per_profile.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(root_effort_per_profile, effort_unit_coefficient), user_number_precision, true)} " %>
+                            <% end %>
                         <% else %>
-
-                          <% if wbs_unit == "€" %>
-                            <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(root_effort_per_profile, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
-                          <% else %>
-                            <%= root_effort_per_profile.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(root_effort_per_profile, effort_unit_coefficient), user_number_precision, true)}" %>
-                          <% end %>
+                            <% if view_widget.use_organization_effort_unit == true %>
+                                <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(root_effort_per_profile, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                            <% else %>
+                                <%= root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(root_effort_per_profile, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
+                            <% end %>
                         <% end %>
                       </td>
                     <% end %>
@@ -205,16 +221,20 @@
                     <td></td>
                 <% end %>
                 <td>
-                  <div class="pull-right">
+                  <div class="text_center">
                     <strong>
-                      <% if view_widget.use_organization_effort_unit == true %>
-                        <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(total_per_phase_to_sum.map(&:to_f).sum.to_f, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                      <% if current_user.locale == "en" %>
+                          <% if view_widget.use_organization_effort_unit == true %>
+                            <%= total_per_phase_to_sum.compact.empty? ? "-" : " #{organization_effort_unit} #{convert_with_precision(convert_effort_with_organization_unit(total_per_phase_to_sum.map(&:to_f).sum.to_f, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)}" %>
+                          <% else %>
+                              <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(total_per_phase_to_sum.map(&:to_f).sum.to_f, effort_unit_coefficient), user_number_precision, true)}" %>
+                          <% end %>
                       <% else %>
-                        <% if wbs_unit == "€" %>
-                          <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(total_per_phase_to_sum.map(&:to_f).sum.to_f, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
-                        <% else %>
-                          <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(total_per_phase_to_sum.map(&:to_f).sum.to_f, effort_unit_coefficient), user_number_precision, true)}" %>
-                        <% end %>
+                          <% if view_widget.use_organization_effort_unit == true %>
+                              <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(total_per_phase_to_sum.map(&:to_f).sum.to_f, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                          <% else %>
+                              <%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(total_per_phase_to_sum.map(&:to_f).sum.to_f, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit} " %>
+                          <% end %>
                       <% end %>
                     </strong>
                   </div>
@@ -222,15 +242,19 @@
                   <div class="pull-left">
                     <strong>
                       <%#= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert(root_effort_per_phase, @current_organization), user_number_precision, true)} #{wbs_unit}" %>
+                      <% if current_user.locale == "en" %>
+                          <% if view_widget.use_organization_effort_unit == true  %>
+                              <%= root_effort_per_phase.nil? ? "-" : "#{organization_effort_unit} #{convert_with_precision(convert_effort_with_organization_unit(root_effort_per_phase, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)}" %>
+                          <% else %>
+                              <%= root_effort_per_phase.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(root_effort_per_phase, effort_unit_coefficient), user_number_precision, true)}" %>
+                          <% end %>
 
-                      <% if view_widget.use_organization_effort_unit == true  %>
-                          <%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(root_effort_per_phase, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
                       <% else %>
-                        <% if wbs_unit == "€" %>
-                          <%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_wbs_activity_value(root_effort_per_phase, effort_unit_coefficient), user_number_precision, true)} #{wbs_unit}" %>
-                        <% else %>
-                          <%= root_effort_per_phase.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(root_effort_per_phase, effort_unit_coefficient), user_number_precision, true)}" %>
-                        <% end %>
+                          <% if view_widget.use_organization_effort_unit == true  %>
+                              <%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(convert_effort_with_organization_unit(root_effort_per_phase, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)} #{organization_effort_unit}" %>
+                          <% else %>
+                              <%= root_effort_per_phase.nil? ? "-" : "#{wbs_unit} #{convert_with_precision(convert_wbs_activity_value(root_effort_per_phase, effort_unit_coefficient), user_number_precision, true)}" %>
+                          <% end %>
                       <% end %>
                     </strong>
                   </div>

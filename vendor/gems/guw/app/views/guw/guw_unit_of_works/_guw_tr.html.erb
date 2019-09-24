@@ -63,15 +63,15 @@
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
 </td>
 
-<td class="guw-cell-ajustment">
-  <b>
-    <% if guow.guw_unit_of_work.nil? %>
-      #<%= guow.id %>
-    <% else %>
-      -
-    <% end %>
-  </b>
-</td>
+<!--<td class="guw-cell-ajustment">-->
+<!--  <b>-->
+    <%# if guow.guw_unit_of_work.nil? %>
+<!--      #<%#= guow.id %>-->
+    <%# else %>
+<!--      --->
+    <%# end %>
+<!--  </b>-->
+<!--</td>-->
 
 <td class="text_field_text_overflow span3 guw-cell-ajustment">
   <span class="pull-left">
@@ -162,7 +162,7 @@
 
         <% end %>
       <% end %>
-    <% elsif i[0] == "Criteria" %>
+    <% elsif i[0] == "Criteria" || i[0] == "Critères" %>
       <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
         <td class="guw-cell-ajustment">
           <% unless @guw_type.nil? %>
@@ -170,9 +170,9 @@
               <span class="text-center criteria_label_<%= guow.id %>">
                 <% counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
                 <% if counting.empty? %>
-                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{ (guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
                 <% else %>
-                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{(guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{ (guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
                 <% end %>
               </span>
             <% else %>
@@ -183,7 +183,7 @@
           <% end %>
         </td>
       <% end %>
-    <% elsif i[0] == "Coeff. complexity" %>
+    <% elsif i[0] == "Coeff. complexity" || i[0] == "Coeff. de Complexité" %>
       <% unless @guw_type.nil? %>
         <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
       <% end %>
@@ -435,7 +435,7 @@
                   <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
                                        step: 0.001,
                                        readonly: true,
-                                       class: "guw-#{guow.id} guw_number_field_tag retained form-control",
+                                       class: "guw-#{guow.id} guw_number_field_tag retained form-control total_#{uowg.id}_#{@guw_output.id}",
                                        style: "text-align: right; " %>
                 </span>
               <%# end %>
@@ -551,8 +551,15 @@
               <%= link_to raw("<i class='material-icons'>file_copy</i> Suggest a correction"), guw.guw_unit_of_work_add_correction_path(guow), method: "post", class: "dropdown-item" %>
             <% end %>
             <%= link_to raw("<i class='material-icons'>file_copy</i> Duplicate"), guw.guw_unit_of_work_duplicate_path(guow), method: "post",  class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", class: "dropdown-item" %>
-            <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", class: "dropdown-item" %>
+
+            <% unless guow.display_order.to_i <= uowg.guw_unit_of_works.map(&:display_order).min.to_i %>
+              <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", class: "dropdown-item" %>
+            <% end %>
+
+            <% unless guow.display_order.to_i >= uowg.guw_unit_of_works.map(&:display_order).max.to_i %>
+              <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", class: "dropdown-item" %>
+            <% end %>
+
           <% else %>
             <%= link_to raw("<i class='material-icons'>check</i> Accept"), guw.guw_unit_of_work_accept_correction_path(guow), method: "post", class: "dropdown-item" %>
           <% end %>

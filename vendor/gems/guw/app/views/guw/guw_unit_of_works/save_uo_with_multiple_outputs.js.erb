@@ -62,12 +62,18 @@ var my_array = [];
       $("#modified_guw_line_ids").val(my_array);
     });
 
-    $('.selected').change(function(){
-      $.ajax({
-        url: "<%= guw.change_selected_state_path %>",
-        data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
-      });
+    $(".selected").on("change", function(e) {
+      var new_line = $(this).closest("tr").data("guw-id");
+      my_array.push(new_line);
+      $("#modified_guw_line_ids").val(my_array);
     });
+
+//    $('.selected').change(function(){
+//      $.ajax({
+//        url: "<%# guw.change_selected_state_path %>",
+//        data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
+//      });
+//    });
 
     $('.guw_type').change(function(){
       reset($(this).attr("guw"));

@@ -48,7 +48,7 @@
 
 %>
 
-<table class='table table-condensed table-bordered  table_effort_per_phase' style="margin-left:20px;">
+<table class='table table-sm table-condensed table-bordered  table_effort_per_phase' style="margin-left:20px;">
   <tr>
     <th rowspan=""<%= rowspan %>">Phases</th>
     <% if view_widget.show_tjm %>
@@ -90,9 +90,9 @@
             <% element_tjm = mp_ratio_element.tjm %>
             <% if mp_ratio_element.is_root? %>
                 <td>
-                  <strong style="vertical-align: middle">
+                  <span style="vertical-align: middle">
                     <span id='<%= "tjm_global_#{view_widget.id}" %>'></span>
-                  </strong>
+                  </span>
                 </td>
             <% else %>
                 <td><%= element_tjm.blank? ? "-" : convert_with_precision(element_tjm, 3, true) %></td>
@@ -111,7 +111,7 @@
                 <!--  # for Effort attribute -->
                 <td class=''>
                   <% if i == 0 %>
-                    <b>
+                    <!--<b>-->
                       <span class='pull-right'>
                         <%=
                           if view_widget.use_organization_effort_unit == true
@@ -123,7 +123,7 @@
                           end
                         %>
                       </span>
-                    </b>
+                    <!--</b>-->
                   <% else %>
                     <span class='pull-right'>
                       <%=

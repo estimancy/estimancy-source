@@ -178,7 +178,7 @@
     </div>
 
     <!-- A afficher que si on affiche que le changement du Ratio et si il y a plusieurs Ratios -->
-    <% if @wbs_activity.hide_wbs_header == "show_only_ratio" || @wbs_activity.hide_wbs_header == "show_all" %>
+    <% if @wbs_activity.hide_wbs_header == "show_only_ratio" %>
       <div class="card card-widget">
         <div class="card-body">
           <div class="edition-bloc-title">
@@ -195,7 +195,7 @@
     <br>
 
     <%# unless @wbs_activity.hide_wbs_header == "show_only_ratio" %>
-      <div class="card card-widget" style="visibility:hidden; position: absolute;">
+      <div class="card card-widget" style="<%= @wbs_activity.hide_wbs_header == 'show_all' ? '' : 'visibility:hidden; position: absolute;' %>">
         <div class="card-body">
           <div class="edition-bloc-title">
             Input Value
@@ -232,6 +232,7 @@
                 <% else %>
                   <th>Effort</th>
                 <% end %>
+                <th><%= I18n.t(:ratio) %></th>
 
                 <% if wbs_activity.three_points_estimation? %>
                   <th><%= I18n.t(:calculated_effort) %></th>
@@ -248,8 +249,8 @@
                   <th><%= I18n.t(:retained_effort) %></th>
                 <% end %>
 
-                <th><%= I18n.t(:ratio) %></th>
                 <th><%= I18n.t(:comment) %></th>
+                <th></th>
               </tr>
 
               <tr class="hide_wbs_header">
@@ -501,12 +502,12 @@
         <% @wbs_activity_ratio =  selected_ratio %>
 
         <% if selected_ratio.nil? %>
-           <%= render :text => "Aucun ratio sélectionné" %>
+          <%= render :text => "Aucun ratio sélectionné" %>
         <% else %>
-            <%= render :partial => 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
-                   :object => [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
-                   locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
-         <% end %>
+          <%= render partial: 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
+                     object: [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
+                     locals: { wbs_activity_ratio: selected_ratio, wai: wai, effort_unit_coeff: coeff, project_organization: organization } %>
+        <% end %>
       </div>
     </div>
 

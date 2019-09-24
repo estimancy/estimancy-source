@@ -61,6 +61,10 @@
   <div class="row">
     <div class="col-12 tools">
 
+      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+        <%= link_to raw("<i class='material-icons'>unarchive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
+      <% end %>
+
       <% if @guw_model.view_data == true %>
         <%= link_to image_tag("/assets/twotone-data-24px.svg", size: "24x24"), guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", target: :_blank, class: "float-right", title: I18n.t(:data_model) %>
       <% end %>
@@ -73,9 +77,13 @@
         <%= link_to raw("<i class='material-icons'>queue</i>"), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "float-right", title: "#{I18n.t :group}" %>
       <% end %>
 
+      <span class="float-right">
+        &nbsp;
+        &nbsp;
+      </span>
+
       <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
         <%= link_to image_tag("/assets/baseline-save2_alt-24px.svg", size: "24x24"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
-        <%= link_to raw("<i class='material-icons'>unarchive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
       <% else %>
         <%= link_to raw("<i class='material-icons'>archive</i> &nbsp;"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
       <% end %>
@@ -107,17 +115,11 @@
 
     <div class="card card-widget">
       <div class="card-body">
-        <div class="edition-bloc-title">
-          <%= uowg %>
-          <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link"><%= I18n.t :rename %></a>
-        </div>
         <div class="edition-bloc-content pb-4">
           <div class="guw-list">
-            <table class="table requirements-table estimation-table group_<%= uowg.id %>" id="guw">
+            <table class="table table-sm requirements-table estimation-table group_<%= uowg.id %>" id="guw">
               <tr>
-                <th></th>
-                <th>#</th>
-                <th><%= I18n.t :name %></th>
+                <th colspan="2"><%= I18n.t :name %></th>
                 <th><%= I18n.t(:component) %></th>
 
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
@@ -169,8 +171,26 @@
                   <% end %>
                 <% end %>
 
-                <%# if can? :execute_estimation_plan, @project %>
                 <th class=""><%= I18n.t :actions %></th>
+              </tr>
+
+              <tr style="height: 0px;">
+                <td colspan="3">
+                  <a href="<%= guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg) %>" class="edition-bloc-title-link"><%= uowg %></a>
+                </td>
+                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                  <% unless i[1].blank? %>
+                    <% go = @hash_guw_outputs[i[0]] %>
+                    <% if go.class == Guw::GuwOutput %>
+                      <td>
+                        <strong class="center" id="total_<%= uowg.id %>_<%= go.id %>" style="padding-left: 5%;"></strong>
+                      </td>
+                    <% else %>
+                      <td></td>
+                    <% end %>
+                  <% end %>
+                <% end %>
+                <td></td>
               </tr>
 
               <% @hash_guw_complexities = {} %>
@@ -245,6 +265,12 @@
             my_array.push(new_line);
             $("#modified_guw_line_ids").val(my_array);
         });
+
+        $(".selected").on("change", function(e) {
+            var new_line = $(this).closest("tr").data("guw-id");
+            my_array.push(new_line);
+            $("#modified_guw_line_ids").val(my_array);
+        });
     });
   </script>
 
@@ -286,7 +312,7 @@
         return false; // prevent default click action from happening!
         e.preventDefault();
     }
-"Coefficient"
+
     function raz_line(uo){
         $('.retained-guw-' + uo).val('');
         return false; // prevent default click action from happening!
@@ -324,12 +350,12 @@
 
     $(document).ready(function () {
 
-        $('.selected').change(function(){
-            $.ajax({
-                url: "<%= guw.change_selected_state_path %>",
-                data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
-            });
-        });
+<!--        $('.selected').change(function(){-->
+<!--            $.ajax({-->
+<!--                url: "<%# guw.change_selected_state_path %>",-->
+<!--                data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()-->
+<!--            });-->
+<!--        });-->
 
         $('.guw_type').change(function(){
             reset($(this).attr("guw"));
@@ -403,7 +429,7 @@
           <%# raw render partial: "guw/guw_unit_of_works/g_word_trees" %>
         <% rescue %>
           <%= I18n.t(:data_model_display_error) %>
-        <% end %>
+        <% end %>y
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %></button>
@@ -789,3 +815,21 @@
     </div>
   <% end %>
 </div>
+
+<script>
+  $(document).ready(function(){
+    <% current_module_project.guw_unit_of_work_groups.each do |uowg| %>
+      <% @guw_model.guw_outputs.each do |go| %>
+        var sum = 0;
+        $(".total_<%= uowg.id %>_<%= go.id %>").each(function() {
+            var value = $(this).val();
+            if(!isNaN(value) && value.length != 0) {
+                sum += parseFloat(value);
+            }
+        });
+
+        $("#total_<%= uowg.id %>_<%= go.id %>").html(sum + " <%= go.unit %>");
+      <% end %>
+    <% end %>
+  });
+</script>

@@ -35,8 +35,7 @@
 
         <td><%= difference[:nature] %></td>
         <td>
-          <% attribute =  Guw::GuwAttribute.where(id: difference[:element_id]).first%>
-          <%#= column_name %>
+          <% attribute =  Guw::GuwAttribute.where(id: difference[:element_id]).first %>
           <% if  attribute %>
             <%= "Nom : #{attribute.name}" %> <br>
             <%= "Description : #{attribute.description}" %>

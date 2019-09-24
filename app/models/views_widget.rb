@@ -23,9 +23,12 @@ class ViewsWidget < ActiveRecord::Base
   attr_accessible :color, :icon_class, :module_project_id, :name, :pbs_project_element_id, :estimation_value_id, :pe_attribute_id,
                   :show_min_max, :view_id, :widget_id, :position, :position_x, :position_y, :width, :height, :widget_type,
                   :show_name, :show_wbs_activity_ratio, :from_initial_view, :is_label_widget, :comment, :formula, :kpi_unit,
-                  :is_kpi_widget, :use_organization_effort_unit, :equation, :show_tjm, :min_value, :max_value, :validation_text, :estimation_status_id
+                  :is_kpi_widget, :use_organization_effort_unit, :equation, :show_tjm, :min_value, :max_value, :validation_text,
+                  :estimation_status_id, :show_module_name
 
   serialize :equation, Hash
+
+  extend OrderAsSpecified
 
   #WIDGETS_COLORS = ["#007DAB","#0099C9", "#84CEE5","#CFD8DC", '#7b7f96', '#e5e4e2', '#96857b', '#7b9693', 'gold', '#C5A5CF', '#b87333', 'silver', '#76A7FA', '#703593', '#871B47', '#BC5679', 'D59931', 'teal', '#00B3FF', '#3399FF']
   WIDGETS_COLORS = ["#CFD8DC", "#84CEE5", "#0099C9", "#007DAB", '#a1c2fa', '#9661FF', '#4285f4', '#7b7f96', '#e5e4e2', '#96857b', '#7b9693', 'gold', '#C5A5CF', '#b87333', 'silver', '#76A7FA', '#703593', '#871B47', '#BC5679', 'D59931', 'teal', '#00B3FF', '#3399FF']
