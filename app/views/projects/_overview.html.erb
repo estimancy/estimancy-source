@@ -67,7 +67,7 @@
 
             <% if view_widget.is_label_widget? %>
                 <div class="col-12">
-                  <span><%= value.nil? ? '-' : value %></span>
+                  <span><b><%= value.nil? ? '-' : value %></b></span>
                 </div><br>
             <% else %>
                 <% unless value.is_a?(Hash) %>
