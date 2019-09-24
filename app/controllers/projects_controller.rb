@@ -197,7 +197,7 @@ class ProjectsController < ApplicationController
             @guw_coefficient_elements = @guw_coefficients.flat_map(&:guw_coefficient_elements)
             guw_charge_ss_prod_coefficient = @guw_coefficients.where(coefficient_type: "Coefficient", name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"]).first
 
-            guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)", "Charge Services (jh)"], guw_model_id: @guw_model.id).first
+            guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)", "Charge Services (jh)", "Charge (jh)"], guw_model_id: @guw_model.id).first
             #guw_output_charge_ss_prod = Guw::GuwOutput.where(name: ["Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
             guw_output_charge_ss_prod = Guw::GuwOutput.where(output_type: "Effort", name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
             guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first
