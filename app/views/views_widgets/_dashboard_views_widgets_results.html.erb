@@ -55,9 +55,10 @@
           <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
           <% module_project_view_widgets.each do |view_widget| %>
             <% if view_widget.is_label_widget? %>
-              <% view_widget_data = get_label_widget_data(view_widget.id) %>
+              <%# view_widget_data = view_widget.comment #get_label_widget_data(view_widget.id) %>
               <%# @widgets[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
-              <% @widgets[view_widget.name] = [view_widget, view_widget_data[:value_to_show]] %>
+              <%# @widgets[view_widget.name] = [view_widget, view_widget_data[:value_to_show]] %>
+              <% @widgets[view_widget.name] = [view_widget, view_widget.comment] %>
               <% @label_widget_ids << view_widget.id %>
             <% elsif view_widget.is_kpi_widget? %>
               <% view_widget_data = get_kpi_value(view_widget) %>
@@ -102,7 +103,7 @@
                         <!--<div class="grid-stack-item-content">-->
                           <div class=" row" style="padding-top: 4.5rem;">
                             <div class="col-10 widget-group-label">
-                              <span class="label_widget_title"><%= value.nil? ? '-' : value %><%#= view_widget.name %></span>
+                              <span class="label_widget_title"><%= value.nil? ? '-' : value %></span>
                             </div>
 
                             <div class="col-2 label_widget_icon">

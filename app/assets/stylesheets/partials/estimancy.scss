@@ -206,7 +206,7 @@ table td.guw-cell-ajustment{
   cursor: all-scroll;
 }
 
-table .table .table_effort_per_phase tr td {
+.effort-table .table .table_effort_per_phase > tbody > tr > td:first-child, .effort-table .table .table_effort_per_phase > tbody > tr > td:last-child {
   font-weight: normal;
 }
 //.grid-stack > .grid-stack-item.table_graph{
