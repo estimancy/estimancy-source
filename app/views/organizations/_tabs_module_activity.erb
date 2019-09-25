@@ -30,7 +30,7 @@
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'),
                           confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to raw("<i class='material-icons'>file_copy</i>"), duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id),
+                <%= link_to raw("<i class='material-icons'>file_copy</i>"), duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), method: :post,
                             :class => 'material-icons', :title => I18n.t(:duplicate_module) %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), wbs_activity,
                             confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: :delete, organization_id: @organization.id %>
