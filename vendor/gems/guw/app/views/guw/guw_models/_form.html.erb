@@ -109,12 +109,14 @@
                           <div class="form-row">
                             <div class="col-5">
                               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-left:1rem;">
-                                <%= f.input :allow_technology, label: I18n.t(:allow_technologies)%>
+                                <%= f.input :allow_technology, as: :boolean, label: false, :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                                <label class="mdl-textfield__label" for="allow_technology" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:allow_technologies) %></label>
                               </div>
                             </div>
                             <div class="col-5">
                               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <%= f.input :view_data, label: "#{I18n.t :enable_data_visualization}" %> <%# Activer la visualiation des données %>
+                                <%= f.input :view_data, as: :boolean, label: false, :input_html => {:class => 'mdl-checkbox__inputs'}  %> <%# Activer la visualiation des données %>
+                                <label class="mdl-textfield__label" for="view_data" style="padding-left: 20px; margin-top: -7px;"><%= "#{I18n.t :enable_data_visualization}" %></label>
                               </div>
                             </div>
                           </div>
@@ -127,7 +129,8 @@
 
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                              <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
+                              <%= f.input :three_points_estimation, label: false, :input_html => {:class => 'mdl-checkbox__inputs'}   %>
+                              <label class="mdl-textfield__label" for="three_points_estimation" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:three_points_estimation) %></label>
                             </div>
                           </div>
 
@@ -164,7 +167,7 @@
 
                               <tbody>
                               <tr>
-                                <td><%= f.input :allow_excel, label: "#{I18n.t :enable_import_via_excel}"  %></td> <%# Activer l'import par Excel %>
+                                <td><%= f.input :allow_excel, label: "#{I18n.t :enable_import_via_excel}" %></td> <%# Activer l'import par Excel %>
                                 <td><%= f.input :excel_ml_server, label: false, placeholder: "#{I18n.t :server_address}", disabled: !@guw_model.allow_excel %></td> <%# Adresse du serveur %>
                                 <td><%= f.input :allow_ml_excel, label: "IA Optionnelle" %></td>
                               </tr>

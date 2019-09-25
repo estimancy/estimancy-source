@@ -31,7 +31,8 @@
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :allow_subtotal, label: "Calculer les sous-totaux " %>
+                  <%= f.input :allow_subtotal, label: false, as: :boolean, :input_html => { :class => 'mdl-checkbox__inputs' } %>
+                  <label class="mdl-textfield__label" for="allow_subtotal" style="padding-left: 20px; margin-top: -7px;"><%=  "Calculer les sous-totaux " %></label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

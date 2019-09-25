@@ -2487,3 +2487,7 @@ frsncf:
   phase_short_name: "Nom court de la phase"
   variable_name: "Nom de la variable"
   percentage_of_input: "Pourcentage de l'entrée"
+  "yes": 'Oui'
+  "no": 'Non'
+  new_complexity: "Nouvelle complexité"
+  settings_super_admin: "Super Administrateur"

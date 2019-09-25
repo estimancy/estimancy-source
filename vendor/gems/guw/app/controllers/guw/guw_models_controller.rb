@@ -1460,7 +1460,6 @@ class Guw::GuwModelsController < ApplicationController
     send_data(workbook.stream.string, filename: "#{@guw_model.name[0.4]}_ModuleUOMXT-#{@guw_model.name.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
-
   def show
     authorize! :show_modules_instances, ModuleProject
 

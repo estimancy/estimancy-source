@@ -5,7 +5,7 @@
       <ul>
       <li>
         <a href="#tabs-1">
-          <%= I18n.t(:security_level) %>
+          <h4><%= I18n.t(:security_level) %></h4>
         </a>
       </li>
     </ul>
@@ -16,7 +16,7 @@
           <%= f.error_notification %>
 
           <div class="form-row">
-          <div class="col-3">
+          <div class="col-7">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <%= f.input :name, :label => false, :input_html => {:autofocus => (controller.action_name == 'new'), :class => 'mdl-textfield__input form-control' } %>
               <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
@@ -25,7 +25,7 @@
         </div>
 
           <div class="form-row">
-          <div class="col-3">
+          <div class="col-7">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
             <%= f.input :description, :label => false, :input_html => { :class => 'mdl-textfield__input form-control', :rows => 8 } %>
               <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>

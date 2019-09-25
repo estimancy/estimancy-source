@@ -121,14 +121,14 @@
                   </div>
 
                   <div class="form-row">
-                    <div class="col-3">
+                    <div class="col-4">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <%= f.input :quick_access, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                        <%= f.input :quick_access, as: :boolean, :label => false, :input_html => { :class => 'mdl-checkbox__inputs'}  %>
                         <label class="mdl-textfield__label" for="quick_access" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:allow_quick_access) %></label>
                       </div>
                     </div>
 
-                    <div class="col-3">
+                    <div class="col-4">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :allow_full_screen_dashboard, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
                         <label class="mdl-textfield__label" for="allow_full_screen_dashboard" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:allow_full_screen_dashboard) %></label>
@@ -137,7 +137,7 @@
                   </div>
 
                   <div class="form-row">
-                    <div class="col-3">
+                    <div class="col-4">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <% if can? :manage, User %>
                           <%= f.input :auth_type, :label => false, :as => :select, :collection => AuthMethod.all, :include_blank => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
@@ -149,17 +149,16 @@
                     </div>
                   </div>
 
-
                   <% if @user.new_record? %>
                     <div class="form-row">
-                      <div class="col-3">
+                      <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                           <%= f.input :password, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@generated_password if @generated_password), :class => 'mdl-textfield__input form-control' }, :required => false %>
                           <label class="mdl-textfield__label" for="password"><%= I18n.t(:password) %></label>
                         </div>
                       </div>
 
-                      <div class="col-3">
+                      <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                           <%= f.input :password_confirmation, :as => :password, :label => false, :input_html => {:value => (@generated_password if @generated_password), :class => 'mdl-textfield__input form-control' } %>
                           <label class="mdl-textfield__label" for="password_confirmation"><%= I18n.t(:password_confirmation) %></label>
@@ -170,7 +169,7 @@
                   <% else %>
 
                     <div class="form-row">
-                      <div class="col-3">
+                      <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                           <%= f.input :current_password, :label => false, required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
                           <label class="mdl-textfield__label" for="current_password"><%= I18n.t(:current_password) %></label>
@@ -179,14 +178,14 @@
                     </div>
 
                     <div class="form-row">
-                      <div class="col-3">
+                      <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                           <%= f.input :password, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@user_password if @user_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
                           <label class="mdl-textfield__label" for="password"><%= I18n.t(:new_password) %></label>
                         </div>
                       </div>
 
-                      <div class="col-3">
+                      <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                           <%= f.input :password_confirmation, :as => :password, :label => false, :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
                           <label class="mdl-textfield__label" for="password_confirmation"><%= I18n.t(:confirm_new_password) %></label>
@@ -196,7 +195,7 @@
                   <% end %>
 
                   <div class="form-row">
-                    <div class="col-3">
+                    <div class="col-4">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :created_at, :label => false do %>
                           <%= f.text_field :created_at, :value => (I18n.l(@user.created_at) unless @user.created_at.nil?), :disabled => true, :class => 'form-control' %>
@@ -205,7 +204,7 @@
                       </div>
                     </div>
 
-                    <div class="col-3">
+                    <div class="col-4">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :updated_at, :label => false do %>
                           <%= f.text_field :updated_at, :value => (I18n.l(@user.updated_at) unless @user.updated_at.nil?), :disabled => true, :class => 'form-control' %>
@@ -216,7 +215,7 @@
                   </div>
 
                   <div class="form-row">
-                    <div class="col-3">
+                    <div class="col-4">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= text_field_tag "user[subscription_end_date]", @user.subscription_end_date.nil? ? '-' : I18n.l(@user.subscription_end_date.to_date),
                                            :disabled => !current_user.super_admin, :class => 'form-control date-picker' %>
@@ -224,7 +223,7 @@
                       </div>
                     </div>
 
-                    <div class="col-3">
+                    <div class="col-4">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :last_login, :label => false do %>
                           <%= f.text_field :last_login, :value => (I18n.l(@user.last_login) unless @user.last_login.nil?), :disabled => true, :class => 'form-control' %>

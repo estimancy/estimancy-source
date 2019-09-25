@@ -1,39 +1,104 @@
-<div class="tabs">
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        <%= I18n.t(:complexity).pluralize %> de <%= @guw_type %>
-      </a>
-    </li>
-  </ul>
-
-  <div id="tabs-1">
-    <%= simple_form_for(@guw_complexity) do |f| %>
-      <%= f.error_notification %>
-
-      <div class="form-inputs">
-
-        <%= f.input :guw_type_id, as: :hidden, input_html: { value: params[:guw_type_id] } %>
-
-        <%= f.input :name %>
-        <% if @guw_type.allow_criteria == true %>
-          <%= f.input :bottom_range, label: I18n.t(:low_border_include) %>
-          <%= f.input :top_range, label: I18n.t(:high_border_include) %>
-          <%= f.input :enable_value, label: I18n.t(:Product) %>
-        <% end %>
-        <%= f.input :default_value, label: "Valeur par défaut" %>
-        <%= f.input :weight, label: I18n.t(:weight) %>
-        <%= f.input :weight_b, label: "Ordonnée à l'origine" %>
-        <%= f.input :display_order, label: I18n.t(:display_order) %>
+      <div class="edition-bloc-title">
+        <ul>
+          <li>
+            <h4><a href="#tabs-1"><%= I18n.t(:complexity).pluralize %> de <%= @guw_type %></a></h4>
+          </li>
+        </ul>
       </div>
 
-      <div class="actions-tabs">
-        <% if can? :manage_modules_instances, ModuleProject %>
-          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-        <% end %>
-        <%= link_to I18n.t(:back), :back, class: "btn" %>
+      <div id="tabs-1">
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+            <%= simple_form_for(@guw_complexity) do |f| %>
+              <%= f.error_notification %>
+
+              <div class="form-inputs">
+
+                <%= f.input :guw_type_id, as: :hidden, input_html: { value: params[:guw_type_id] } %>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>
+                      <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                    </div>
+                  </div>
+                </div>
+                <% if @guw_type.allow_criteria == true %>
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :bottom_range, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                        <label class="mdl-textfield__label" for="bottom_range"><%= I18n.t(:low_border_include) %></label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :top_range, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                        <label class="mdl-textfield__label" for="top_range"><%= I18n.t(:high_border_include) %></label>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :enable_value, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                        <label class="mdl-textfield__label" for="enable_value" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:Product) %></label>
+                      </div>
+                    </div>
+                  </div>
+                <% end %>
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :default_value, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                      <label class="mdl-textfield__label" for="default_value" style="padding-left: 20px; margin-top: -7px;"><%= "Valeur par défaut" %></label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :weight, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="weight"><%= I18n.t(:weight) %></label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :weight_b, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="weight_b"><%= "Ordonnée à l'origine" %></label>
+                    </div>
+                  </div>
+                </div>
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :display_order, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                      <label class="mdl-textfield__label" for="display_order"><%= I18n.t(:display_order) %></label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="actions-tabs">
+                <% if can? :manage_modules_instances, ModuleProject %>
+                  <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+                <% end %>
+                <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
       </div>
-    <% end %>
+
+    </div>
   </div>
-</div>
+</section>

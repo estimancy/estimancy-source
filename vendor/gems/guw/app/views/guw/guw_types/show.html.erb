@@ -208,25 +208,6 @@
               </tr>
             <% end %>
 
-            <% if @guw_model.allow_technology == true %>
-              <% @guw_model.organization.organization_technologies.each do |technology| %>
-                <tr>
-                  <td>
-                    <%= technology.name %>
-                  </td>
-
-                  <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                    <% tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_cplx.id,
-                                                                  organization_technology_id: technology.id).first %>
-                    <td colspan="<%= guw_outputs.size %>" class="align-center">
-                      <%= text_field_tag "technology_value[#{guw_cplx.id}][#{technology.id}]", tcplx.nil? ? '' : tcplx.coefficient, class: "form-control" %>
-                    </td>
-                  <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            <% end %>
-
           </table>
 
           <% if can? :manage_modules_instances, ModuleProject %>

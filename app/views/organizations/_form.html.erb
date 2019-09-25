@@ -19,7 +19,7 @@
       </li>
 
       <li class="nav-item">
-        <a class="nav-link"  data-toggle="pill" id="pills-kpi-tab" href="#pills-technical_informations" role="tab" aria-selected="false">
+        <a class="nav-link"  data-toggle="pill" id="pills-kpi-tab" href="#pills-kpi" role="tab" aria-selected="false">
           KPI Configuration
         </a>
       </li>
@@ -29,31 +29,7 @@
 
         <div class="tab-content" id="pills-tabContent">
 
-          <div class="tab-pane fade show active" id="pills-global_properties" role="tabpanel" aria-labelledby="pills-kpi-tab">
-            <div class="card-body">
-              <div class="edition-bloc-left">
-                <div class="edition-bloc-title">
-                  <h1>
-                    KPI Configuration
-                  </h1>
-                </div>
-              </div>
-
-              <div class="edition-bloc-content">
-                <div class="edition-bloc-form">
-                  <div class="form-row">
-
-                    <div class="col-5">
-                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
+          <!-- Global Properties -->
           <div class="tab-pane fade show active" id="pills-global_properties" role="tabpanel" aria-labelledby="pills-global_properties-tab">
             <div class="card-body">
               <div class="edition-bloc-left">
@@ -78,13 +54,17 @@
                     </div>
 
                     <div class="col-3">
-                      <%= f.input :is_image_organization, as: :boolean, label: false, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__input'} %>
-                      <label class="mdl-textfield__label" for="is_image_organization"><%= I18n.t(:is_image_organization) %></label>
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :is_image_organization, as: :boolean, label: false, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__input'} %>
+                        <label class="mdl-textfield__label" for="is_image_organization" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:is_image_organization) %></label>
+                      </div>
                     </div>
 
                     <div class="col-3">
-                      <%= f.input :allow_demand, :label => false, as: :boolean, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__inputs'} %>
-                      <label class="mdl-textfield__label" for="allow_demand"><%= I18n.t(:demands_list) %></label>
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :allow_demand, :label => false, as: :boolean, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__inputs'} %>
+                        <label class="mdl-textfield__label" for="allow_demand" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:demands_list) %></label>
+                      </div>
                     </div>
                   </div>
 
@@ -125,7 +105,7 @@
             </div>
           </div>
 
-          <!-- Informations techniques-->
+          <!-- Informations techniques -->
           <div class="tab-pane fade" id="pills-technical_informations" role="tabpanel" aria-labelledby="pills-technical_informations-tab">
             <div class="card-body">
               <div class="edition-bloc-left">
@@ -157,7 +137,7 @@
                   </div>
 
                   <div class="form-row">
-                    <div class="col-12">
+                    <div class="col-5">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :estimations_counter_history, :label => false, :input_html => {:class => 'mdl-textfield__input', :rows => 5}, readonly: !current_user.super_admin %>
                         <label class="mdl-textfield__label" for="need"><%= I18n.t(:actions_history) %></label>
@@ -257,6 +237,20 @@
               </div>
             </div>
           </div>
+
+          <!-- KPI Configuration -->
+          <div class="tab-pane fade" id="pills-kpi" role="tabpanel" aria-labelledby="pills-kpi-tab">
+            <div class="card-body">
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h1>
+                    <%= "KPI Configuration" %>
+                  </h1>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
     <% end %>
 

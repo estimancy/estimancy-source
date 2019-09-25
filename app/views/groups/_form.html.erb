@@ -1,108 +1,124 @@
-<div class="tabs">
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <ul>
-    <li><a href="#tabs-1"><%= @group.new_record? ? I18n.t('new_group') : "#{I18n.t(:edit_group, value: @group)}" %></a></li>
-    <% unless controller.action_name == "new" %>
-      <li><a href="#tabs-2"><%= I18n.t('users') %></a></li>
-    <% end %>
-  </ul>
+      <div class="edition-bloc-title">
+        <ul>
+          <li><h4><a href="#tabs-1"><%= @group.new_record? ? I18n.t('new_group') : "#{I18n.t(:edit_group, value: @group)}" %></a></h4></li>
+          <% unless controller.action_name == "new" %>
+            <li><a href="#tabs-2"><%= I18n.t('users') %></a></li>
+          <% end %>
+        </ul>
+      </div>
 
-  <% can_add_user_to_group = @group.is_protected_group != true || ( @group.is_protected_group == true && ( @current_user.super_admin || @current_user.groups.include?(@group)) ) %>
+      <% can_add_user_to_group = @group.is_protected_group != true || ( @group.is_protected_group == true && ( @current_user.super_admin || @current_user.groups.include?(@group)) ) %>
 
-  <div id="tabs-1">
-    <%= simple_form_for(@group) do |f| %>
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <%= simple_form_for(@group) do |f| %>
 
-        <%= f.error_notification %>
+            <%= f.error_notification %>
 
-        <%= hidden_field_tag :current_tab, '', :class => 'current_tab' %>
-        <% if @organization %>
-            <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id || params[:organization_id], class: 'input-xxlarge' } %>
-        <% end %>
-
-        <div class="div_tabs_to_disable">
-
-          <div class="row-fluid input-xxlarge">
-            <div class="span7">
-              <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
-            </div>
-            <div class="span5">
-              <label class="checkbox"></label>
-              <%= f.input :is_protected_group, :label => I18n.t('is_protected_group') %>
-            </div>
-          </div>
-
-
-          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
-        </div>
-
-        <div class="actions-tabs">
-          <% if can? :manage, Group %>
-            <% if action_name == 'new' || action_name=='create' %>
-              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
+            <%= hidden_field_tag :current_tab, '', :class => 'current_tab' %>
+            <% if @organization %>
+                <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id || params[:organization_id], class: 'input-xxlarge' } %>
             <% end %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy' %>
-          <% end %>
-          <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group"), :class => 'btn btn-secondary btn-estimancy' %>
-        </div>
-    <% end -%>
-  </div>
 
-  <% unless controller.action_name == "new" %>
-    <div id="tabs-2">
-      <%= form_tag('/update_selected_users', :method => 'POST', :class => 'simple_form') do -%>
-        <b><%= I18n.t(:text_group_associated_users, value: @group) %></b>
-        <br/><br/>
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>
+                  <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                </div>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :is_protected_group, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                  <label class="mdl-textfield__label" for="is_protected_group" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_protected_group') %></label>
+                </div>
+              </div>
+            </div>
 
-        <div class="field_checkbox">
-          <table id="table_list_2" class="table tablesorterPager table-striped table-bordered table-condensed">
-            <%= hidden_field_tag 'group_id', @group.id %>
-            <%= hidden_field_tag 'group[user_ids][]' %>
-              <thead>
-                <tr>
-                  <th><%= I18n.t(:first_name) %></th>
-                  <th><%= I18n.t(:last_name) %></th>
-                  <th><%= I18n.t(:login_name) %></th>
-                  <th class="filter-select"><%= I18n.t(:selected) %></th>
-                </tr>
-              </thead>
-            <tbody>
-              <% @organization.users.each do |group_user| %>
-                <tr>
-                  <td><%= group_user.first_name %></td>
-                  <td><%= group_user.last_name %></td>
-                  <td><%= group_user.login_name %></td>
-                  <td class="align-center">
-                    <span class="hidden">
-                      <%= @group.users.map(&:id).include?(group_user.id).to_s.humanize %>
-                    </span>
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :description, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', rows: "5"} %>
+                  <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                </div>
+              </div>
+            </div>
 
-                    <% if can_add_user_to_group %>
-                        <%= check_box_tag('group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), :id => nil, :class => "group_#{group_user.id}") %>
-                    <% else %>
-                        <%= check_box_tag('group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), :id => nil, :class => "group_#{group_user.id}", :style => 'visibility: hidden') %>
-                        <%= check_box_tag('show_readonly_group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), disabled: true, :id => nil, :class => "group_#{group_user.id}", :style => 'margin-left: -15px;') %>
-                    <% end %>
-                  </td>
-                </tr>
+            <div class="actions-tabs">
+              <% if can? :manage, Group %>
+                <% if action_name == 'new' || action_name=='create' %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
+                <% end %>
+                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy' %>
               <% end %>
-              <%= render :partial => 'layouts/footer_table' %>
-            </tbody>
-          </table>
+              <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group"), :class => 'btn btn-secondary btn-estimancy' %>
+            </div>
+        <% end -%>
         </div>
+      </div>
 
-        <% if can? :manage, Group %>
-          <% if action_name == 'new' || action_name=='create' %>
-            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
-          <% end %>
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy' %>
-        <% end %>
-        <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group"), :class => 'btn btn-secondary btn-estimancy' %>
-      <% end -%>
+      <% unless controller.action_name == "new" %>
+        <div id="tabs-2">
+          <%= form_tag('/update_selected_users', :method => 'POST', :class => 'simple_form') do -%>
+            <b><%= I18n.t(:text_group_associated_users, value: @group) %></b>
+            <br/><br/>
+
+            <div class="field_checkbox">
+              <table id="table_list_2" class="table tablesorterPager table-striped table-bordered table-condensed">
+                <%= hidden_field_tag 'group_id', @group.id %>
+                <%= hidden_field_tag 'group[user_ids][]' %>
+                  <thead>
+                    <tr>
+                      <th><%= I18n.t(:first_name) %></th>
+                      <th><%= I18n.t(:last_name) %></th>
+                      <th><%= I18n.t(:login_name) %></th>
+                      <th class="filter-select"><%= I18n.t(:selected) %></th>
+                    </tr>
+                  </thead>
+                <tbody>
+                  <% @organization.users.each do |group_user| %>
+                    <tr>
+                      <td><%= group_user.first_name %></td>
+                      <td><%= group_user.last_name %></td>
+                      <td><%= group_user.login_name %></td>
+                      <td class="align-center">
+                        <span class="hidden">
+                          <%= @group.users.map(&:id).include?(group_user.id).to_s.humanize %>
+                        </span>
+
+                        <% if can_add_user_to_group %>
+                            <%= check_box_tag('group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), :id => nil, :class => "group_#{group_user.id}") %>
+                        <% else %>
+                            <%= check_box_tag('group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), :id => nil, :class => "group_#{group_user.id}", :style => 'visibility: hidden') %>
+                            <%= check_box_tag('show_readonly_group[user_ids][]', group_user.id, (@group.users.map(&:id).include? group_user.id), disabled: true, :id => nil, :class => "group_#{group_user.id}", :style => 'margin-left: -15px;') %>
+                        <% end %>
+                      </td>
+                    </tr>
+                  <% end %>
+                  <%= render :partial => 'layouts/footer_table' %>
+                </tbody>
+              </table>
+            </div>
+
+            <% if can? :manage, Group %>
+              <% if action_name == 'new' || action_name=='create' %>
+                <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary btn-estimancy' %>
+              <% end %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy' %>
+            <% end %>
+            <%= link_to I18n.t('back'), organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group"), :class => 'btn btn-secondary btn-estimancy' %>
+          <% end -%>
+        </div>
+      <% end %>
     </div>
-  <% end %>
-</div>
 
-
-
+  </div>
+</section>

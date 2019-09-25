@@ -67,14 +67,16 @@ class Guw::GuwCoefficientsController < ApplicationController
     @guw_coefficient = Guw::GuwCoefficient.new(params[:guw_coefficient])
     @guw_coefficient_element = Guw::GuwCoefficientElement.new
     @guw_coefficient.save
-    redirect_to guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients")
+    #redirect_to guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients")
+    redirect_to guw.edit_guw_model_guw_coefficient_path(@guw_coefficient.guw_model, @guw_coefficient, organization_id: @current_organization.id, anchor: "tabs-coefficients")
   end
 
   def update
     @guw_coefficient = Guw::GuwCoefficient.find(params[:id])
     @guw_coefficient.update_attributes(params[:guw_coefficient])
     set_page_title I18n.t(:Edit_Units_Of_Work)
-    redirect_to guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients")
+    #redirect_to guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients")
+    redirect_to guw.edit_guw_model_guw_coefficient_path(@guw_coefficient.guw_model, @guw_coefficient, organization_id: @current_organization.id, anchor: "tabs-coefficients")
   end
 
   def destroy

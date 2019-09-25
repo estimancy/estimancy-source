@@ -85,14 +85,14 @@
                         <%= f.input :priority_order, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
                         <label class="mdl-textfield__label" for="priority_order"><%= I18n.t(:priority_order) %></label>
                     </div>
-                  </div>
 
-                  <div class="col-5">
-                      <%= f.input :on_the_fly_user_creation, :label => I18n.t(:on_the_fly_user_creation),
-                                  :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :on_the_fly_user_creation, :label => false, as: :boolean,
+                                  :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                      <label class="mdl-textfield__label" for="on_the_fly_user_creation" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:on_the_fly_user_creation) %></label>
+                    </div>
                   </div>
                 </div>
-
 
                 <div id="accordion1" class="accordion">
                   <div class="accordion-group accordion-caret">
@@ -153,21 +153,18 @@
 
                 <br>
 
-                <div class="form-row">
-                  <div class="col-5">
-                    <div class="actions-tabs">
-                      <% if action_name.in?(%w(new create)) %>
-                        <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                      <% elsif action_name == 'edit' || action_name=='update' %>
-                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                        <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-                      <% end %>
-                      <%= link_to I18n.t('back'), auth_methods_path, :class => 'btn btn-secondary' %>
-                    </div>
+                <div class="actions-tabs">
+                  <% if action_name.in?(%w(new create)) %>
+                    <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <% elsif action_name == 'edit' || action_name=='update' %>
+                    <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
                   <% end %>
+                  <%= link_to I18n.t('back'), auth_methods_path, :class => 'btn btn-secondary' %>
                 </div>
-              </div>
+              <% end %>
+
 
             </div>
 

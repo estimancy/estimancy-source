@@ -66,7 +66,10 @@
           </script>
 
       </div>
-        <%= f.input :is_ignored, as: :boolean, label: I18n.t('is_ignored'), type: "checkbox", id:"application[is_ignored]", class: "mdl-checkbox__input" %>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <%= f.input :is_ignored, as: :boolean, label: false, id:"application[is_ignored]", :input_html => {:class => 'mdl-checkbox__inputs'}   %>
+          <label class="mdl-textfield__label" for="is_ignored" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_ignored') %></label>
+        </div>
 <!--        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mt-3" for="application[is_ignored]">-->
 <!--          <input type="checkbox" name="application[is_ignored]" id="application_is_ignored]" class="mdl-checkbox__input" as="boolean" >-->
 <!--          <label class="mdl-checkbox__label" for="is_ignored"><%#= I18n.t('is_ignored') %></label>-->
