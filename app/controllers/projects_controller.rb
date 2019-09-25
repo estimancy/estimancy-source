@@ -4424,7 +4424,9 @@ public
         render pdf: @project.to_s,
                encoding: "UTF-8",
                page_size: 'A4',
-               orientation: :landscape
+               orientation: :landscape,
+               zoom: 1,
+               lowquality: true
       end
     end
   end
