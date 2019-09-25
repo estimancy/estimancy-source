@@ -38,8 +38,10 @@
 
                 <div class="form-row">
                   <div class="col-5">
-                    <%= f.input :default, label: I18n.t(:default), :input_html => { class: "custom-checkbox"} %>
-                    <label>  </label>
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :default, label: false, as: :boolean,  :input_html => { class: "mdl-checkbox__inputs"} %>
+                      <label class="mdl-textfield__label" for="default" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:default) %></label>
+                    </div>
                   </div>
                 </div>
 

@@ -208,25 +208,6 @@
               </tr>
             <% end %>
 
-            <% if @guw_model.allow_technology == true %>
-              <% @guw_model.organization.organization_technologies.each do |technology| %>
-                <tr>
-                  <td>
-                    <%= technology.name %>
-                  </td>
-
-                  <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
-                    <% tcplx = Guw::GuwComplexityTechnology.where(guw_complexity_id: guw_cplx.id,
-                                                                  organization_technology_id: technology.id).first %>
-                    <td colspan="<%= guw_outputs.size %>" class="align-center">
-                      <%= text_field_tag "technology_value[#{guw_cplx.id}][#{technology.id}]", tcplx.nil? ? '' : tcplx.coefficient, class: "form-control" %>
-                    </td>
-                  <% end %>
-                  </td>
-                </tr>
-              <% end %>
-            <% end %>
-
           </table>
 
           <% if can? :manage_modules_instances, ModuleProject %>
@@ -247,7 +228,6 @@
               <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
             </div>
           <% end %>
-
 
           <%= form_tag guw_model_guw_type_guw_attribute_complexities_save_attributs_complexities_path(@guw_model, guw_type.id), method: "POST" do %>
             <table class="table table-list">
@@ -339,7 +319,7 @@
       <ul class="nav" style="display: block;">
         <% guw_model_guw_types.each do |guw_type| %>
           <li class="nav-item">
-            <a class="nav-link group" href="<%= guw.guw_type_path(guw_type) %>">
+            <a class="nav-link group" href="<%= guw_type_path(guw_type) %>">
               <span>
                 <%= guw_type %>
               </span>

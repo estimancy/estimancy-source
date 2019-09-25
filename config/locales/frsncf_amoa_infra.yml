@@ -2417,3 +2417,12 @@ frsncf_amoa_infra:
 
   add_to_kb: "Ajouter à la base de connaissance"
   show_module_name: "Afficher le nom du module"
+
+  coefficients_list: "Liste des coefficients"
+  hide_all: "Masquer l'entête de la WBS"
+  variable_name: "Nom de la variable"
+  percentage_of_input: "Pourcentage de l'entrée"
+  "yes": 'Oui'
+  "no": 'Non'
+  new_complexity: "Nouvelle complexité"
+  settings_super_admin: "Super Administrateur"

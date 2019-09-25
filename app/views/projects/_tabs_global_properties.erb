@@ -1,6 +1,5 @@
 <%= simple_form_for(@project) do |f| %>
 
-
     <%= hidden_field_tag :project_id, @project.id %>
     <%= hidden_field_tag :organization_id, @organization.id %>
 
@@ -22,7 +21,6 @@
                             :label => false,
                             :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model),
                             :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new') } %>
-
                 <label class="mdl-textfield__label" for="name"><%= I18n.t('name') %></label>
               </div>
             </div>
@@ -108,7 +106,86 @@
                       <% apps = Project.find(@project.original_model_id).applications.active.all %>
                   <% rescue %>
                       <% apps = [] %>
-                  <% end %>
+                  <% end %><div class="col-10" style="margin-top: 20px">
+
+  <%#= simple_form_for(@project) do |f| %>
+
+    <div class="row pb-5">
+      <div id="estimation_content" class="col-10">
+
+        <% if @partial_name.blank? %>
+            <%= render :partial => "projects/tabs_global_properties", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
+        <% else %>
+            <%= render :partial => "projects/#{@partial_name}", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
+        <% end %>
+        <br>
+        <br>
+      </div>
+
+      <div class="col-2">
+        <div id="edition-sidebar">
+          <% if controller.action_name == "edit" || controller.action_name == "update" %>
+              <h4 class="mb-0">Navigation</h4>
+              <ul class="nav flex-column">
+                <li class="nav-item">
+                  <!--<a class="nav-link group" href="#global1"><span><%#= I18n.t("global_properties") %></span></a>-->
+                  <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties') %>"><span><%= I18n.t("global_properties") %></span></a>
+                </li>
+
+                <li class="nav-item">
+                    <!--<a class="nav-link group" href="#plan"><span><%#= I18n.t("estimation_plan") %></span></a>-->
+                    <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan') %>"><span><%= I18n.t("estimation_plan") %></span></a>
+                </li>
+
+                <li class="nav-item">
+                    <!--<a class="nav-link group" href="#security"><span><%#= I18n.t("securities") %></span></a>-->
+                    <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_securities', anchor: 'tabs-securities') %>"><span><%= I18n.t("securities") %></span></a>
+                </li>
+
+                <li class="nav-item">
+                    <!--<a class="nav-link group" href="#history"><span><%#= I18n.t("label_project_history") %></span></a>-->
+                    <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_history', anchor: 'tabs-history') %>"><span><%= I18n.t("label_project_history") %></span></a>
+                </li>
+              </ul>
+          <%# end %>
+        </div>
+      </div>
+    </div>
+
+    <br>
+    <br>
+
+  <% end %>
+
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+  <script>
+      $(document).ready(function() {
+          $(document).on('scroll', function(){
+              if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+                  $("#edition-sidebar").css({position: "fixed", top: -5});
+              }
+              if ($(document).scrollTop() < 200){
+                  $("#edition-sidebar").css({position: "static", top: 0});
+              }
+          });
+
+          $(".date-picker").datepicker({
+              language: '<%= set_user_language_for_datepicker %>',
+              //uiLibrary: 'bootstrap4',
+              //locale: 'fr-fr',
+              orientation: 'auto top',
+              autoclose: true,
+              todayHighlight: true,
+              todayBtn: true,
+              icons: {
+                  rightIcon: '<i class="material-icons">event</i>'
+              }
+          });
+
+      });
+  </script>
+
+</div>
 
                   <% if @current_organization.applications.empty? and apps.empty? %>
                       <%= f.input :application_name,

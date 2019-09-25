@@ -10,7 +10,7 @@
           <a class="nav-link show active"  data-toggle="pill" id="tabs-1_tab" href="#tabs-1" role="tab" aria-selected="true"><%= I18n.t(:general) %> </a>
         </li>
 
-        <%if action_name.in?(%w(edit update)) %>
+        <% if action_name.in?(%w(edit update)) %>
           <li class="nav-item">
             <a class="nav-link"  data-toggle="pill" id="tabs-2_tab" href="#tabs-2" role="tab" aria-selected="false"><%= I18n.t(:wbs_elements) %></a>
           </li>
@@ -59,15 +59,23 @@
 
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                              <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input'} %>
+                              <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input', rows: "5"} %>
                               <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
                             </div>
                           </div>
 
-                          <div class="col-5">
-                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                              <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
-                              <%= f.input :enabled_input, label: I18n.t(:modification_entry_valur) %>
+                          <div class="form-row">
+                            <div class="col-5" style="margin-left:1rem;">
+                              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <%= f.input :three_points_estimation, label: false %>
+                                <label class="mdl-textfield__label" for="three_points_estimation" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:three_points_estimation) %></label>
+                              </div>
+                            </div>
+                            <div class="col-5">
+                              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <%= f.input :enabled_input, label: false %>
+                                <label class="mdl-textfield__label" for="enabled_input" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:modification_entry_valur) %></label>
+                              </div>
                             </div>
                           </div>
 
@@ -145,7 +153,7 @@
                   <!-- Test -->
                   <div class="span3">
                     <% unless @wbs_activity.new_record? %>
-                      <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondaryfloat-right' %>
+                      <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondary float-md-right' %>
                     <% else %>
                       <!--<a href="#import" role="button" class="btn pull-right button_margin_right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal">-->
                       <!--<%#= I18n.t(:import) %>-->
@@ -223,7 +231,7 @@
             <div class="edition-bloc-left">
               <div class="edition-bloc-content">
                 <div class="group_button">
-                  <%= link_to I18n.t(:create_button), new_wbs_activity_ratio_path(:activity_id => @wbs_activity.id), :class => 'btn btn-primary' %>
+                  <%= link_to I18n.t(:create_button), new_wbs_activity_ratio_path(:activity_id => @wbs_activity.id), :class => 'btn btn-primary', style: 'margin-bottom:1rem;' %>
                 </div>
               </div>
             </div>

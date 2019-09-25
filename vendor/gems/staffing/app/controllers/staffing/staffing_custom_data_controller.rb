@@ -38,7 +38,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_datum = StaffingCustomDatum.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
+      format.html # show.js.erb
       format.json { render json: @staffing_custom_datum }
     end
   end

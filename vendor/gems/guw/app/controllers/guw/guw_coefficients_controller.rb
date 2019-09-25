@@ -22,6 +22,21 @@
 
 class Guw::GuwCoefficientsController < ApplicationController
 
+
+  def show
+    @guw_coefficient = Guw::GuwCoefficient.find(params[:id])
+    @guw_model = @guw_coefficient.guw_model
+    @organization = @guw_model.organization
+
+    #set_page_title "#{@guw_coefficient}"
+    set_page_title I18n.t(:edit_project_element_name, parameter: @guw_model.name)
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}",
+                    @organization.to_s => main_app.organization_estimations_path(@organization),
+                    I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"),
+                    @guw_model.name => @guw_model.name,
+                    @guw_coefficient.name => ""
+  end
+
   def index
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     @guw_coefficients = @guw_model.guw_coefficients
@@ -52,14 +67,16 @@ class Guw::GuwCoefficientsController < ApplicationController
     @guw_coefficient = Guw::GuwCoefficient.new(params[:guw_coefficient])
     @guw_coefficient_element = Guw::GuwCoefficientElement.new
     @guw_coefficient.save
-    redirect_to guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients")
+    #redirect_to guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients")
+    redirect_to guw.edit_guw_model_guw_coefficient_path(@guw_coefficient.guw_model, @guw_coefficient, organization_id: @current_organization.id, anchor: "tabs-coefficients")
   end
 
   def update
     @guw_coefficient = Guw::GuwCoefficient.find(params[:id])
     @guw_coefficient.update_attributes(params[:guw_coefficient])
     set_page_title I18n.t(:Edit_Units_Of_Work)
-    redirect_to guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients")
+    #redirect_to guw.edit_guw_model_path(@guw_coefficient.guw_model, organization_id: @current_organization.id, anchor: "tabs-coefficients")
+    redirect_to guw.edit_guw_model_guw_coefficient_path(@guw_coefficient.guw_model, @guw_coefficient, organization_id: @current_organization.id, anchor: "tabs-coefficients")
   end
 
   def destroy

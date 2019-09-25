@@ -1925,3 +1925,8 @@ en-gb:
   asc_order: "Ascending"
   desc_order: "Descending"
   show_module_name: "Show module name"
+
+  coefficients_list: "Coefficients List"
+  hide_all: "Hide All"
+  new_complexity: "New complexity"
+  settings_super_admin: "Super Administrator"

@@ -20,8 +20,8 @@
           <td><%= dt.cost_from %></td>
           <td><%= dt.demand_status %></td>
           <td>
-            <%= link_to 'Editer', edit_organization_demand_type_path(@organization, dt), :class => 'icon-pencil' %> |
-            <%= link_to 'Supprimer', organization_demand_type_path(@organization, dt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_demand_type_path(@organization, dt) , :class => 'material-icons', :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), organization_demand_type_path(@organization, dt), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
           </td>
         </tr>
     <% end %>

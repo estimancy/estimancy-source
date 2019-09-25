@@ -5,7 +5,7 @@
 
     <% if can? :show_modules_instances, ModuleProject %>
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:create_button), staffing.new_staffing_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+        <%= link_to I18n.t(:create_button), staffing.new_staffing_model_path(organization_id: @organization.id), :class => 'btn btn-primary float-md-right', style: 'margin-bottom:1rem;' %>
       <% end %>
 
       <table class="table table-list">

@@ -30,7 +30,7 @@ class WbsProjectElementsController < ApplicationController
     @wbs_project_element = WbsProjectElement.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
+      format.html # show.js.erb
       format.json { render json: @wbs_project_element }
     end
   end

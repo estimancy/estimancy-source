@@ -37,7 +37,7 @@ class WidgetsController < ApplicationController
     @widget = Widget.find(params[:id])
 
     respond_to do |format|
-      format.html # show.html.erb
+      format.html # show.js.erb
       format.json { render json: @widget }
     end
   end

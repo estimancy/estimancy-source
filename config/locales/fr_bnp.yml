@@ -2451,4 +2451,6 @@ fr_bnp:
   desc_order: "Décroissant"
   show_module_name: "Afficher le nom du module"
 
-
+  coefficients_list: "Liste des coefficients"
+  hide_all: "Masquer l'entête de la WBS"
+  settings_super_admin: "Super Administrateur"

@@ -5,7 +5,10 @@
 
     <% if can? :show_modules_instances, ModuleProject %>
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to I18n.t(:create_button), new_organization_wbs_activity_path(@organization), :class => 'btn btn-primary', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+        <%= link_to I18n.t(:create_button), new_organization_wbs_activity_path(@organization),
+                    :class => 'btn btn-primary float-md-right',
+                    :style => 'margin-bottom:1rem;',
+                    :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
       <% end %>
 
       <table class="table table-list">
@@ -13,7 +16,7 @@
           <th><%= I18n.t(:name) %></th>
           <th><%= I18n.t(:description) %></th>
           <th><%= I18n.t(:created_at)%></th>
-          <th class="action" style="width: 160px"><%= I18n.t(:actions) %></th>
+          <th class="action" style="width:100px;"><%= I18n.t(:actions) %></th>
         </tr>
 
         <% @wbs_activities.order("name asc").each do |wbs_activity| %>
@@ -23,7 +26,7 @@
             <td class="span2 align-center">
               <%= wbs_activity.created_at.nil? ? '-' : I18n.l(wbs_activity.created_at) %>
             </td>
-            <td class="center">
+            <td class="center" style="width:100px;">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'),
                           confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage_modules_instances, ModuleProject %>
