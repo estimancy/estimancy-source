@@ -470,7 +470,9 @@
                   <div class="col-9">
 
                     <div id="guw_coefficients_tab">
-                      <%= render :partial => "guw/guw_coefficients/show", object: [@guw_coefficient] %>
+                      <% if @guw_coefficient %>
+                        <%= render :partial => "guw/guw_coefficients/show", object: [@guw_coefficient] %>
+                      <% end %>
                     </div>
 
                     <% if can? :manage_modules_instances, ModuleProject %>
