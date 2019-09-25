@@ -162,7 +162,7 @@
 
         <% end %>
       <% end %>
-    <% elsif i[0] == "Criteria" || i[0] == "Critères" %>
+    <% elsif i[0] == "Criteria" || i[0] == "Critères" || i[0] == I18n.t(:criteria) %>
       <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
         <td class="guw-cell-ajustment">
           <% unless @guw_type.nil? %>
@@ -183,7 +183,7 @@
           <% end %>
         </td>
       <% end %>
-    <% elsif i[0] == "Coeff. complexity" || i[0] == "Coeff. de Complexité" %>
+    <% elsif i[0] == "Coeff. complexity" || i[0] == "Coeff. de Complexité" || i[0] == I18n.t(:cplx_coeff) %>
       <% unless @guw_type.nil? %>
         <% @guw_complexities = @guw_type.guw_complexities.order("display_order ASC") %>
       <% end %>
