@@ -45,8 +45,15 @@ class ViewsWidgetsController < ApplicationController
       puts "#{view_widget.id}"
       case view_widget.name.to_s.downcase
 
-        when "abaque", ""
+        when "abaque"
           data = [0,0,5,1]
+
+        when ""
+          data = [0,0,5,1]
+          if view_widget.name.blank? && view_widget.is_label_widget?
+            view_widget.name = view_widget.comment.to_s.humanize
+            view_widget.save(validate: false)
+          end
 
         when "localisation"
           data = [0,1,5,1]
