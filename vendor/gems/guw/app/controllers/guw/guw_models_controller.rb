@@ -1873,10 +1873,12 @@ class Guw::GuwModelsController < ApplicationController
 
           corresponding_ratio_elt = WbsActivityRatioElement.where(organization_id: organization_id, wbs_activity_id: @wbs_activity.id, wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_element_id: wbs_activity_element.id).first
 
-          final_formula = corresponding_ratio_elt.formula
-                              .gsub("RTU", guw_output_effort_value.to_s)
-                              .gsub("TEST", guw_output_test_value.to_s)
-                              .gsub('%', ' * 0.01 ')
+          unless corresponding_ratio_elt.nil?
+            final_formula = corresponding_ratio_elt.formula
+                                .gsub("RTU", guw_output_effort_value.to_s)
+                                .gsub("TEST", guw_output_test_value.to_s)
+                                .gsub('%', ' * 0.01 ')
+          end
 
           begin
             value = calculator.evaluate(final_formula).to_f.round(3)
