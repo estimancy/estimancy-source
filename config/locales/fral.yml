@@ -1759,7 +1759,7 @@ fral:
   error_message_1: "Une anomalie est survenue."
   error_message_2: "Un administrateur Estimancy a été averti."
   error_message_3: "Vous pouvez continuer."
-  locked_at: "Bloquer le"
+  locked_at: "Bloqué le"
   unlocked: "Non bloqué"
   user_exist: "Le(s) utilisateur(s) \"%{parameter}\" existe déjâ"
   user_with_no_name: "la/les ligne(s) suivante contienne des erreurs (nom|prenom|login|email manquant): %{parameter}"
