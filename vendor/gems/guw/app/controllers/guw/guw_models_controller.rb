@@ -233,7 +233,7 @@ class Guw::GuwModelsController < ApplicationController
                                                      output_type: row[1].nil? ? nil : row[1].value,
                                                      organization_id: organization_id,
                                                      guw_model_id: @guw_model.id,
-                                                     allow_intermediate_value: (row[2].value == 0) ? false : true,
+                                                     allow_intermediate_value: (row[2].nil? ? false : row[2].value == 0) ? false : true,
                                                      standard_coefficient: row[4].nil? ? nil : row[4].value,
                                                      display_order: row[5].nil? ? nil : row[5].value,
                                                      unit: row[6].nil? ? nil : row[6].value,
@@ -488,7 +488,7 @@ class Guw::GuwModelsController < ApplicationController
               if index != 0 && !row.nil?
                  Guw::GuwWorkUnit.create(name:row[0].value,
                                          value: row[1].value,
-                                         display_order: row[2].value,
+                                         display_order: row[2].nil? ? nil : row[2].value,
                                          guw_model_id: @guw_model.id)
               end
             end
@@ -498,7 +498,7 @@ class Guw::GuwModelsController < ApplicationController
               if index != 0 && !row.nil?
                 Guw::GuwWeighting.create(name:row[0].value,
                                         value: row[1].value,
-                                        display_order: row[2].value,
+                                        display_order: row[2].nil? ? nil : row[2].value,
                                         guw_model_id: @guw_model.id)
               end
             end
