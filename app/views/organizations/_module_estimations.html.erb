@@ -293,7 +293,7 @@
               <td class="center">
                 <%= link_to '', edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module), :class => 'fa fa-pencil', :title => I18n.t(:edit) %>
                 <% if can? :manage_modules_instances, ModuleProject %>
-                  <%= link_to '', duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module) %>
+                  <%= link_to '', duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), method: :post, :class => 'fa fa-copy', :title => I18n.t(:duplicate_module) %>
                   <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'wbs_activity_id', :instance_model_id => wbs_activity.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
                   <%= link_to '', wbs_activity, confirm: I18n.t(:are_you_sure), method: :delete, organization_id: @organization.id, :class => 'fa fa-trash', :title => I18n.t(:delete) %>
                 <% end %>
