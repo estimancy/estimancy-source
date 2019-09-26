@@ -2172,3 +2172,7 @@ fr_bnp:
   text_new_status: "Nouveau statut"
   text_project_duplication_of: "Cette estimation est une copie de l'estimation"
   status_change_automation: "l'automatisme de changement de statut"
+
+  default: "Par défaut"
+  color_code: "Couleur"
+  color_priority: "Priorité de la couleur"

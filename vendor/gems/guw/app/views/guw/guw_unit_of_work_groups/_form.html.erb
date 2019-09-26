@@ -21,9 +21,6 @@
 
         <%= f.input :name, label: I18n.t(:name), :input_html => { :class => 'input-xxlarge' } %>
         <%= f.input :comments, label: I18n.t(:comments), :input_html => { :class => 'input-xxlarge' } %>
-        <% if @guw_model.allow_technology == true %>
-          <%= f.input :organization_technology_id, as: :select, collection: @project.organization.organization_technologies, label: I18n.t(:organization_technology) %>
-        <% end %>
       </div>
 
       <% if can? :execute_estimation_plan, @project %>

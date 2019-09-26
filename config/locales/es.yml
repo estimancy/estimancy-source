@@ -2051,5 +2051,9 @@ es:
   text_project_duplication_of: "This project is a duplication of project"
   status_change_automation: "the status change automation"
 
+  default: "Default"
+  color_code: "Color code"
+  color_priority: "Color Priority"
+
 
 
