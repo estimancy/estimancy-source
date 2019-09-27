@@ -29,6 +29,7 @@ module Operation
     #validates :standard_unit_coefficient, :output_unit, :presence => true
     validates :operation_type, :presence => true
 
+    attr_accessible :organization_id, :name, :three_points_estimation, :operation_type
 
     belongs_to :organization
     has_many :module_projects, :dependent => :destroy

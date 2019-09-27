@@ -175,7 +175,7 @@
             <% if can? :manage_modules_instances, ModuleProject %>
               <%= link_to raw("<i class='material-icons'>file_copy</i>"), expert_judgement.instance_duplicate_expert_judgment_path(i, organization_id: @organization.id),
                           :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
-              <%= link_to I18n.t(:delete), expert_judgement.instance_path(i, organization_id: @organization.id),  confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+              <%#= link_to I18n.t(:delete), expert_judgement.instance_path(i, organization_id: @organization.id),  confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
               <%= link_to raw("<i class='material-icons'>delete</i>"), expert_judgement.instance_path(i, organization_id: @organization.id),
                           confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
             <% end %>

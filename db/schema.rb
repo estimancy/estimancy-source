@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190910135616) do
+ActiveRecord::Schema.define(version: 20190927144743) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -578,6 +578,7 @@ ActiveRecord::Schema.define(version: 20190910135616) do
     t.boolean "enabled_effort"
     t.boolean "enabled_size"
     t.integer "copy_id",                 limit: 4
+    t.integer "copy_number",             limit: 4
   end
 
   add_index "expert_judgement_instances", ["organization_id", "name"], name: "index_expert_judgement_instances_on_organization_id_and_name", unique: true, using: :btree

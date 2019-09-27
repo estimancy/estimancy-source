@@ -124,7 +124,6 @@ class Operation::OperationModelsController < ApplicationController
     redirect_to main_app.organization_module_estimation_path(@operation_model.organization_id, anchor: "effort")
   end
 
-
   def save_efforts
 
     authorize! :execute_estimation_plan, @project
@@ -304,7 +303,6 @@ class Operation::OperationModelsController < ApplicationController
 
     redirect_to main_app.dashboard_path(@project)
   end
-
 
   def save_efforts_save
     authorize! :execute_estimation_plan, @project

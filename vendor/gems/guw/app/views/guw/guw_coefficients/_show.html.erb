@@ -13,7 +13,7 @@
       <br>
 
       <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient), class: "btn btn-primary float-md-right" %>
+        <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient), class: "btn btn-primary float-md-right", style: 'margin-bottom:1rem;' %>
       <% end %>
 
       <table class="table table-sm table-bordered table-list" %>

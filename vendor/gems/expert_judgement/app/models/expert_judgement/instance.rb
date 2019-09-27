@@ -25,6 +25,11 @@ module ExpertJudgement
     belongs_to :organization
     has_many :instance_estimates, foreign_key: "expert_judgement_instance_id"
 
+    attr_accessible :organization_id, :name, :description, :three_points_estimation,
+                    :enabled_cost, :cost_unit, :cost_unit_coefficient,
+                    :enabled_effort, :effort_unit, :effort_unit_coefficient,
+                    :enabled_size, :retained_size_unit, :copy_number
+
     ###validates_presence_of :organization_id
     validates :name, :presence => true, :uniqueness => {:scope => :organization_id, :case_sensitive => false, message: I18n.t(:module_instance_name_already_exists)}
 
