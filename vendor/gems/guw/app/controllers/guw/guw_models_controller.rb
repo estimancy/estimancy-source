@@ -216,7 +216,7 @@ class Guw::GuwModelsController < ApplicationController
                                                        guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
                                                        organization_id: organization_id,
                                                        guw_model_id: @guw_model.id,
-                                                       default_value: (row[5].nil? ? 1 : row[5].value.to_s == "true") ? 1 : 0,
+                                                       default_value: (row[5].nil? ? 0 : row[5].value.to_s == "true") ? 1 : 0,
                                                        default: (row[5].nil? ? 1 : row[5].value.to_s == "true") ? 1 : 0,
                                                        color_code: row[6].nil? ? nil : row[6].value,
                                                        color_priority: row[7].nil? ? nil : row[7].value)
@@ -1154,7 +1154,7 @@ class Guw::GuwModelsController < ApplicationController
     coefficients_worksheet.add_cell(0, 3, I18n.t(:allow_intermediate_value))
     coefficients_worksheet.add_cell(0, 4, I18n.t(:deported))
 
-    @guw_model.guw_coefficients.where(organization_id: @guw_organisation.id).each_with_index do |coeff, index|
+    @guw_model.guw_coefficients.where(organization_id: @guw_organisation.id).order('display_order asc').each_with_index do |coeff, index|
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
       coefficients_worksheet.add_cell(index + 1, 1, coeff.description)
       coefficients_worksheet.add_cell(index + 1, 2, coeff.coefficient_type)
@@ -1185,8 +1185,11 @@ class Guw::GuwModelsController < ApplicationController
         coeff_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}")).change_horizontal_alignment('center')
 
         line_number = counter_line + 1
-        coefficient.guw_coefficient_elements.where(organization_id: @guw_organisation.id, guw_model_id: @guw_model.id).each do |coeff_element|
+        coefficient.guw_coefficient_elements.where(organization_id: @guw_organisation.id, guw_model_id: @guw_model.id).order('display_order asc').each do |coeff_element|
           column_value = coeff_element.send(attr)
+          if attr == "default"
+            column_value = coeff_element.default ? 1 : 0
+          end
           coeff_elements_worksheet.add_cell(line_number, column_number, column_value)
           line_number += 1
         end

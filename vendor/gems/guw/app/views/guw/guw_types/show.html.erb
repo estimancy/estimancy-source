@@ -174,7 +174,7 @@
           <% guw_complexity_coefficient_elements["#{gcce.guw_complexity_id}_#{gcce.guw_coefficient_element_id}_#{gcce.guw_output_id}"] = (gcce.value.nil? ? nil : gcce.value) %>
         <% end %>
 
-        <% guw_coefficient_elements.each do |guw_coefficient_element| %>
+        <% guw_coefficient_elements.order('display_order asc').each do |guw_coefficient_element| %>
           <tr>
             <td style="font-weight: <%= (guw_coefficient_element.default == true) ? 'bolder' : '' %>">
               <%= guw_coefficient_element.name %> (<%= guw_coefficient_element.value %>) (<%= guw_coefficient_element.default_display_value %>)
