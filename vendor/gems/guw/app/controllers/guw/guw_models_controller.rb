@@ -1423,7 +1423,7 @@ class Guw::GuwModelsController < ApplicationController
 
           output_line += 1
 
-          guw_coefficient.guw_coefficient_elements.where(organization_id: @guw_organisation.id, guw_model_id: @guw_model.id).each do |guw_coefficient_element|
+          guw_coefficient.guw_coefficient_elements.where(organization_id: @guw_organisation.id, guw_model_id: @guw_model.id).order('display_order asc').each do |guw_coefficient_element|
 
             worksheet.add_cell(output_line, 0, guw_coefficient_element.name)
 
