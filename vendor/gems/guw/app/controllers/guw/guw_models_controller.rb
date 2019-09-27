@@ -341,7 +341,7 @@ class Guw::GuwModelsController < ApplicationController
                   nb_output = @guw_model.guw_outputs.where(organization_id: organization_id, guw_model_id: @guw_model.id).size
                   next_item = 15 + nb_output
                   @guw_model.guw_coefficients.where(organization_id: organization_id).each do |guw_coefficient|
-                    guw_coefficient.guw_coefficient_elements.order('display_order ASC').each_with_index do |guw_coefficient_element, k|
+                    guw_coefficient.guw_coefficient_elements.each_with_index do |guw_coefficient_element, k|
 
                       next_item = next_item + 1
 
