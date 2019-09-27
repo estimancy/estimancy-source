@@ -23,7 +23,7 @@ module Guw
   class GuwType < ActiveRecord::Base
 
     attr_accessible :name, :description, :organization_technology_id,
-                    :guw_model_id, :copy_id, :allow_quantity,
+                    :organization_id, :guw_model_id, :copy_id, :allow_quantity,
                     :allow_retained, :allow_complexity, :allow_quantity,
                     :guw_model_id, :copy_id, :allow_criteria,
                     :display_threshold, :attribute_type, :is_default,

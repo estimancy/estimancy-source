@@ -5,7 +5,7 @@ module Guw
     has_many :guw_output_associations, dependent: :destroy
     has_many :guw_output_complexities, dependent: :destroy
 
-    attr_accessible :name, :output_type, :guw_model_id,
+    attr_accessible :name, :output_type, :guw_model_id, :organization_id,
                     :allow_intermediate_value, :allow_subtotal, :standard_coefficient,
                     :unit, :display_order, :color_code, :color_priority
 

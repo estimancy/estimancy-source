@@ -90,6 +90,8 @@ class Guw::GuwModelsController < ApplicationController
 
   def import_new_config
 
+    organization_id = @current_organization.id || params[organization_id]
+
     ActiveRecord::Base.transaction do
       if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
         @workbook = RubyXL::Parser.parse(params[:file].path)
@@ -105,7 +107,6 @@ class Guw::GuwModelsController < ApplicationController
               break
             end
 
-            organization_id = @current_organization.id
             @guw_model = Guw::GuwModel.where(organization_id: organization_id, name: tab[0][1].nil? ? nil : tab[0][1].value).first
             if @guw_model.nil?
               @guw_model = Guw::GuwModel.new( organization_id: organization_id,

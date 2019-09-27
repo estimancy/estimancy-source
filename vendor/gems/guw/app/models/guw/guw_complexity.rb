@@ -32,7 +32,7 @@ module Guw
     has_many :guw_output_complexities, dependent: :destroy
     has_many :guw_output_complexity_initializations, dependent: :destroy
 
-    attr_accessible :organization_id, :name, :alias, :weight,
+    attr_accessible :organization_id, :guw_model_id, :name, :alias, :weight,
                     :bottom_range, :top_range, :guw_type_id,
                     :enable_value, :display_order, :default_value, :weight_b
 
