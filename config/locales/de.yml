@@ -1709,7 +1709,7 @@ de:
   text_project_duplication_of: "This project is a duplication of project"
   status_change_automation: "The status change automation"
 
-  default: "Default"
+  default: "Default value"
   color_code: "Color"
   color_priority: "Color Priority"
 

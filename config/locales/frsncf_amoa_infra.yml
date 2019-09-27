@@ -2139,6 +2139,6 @@ frsncf_amoa_infra:
   text_project_duplication_of: "Ce devis est une copie du devis"
   status_change_automation: "l'automatisme de changement de statut"
 
-  default: "Par défaut"
+  default: "Valeur par défaut"
   color_code: "Couleur"
   color_priority: "Priorité de la couleur"
