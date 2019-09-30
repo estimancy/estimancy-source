@@ -83,7 +83,7 @@ class ViewsWidget < ActiveRecord::Base
 
         # reset module_project_ratio_elements for EffortBreakdown module
         if mp.pemodule.alias == "effort_breakdown"
-          mp.module_project_ratio_elements.where(organization_id: organization_id, pbs_project_element_id: pbs_project_element.id, module_project_id: module_project.id).each do |mp_ratio_elt|
+          mp.module_project_ratio_elements.where(organization_id: organization_id, pbs_project_element_id: pbs_project_element.id).each do |mp_ratio_elt|
             ["theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"].each do |attribute|
               ["low", "most_likely", "high", "probable"].each do |level|
                 mp_ratio_elt.send("#{attribute}_#{level}=", nil)
