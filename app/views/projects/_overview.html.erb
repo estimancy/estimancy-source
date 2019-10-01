@@ -32,7 +32,7 @@
     <% module_project_view = module_project.view %>
     <% unless module_project_view.nil? %>
         <%# module_project_view_widgets = module_project_view.views_widgets.where(widget_type: "text").order_as_specified(name: widgets_name).all %>
-        <% module_project_view.views_widgets.where(module_project_id: module_project.id, widget_type: "text").order_as_specified(name: widgets_name).each do |view_widget| %>
+        <% module_project_view.views_widgets.where(widget_type: "text").order_as_specified(name: widgets_name).each do |view_widget| %>
         <%# module_project_view.views_widgets.where(module_project_id: module_project.id, widget_type: "text").each do |view_widget| %>
             <% view_widget_name = view_widget.name %>
             <% if view_widget.is_label_widget? %>
