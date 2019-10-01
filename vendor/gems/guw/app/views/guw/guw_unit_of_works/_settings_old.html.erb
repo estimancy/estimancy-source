@@ -157,9 +157,6 @@
               <% unless @guw_model.factors_label.blank? %>
                 <th class=""><%= @guw_model.factors_label.to_s %></th>
               <% end %>
-              <% if @guw_model.allow_technology == true %>
-                <th class=""><%= I18n.t :technology %></th>
-              <% end %>
 
               <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
                 <th class=""><%= I18n.t :quantity %></th>
@@ -284,26 +281,6 @@
                                        guw: guow.id,
                                        required: true,
                                        readonly: !can?(:execute_estimation_plan, @project) %>
-                      <% end %>
-                    </span>
-                  </td>
-                <% end %>
-
-                <% if @guw_model.allow_technology == true %>
-                  <td class="span2">
-                    <span class="technology_<%= guow.id %>" >
-                      <% results = Guw::GuwComplexityTechnology.where(guw_type_id: guow.guw_type_id).select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq %>
-                      <% unless results.empty? %>
-                        <% begin %>
-                          <%= select_tag "guw_technology[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                                          selected: guow.organization_technology.nil? ?
-                                                                                                  uowg.organization_technology_id : guow.organization_technology.id),
-                                         class: "guw_technology input-xsmall",
-                                         guw: guow.id,
-                                         required: true,
-                                         readonly: !can?(:execute_estimation_plan, @project) %>
-                        <% rescue %>
-                        <% end %>
                       <% end %>
                     </span>
                   </td>
