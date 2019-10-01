@@ -33188,7 +33188,9 @@ $( document ).ready(function() {
     // Table des estimations
     $('.main-estimation-table tbody').on( 'click', 'tr', function (e) {
         if(!$(e.target).parents('.tools').length) {
-            if ( $(this).hasClass('selected') ) {
+            //if ( $(this).hasClass('selected') ) {
+            //if ( $(this).hasClass('selected') || ($(e.target).hasClass('estimancy')) ) {
+            if ( $(this).hasClass('selected') || ($(e.target).closest('td').find('a').hasClass('estimancy')) ) {
                 $(this).removeClass('selected');
             }
             else {
