@@ -374,7 +374,14 @@ class ProjectsController < ApplicationController
         fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)"]).first
         fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
 
-        ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio).each_with_index do |mpre, iii|
+        if params[:date_min].present? && params[:date_min].present?
+          mpres = ModuleProjectRatioElement.where(organization_id: @organization.id,
+                                                  created_at: Time.parse(params[:date_min])..Time.parse(params[:date_max])).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
+        else
+          mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
+        end
+
+        mpres.each_with_index do |mpre, iii|
 
           mpre_project = mpre.module_project.project
 
