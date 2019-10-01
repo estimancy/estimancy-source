@@ -523,8 +523,8 @@ class ProjectsController < ApplicationController
   def download
     @organization = Organization.find(params[:organization_id])
     send_file(
-        "#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx",
-        filename: "#{@organization.name}-RAW_DATA.xlsx",
+        "#{Rails.root}/public/#{@organization.name}-#{current_user}-RAW_DATA.xlsx",
+        filename: "#{@organization.name}-#{current_user}-RAW_DATA.xlsx",
         type: "application/vnd.ms-excel"
     )
   end
