@@ -2000,9 +2000,9 @@ class Guw::GuwModelsController < ApplicationController
         cplx = guow.guw_complexity.name
       end
 
-      worksheet.add_cell(ind, 0, current_mp_project.organization.name)
-      worksheet.add_cell(ind, 1, current_mp_project.provider.name)
-      worksheet.add_cell(ind, 2, current_mp_project.application.name)
+      worksheet.add_cell(ind, 0, current_mp_project.organization.nil? ? nil : current_mp_project.organization.name)
+      worksheet.add_cell(ind, 1, current_mp_project.provider.nil? ? nil : current_mp_project.provider.name)
+      worksheet.add_cell(ind, 2, current_mp_project.application.nil? ? nil : current_mp_project.application.name)
       worksheet.add_cell(ind, 3, current_mp_project.business_need)
       worksheet.add_cell(ind, 4, current_mp_project.estimation_status.nil? ? nil : current_mp_project.estimation_status.name)
       worksheet.add_cell(ind, 5, current_mp_project.project_area.nil? ? nil : current_mp_project.project_area.name)
