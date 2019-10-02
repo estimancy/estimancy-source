@@ -43,8 +43,8 @@
             <% else %>
                 <% if module_project.pemodule.alias == initialization_module_name %>
                     <%# view_widget_data = get_view_widget_data(module_project.id, view_widget.id) %>
-                    <% view_widget_data = get_text_view_widget_data_without_size_min_max(module_project.id, view_widget.id) %>
-                    <% @widgets[view_widget_name] = [view_widget, view_widget_data[:value_to_show]] %>
+                    <% view_widget_data_text = get_text_view_widget_data_without_size_min_max(module_project.id, view_widget.id) %>
+                    <% @widgets[view_widget_name] = [view_widget, view_widget_data_text] %>
                 <% else %>
                     <% view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
                     <% @widgets[view_widget_name] = [view_widget, view_widget_data] %>

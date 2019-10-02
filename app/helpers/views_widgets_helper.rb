@@ -710,13 +710,11 @@ module ViewsWidgetsHelper
           else
             value_to_show = probable_value_text
         end
-
-        widget_data[:value_to_show] = value_to_show
       end
     end
 
-    # Return the view_widget HASH
-    widget_data
+    # Return the text value to show
+    value_to_show
   end
 
 
