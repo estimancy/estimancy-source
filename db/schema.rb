@@ -1726,7 +1726,6 @@ ActiveRecord::Schema.define(version: 20191002091051) do
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
     t.integer  "copy_id",         limit: 4
-    t.float    "coefficient",     limit: 24
   end
 
   add_index "organization_profiles", ["organization_id"], name: "index_organization_profiles_on_organization_id", using: :btree
