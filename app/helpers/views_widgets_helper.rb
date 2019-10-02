@@ -521,8 +521,8 @@ module ViewsWidgetsHelper
     pemodule = module_project.pemodule
 
     widget_data = {}
-    data_probable = ""; min_value = ""; max_value = ""; value_to_show = ""
-    initial_width = 60;  initial_height = 60
+    data_probable = ""; value_to_show = ""
+
     value_to_show = nil # according to the widget type
     data_low = nil; data_most_likely=nil; data_high=nil; data_probable=nil
     widget_data = { data_low: data_low, data_high: data_high, data_most_likely: data_most_likely, data_probable: data_probable }
