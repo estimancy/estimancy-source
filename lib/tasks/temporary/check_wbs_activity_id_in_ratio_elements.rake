@@ -23,6 +23,14 @@ namespace :wbs_activities do
       end
     end
 
+    Guw::GuwComplexity.all.each do |guw_complexity|
+      guw_complexity_guw_type = guw_complexity.guw_type
+      unless guw_complexity_guw_type.nil?
+        guw_complexity.guw_model_id = guw_complexity_guw_type.guw_model_id
+        guw_complexity.save
+      end
+    end
+
   end
 end
 
