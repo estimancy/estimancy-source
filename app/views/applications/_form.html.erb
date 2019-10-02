@@ -19,12 +19,6 @@
         </div>
       </div>
 
-      <div class="row-fluid">
-        <div class="span7">
-          <%= f.input :coefficient, :label => I18n.t('coefficient'), :input_html => { :class => 'input-xlarge' } %>
-        </div>
-      </div>
-
       <div class="actions-tabs">
         <% if action_name.in?(%w(new create)) %>
           <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
