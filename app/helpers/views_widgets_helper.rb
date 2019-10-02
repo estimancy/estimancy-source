@@ -511,6 +511,216 @@ module ViewsWidgetsHelper
 
 
   # Get the view_widget data for each view/widget/module_project
+  def get_text_view_widget_data_without_size_min_max(module_project_id, view_widget_id)
+
+    # General data
+    view_widget = ViewsWidget.find(view_widget_id)
+    module_project = ModuleProject.find(module_project_id)
+    project = module_project.project
+    pbs_project_elt = project.root_component
+    pemodule = module_project.pemodule
+
+    widget_data = {}
+    data_probable = ""; min_value = ""; max_value = ""; value_to_show = ""
+    initial_width = 60;  initial_height = 60
+    value_to_show = nil # according to the widget type
+    data_low = nil; data_most_likely=nil; data_high=nil; data_probable=nil
+    widget_data = { data_low: data_low, data_high: data_high, data_most_likely: data_most_likely, data_probable: data_probable }
+
+    if view_widget.estimation_value.pe_attribute.nil?
+      value_to_show = {}
+      return value_to_show
+    end
+
+    ############################ Get the view_widget estimation value  ############################
+
+    view_widget_est_val = view_widget.estimation_value
+    user = current_user
+    user_precision = user_number_precision
+    effort_unit_coefficient = 1
+
+    unless view_widget_est_val.nil?
+      est_val_in_out = view_widget_est_val.in_out
+      view_widget_attribute = view_widget_est_val.pe_attribute #view_widget.pe_attribute
+      view_widget_attribute_name = view_widget_attribute.nil? ? "" : get_attribute_human_name(view_widget_attribute) #view_widget_attribute.name
+
+      unless view_widget_attribute.nil?
+        estimation_value = module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', view_widget_attribute.id, view_widget_est_val.in_out).last
+      end
+
+      attribute_unit_label = get_attribute_unit(view_widget_attribute, view_widget_est_val)
+
+      unless estimation_value.nil?
+        data_low = estimation_value.string_data_low[pbs_project_elt.id]
+        data_high = estimation_value.string_data_high[pbs_project_elt.id]
+        data_most_likely = estimation_value.string_data_most_likely[pbs_project_elt.id]
+        data_probable = estimation_value.string_data_probable[pbs_project_elt.id]
+
+        probable_value_text = nil
+
+        # Get the project wbs_project_element root if module with activities
+        if estimation_value.module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+          wbs_activity = module_project.wbs_activity
+
+          # root element
+          wbs_activity_elt_root = wbs_activity.wbs_activity_elements.first.root
+          return if wbs_activity_elt_root.nil?
+
+          wbs_activity_elt_root_id = wbs_activity_elt_root.id
+
+          # get the wbs_activity_selected ratio
+          #ratio_reference = module_project.get_wbs_activity_ratio(pbs_project_elt.id) #module_project.wbs_activity_ratio #@wbs_activity_ratio
+          ratio_reference = module_project.wbs_activity_ratio #@wbs_activity_ratio
+          if ratio_reference.nil?
+            ratio_reference = module_project.get_wbs_activity_ratio(pbs_project_elt.id)
+          end
+
+          text_data_probable = data_probable
+
+          if estimation_value.in_out == "output"
+            unless estimation_value.pe_attribute.alias == "ratio" || estimation_value.pe_attribute.alias == "ratio_name"
+
+              wbs_data_low = data_low.nil? ? nil : data_low
+              wbs_data_most_likely = data_most_likely.nil? ? nil : data_most_likely
+              wbs_data_high = data_high.nil? ? nil : data_high
+              wbs_data_probable = data_probable.nil? ? nil : data_probable
+
+              data_low = wbs_data_low.nil? ? nil : wbs_data_low
+              data_high = wbs_data_high.nil? ? nil : wbs_data_high
+
+              if wbs_data_probable.nil?
+                wbs_activity_elt_root_data_probable = nil
+              else
+                begin
+                  wbs_activity_elt_root_data_probable = wbs_data_probable[wbs_activity_elt_root.id]
+                rescue
+                  wbs_activity_elt_root_data_probable = nil
+                end
+              end
+
+              if wbs_activity_elt_root_data_probable.nil? || wbs_activity_elt_root_data_probable.empty?
+                text_data_probable = nil
+              else
+                text_data_probable = (wbs_data_probable.nil? || wbs_data_probable.empty?) ? nil : wbs_activity_elt_root_data_probable[:value]
+              end
+            end
+          end
+
+          if data_probable.nil?
+            probable_value_text = "-"
+          else
+            if is_number?(text_data_probable)
+              probable_value_text = display_value(text_data_probable.to_f, estimation_value, module_project_id, view_widget.use_organization_effort_unit)
+            else
+              probable_value_text = text_data_probable
+            end
+          end
+
+        elsif estimation_value.module_project.pemodule.alias == "guw"
+
+          probable_value_text = Guw::GuwModel.display_value(data_probable, estimation_value, view_widget, user)
+
+        elsif estimation_value.module_project.pemodule.alias == "operation"
+          probable_value_text = Operation::OperationModel.display_value(data_probable, estimation_value, view_widget, user)
+
+        elsif  estimation_value.module_project.pemodule.alias == "ge" && estimation_value.pe_attribute.alias.in?(Ge::GeModel::GE_ATTRIBUTES_ALIAS)
+          ge_model = module_project.ge_model
+          probable_value_text = Ge::GeModel.display_value(data_probable, estimation_value, view_widget, user)
+
+        elsif  estimation_value.module_project.pemodule.alias == "kb"
+          probable_value_text = Kb::KbModel.display_value(data_probable, estimation_value, view_widget, user)
+
+        elsif  estimation_value.module_project.pemodule.alias == "skb"
+          probable_value_text = Skb::SkbModel.display_value(data_probable, estimation_value, view_widget, user)
+
+        else
+          if data_probable.nil?
+            probable_value_text = "-" #display_value(data_probable.to_f, estimation_value, module_project_id)
+          else
+            if is_number?(data_probable)
+              probable_value_text = display_value(data_probable.to_f, estimation_value, module_project_id, view_widget.use_organization_effort_unit)
+            else
+              probable_value_text = data_probable
+            end
+          end
+        end
+
+        #Update the widget data
+        #widget_data = { data_low: data_low, data_high: data_high, data_most_likely: data_most_likely, data_probable: data_probable, max_value_text: max_value_text, min_value_text: min_value_text, probable_value_text: probable_value_text }
+        widget_data[:data_low] = data_low
+        widget_data[:data_high] = data_high
+        widget_data[:data_most_likely] = data_most_likely
+        widget_data[:data_probable] = data_probable
+        widget_data[:probable_value_text] = probable_value_text
+
+        #get  rounded values before use
+        if estimation_value.module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN
+
+          if wbs_activity
+            effort_unit_coefficient = wbs_activity.effort_unit_coefficient.nil? ? 1 : wbs_activity.effort_unit_coefficient
+
+            unless ratio_reference.nil?
+              module_project_ratio_elements = estimation_value.module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio_reference.id)
+
+              if view_widget.use_organization_effort_unit == true
+                min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+                organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
+
+                effort_unit_coefficient = organization_effort_limit_coeff
+                attribute_unit_label = organization_effort_unit
+              end
+            end
+          end
+
+
+          data_low = data_low.is_a?(Hash) ? data_low.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) } : data_low
+          data_most_likely = data_most_likely.is_a?(Hash) ? data_most_likely.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) } : data_most_likely
+          data_high = data_high.is_a?(Hash) ? data_high.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) } : data_high
+
+          #data_probable = data_probable.is_a?(Hash) ? (data_probable.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first) : data_probable
+          if data_probable.is_a?(Hash)
+            data_probable = data_probable.map{|key,value| (value.nil? || value.empty?) ? 0 : (value[:value].nil? ? 0 : value[:value].round(user_precision)) }
+          else
+            data_probable = data_probable
+          end
+        else
+          data_low = data_low.is_a?(Hash) ? data_low.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_low
+          data_most_likely = data_most_likely.is_a?(Hash) ? data_most_likely.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_most_likely
+          data_high = data_high.is_a?(Hash) ? data_high.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first : data_high
+          data_probable = data_probable.is_a?(Hash) ? (data_probable.map{|key,value| value.nil? ? value.to_f : value.round(user_precision) }.first) : data_probable
+        end
+
+        attribute_unit = get_attribute_unit(view_widget_attribute)
+
+        ### Organization effort unit coefficient
+        # Get min value and organization effort unit coeff
+        if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)
+          if view_widget.use_organization_effort_unit == true
+            min_value = data_low #get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
+            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+
+            attribute_unit = organization_effort_unit
+          end
+        end
+
+        case view_widget.widget_type
+          when "text"
+            value_to_show = probable_value_text
+            is_simple_text = true
+          else
+            value_to_show = probable_value_text
+        end
+
+        widget_data[:value_to_show] = value_to_show
+      end
+    end
+
+    # Return the view_widget HASH
+    widget_data
+  end
+
+
+    # Get the view_widget data for each view/widget/module_project
   def get_view_widget_data(module_project_id, view_widget_id)
 
     # General data
