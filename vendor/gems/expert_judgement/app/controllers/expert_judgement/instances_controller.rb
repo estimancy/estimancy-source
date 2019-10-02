@@ -213,9 +213,31 @@ class ExpertJudgement::InstancesController < ApplicationController
     redirect_to main_app.dashboard_path(@project)
   end
 
-
   def duplicate_expert_judgment
+    authorize! :manage_modules_instances, ModuleProject
 
+    @instance = ExpertJudgement::Instance.find(params[:instance_id])
+    new_instance = @instance.amoeba_dup
+
+    if @instance.copy_number.nil?
+      @instance.copy_number = 0
+    end
+
+    new_copy_number =  @instance.copy_number.to_i + 1
+    new_instance.name = "#{@instance.name}(#{new_copy_number})"
+    new_instance.copy_number = 0
+    @instance.copy_number = new_copy_number
+
+    new_instance.transaction do
+      if new_instance.save
+        @instance.save
+        flash[:notice] = "Modèle copié avec succès"
+      else
+        flash[:error] = "Erreur lors de la copie de la base"
+      end
+    end
+
+    redirect_to main_app.organization_module_estimation_path(@instance.organization_id, anchor: "effort")
   end
 
 end

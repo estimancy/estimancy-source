@@ -107,13 +107,7 @@
                           </div>
 
                           <div class="form-row">
-                            <div class="col-5">
-                              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label" style="margin-left:1rem;">
-                                <%= f.input :allow_technology, as: :boolean, label: false, :input_html => {:class => 'mdl-checkbox__inputs'} %>
-                                <label class="mdl-textfield__label" for="allow_technology" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:allow_technologies) %></label>
-                              </div>
-                            </div>
-                            <div class="col-5">
+                            <div class="col-5" style="margin-left:1rem;">
                               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                                 <%= f.input :view_data, as: :boolean, label: false, :input_html => {:class => 'mdl-checkbox__inputs'}  %> <%# Activer la visualiation des données %>
                                 <label class="mdl-textfield__label" for="view_data" style="padding-left: 20px; margin-top: -7px;"><%= "#{I18n.t :enable_data_visualization}" %></label>
@@ -396,7 +390,6 @@
 
                       <div class="actions-tabs">
                         <% if can? :manage_modules_instances, ModuleProject %>
-                          <%= link_to I18n.t(:create_button), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
                         <% end %>
                         <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn btn-secondary" %>
                       </div>
