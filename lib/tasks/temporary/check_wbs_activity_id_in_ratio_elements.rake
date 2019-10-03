@@ -79,7 +79,7 @@ namespace :wbs_activities do
 
     organization.guw_output_complexity_initializations.each do |goci|
       goci_guw_complexity = goci.guw_complexity
-      guw_output = Guw::GuwOutput.where(copy_id: goc.guw_output_id, organization_id: 71).first
+      guw_output = Guw::GuwOutput.where(copy_id: goci.guw_output_id, organization_id: 71).first
 
       unless goci_guw_complexity.nil?
         goci.guw_model_id = goci_guw_complexity.guw_model_id
