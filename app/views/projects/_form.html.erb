@@ -1,12 +1,11 @@
 <div class="col-10" style="margin-top: 20px">
 
-  <%#= simple_form_for(@project) do |f| %>
-
     <div class="row pb-5">
+
       <div id="estimation_content" class="col-10">
 
         <% if @partial_name.blank? %>
-            <%= render :partial => "projects/tabs_global_properties", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
+          <%= render :partial => "projects/tabs_global_properties", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
         <% else %>
             <%= render :partial => "projects/#{@partial_name}", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
         <% end %>
@@ -39,15 +38,13 @@
                     <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_history', anchor: 'tabs-history') %>"><span><%= I18n.t("label_project_history") %></span></a>
                 </li>
               </ul>
-          <%# end %>
+          <% end %>
         </div>
       </div>
     </div>
 
     <br>
     <br>
-
-  <% end %>
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script>
