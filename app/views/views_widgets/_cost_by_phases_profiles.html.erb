@@ -264,12 +264,12 @@
 
                     <td>
                       <% if wbs_unit == "€" %>
-                          <div class="text_center"><strong><%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} #{wbs_unit}" %></strong></div>
+                          <!--<div class="text_center"><strong><%#= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} #{wbs_unit}" %></strong></div>-->
                           <br />
                           <div class="text_center"><strong><%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(root_effort_per_phase, user_number_precision, true)} #{wbs_unit}" %></strong></div>
                       <% else %>
 
-                          <div class="text_center"><strong><%= total_per_phase_to_sum.compact.empty? ? "-" : "#{wbs_unit} #{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)}" %></strong></div>
+                          <!--<div class="text_center"><strong><%#= total_per_phase_to_sum.compact.empty? ? "-" : "#{wbs_unit} #{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)}" %></strong></div>-->
                           <br />
                           <div class="text_center"><strong><%= root_effort_per_phase.nil? ? "-" : " #{wbs_unit} #{convert_with_precision(root_effort_per_phase, user_number_precision, true)}" %></strong></div>
                       <% end %>
