@@ -1630,7 +1630,7 @@ en:
   label_model_group_security_resume: "Group securities resume of current model"
   estimation_creator_from_model: "Creator of estimation from this model"
   text_create_from_model: "Create project from the \"%{model_name}\" template"
-  text_create_from_model_2: "Create project from from template"
+  text_create_from_model_2: "Create project from template"
   model_securities: "Permissions on the model"
   securities_for_generated_project: "Permissions for the generated estimation"
   update_password_first_connexion: "You must change your password during your first connection"

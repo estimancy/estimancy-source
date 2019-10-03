@@ -20,7 +20,7 @@
 
 <div>
   <div class="pull-left">
-    <table id="profiles_per_activity" class="table table-sm" style="margin-left:20px;">
+    <table id="profiles_per_activity" class="table table-sm table-bordered" style="margin-left:20px;">
       <tr>
         <th style="text-align: left"><%= I18n.t(:phases) %></th>
         <% if view_widget.show_tjm %>
@@ -28,7 +28,7 @@
         <% end %>
 
         <th colspan="<%= project_organization_profiles.length %>" class="text_center"><%= I18n.t(:profiles) %></th>
-        <th rowspan="2">
+        <th class="text-center">
           <%= I18n.t(:total_per_phase) %> <br>
           <span>
             <%= get_attribute_human_name(estimation_value.pe_attribute) %> <%= "(#{wbs_unit})" %>
@@ -44,6 +44,7 @@
             <% project_organization_profiles.each do |profile| %>
                 <th class="text_center"><%= profile.name %></th>
             <% end %>
+            <th></th>
         <% else %>
             <% mp_profiles_length = 2 %>
             <th><%= I18n.t(:no_profiles_for_wbs_activity_organization) %></th>
@@ -264,12 +265,12 @@
 
                     <td>
                       <% if wbs_unit == "€" %>
-                          <div class="text_center"><strong><%= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} #{wbs_unit}" %></strong></div>
+                          <!--<div class="text_center"><strong><%#= total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} #{wbs_unit}" %></strong></div>-->
                           <br />
                           <div class="text_center"><strong><%= root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(root_effort_per_phase, user_number_precision, true)} #{wbs_unit}" %></strong></div>
                       <% else %>
 
-                          <div class="text_center"><strong><%= total_per_phase_to_sum.compact.empty? ? "-" : "#{wbs_unit} #{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)}" %></strong></div>
+                          <!--<div class="text_center"><strong><%#= total_per_phase_to_sum.compact.empty? ? "-" : "#{wbs_unit} #{convert_with_precision(total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)}" %></strong></div>-->
                           <br />
                           <div class="text_center"><strong><%= root_effort_per_phase.nil? ? "-" : " #{wbs_unit} #{convert_with_precision(root_effort_per_phase, user_number_precision, true)}" %></strong></div>
                       <% end %>
