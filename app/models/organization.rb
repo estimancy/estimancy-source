@@ -84,7 +84,7 @@ class Organization < ActiveRecord::Base
   has_many :guw_coefficient_elements, class_name: "Guw::GuwCoefficientElement", dependent: :destroy
   has_many :guw_complexity_coefficient_elements, class_name: "Guw::GuwComplexityCoefficientElement", dependent: :destroy
   has_many :guw_output_associations, class_name: "Guw::GuwOutputAssociation", dependent: :destroy
-  has_many :guw_output_complexity, class_name: "Guw::GuwOutputComplexity", dependent: :destroy
+  has_many :guw_output_complexities, class_name: "Guw::GuwOutputComplexity", dependent: :destroy
   has_many :guw_output_complexity_initializations, class_name: "Guw::GuwOutputComplexityInitialization", dependent: :destroy
 
   has_many :providers
