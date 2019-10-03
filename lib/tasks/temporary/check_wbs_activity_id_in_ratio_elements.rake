@@ -90,7 +90,16 @@ namespace :wbs_activities do
       end
 
       goci.save
+    end
 
+    Guw::GuwOutputType.all.each do |got|
+      got_guw_model = got.guw_model
+
+      unless got_guw_model.nil?
+        got.organization_id = got_guw_model.organization_id
+      end
+
+      got.save
     end
 
   end
