@@ -171,7 +171,6 @@ class ProjectsController < ApplicationController
               @max_guw_model_attributes_size = guw_model_attributes_size
             end
           end
-
         end
 
         @organization_projects.each do |project|
