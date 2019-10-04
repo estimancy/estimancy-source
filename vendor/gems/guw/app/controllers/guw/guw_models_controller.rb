@@ -2045,7 +2045,18 @@ class Guw::GuwModelsController < ApplicationController
                                                                     guw_unit_of_work_id: guow.id).last
                 end
 
-                worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
+                results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+                                                                                .includes(:guw_coefficient_element)
+                                                                                .where(organization_id: organization_id,
+                                                                                       guw_model_id: @guw_model.id,
+                                                                                       guw_type_id: guow.guw_type_id)
+                                                                                .select{|ct| ct.value != nil }
+                                                                                .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+
+                unless results.empty?
+                  worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 1 : (ceuw.percent.nil? ? '' : ceuw.percent.to_f.round(2))).to_s)
+                end
+
                 # worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
               else
                 worksheet.add_cell(ind, 19+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
