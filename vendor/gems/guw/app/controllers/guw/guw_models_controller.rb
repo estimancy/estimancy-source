@@ -1983,7 +1983,7 @@ class Guw::GuwModelsController < ApplicationController
 
     # worksheet.change_row_bold(0,true)
 
-    jj = 21 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
+    jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
 
     @guw_unit_of_works.each_with_index do |guow, i|
 
