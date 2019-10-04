@@ -240,33 +240,41 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
       end
     end
 
-    # unless params[:factors_value].nil?
-    #   params[:factors_value].each do |i|
-    #     i.last.each do |j|
-    #       j.last.each do |k|
-    #         cplx = Guw::GuwComplexity.find(i.first.to_i)
-    #         fa = Guw::GuwFactor.find(j.first.to_i)
-    #         output = Guw::GuwOutput.find(k.first.to_i)
-    #
-    #         cfa = Guw::GuwComplexityFactor.where(guw_complexity_id: cplx.id,
-    #                                              guw_factor_id: fa.id,
-    #                                              guw_output_id: output.id).first
-    #         if cfa.nil?
-    #           Guw::GuwComplexityFactor.create(guw_complexity_id: cplx.id,
-    #                                           guw_factor_id: fa.id,
-    #                                           guw_output_id: output.id,
-    #                                           value: params[:factors_value]["#{cplx.id}"]["#{fa.id}"]["#{output.id}"],
-    #                                           guw_type_id: @guw_type.id)
-    #         else
-    #           cfa.value = params[:factors_value]["#{cplx.id}"]["#{fa.id}"]["#{output.id}"]
-    #           cfa.guw_type_id = @guw_type.id
-    #           cfa.guw_output_id = output.id
-    #           cfa.save
-    #         end
-    #       end
-    #     end
-    #   end
-    # end
+    unless params[:applications_guw_output].nil?
+      params[:applications_guw_output].each do |i|
+        i.last.each do |j|
+          j.last.each do |k|
+            cplx = Guw::GuwComplexity.find(i.first.to_i)
+            app = Application.find(j.first.to_i)
+            guw_output = Guw::GuwOutput.find(k.first.to_i)
+
+            goa = Guw::GuwOutputApplication.where(organization_id: @organization.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  guw_type_id: @guw_type.id,
+                                                  guw_output_id: guw_output.id,
+                                                  guw_complexity_id: cplx.id,
+                                                  application_id: app.id).first
+
+            if goa.nil?
+
+              Guw::GuwOutputApplication.create(organization_id: @organization.id,
+                                               guw_model_id: @guw_model.id,
+                                               guw_type_id: @guw_type.id,
+                                               guw_output_id: guw_output.id,
+                                               guw_complexity_id: cplx.id,
+                                               application_id: app.id,
+                                               value: params[:applications_guw_output]["#{cplx.id}"]["#{app.id}"]["#{guw_output.id}"])
+
+            else
+              goa.value = params[:factors_value]["#{cplx.id}"]["#{fa.id}"]["#{output.id}"]
+              goa.guw_type_id = @guw_type.id
+              goa.guw_output_id = output.id
+              goa.save
+            end
+          end
+        end
+      end
+    end
 
     unless params[:technology_value].nil?
       params[:technology_value].each do |i|

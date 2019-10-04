@@ -1962,12 +1962,11 @@ class Guw::GuwModelsController < ApplicationController
         "Nom du CDS",
         "Nom du fournisseur",
         "Nom de l'application",
-        "Numéro de devis",
-        "Numéro de demande",
+        "Besoin Métier",
         "Statut du devis",
-        "Service",
-        "Prestation",
-        "Localication",
+        "Services",
+        "Domaine",
+        "Localisation",
         I18n.t(:estimation),
         I18n.t(:version_number),
         I18n.t(:group),
@@ -1984,7 +1983,7 @@ class Guw::GuwModelsController < ApplicationController
 
     # worksheet.change_row_bold(0,true)
 
-    jj = 21 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
+    jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
 
     @guw_unit_of_works.each_with_index do |guow, i|
 
@@ -2000,9 +1999,9 @@ class Guw::GuwModelsController < ApplicationController
         cplx = guow.guw_complexity.name
       end
 
-      worksheet.add_cell(ind, 0, current_mp_project.organization.name)
-      worksheet.add_cell(ind, 1, current_mp_project.provider.name)
-      worksheet.add_cell(ind, 2, current_mp_project.application.name)
+      worksheet.add_cell(ind, 0, current_mp_project.organization.nil? ? nil : current_mp_project.organization.name)
+      worksheet.add_cell(ind, 1, current_mp_project.provider.nil? ? nil : current_mp_project.provider.name)
+      worksheet.add_cell(ind, 2, current_mp_project.application.nil? ? nil : current_mp_project.application.name)
       worksheet.add_cell(ind, 3, current_mp_project.business_need)
       worksheet.add_cell(ind, 4, current_mp_project.estimation_status.nil? ? nil : current_mp_project.estimation_status.name)
       worksheet.add_cell(ind, 5, current_mp_project.project_area.nil? ? nil : current_mp_project.project_area.name)
@@ -2046,10 +2045,21 @@ class Guw::GuwModelsController < ApplicationController
                                                                     guw_unit_of_work_id: guow.id).last
                 end
 
-                worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 1 : ceuw.percent.to_f.round(2)).to_s)
+                results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+                                                                                .includes(:guw_coefficient_element)
+                                                                                .where(organization_id: organization_id,
+                                                                                       guw_model_id: @guw_model.id,
+                                                                                       guw_type_id: guow.guw_type_id)
+                                                                                .select{|ct| ct.value != nil }
+                                                                                .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+
+                unless results.empty?
+                  worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 1 : (ceuw.percent.nil? ? '' : ceuw.percent.to_f.round(2))).to_s)
+                end
+
                 # worksheet.add_hint(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
               else
-                worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                worksheet.add_cell(ind, 19+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
             end
           end
@@ -2058,7 +2068,7 @@ class Guw::GuwModelsController < ApplicationController
           unless guow.guw_type.nil?
             unless guw_output.nil?
               v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f))
-              worksheet.add_cell(ind, 20 + j, v.to_s)
+              worksheet.add_cell(ind, 19 + j, v.to_s)
             end
           end
         end

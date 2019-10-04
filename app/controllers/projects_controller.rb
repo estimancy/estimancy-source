@@ -98,12 +98,22 @@ class ProjectsController < ApplicationController
 
         @organization = Organization.where(id: params[:organization_id]).first
 
-        @organization_projects = @organization.projects
-                                     .where(is_model: false)
-                                     .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
-                                               :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
-                                               :guw_types, :guw_unit_of_works, :module_projects,
-                                               :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+        if params[:date_min].present? && params[:date_min].present?
+          @organization_projects = @organization.projects
+                                       .where(is_model: false)
+                                       .where(created_at: Time.parse(params[:date_min])..Time.parse(params[:date_max]))
+                                       .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
+                                                 :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
+                                                 :guw_types, :guw_unit_of_works, :module_projects,
+                                                 :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+        else
+          @organization_projects = @organization.projects
+                                       .where(is_model: false)
+                                       .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
+                                                 :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
+                                                 :guw_types, :guw_unit_of_works, :module_projects,
+                                                 :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+        end
 
         worksheet_cf = workbook.worksheets[0]
         worksheet_cf.sheet_name = 'Comp. Abaques & Serv. Dire Exp'
@@ -363,7 +373,14 @@ class ProjectsController < ApplicationController
         fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)"]).first
         fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
 
-        ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio).each_with_index do |mpre, iii|
+        if params[:date_min].present? && params[:date_min].present?
+          mpres = ModuleProjectRatioElement.where(organization_id: @organization.id,
+                                                  created_at: Time.parse(params[:date_min])..Time.parse(params[:date_max])).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
+        else
+          mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
+        end
+
+        mpres.each_with_index do |mpre, iii|
 
           mpre_project = mpre.module_project.project
 
@@ -499,7 +516,7 @@ class ProjectsController < ApplicationController
           end
         end
 
-        workbook.write("#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx")
+        workbook.write("#{Rails.root}/public/#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx")
         UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
       end
     end
@@ -512,8 +529,8 @@ class ProjectsController < ApplicationController
   def download
     @organization = Organization.find(params[:organization_id])
     send_file(
-        "#{Rails.root}/public/#{@organization.name}-RAW_DATA.xlsx",
-        filename: "#{@organization.name}-RAW_DATA.xlsx",
+        "#{Rails.root}/public/#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx",
+        filename: "#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx",
         type: "application/vnd.ms-excel"
     )
   end

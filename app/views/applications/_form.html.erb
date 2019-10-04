@@ -5,18 +5,19 @@
 
   <div id="tabs-1">
     <%= simple_form_for([@organization, @application]) do |f| %>
-    <%= f.error_notification %>
+      <%= f.error_notification %>
 
-    <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+      <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
 
-    <div class="row-fluid input-xxlarge">
-      <div class="span7">
-        <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %></div>
-      <div class="span5">
-        <label class="checkbox"></label>
-        <%= f.input :is_ignored, as: :boolean, :label => I18n.t('is_ignored') %>
+      <div class="row-fluid">
+        <div class="span3">
+          <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %>
+        </div>
+        <div class="span2">
+          <label class="checkbox"></label>
+          <%= f.input :is_ignored, as: :boolean, :label => I18n.t('is_ignored') %>
+        </div>
       </div>
-    </div>
 
       <div class="actions-tabs">
         <% if action_name.in?(%w(new create)) %>
