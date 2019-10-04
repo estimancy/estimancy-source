@@ -29,8 +29,8 @@
 
 
     <div class="d-flex estimation-overview-quantity mb-5 row">
-    <%# module_project = ModuleProject.where(organization_id: project.organization_id, pemodule_id: @initialization_module.id, project_id: project.id).first unless @initialization_module.nil? %>
-    <% module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
+    <% module_project = ModuleProject.where(organization_id: project.organization_id, pemodule_id: @initialization_module.id, project_id: project.id).first unless @initialization_module.nil? %>
+    <%# module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
     <% module_project_view = module_project.nil? ? nil : module_project.view %>
     <% unless module_project_view.nil? %>
         <%# module_project_view_widgets = module_project_view.views_widgets.where(widget_type: "text").order_as_specified(name: widgets_name).all %>
