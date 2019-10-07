@@ -257,6 +257,7 @@
         $('.grid-stack').on('resizestop', function(event, ui) {
             var element = $(event.target);
             var node = element.data('_gridstack_node');
+            var node_height = node['height']; //node.height;
             //console.log(node);
 
             $.ajax({
