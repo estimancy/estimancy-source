@@ -184,6 +184,7 @@ class ProjectsController < ApplicationController
         end
 
         @organization_projects.each do |project|
+        #@organization_projects.where(id: 3021).each do |project|
 
           pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
 
@@ -278,20 +279,31 @@ class ProjectsController < ApplicationController
                   # Charge sans prod en colonne AI
                 elsif guw_charge_ss_prod_coefficient
                   if gc.id == guw_charge_ss_prod_coefficient.id
-                    begin
-                      ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{gc.id}"]
-                    rescue
-                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                                        guw_model_id: @guw_model.id,
-                                                                        guw_coefficient_id: gc.id,
-                                                                        project_id: project.id,
-                                                                        module_project_id: pmp.id,
-                                                                        guw_unit_of_work_id: guow.id).order("updated_at ASC").last
-                    end
-                      # project = Project.find(2077)
-                      # project.guw_coefficient_element_unit_of_works.where(guw_model_id: 494, module_project_id: 5053, guw_unit_of_work_id: 18606, guw_coefficient_id: 637).first
-                      #####################
-                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent))  # « Charge ss prod. (jh) » en colonne AI
+                    #=== Test ====
+                    #results = []
+                    #results = @guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+                                                                                    # .includes(:guw_coefficient_element)
+                                                                                    # .where(organization_id: @organization.id, guw_model_id: @guw_model.id, guw_type_id: guow.guw_type_id)
+                                                                                    # .select{|ct| ct.value != nil }
+                                                                                    # .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+                    #=== Test ====
+
+                    #unless results.empty?
+                      begin
+                        ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{gc.id}"]
+                      rescue
+                        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                          guw_model_id: @guw_model.id,
+                                                                          guw_coefficient_id: gc.id,
+                                                                          project_id: project.id,
+                                                                          module_project_id: pmp.id,
+                                                                          guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+                      end
+                        # project = Project.find(2077)
+                        # project.guw_coefficient_element_unit_of_works.where(guw_model_id: 494, module_project_id: 5053, guw_unit_of_work_id: 18606, guw_coefficient_id: 637).first
+                        #####################
+                        worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent))  # « Charge ss prod. (jh) » en colonne AI
+                    #end
                   end
                 end
               end
