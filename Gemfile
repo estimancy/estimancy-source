@@ -2,6 +2,8 @@ source 'https://rubygems.org'
 
 # gem 'rails', '3.2.22'
 gem 'rails', '4.2.11.1'
+gem 'sprockets', '~> 3.7.2'
+
 
 gem 'jquery-rails', '~> 2.0.2'
 gem 'i18n'
