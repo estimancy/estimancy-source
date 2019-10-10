@@ -1137,7 +1137,7 @@ class OrganizationsController < ApplicationController
               tab_warning_messages << " \n\n #{new_profile.name} : #{I18n.t(:warning_already_exist)}"
             else
               #begin
-                new_profile = OrganizationProfile.new(name: row[0].value, description: row[1].value, cost_per_hour: row[2].value, organization_id: @organization.id)
+                new_profile = OrganizationProfile.new(name: (row[0].value rescue nil), description: (row[1].value rescue nil), cost_per_hour: (row[2].value rescue nil), organization_id: @organization.id)
                 # new_profile = OrganizationProfile.new(name: row[0].value, description: row[1].value, cost_per_hour: row[2].value,
                 #                                       is_real_profile: row[3].value, associated_services: row[4].value,
                 #                                       r_value: row[5].value, tm_value: row[6].value,
