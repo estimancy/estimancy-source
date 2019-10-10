@@ -12,67 +12,73 @@
       <div class="row-fluid">
         <div class="span9">
             <%= simple_form_for(@wbs_activity) do |f| %>
-        <%= f.error_notification %>
+                <%= f.error_notification %>
 
-        <%= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
-        <% if controller.action_name == 'edit' and @wbs_activity.retired? %>
-          <%= f.input :state, :label => I18n.t('state'), :as => :select, :collection => WbsActivity.aasm.states_for_select, :input_html => {:class => 'input-xxlarge'} %>
-        <% else %>
-          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
-          <%= f.input :three_points_estimation, :label => I18n.t(:three_points_estimation) %>
-          <%= f.input :enabled_input, label: I18n.t(:modification_entry_valur) %>
+                <%= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
+                <% if controller.action_name == 'edit' and @wbs_activity.retired? %>
+                  <%= f.input :state, :label => I18n.t('state'), :as => :select, :collection => WbsActivity.aasm.states_for_select, :input_html => {:class => 'input-xxlarge'} %>
+                <% else %>
+                  <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
 
-          <%#= f.input :hide_wbs_header, label: I18n.t(:hide_wbs_header) %>
-          <%= f.input :hide_wbs_header,  as: :select,
-                     collection: [[I18n.t(:hide_all), "hide_all"],
-                                  [I18n.t(:show_only_ratio), "show_only_ratio"],
-                                  [I18n.t(:show_all), "show_all"]],
-                      :include_blank => false,
-                      label: I18n.t(:show_hide_wbs_header),
-                     :input_html => {:class => 'input-xlarge', :style => 'margin-left:0px'}
-          %>
-          <%#= f.input :gender, as: :radio_buttons, collection: [['0', 'female'], ['1', 'male']], label_method: :second, value_method: :first %>
-
-          <%= f.input :effort_unit, :label => I18n.t(:Wording_of_the_module_unit_effort) %>
-          <%= f.input :effort_unit_coefficient, :label => I18n.t(:Conversion_factor_standard_effort) %>
-          <%= f.input :average_rate_wording, :label => I18n.t(:average_rate_wording) %>
-        <% end %>
-
-        <div id="accordion_wbs_profile" class="accordion">
-          <div class="accordion-group accordion-caret">
-            <div class="accordion-heading">
-              <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_wbs_profile" href="#wbs_activity_organization_profiles">
-                <i class="fa fa-caret-down"></i>
-                <b><%= I18n.t(:profiles) %> : <%= I18n.t(:select_wbs_activity_profiles) %></b>
-              </a>
-            </div>
-            <div id="wbs_activity_organization_profiles" class="accordion-body in collapse">
-              <div class="accordion-inner">
-                <%= hidden_field_tag "wbs_activity[organization_profile_ids][]", nil %>
-                <% for profile in @organization.organization_profiles.order('name') %>
-                  <div>
-                    <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id, @wbs_activity.organization_profiles.include?(profile) %>
-                    <i class="profile_description_tooltip" title="<%= profile.description %>"><%= profile.name %></i>
+                  <div class="row-fluid">
+                    <div class="span3"><%= f.input :wbs_for_config, as: :boolean, :label => I18n.t(:wbs_for_config) %></div>
+                    <div class="span3"><%= f.input :use_real_profiles, as: :boolean, :label => I18n.t(:use_real_profiles) %></div>
                   </div>
-                <% end %>
-              </div>
-            </div>
-          </div>
-        </div>
 
-        <div class="actions-tabs">
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <% if action_name == 'new' || action_name == 'create' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <% elsif action_name == 'edit' || action_name == 'update' %>
-                <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-                <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <% end %>
+                  <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+                  <%= f.input :three_points_estimation, :label => I18n.t(:three_points_estimation) %>
+                  <%= f.input :enabled_input, label: I18n.t(:modification_entry_valur) %>
+
+                  <%#= f.input :hide_wbs_header, label: I18n.t(:hide_wbs_header) %>
+                  <%= f.input :hide_wbs_header,  as: :select,
+                             collection: [[I18n.t(:hide_all), "hide_all"],
+                                          [I18n.t(:show_only_ratio), "show_only_ratio"],
+                                          [I18n.t(:show_all), "show_all"]],
+                              :include_blank => false,
+                              label: I18n.t(:show_hide_wbs_header),
+                             :input_html => {:class => 'input-xlarge', :style => 'margin-left:0px'}
+                  %>
+                  <%#= f.input :gender, as: :radio_buttons, collection: [['0', 'female'], ['1', 'male']], label_method: :second, value_method: :first %>
+
+                  <%= f.input :effort_unit, :label => I18n.t(:Wording_of_the_module_unit_effort) %>
+                  <%= f.input :effort_unit_coefficient, :label => I18n.t(:Conversion_factor_standard_effort) %>
+                  <%= f.input :average_rate_wording, :label => I18n.t(:average_rate_wording) %>
+                <% end %>
+
+                <div id="accordion_wbs_profile" class="accordion">
+                  <div class="accordion-group accordion-caret">
+                    <div class="accordion-heading">
+                      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_wbs_profile" href="#wbs_activity_organization_profiles">
+                        <i class="fa fa-caret-down"></i>
+                        <b><%= I18n.t(:profiles) %> : <%= I18n.t(:select_wbs_activity_profiles) %></b>
+                      </a>
+                    </div>
+                    <%= hidden_field_tag "wbs_activity[organization_profile_ids][]", nil %>
+                    <div id="wbs_activity_organization_profiles" class="accordion-body in collapse">
+                      <div class="accordion-inner" id="organization_profiles_list">
+                        <% for profile in @organization_profiles_list.order('name') %>
+                          <div>
+                            <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id, @wbs_activity.organization_profiles.include?(profile) %>
+                            <i class="profile_description_tooltip" title="<%= profile.description %>"><%= profile.name %></i>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="actions-tabs">
+                    <% if can? :manage_modules_instances, ModuleProject %>
+                      <% if action_name == 'new' || action_name == 'create' %>
+                        <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% elsif action_name == 'edit' || action_name == 'update' %>
+                        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                        <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% end %>
+                    <% end %>
+                    <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
+                </div>
             <% end %>
-            <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn back' %>
-        </div>
-      <% end %>
         </div>
 
         <!-- Test -->
@@ -231,8 +237,27 @@
               </div>
           <% end %>
         </div>
-
-        </div>
-    <% end %>
+    </div>
+  <% end %>
 
 </div>
+
+<script>
+  // Update the profiles with the Real profiles list
+  $("#wbs_activity_use_real_profiles").change(function() {
+      var use_real_profiles = false;
+      if (this.checked){
+          use_real_profiles = true;
+      }
+      //if ($(this).val() !== ""){
+          return $.ajax({
+              url: "/refresh_wbs_profiles_list",
+              method: "GET",
+              data: {
+                  wbs_activity_id: '<%= @wbs_activity.id %>',
+                  use_real_profiles: use_real_profiles
+              }
+          });
+      //}
+  });
+</script>
