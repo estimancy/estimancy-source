@@ -22,7 +22,6 @@
       <% end %>
     </div>
   </div>
-  <br>
 
     <div class="group_button">
       <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn' %>
@@ -59,6 +58,7 @@
   <tr>
     <th><%= I18n.t(:name) %></th>
     <th><%= I18n.t(:is_real_profile) %></th>
+    <th><%= I18n.t(:use_dynamic_coefficient) %></th>
     <th><%= I18n.t(:associated_services) %></th>
     <th><%= I18n.t(:description) %></th>
     <th><%= I18n.t(:cost_per_hour) %></th>
@@ -76,7 +76,8 @@
     <tr>
       <td class="td_min_width"><%= profile.name %></td>
       <td><%= profile.is_real_profile ? "1" : "0" %></td>
-      <td class="td_min_width"><%= profile.associated_services %></td>
+      <td><%= profile.use_dynamic_coefficient ? "1" : "0" %></td>
+      <td><%= profile.associated_services %></td>
       <td><%= profile.description %></td>
       <td><%= profile.cost_per_hour %></td>
       <td><%= profile.r_value %></td>
