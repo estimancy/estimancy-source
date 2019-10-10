@@ -216,7 +216,7 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity = WbsActivity.new
     @organization_id = params['organization_id']
     @organization = Organization.find(params[:organization_id])
-    @organization_profiles_list = @organization.organization_profiles.where.where(is_real_profile: [false, nil])
+    @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
     set_page_title I18n.t(:new_wbs_activity)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:wbs_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "activite"), I18n.t(:new) => ""
   end
