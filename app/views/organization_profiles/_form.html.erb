@@ -23,6 +23,7 @@
             <div class="span2"><%= f.input :use_dynamic_coefficient, as: :boolean, :label => I18n.t(:use_dynamic_coefficient) %></div>
           </div>
 
+          <%= f.input :associated_services, :label => I18n.t(:associated_services), :input_html => {:class => 'input-xxlarge'} %>
           <%= f.input :description, :label => I18n.t(:description), :input_html => {:class => 'input-xxlarge', :rows => 8 }  %>
           <%= f.input :cost_per_hour, label: "#{I18n.t(:cost_per_hour)} (#{@organization.currency})" %>
 
@@ -37,35 +38,6 @@
 
           <%= f.input :formula, :label => I18n.t(:formula), :input_html => {:class => 'input-xxlarge'}  %>
           <%= f.input :used_cost, label: "#{I18n.t(:used_cost)} (#{@organization.currency})" %>
-
-          <!-- Test -->
-          <div id="accordion_wbs_profile" class="accordion">
-            <div class="accordion-group accordion-caret">
-              <div class="accordion-heading">
-                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion_wbs_profile" href="#profile_associated_services">
-                  <i class="fa fa-caret-down"></i>
-                  <b><%= I18n.t(:associated_services) %> : <%= I18n.t(:select_profile_associated_services) %> (liste texte séparé par une virgule)</b>
-                </a>
-              </div>
-              <%#= hidden_field_tag "organization_profile[associated_services][]", nil %>
-              <div id="profile_associated_services" class="accordion-body in collapse">
-                <div class="accordion-inner">
-                  <%# if @organization_profile.associated_services.blank? %>
-                      <%#= f.input :associated_services, :label => I18n.t(:associated_services), :input_html => {:class => 'input-xxlarge'} %>
-                  <%# else %>
-                      <% @organization_profile.associated_services.each do |service| %>
-                          <div>
-                            <%= check_box_tag "associated_services[#{service}]", 1, true %>
-                            <i class="service_description_tooltip" title="<%= service %>"></i>
-                          </div>
-                      <% end %>
-                  <%# end %>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Test -->
 
         </div>
 

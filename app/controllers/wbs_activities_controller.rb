@@ -31,7 +31,11 @@ class WbsActivitiesController < ApplicationController
 
   #Calculate Mixed Profiles
   def calculate_mixed_profiles
-    wbs_for_config = @organization.wbs_activities.where(id: params[:wbs_activity_id]).first
+    wbs_activity = @organization.wbs_activities.where(id: params[:wbs_activity_id]).first
+    organization = @organization.wbs_activities.where(id: params[:organization_id]).first
+    r_value = params[:r_ralue]
+    tm_value = params[:tm_ralue]
+
 
     redirect_to :back
   end
