@@ -12,7 +12,7 @@
           <h4><%= I18n.t(:calculate_mixed_profiles) %></h4>
           <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
               <%= hidden_field_tag :organization_id, @organization.id %>
-              <%= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
+              <%#= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
 
               R :  <%= text_field_tag :r_value, "0.25" %>
               TM : <%= text_field_tag :tm_value %>
