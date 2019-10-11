@@ -119,7 +119,7 @@ class OrganizationProfilesController < ApplicationController
   end
 
   def maj_prix_profil
-    project = Project.find(3388)
+    project = Project.where(name: "EBE001 Calcul Mixed Profiles").first
     organization = project.organization
     module_project = project.module_projects.last
 
@@ -167,7 +167,7 @@ class OrganizationProfilesController < ApplicationController
       end
     end
 
-    redirect_to :back
+    redirect_to root_url
   end
 
 end
