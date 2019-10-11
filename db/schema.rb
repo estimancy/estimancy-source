@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191009083002) do
+ActiveRecord::Schema.define(version: 20191011090224) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1396,7 +1396,7 @@ ActiveRecord::Schema.define(version: 20191009083002) do
     t.float    "r_value",                 limit: 24
     t.float    "tm_value",                limit: 24
     t.string   "formula",                 limit: 255
-    t.float    "used_cost",               limit: 24
+    t.float    "initial_cost_per_hour",   limit: 24
   end
 
   add_index "organization_profiles", ["organization_id"], name: "index_organization_profiles_on_organization_id", using: :btree

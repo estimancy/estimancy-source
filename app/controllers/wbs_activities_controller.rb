@@ -31,11 +31,39 @@ class WbsActivitiesController < ApplicationController
 
   #Calculate Mixed Profiles
   def calculate_mixed_profiles
-    wbs_activity = @organization.wbs_activities.where(id: params[:wbs_activity_id]).first
-    wbs_activity
-    organization = @organization.wbs_activities.where(id: params[:organization_id]).first
-    r_value = params[:r_ralue]
-    tm_value = params[:tm_ralue]
+    @organization = Organization.where(id: params[:organization_id]).first
+
+    # @wbs_activity = @organization.wbs_activities.where(id: params[:wbs_activity_id]).first
+    # @wbs_activity_elements = @wbs_activity.wbs_activity_elements
+    # @wbs_activity_ratio = @wbs_activity.wbs_activity_activity_ratio.first
+    # @wbs_activity_root = @wbs_activity_elements.first.root # Get the wbs_activity_element which contain the wbs_activity_ratio
+    # @wbs_activity_ratio_elements = WbsActivityRatioElement.where('wbs_activity_ratio_id =?', @wbs_activity_ratio.id)
+    # @wbs_activity_profiles = @wbs_activity.organization_profiles
+    # # Output results
+    # @efforts_tjm_costs_per_phase_profiles = HashWithIndifferentAccess.new
+    #
+    # @wbs_activity_elements.each do |element|
+    #   element_hash = {  tjm: 0 }
+    #   @efforts_tjm_costs_per_phase_profiles[element.id] = element_hash
+    # end
+    # # Calcule des TJM par phase
+    # @tjm_per_phase = calculate_tjm_per_phase
+
+    real_profiles_with_dynamic_coeff = @organization.organization_profiles.where(is_real_profile: true, use_dynamic_coefficient: true)
+    profiles_price_to_use = HashWithIndifferentAccess.new
+    r_value = 0.25
+    tm_value = 0.5
+    r_value = params[:r_value].to_f
+    tm_value = params[:tm_value].to_f
+
+    real_profiles_with_dynamic_coeff.all.each do |profile|
+      used_cost = profile.initial_cost_per_hour.to_f * (1 - (tm_value * r_value))
+      profile.cost_per_hour = used_cost
+      profile.r_value = r_value
+      profile.tm_value = tm_value
+      profile.formula = "#{profile.cost_per_hour.to_f} * #{(1 - (tm_value * r_value))}"
+      profile.save
+    end
 
 
     redirect_to :back

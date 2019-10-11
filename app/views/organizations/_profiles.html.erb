@@ -13,7 +13,7 @@
               <%= hidden_field_tag :organization_id, @organization.id %>
               <%= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
 
-              R : <%= text_field_tag :r_value %>
+              R :  <%= text_field_tag :r_value, "0.25" %>
               TM : <%= text_field_tag :tm_value %>
 
               <%= submit_tag I18n.t('calculate'), :class => 'btn btn-primary' %>
@@ -79,11 +79,11 @@
       <td><%= profile.use_dynamic_coefficient ? "1" : "0" %></td>
       <td><%= profile.associated_services %></td>
       <td><%= profile.description %></td>
-      <td><%= profile.cost_per_hour %></td>
+      <td><%= profile.initial_cost_per_hour %></td>
       <td><%= profile.r_value %></td>
       <td><%= profile.tm_value %></td>
       <td><%= profile.formula %></td>
-      <td><%= profile.used_cost %></td>
+      <td><%= profile.cost_per_hour %></td>
 
       <td class="align-center">
         <%= link_to '', edit_organization_profile_path(profile), :class => 'icon-pencil', :title => I18n.t('edit') %>
