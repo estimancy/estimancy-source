@@ -6,7 +6,8 @@
     <div class="span5" style="float: right">
       <% wbs_for_config = @organization.wbs_activities.where(wbs_for_config: true).first %>
 
-      <% if wbs_for_config && wbs_for_config.use_real_profiles %>
+      <%# if wbs_for_config && wbs_for_config.use_real_profiles %>
+      <% if @current_user.super_admin? %>
         <div class="well component_tree" style="background-color: transparent">
           <h4><%= I18n.t(:calculate_mixed_profiles) %></h4>
           <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
