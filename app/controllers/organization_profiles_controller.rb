@@ -118,39 +118,56 @@ class OrganizationProfilesController < ApplicationController
     end
   end
 
-  def super_fonction
-    project = Project.find(3386)
+  def maj_prix_profil
+    project = Project.find(3388)
     organization = project.organization
     module_project = project.module_projects.last
-    wbs_activity = module_project.wbs_activity
 
-    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id, module_project_id: module_project.id).all
+    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id, module_project_id: module_project.id).all.reverse
 
     mpres.each do |mpre|
-      tjm = mpre.tjm
+      tjm = mpre.tjm.to_f.round(2)
+
       mpre_wbs_activity_element_name = mpre.wbs_activity_element.name.to_s
       mpre_wbs_activity_element_name = mpre_wbs_activity_element_name[0..(mpre_wbs_activity_element_name.size-1)]
 
-      # op = wbs_activity.organization_profiles.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).first
       op = OrganizationProfile.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).first
-
       unless op.nil?
-        op.cost_per_hour = tjm.to_f.round(2)
-        # op.save
+        op.cost_per_hour = tjm
+        op.save
       end
 
-      guw_type = Guw::GuwType.where(organization_id: organization.id).where("name LIKE ?", "%#{ mpre_wbs_activity_element_name[12..17] }%").first
-      guw_model = guw_type.guw_model
+      mpre_wbs_activity_element_name_without_localisation = mpre_wbs_activity_element_name.gsub(' PARIS', '').gsub(' PROVINCE', '').gsub('MCO', '')
 
-      gcce = Guw::GuwComplexityCoefficientElement.where(organization_id: organization.id,
-                                                        guw_model_id: guw_model.id,
-                                                        guw_complexity_id: guw_model.guw_complexities.first.id,
-                                                        guw_type_id: guw_type.id).first
+      organization.guw_models.each do |guw_model|
 
-      gcce
+        guw_model.guw_types.where("name LIKE ?", "%#{mpre_wbs_activity_element_name_without_localisation}%").each do |guw_type|
 
+          guw_type_guw_complexity = guw_type.guw_complexities.first
+
+          if guw_type.name.include?("MCO")
+            guw_type_guw_complexity.weight = tjm
+          else
+
+            gcces = Guw::GuwComplexityCoefficientElement.where(organization_id: organization.id,
+                                                               guw_model_id: guw_model.id,
+                                                               guw_complexity_id: guw_type_guw_complexity.id,
+                                                               guw_type_id: guw_type.id).all
+
+            gcces.each do |gcce|
+              if (gcce.guw_coefficient_element.name.include?(mpre_wbs_activity_element_name)) || (gcce.guw_coefficient_element.name.include?("Paris") && mpre_wbs_activity_element_name.include?('PARIS')) || (gcce.guw_coefficient_element.name.include?("Province") && mpre_wbs_activity_element_name.include?('PROVINCE'))
+                unless tjm == 0.0
+                  gcce.value = tjm
+                  gcce.save
+                end
+              end
+            end
+          end
+        end
+      end
     end
 
+    redirect_to :back
   end
 
 end

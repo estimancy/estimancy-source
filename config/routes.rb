@@ -62,7 +62,7 @@ Projestimate::Application.routes.draw do
   resources :organization_profiles
   get 'refresh_organization_profiles' => 'organization_profiles#refresh_organization_profiles', as: 'refresh_organization_profiles'
   get 'refresh_organization_profile_data' => 'organization_profiles#refresh_organization_profile_data', as: 'refresh_organization_profile_data'
-  get 'super_fonction' => 'organization_profiles#super_fonction', as: 'super_fonction'
+  get 'maj_prix_profil' => 'organization_profiles#maj_prix_profil', as: 'maj_prix_profil'
 
 
   resources :profiles
