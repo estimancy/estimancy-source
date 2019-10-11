@@ -119,7 +119,7 @@ class OrganizationProfilesController < ApplicationController
   end
 
   def maj_prix_profil
-    project = Project.where(name: "EBE001 Calcul Mixed Profiles").first
+    project = Project.where(title: "EBE001 Calcul Mixed Profiles").first
     organization = project.organization
     module_project = project.module_projects.last
 
