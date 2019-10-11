@@ -13,13 +13,32 @@
           <div class="well input-xxlarge">
              <span><%= I18n.t(:select_profile_or_fill_text_fields) %></span><br>
              <%= select_tag 'profile_id_for_organization', options_for_select(Profile.all.map { |i| [i.name, i.id] }, :selected => nil), prompt: "#{I18n.t("helpers.select.prompt")} #{I18n.t(:profile)}", :class => 'input-xlarge btn btn-info' %>
-
           </div>
 
           <%#= f.input :profile_id, label: I18n.t(:profiles), as: :select, collection: Profile.all, selected: @organization_profile.profile_id||nil, prompt: I18n.t("helpers.select.prompt"), input_html: { class: 'input-xxlarge'} %>
           <%= f.input :name, :label => I18n.t(:name), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+
+          <div class="row-fluid">
+            <div class="span2"><%= f.input :is_real_profile, as: :boolean, :label => I18n.t(:is_real_profile) %></div>
+            <div class="span2"><%= f.input :use_dynamic_coefficient, as: :boolean, :label => I18n.t(:use_dynamic_coefficient) %></div>
+          </div>
+
+          <%= f.input :associated_services, :label => I18n.t(:associated_services), :input_html => {:class => 'input-xxlarge'} %>
           <%= f.input :description, :label => I18n.t(:description), :input_html => {:class => 'input-xxlarge', :rows => 8 }  %>
-          <%= f.input :cost_per_hour, label: "#{I18n.t(:cost_per_hour)} (#{@organization.currency})" %>
+          <%= f.input :initial_cost_per_hour, label: "#{I18n.t(:cost_per_hour)} (#{@organization.currency})" %>
+
+          <div class="row-fluid">
+            <div class="span2">
+              <%= f.input :r_value, :label => "R", :input_html => {:class => 'input-large'}  %>
+            </div>
+            <div class="span2">
+              <%= f.input :tm_value, :label => "TM", :input_html => {:class => 'input-large'}  %>
+            </div>
+          </div>
+
+          <%= f.input :formula, :label => I18n.t(:formula), :input_html => {:class => 'input-xxlarge'}  %>
+          <%= f.input :cost_per_hour, label: "#{I18n.t(:used_cost)} (#{@organization.currency})" %>
+
         </div>
 
         <div class="actions-tabs">

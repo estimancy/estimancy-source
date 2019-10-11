@@ -29,6 +29,60 @@ class WbsActivitiesController < ApplicationController
   load_resource
 
 
+  #Calculate Mixed Profiles
+  def calculate_mixed_profiles
+    @organization = Organization.where(id: params[:organization_id]).first
+
+    # @wbs_activity = @organization.wbs_activities.where(id: params[:wbs_activity_id]).first
+    # @wbs_activity_elements = @wbs_activity.wbs_activity_elements
+    # @wbs_activity_ratio = @wbs_activity.wbs_activity_activity_ratio.first
+    # @wbs_activity_root = @wbs_activity_elements.first.root # Get the wbs_activity_element which contain the wbs_activity_ratio
+    # @wbs_activity_ratio_elements = WbsActivityRatioElement.where('wbs_activity_ratio_id =?', @wbs_activity_ratio.id)
+    # @wbs_activity_profiles = @wbs_activity.organization_profiles
+    # # Output results
+    # @efforts_tjm_costs_per_phase_profiles = HashWithIndifferentAccess.new
+    #
+    # @wbs_activity_elements.each do |element|
+    #   element_hash = {  tjm: 0 }
+    #   @efforts_tjm_costs_per_phase_profiles[element.id] = element_hash
+    # end
+    # # Calcule des TJM par phase
+    # @tjm_per_phase = calculate_tjm_per_phase
+
+    real_profiles_with_dynamic_coeff = @organization.organization_profiles.where(is_real_profile: true, use_dynamic_coefficient: true)
+    profiles_price_to_use = HashWithIndifferentAccess.new
+    r_value = 0.25
+    tm_value = 0.5
+    r_value = params[:r_value].to_f
+    tm_value = params[:tm_value].to_f
+
+    real_profiles_with_dynamic_coeff.all.each do |profile|
+      used_cost = profile.initial_cost_per_hour.to_f * (1 - (tm_value * r_value))
+      profile.cost_per_hour = used_cost
+      profile.r_value = r_value
+      profile.tm_value = tm_value
+      profile.formula = "#{profile.cost_per_hour.to_f} * #{(1 - (tm_value * r_value))}"
+      profile.save
+    end
+
+
+    redirect_to :back
+  end
+
+
+  # Refresh the profiles list according to if it use real_profiles or not
+  def refresh_wbs_profiles_list
+    @wbs_activity = WbsActivity.where(id: params[:wbs_activity_id]).first
+    use_real_profiles = params[:use_real_profiles]
+    @organization = @current_organization
+    if use_real_profiles.to_s == "true" || use_real_profiles.to_s == "1"
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: true)
+    else
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
+    end
+  end
+
+
   def refresh_ratio_elements
 
     # @wbs_activity_ratio_elements = []
@@ -82,6 +136,12 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity = WbsActivity.find(params[:id])
     @organization_id = @wbs_activity.organization_id
     @organization = @wbs_activity.organization
+
+    if @wbs_activity.use_real_profiles
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: true)
+    else
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
+    end
 
     set_page_title I18n.t(:edit_wbs_activity, value: @wbs_activity.name)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:wbs_modules) => main_app.organization_module_estimation_path(@organization, anchor: "activite"), @wbs_activity.name => ""
@@ -170,6 +230,13 @@ class WbsActivitiesController < ApplicationController
     else
       @organization = @wbs_activity_organization
       @wbs_activity_elements_list = @wbs_activity.wbs_activity_elements
+
+      if @wbs_activity.use_real_profiles
+        @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: true)
+      else
+        @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
+      end
+
       render :edit
     end
   end
@@ -178,6 +245,7 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity = WbsActivity.new
     @organization_id = params['organization_id']
     @organization = Organization.find(params[:organization_id])
+    @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
     set_page_title I18n.t(:new_wbs_activity)
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:wbs_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "activite"), I18n.t(:new) => ""
   end
@@ -186,6 +254,11 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity = WbsActivity.new(params[:wbs_activity])
     @organization_id = params['wbs_activity']['organization_id']
     @organization = Organization.find(@organization_id)
+    if @wbs_activity.use_real_profiles
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: true)
+    else
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
+    end
 
     if @wbs_activity.save
       @wbs_activity_element = WbsActivityElement.new(:name => @wbs_activity.name, :wbs_activity_id => @wbs_activity.id, :description => 'Root Element', :is_root => true)

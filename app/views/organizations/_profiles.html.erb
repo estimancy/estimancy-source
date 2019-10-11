@@ -2,13 +2,34 @@
 <%= hidden_field_tag "organization_id", params[:id] %>
 
 <% if can? :manage, OrganizationProfile %>
-  <div class="group_button">
+  <div class="row-fluid">
+    <div class="span5" style="float: right">
+      <% wbs_for_config = @organization.wbs_activities.where(wbs_for_config: true).first %>
+
+      <% if wbs_for_config && wbs_for_config.use_real_profiles %>
+        <div class="well component_tree" style="background-color: transparent">
+          <h4><%= I18n.t(:calculate_mixed_profiles) %></h4>
+          <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
+              <%= hidden_field_tag :organization_id, @organization.id %>
+              <%= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
+
+              R :  <%= text_field_tag :r_value, "0.25" %>
+              TM : <%= text_field_tag :tm_value %>
+
+              <%= submit_tag I18n.t('calculate'), :class => 'btn btn-primary' %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+    <div class="group_button">
       <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn' %>
       <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :class => 'btn'%>
       <a href="#ImportProjectProfile" role="button" class="btn" title="Import project areas from excel" data-toggle="modal">
-      <%= I18n.t(:import) %>
-    </a>
-  </div>
+        <%= I18n.t(:import) %>
+      </a>
+    </div>
 
     <div id="ImportProjectProfile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
        <%= form_tag organization_import_project_profile_path(@organization), :multipart => true, :class => 'simple_form' do %>
@@ -36,8 +57,15 @@
   <thead>
   <tr>
     <th><%= I18n.t(:name) %></th>
+    <th><%= I18n.t(:is_real_profile) %></th>
+    <th><%= I18n.t(:use_dynamic_coefficient) %></th>
+    <th><%= I18n.t(:associated_services) %></th>
     <th><%= I18n.t(:description) %></th>
     <th><%= I18n.t(:cost_per_hour) %></th>
+    <th><%= "R" %></th>
+    <th><%= "TM" %></th>
+    <th><%= I18n.t(:formula) %></th>
+    <th><%= I18n.t(:used_cost) %></th>
     <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
   </tr>
   </thead>
@@ -47,7 +75,14 @@
   <% @organization_profiles.each do |profile| %>
     <tr>
       <td class="td_min_width"><%= profile.name %></td>
+      <td><%= profile.is_real_profile ? "1" : "0" %></td>
+      <td><%= profile.use_dynamic_coefficient ? "1" : "0" %></td>
+      <td><%= profile.associated_services %></td>
       <td><%= profile.description %></td>
+      <td><%= profile.initial_cost_per_hour %></td>
+      <td><%= profile.r_value %></td>
+      <td><%= profile.tm_value %></td>
+      <td><%= profile.formula %></td>
       <td><%= profile.cost_per_hour %></td>
 
       <td class="align-center">
