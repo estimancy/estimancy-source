@@ -167,7 +167,7 @@ class OrganizationProfilesController < ApplicationController
       end
     end
 
-    redirect_to main_app.organization_estimations_path(@organization)
+    redirect_to main_app.organization_estimations_path(organization)
   end
 
 end
