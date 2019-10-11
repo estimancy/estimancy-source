@@ -1390,6 +1390,7 @@ ActiveRecord::Schema.define(version: 20191011090224) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "copy_id",                 limit: 4
+    t.float    "coefficient",             limit: 24
     t.boolean  "is_real_profile"
     t.boolean  "use_dynamic_coefficient"
     t.string   "associated_services",     limit: 255

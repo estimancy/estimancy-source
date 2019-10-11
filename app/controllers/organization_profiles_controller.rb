@@ -118,4 +118,39 @@ class OrganizationProfilesController < ApplicationController
     end
   end
 
+  def super_fonction
+    project = Project.find(3386)
+    organization = project.organization
+    module_project = project.module_projects.last
+    wbs_activity = module_project.wbs_activity
+
+    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id, module_project_id: module_project.id).all
+
+    mpres.each do |mpre|
+      tjm = mpre.tjm
+      mpre_wbs_activity_element_name = mpre.wbs_activity_element.name.to_s
+      mpre_wbs_activity_element_name = mpre_wbs_activity_element_name[0..(mpre_wbs_activity_element_name.size-1)]
+
+      # op = wbs_activity.organization_profiles.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).first
+      op = OrganizationProfile.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).first
+
+      unless op.nil?
+        op.cost_per_hour = tjm.to_f.round(2)
+        # op.save
+      end
+
+      guw_type = Guw::GuwType.where(organization_id: organization.id).where("name LIKE ?", "%#{ mpre_wbs_activity_element_name[12..17] }%").first
+      guw_model = guw_type.guw_model
+
+      gcce = Guw::GuwComplexityCoefficientElement.where(organization_id: organization.id,
+                                                        guw_model_id: guw_model.id,
+                                                        guw_complexity_id: guw_model.guw_complexities.first.id,
+                                                        guw_type_id: guw_type.id).first
+
+      gcce
+
+    end
+
+  end
+
 end
