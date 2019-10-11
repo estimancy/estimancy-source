@@ -1246,7 +1246,7 @@ class WbsActivitiesController < ApplicationController
 
         first_page.each_with_index do |row, index|
           model_worksheet.add_cell(index, 0, row[0])
-          model_worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
+          model_worksheet.add_cell(index, 1, row[1])#.change_horizontal_alignment('center')
           ["bottom", "right"].each do |symbole|
             model_worksheet[index][0].change_border(symbole.to_sym, 'thin')
             model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
@@ -1589,21 +1589,25 @@ class WbsActivitiesController < ApplicationController
                       val = cell && cell.value
 
                       if index <= 8  ### Ligne des profiles
+
                         attr_name = model_sheet_order["#{index}".to_sym]
-                        #begin
-                          if attr_name != "wbs_organization_profiles"
-                            @wbs_activity["#{attr_name}"] = val unless attr_name.nil?
-                          end
-                        # rescue
-                        # end
+
+                        if attr_name != "wbs_organization_profiles"
+                          @wbs_activity["#{attr_name}"] = val unless attr_name.nil?
+                        end
                       else
                         # Gestion dse profils
                         if row.cells[0].value.include?("Profil")
                           organization_profile = organization_profiles.where(name: val).first
                           if organization_profile.nil?
-                            organization_profile = OrganizationProfile.create(organization_id: @organization.id, name: val, description: val, cost_per_hour: 0)
+                            organization_profile = OrganizationProfile.create(organization_id: @organization.id,
+                                                                              name: val,
+                                                                              description: val,
+                                                                              cost_per_hour: 0)
+
                             @organization.organization_profiles << organization_profile
                             @organization.save(validate: false)
+
                             organization_profiles = @organization.organization_profiles
                           end
 
@@ -1638,6 +1642,7 @@ class WbsActivitiesController < ApplicationController
                                                                  name: row[2].nil? ? nil : row[2].value,
                                                                  description: row[3].nil? ? nil : row[3].value,
                                                                  is_root: row[4].nil? ? nil : row[4].value)
+
                     elements_parents["#{activity_element.id}"] = row[5].nil? ? nil : row[5].value
                   end
                 end
@@ -1721,7 +1726,7 @@ class WbsActivitiesController < ApplicationController
                       if index > 0
                         case index
                           # Wbs-activity_ratio-variables
-                          when ratio_variables_line+1..ratio_variables_line+4
+                          when ratio_variables_line + 1..ratio_variables_line + 4
 
                             WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id,
                                                             name: row[1].nil? ? nil : row[1].value,
@@ -1733,9 +1738,10 @@ class WbsActivitiesController < ApplicationController
                                                             wbs_activity_id: @wbs_activity.id)
 
                           # Elements formulas
-                          when formulas_line+1..formulas_line+@wbs_activity_elements.size
+                          when formulas_line + 1..formulas_line + @wbs_activity_elements.size
 
                             wbs_activity_element = @wbs_activity_elements.where(name: row[3].nil? ? nil : row[3].value).first
+
                             WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id,
                                                            wbs_activity_element_id: wbs_activity_element.id,
                                                            is_optional: row[5].nil? ? nil : row[5].value,
