@@ -38,7 +38,7 @@
 
             <h5>Autres paramétrages</h5>
             <%= f.input :config_type, as: :select, collection: [["Ancienne Configuration", "old"], ["Nouvelle Configuration", "new"]], label: "Type de configuration" %>
-            <%= f.input :view_data, label: "Activer la visualiation des données" %>
+            <%= f.input :view_data, label: "Activer la visualisation des données" %>
             <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:default_display), input_html: { class: "input-xxlarge", rows: "5" } %>
             <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
             <%= f.input :retained_size_unit, label: I18n.t(:retained_size_unit) %>
