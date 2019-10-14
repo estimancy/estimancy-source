@@ -1302,7 +1302,9 @@ class WbsActivitiesController < ApplicationController
         model_worksheet.sheet_name = "Model"
 
         first_page = [[I18n.t(:model_name),  @wbs_activity.name],
-                      [I18n.t(:model_description), @wbs_activity.description ],
+                      [I18n.t(:model_description), @wbs_activity.description],
+                      [I18n.t(:wbs_for_config), @wbs_activity.wbs_for_config ? 1 : 0 ],
+                      [I18n.t(:use_real_profiles), @wbs_activity.use_real_profiles ? 1 : 0 ],
                       [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
                       [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
                       [I18n.t(:hide_wbs_header), @wbs_activity.hide_wbs_header],
@@ -1328,7 +1330,7 @@ class WbsActivitiesController < ApplicationController
         model_worksheet.change_column_bold(0,true)
         model_worksheet.change_column_width(0, 60)
         model_worksheet.change_column_width(1, 100)
-        model_worksheet.sheet_data[1][1].change_horizontal_alignment('left')
+        model_worksheet.sheet_data[1][1].change_horizontal_alignment('left') rescue nil
 
 
         # WBS ACTIVITY ELEMENTS  : activity_elements_worksheet
@@ -1343,7 +1345,7 @@ class WbsActivitiesController < ApplicationController
 
         # elements_worksheet.change_row_bold(0,true)
 
-        elements_worksheet.change_row_horizontal_alignment(0, 'center')
+        elements_worksheet.change_row_horizontal_alignment(0, 'center') rescue nil
         @wbs_activity_elements.each_with_index do |activity_element, index|
 
           elements_worksheet.add_cell(index + 1, 0, activity_element.position)
@@ -1393,7 +1395,7 @@ class WbsActivitiesController < ApplicationController
         ratios_worksheet.add_cell(0, 4, I18n.t(:comment_required_if_modifiable))
         # ratios_worksheet.change_row_bold(0,true)
 
-        ratios_worksheet.change_row_horizontal_alignment(0, 'center')
+        ratios_worksheet.change_row_horizontal_alignment(0, 'center') rescue nil
         @wbs_activity_ratios.each_with_index do |ratio, index|
           ratios_worksheet.add_cell(index + 1, 0, ratio.name)
           ratios_worksheet.add_cell(index + 1, 1, ratio.description)
@@ -1452,7 +1454,7 @@ class WbsActivitiesController < ApplicationController
 
           ratio_variable_attributes.each_with_index do |variable_attr, index|
             column_number = index + 1
-            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{variable_attr}")).change_horizontal_alignment('center')
+            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{variable_attr}"))#.change_horizontal_alignment('center')
             ratio_elements_worksheet.change_column_width(column_number, I18n.t("#{variable_attr}").size)
 
             ["bottom", "right"].each do |symbole|
@@ -1494,7 +1496,7 @@ class WbsActivitiesController < ApplicationController
           ratio_elements_attributes.each_with_index do |attr, index|
             column_number = index + 1
 
-            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}")).change_horizontal_alignment('center')
+            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}"))#.change_horizontal_alignment('center')
             ratio_elements_worksheet.change_column_width(column_number, I18n.t("#{attr}").size)
 
             line_number = counter_line + 1
@@ -1546,8 +1548,8 @@ class WbsActivitiesController < ApplicationController
           wbs_activity_profiles = wbs_organization_profiles
 
           ratio_elements_worksheet.add_cell(counter_line, 0, "Valeurs des ratios par profils")
-          ratio_elements_worksheet.add_cell(counter_line, 1, I18n.t(:position)).change_horizontal_alignment('center')
-          ratio_elements_worksheet.add_cell(counter_line, 2, "Phases").change_horizontal_alignment('center')
+          ratio_elements_worksheet.add_cell(counter_line, 1, I18n.t(:position))#.change_horizontal_alignment('center')
+          ratio_elements_worksheet.add_cell(counter_line, 2, "Phases")#.change_horizontal_alignment('center')
 
           column_number = 2
 
@@ -1556,7 +1558,7 @@ class WbsActivitiesController < ApplicationController
             ratio_profile_attributes << profile.name
 
             column_number += 1
-            ratio_elements_worksheet.add_cell(counter_line, column_number, profile.name).change_horizontal_alignment('center')
+            ratio_elements_worksheet.add_cell(counter_line, column_number, profile.name)#.change_horizontal_alignment('center')
 
             column_width = ratio_elements_worksheet.get_column_width(column_number)
             if profile.name.to_s.size > column_width
@@ -1621,7 +1623,6 @@ class WbsActivitiesController < ApplicationController
 
     authorize! :manage_modules_instances, ModuleProject
 
-
     @organization = Organization.find(params[:organization_id])
     organization_profiles = @organization.organization_profiles
 
@@ -1641,7 +1642,7 @@ class WbsActivitiesController < ApplicationController
 
           else
             #there is no model, we will create new model from the model attributes data of the file to import
-            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "average_rate_wording", "effort_unit", "effort_unit_coefficient",
+            model_sheet_order_attributes = ["name", "description", "wbs_for_config", "use_real_profiles", "three_points_estimation", "enabled_input", "hide_wbs_header", "average_rate_wording", "effort_unit", "effort_unit_coefficient",
                                             "wbs_organization_profiles"]
 
             model_sheet_order = Hash.new
@@ -1654,6 +1655,8 @@ class WbsActivitiesController < ApplicationController
             if !model_worksheet.nil?
               @wbs_activity = WbsActivity.new
               @wbs_activity.organization = @organization
+              wbs_for_config = 0
+              use_real_profiles = 0
 
               model_worksheet.each_with_index do | row, index |
                 row && row.cells.each do |cell|
@@ -1661,12 +1664,21 @@ class WbsActivitiesController < ApplicationController
                     if cell.column == 1
                       val = cell && cell.value
 
-                      if index <= 8  ### Ligne des profiles
+                      if index <= 10 #8  ### Ligne des profiles
 
                         attr_name = model_sheet_order["#{index}".to_sym]
 
                         if attr_name != "wbs_organization_profiles"
                           @wbs_activity["#{attr_name}"] = val unless attr_name.nil?
+                        end
+
+                        if attr_name == "wbs_for_config" && val.to_s == "1"
+                          wbs_for_config = 1
+                        end
+
+                        # on teste si c'est une WBS de configuration/ et si elle utilise les vrais profils
+                        if wbs_for_config && attr_name == "use_real_profiles" && val.to_s == "1"
+                          use_real_profiles = 1
                         end
                       else
                         # Gestion dse profils
@@ -1675,7 +1687,9 @@ class WbsActivitiesController < ApplicationController
                           if organization_profile.nil?
                             organization_profile = OrganizationProfile.create(organization_id: @organization.id,
                                                                               name: val,
+                                                                              is_real_profile: use_real_profiles,
                                                                               description: val,
+                                                                              initial_cost_per_hour: 0,
                                                                               cost_per_hour: 0)
 
                             @organization.organization_profiles << organization_profile
