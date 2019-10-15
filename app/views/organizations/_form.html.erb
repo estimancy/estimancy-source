@@ -10,6 +10,13 @@
         <%= I18n.t(:technical_informations) %>
       </a>
     </li>
+    <% if @organization.name == "CDS DISTRIBUTION TRANSPORTEUR" || @organization.name == "06_DSI Voyage_CdS Distribution Transporteur" %>
+      <li>
+        <a href="#tabs-dt">
+          MaJ des prix (CDS DT)
+        </a>
+      </li>
+    <% end %>
     <li>
       <a href="#tabs-3">
         <%= I18n.t(:printing_extraction) %>
@@ -126,10 +133,37 @@
 
     <div id="tabs-3">
       <%= link_to I18n.t('extracting_organizations_and_their_numbers_of_quotations'), '/projects_quantity', :class => 'btn' %>
-
       <%= link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
     </div>
 
   <% end %>
+
+  <div id="tabs-dt">
+    <div class="row-fluid">
+      <div class="span12">
+        <p>
+          <strong>#1</strong> Prise en compte de la contribution espagnole dans les profils
+        </p>
+
+        <p>
+          <% project = Project.where(title: "EBE001 (Calcul Mix Profil)").first %>
+          <% unless project.nil? %>
+            <strong>#2</strong> <%= link_to "Calcul des TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
+          <% end %>
+        </p>
+
+        <p>
+          <% project = Project.where(title: "EBE0001 TJM Petites Evol.").first %>
+          <% unless project.nil? %>
+            <strong>#3</strong> <%= link_to "Calcul des TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
+          <% end %>
+        </p>
+
+        <p>
+          <strong>#4</strong> <%= link_to "Mise à jour des TJM", maj_prix_profil_path, target: "_blank" %>
+        </p>
+      </div>
+    </div>
+  </div>
 
 </div>
