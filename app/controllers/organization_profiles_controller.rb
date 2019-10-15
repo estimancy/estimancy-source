@@ -119,18 +119,21 @@ class OrganizationProfilesController < ApplicationController
   end
 
   def maj_prix_profil
+    # MIX PROFIL
     project = Project.where(title: "EBE001 (Calcul Mix Profil)").first
     organization = project.organization
     module_project = project.module_projects.last
+    project_pbs_project_element = project.pbs_project_elements.first
 
-    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id, module_project_id: module_project.id).all.reverse
+    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id,
+                                            module_project_id: module_project.id,
+                                            pbs_project_element_id: project_pbs_project_element.id).all
 
     mpres.each do |mpre|
       tjm = mpre.tjm.to_f.round(2)
 
       mpre_wbs_activity_element = mpre.wbs_activity_element
       mpre_wbs_activity_element_name = mpre_wbs_activity_element.name.to_s
-      mpre_wbs_activity_element_name = mpre_wbs_activity_element_name[0..(mpre_wbs_activity_element_name.size-1)]
 
       op = OrganizationProfile.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).first
       unless op.nil?
@@ -181,7 +184,44 @@ class OrganizationProfilesController < ApplicationController
       end
     end
 
-    redirect_to main_app.organization_estimations_path(organization)
+    #PETITES EVOLUTIONS
+
+    project = Project.where(title: "EBE0001 TJM Petites Evol.").first
+    organization = project.organization
+    module_project = project.module_projects.last
+
+    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id,
+                                            module_project_id: module_project.id,
+                                            copy_id: nil,
+                                            position: nil).all
+
+    mpres.each do |mpre|
+
+      value = mpre.retained_cost_probable / mpre.retained_effort_probable
+
+      organization.guw_models.each do |guw_model|
+        guw_model.guw_types.where(name: "CPT1").each do |guw_type|
+          guw_type_guw_complexity = guw_type.guw_complexities.first
+
+          gcces = Guw::GuwComplexityCoefficientElement.where(organization_id: organization.id,
+                                                             guw_model_id: guw_model.id,
+                                                             guw_complexity_id: guw_type_guw_complexity.id,
+                                                             guw_type_id: guw_type.id).all
+
+          gcces.each do |gcce|
+            gcce_guw_coefficient_element = gcce.guw_coefficient_element
+            if gcce_guw_coefficient_element.name == "Conv."
+              gcce_guw_coefficient_element.value = value
+              gcce_guw_coefficient_element.default_display_value = value
+              gcce_guw_coefficient_element.save
+            end
+          end
+        end
+      end
+
+    end
+
+    redirect_to main_app.edit_organization_path(organization)
   end
 
 end

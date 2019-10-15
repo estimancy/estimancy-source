@@ -163,19 +163,20 @@
         <p>
           <% project = Project.where(title: "EBE001 (Calcul Mix Profil)").first %>
           <% unless project.nil? %>
-            <strong>#2</strong> <%= link_to "Calcul des TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
+            <strong>#2</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
           <% end %>
         </p>
 
         <p>
           <% project = Project.where(title: "EBE0001 TJM Petites Evol.").first %>
           <% unless project.nil? %>
-            <strong>#3</strong> <%= link_to "Calcul des TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
+            <strong>#3</strong> <%= link_to "Calculer les TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
           <% end %>
         </p>
 
         <p>
-          <strong>#4</strong> <%= link_to "Mise à jour des TJM", maj_prix_profil_path, target: "_blank" %>
+          <strong>#4</strong>
+          <%= link_to "Mettre à jour des TJM", maj_prix_profil_path %>
         </p>
       </div>
     </div>
