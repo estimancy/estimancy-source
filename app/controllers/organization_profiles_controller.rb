@@ -123,8 +123,11 @@ class OrganizationProfilesController < ApplicationController
     project = Project.where(title: "EBE001 (Calcul Mix Profil)").first
     organization = project.organization
     module_project = project.module_projects.last
+    project_pbs_project_element = project.pbs_project_elements.first
 
-    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id, module_project_id: module_project.id).all.reverse
+    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id,
+                                            module_project_id: module_project.id,
+                                            pbs_project_element_id: project_pbs_project_element.id).all
 
     mpres.each do |mpre|
       tjm = mpre.tjm.to_f.round(2)
