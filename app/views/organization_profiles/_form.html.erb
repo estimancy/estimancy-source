@@ -25,7 +25,7 @@
 
           <%= f.input :associated_services, :label => I18n.t(:associated_services), :input_html => {:class => 'input-xxlarge'} %>
           <%= f.input :description, :label => I18n.t(:description), :input_html => {:class => 'input-xxlarge', :rows => 8 }  %>
-          <%= f.input :initial_cost_per_hour, label: "#{I18n.t(:cost_per_hour)} (#{@organization.currency})" %>
+          <%= f.input :initial_cost_per_hour, label: "#{I18n.t(:initial_cost_per_hour)} (#{@organization.currency})" %>
 
           <div class="row-fluid">
             <div class="span2">

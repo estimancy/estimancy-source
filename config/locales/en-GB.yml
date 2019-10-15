@@ -1780,3 +1780,4 @@ en-gb:
   select_profile_associated_services: "Select the profile associated services"
   use_dynamic_coefficient: "Utilise le coefficient dynamique"
   default_display_value: "Default display value"
+  initial_cost_per_hour: "Initial cost"
