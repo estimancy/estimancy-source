@@ -141,9 +141,24 @@
   <div id="tabs-dt">
     <div class="row-fluid">
       <div class="span12">
-        <p>
-          <strong>#1</strong> Prise en compte de la contribution espagnole dans les profils
-        </p>
+
+        <div>
+          <p>
+            <strong>#1</strong> Prise en compte de la contribution espagnole dans les profils :
+          </p>
+            <% if @current_user.super_admin? %>
+                <div class="well component_tree" style="background-color: transparent">
+                  <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
+                      <%= hidden_field_tag :organization_id, @organization.id %>
+                      <%#= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
+                      R :  <%= text_field_tag :r_value, "0.25" %>
+                      TM : <%= text_field_tag :tm_value %>
+
+                      <%= submit_tag I18n.t('calculate'), :class => 'btn btn-primary' %>
+                  <% end %>
+                </div>
+            <% end %>
+        </div>
 
         <p>
           <% project = Project.where(title: "EBE001 (Calcul Mix Profil)").first %>

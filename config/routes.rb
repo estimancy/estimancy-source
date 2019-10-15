@@ -174,7 +174,6 @@ Projestimate::Application.routes.draw do
   resources :wbs_activity_elements
   post 'wbs_activities/:wbs_activity_id/duplicate_wbs_activity' => 'wbs_activities#duplicate_wbs_activity', :as => :duplicate_wbs_activity
   get 'refresh_wbs_profiles_list' => 'wbs_activities#refresh_wbs_profiles_list', :as => :refresh_wbs_profiles_list
-  post "calculate_mixed_profiles" => "wbs_activities#calculate_mixed_profiles", as: 'calculate_mixed_profiles'
   get 'update_status_collection' => 'wbs_activity_elements#update_status_collection', :as => 'update_status_collection'
 
   resources :wbs_activities do
@@ -302,6 +301,7 @@ Projestimate::Application.routes.draw do
   get 'update_available_inline_columns' => 'organizations#update_available_inline_columns', as: 'update_available_inline_columns'
   get 'set_available_inline_columns' => 'organizations#set_available_inline_columns', as: 'set_available_inline_columns'
   post 'organizations/:organization_id/confirm_organization_deletion' => 'organizations#confirm_organization_deletion', :as => :confirm_organization_deletion
+  post "calculate_mixed_profiles" => "organizations#calculate_mixed_profiles", as: 'calculate_mixed_profiles'
 
   get 'export_organization_reference' => 'organizations#export_organization_reference', :as => :export_organization_reference
   get 'export_to_pdf_security_audit_utilities' => 'organizations#export_to_pdf_security_audit_utilities', as: :export_to_pdf_security_audit_utilities

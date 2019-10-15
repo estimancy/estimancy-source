@@ -34,6 +34,29 @@ class OrganizationsController < ApplicationController
   def report_management
   end
 
+  #Calculate Mixed Profiles
+  def calculate_mixed_profiles
+    @organization = Organization.where(id: params[:organization_id]).first
+
+    real_profiles_with_dynamic_coeff = @organization.organization_profiles.where(is_real_profile: true, use_dynamic_coefficient: true)
+    profiles_price_to_use = HashWithIndifferentAccess.new
+    r_value = 0.25
+    tm_value = 0.5
+    r_value = params[:r_value].to_f
+    tm_value = params[:tm_value].to_f
+
+    real_profiles_with_dynamic_coeff.all.each do |profile|
+      used_cost = profile.initial_cost_per_hour.to_f * (1 - (tm_value * r_value))
+      profile.cost_per_hour = used_cost
+      profile.r_value = r_value
+      profile.tm_value = tm_value
+      profile.formula = "#{profile.cost_per_hour.to_f} * #{(1 - (tm_value * r_value))}"
+      profile.save
+    end
+
+    redirect_to edit_organization_path(@organization, anchor: "tabs-dt")
+  end
+
   # Export PDF de la liste des changements
   def export_to_pdf_security_audit_utilities
     @organization = @current_organization  #Organization.find(params[:organization_id])
