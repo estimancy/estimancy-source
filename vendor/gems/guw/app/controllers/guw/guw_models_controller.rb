@@ -210,16 +210,17 @@ class Guw::GuwModelsController < ApplicationController
               tab.each_with_index do |row, i|
                 if i >= 3 && !row.nil?
                   gce = Guw::GuwCoefficientElement.new(name: row[1].nil? ? nil : row[1].value,
-                                                       value: row[3].nil? ? nil : row[3].value,
                                                        description: row[2].nil? ? nil : row[2].value,
-                                                       display_order: row[4].nil? ? nil : row[4].value,
+                                                       value: row[3].nil? ? nil : row[3].value,
+                                                       default_display_value: row[4].nil? ? nil : row[4].value,
+                                                       display_order: row[5].nil? ? nil : row[5].value,
                                                        guw_coefficient_id: coefficient.nil? ? nil : coefficient.id,
                                                        organization_id: organization_id,
                                                        guw_model_id: @guw_model.id,
-                                                       default_value: (row[5].nil? ? 0 : row[5].value.to_s == "true") ? 1 : 0,
-                                                       default: (row[5].nil? ? 1 : row[5].value.to_s == "true") ? 1 : 0,
-                                                       color_code: row[6].nil? ? nil : row[6].value,
-                                                       color_priority: row[7].nil? ? nil : row[7].value)
+                                                       default_value: (row[6].nil? ? 0 : row[6].value.to_s == "true") ? 1 : 0,
+                                                       default: (row[6].nil? ? 1 : row[6].value.to_s == "true") ? 1 : 0,
+                                                       color_code: row[7].nil? ? nil : row[7].value,
+                                                       color_priority: row[8].nil? ? nil : row[8].value)
                   gce.save(validate: false)
                 end
               end
@@ -1166,7 +1167,7 @@ class Guw::GuwModelsController < ApplicationController
 
     ###==================  GUW-COEFFICIENTS-ELEMENTS  ==================
 
-    coefficient_elements_attributes = ["name", "description", "value", "display_order", "default", "color_code", "color_priority"]
+    coefficient_elements_attributes = ["name", "description", "value", "default_display_value", "display_order", "default", "color_code", "color_priority"]
     counter_line = 1
     # On cree une feuille par element de coeff
     @guw_model.guw_coefficients.where(organization_id: @guw_organisation.id).each_with_index do |coefficient, index|

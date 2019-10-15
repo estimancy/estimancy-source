@@ -2204,3 +2204,4 @@ en:
   used_cost: "Used cost"
   select_profile_associated_services: "Select the profile associated services"
   use_dynamic_coefficient: "Use dynamic coefficient"
+  default_display_value: "Default display value"

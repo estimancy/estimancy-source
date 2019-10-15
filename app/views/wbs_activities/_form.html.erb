@@ -20,6 +20,10 @@
                 <% else %>
                   <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
 
+                  <% other_wbs_for_config = @organization.wbs_activities.where(wbs_for_config: true).first
+                    exist_wbs_for_config = other_wbs_for_config.nil? ? false : true
+                  %>
+
                   <div class="row-fluid">
                     <div class="span3"><%= f.input :wbs_for_config, as: :boolean, :label => I18n.t(:wbs_for_config) %></div>
                     <div class="span3"><%= f.input :use_real_profiles, as: :boolean, :label => I18n.t(:use_real_profiles) %></div>

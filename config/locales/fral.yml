@@ -2136,3 +2136,4 @@ fral:
   used_cost: "Coût utilisé"
   select_profile_associated_services: "Sélectionner les services associés à ce profil"
   use_dynamic_coefficient: "Utilise le coefficient dynamique"
+  default_display_value: "Valeur par défaut à l'affichage"
