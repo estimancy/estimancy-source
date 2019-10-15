@@ -211,7 +211,8 @@ class OrganizationProfilesController < ApplicationController
           gcces.each do |gcce|
             gcce_guw_coefficient_element = gcce.guw_coefficient_element
             if gcce_guw_coefficient_element.name == "Conv."
-              gcce.value = value
+              gcce_guw_coefficient_element.value = value
+              gcce_guw_coefficient_element.default_display_value = value
               gcce.save
             end
           end
