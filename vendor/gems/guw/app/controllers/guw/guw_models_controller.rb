@@ -218,7 +218,8 @@ class Guw::GuwModelsController < ApplicationController
                                                        organization_id: organization_id,
                                                        guw_model_id: @guw_model.id,
                                                        default_value: (row[6].nil? ? 0 : row[6].value.to_s == "true") ? 1 : 0,
-                                                       default: (row[6].nil? ? 1 : row[6].value.to_s == "true") ? 1 : 0,
+                                                       #default: (row[6].nil? ? 1 : row[6].value.to_s == "true") ? 1 : 0,
+                                                       default: row[6].nil? ? nil : row[6].value,
                                                        color_code: row[7].nil? ? nil : row[7].value,
                                                        color_priority: row[8].nil? ? nil : row[8].value)
                   gce.save(validate: false)
