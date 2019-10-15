@@ -213,7 +213,7 @@ class OrganizationProfilesController < ApplicationController
             if gcce_guw_coefficient_element.name == "Conv."
               gcce_guw_coefficient_element.value = value
               gcce_guw_coefficient_element.default_display_value = value
-              gcce.save
+              gcce_guw_coefficient_element.save
             end
           end
         end
