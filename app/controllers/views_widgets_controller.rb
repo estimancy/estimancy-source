@@ -176,6 +176,10 @@ class ViewsWidgetsController < ApplicationController
       end
     end
 
+    if params[:views_widget][:is_project_data_widget].present?
+      @views_widget.module_project_id = @module_project.id
+      @views_widget.is_project_data_widget = true
+    end
 
     respond_to do |format|
       if @views_widget.save

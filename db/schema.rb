@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191011090224) do
+ActiveRecord::Schema.define(version: 20191015123124) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1390,7 +1390,6 @@ ActiveRecord::Schema.define(version: 20191011090224) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "copy_id",                 limit: 4
-    t.float    "coefficient",             limit: 24
     t.boolean  "is_real_profile"
     t.boolean  "use_dynamic_coefficient"
     t.string   "associated_services",     limit: 255
@@ -2092,6 +2091,8 @@ ActiveRecord::Schema.define(version: 20191011090224) do
     t.integer  "min_value",                    limit: 4
     t.integer  "max_value",                    limit: 4
     t.string   "validation_text",              limit: 255
+    t.boolean  "is_project_data_widget"
+    t.string   "project_attribute_name",       limit: 255
   end
 
   add_index "views_widgets", ["module_project_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree

@@ -223,9 +223,14 @@
         </tr>
       </table>
 
+      <% label_platform_category =  I18n.t('platform_category') %>
+      <% if @organization.name.downcase.include?("distribution transporteur") %>
+          <% label_platform_category =  "TM" %>
+      <% end %>
+
       <%= f.association :project_area, :label => "#{I18n.t 'project_area'}", :as => :select, :collection => @project_areas, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_areas, @project)) || can_alter_model) %>
       <%= f.association :acquisition_category, :label => "#{I18n.t 'acquisition_category'}", :as => :select, :collection => @acquisition_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project)) || can_alter_model) %>
-      <%= f.association :platform_category, :label => "#{I18n.t 'platform_category'}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_platform_categories, @project)) || can_alter_model) %>
+      <%= f.association :platform_category, :label => "#{label_platform_category}", :as => :select, :collection => @platform_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_platform_categories, @project)) || can_alter_model) %>
       <%= f.association :project_category, :label => "#{I18n.t 'project_category'}", :as => :select, :collection => @project_categories, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_categories, @project))  || can_alter_model) %>
       <%= f.association :provider, :label => "#{I18n.t 'provider'}", :as => :select, :collection => @providers, :input_html => {:class => 'input-xxlarge'}, :disabled => !((can_alter_estimation?(@project) && can?(:alter_providers, @project))  || can_alter_model) %>
 

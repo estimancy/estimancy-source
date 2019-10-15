@@ -40,7 +40,8 @@
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to '', guw.guw_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
                 <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'guw_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                <%= link_to '', guw.guw_model_path(i, organization_id: @organization.id), method: "DELETE", confirm: I18n.t(:are_you_sure), :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                <%#= link_to '', guw.guw_model_path(i, organization_id: @organization.id), method: "DELETE", confirm: I18n.t(:are_you_sure), :class => 'fa fa-trash', :title => I18n.t('delete'), 'data-turbolinks': false %>
+                <%= link_to '', guw.guw_model_path(i, organization_id: @organization.id), method: "DELETE", data: { confirm: I18n.t(:are_you_sure) } , :class => 'fa fa-trash', :title => I18n.t('delete'), 'data-turbolinks': false %>
               <% end %>
             </td>
           </tr>
@@ -83,7 +84,7 @@
                 <% if can? :manage_modules_instances, ModuleProject %>
                   <%= link_to '', skb.skb_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
                   <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'skb_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                  <%= link_to '', skb.skb_model_path(i, organization_id: @organization.id), method: "DELETE", confirm: I18n.t(:are_you_sure), :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                  <%= link_to '', skb.skb_model_path(i, organization_id: @organization.id), method: "DELETE", data: { confirm: I18n.t(:are_you_sure) }, :class => 'fa fa-trash', :title => I18n.t('delete') %>
                 <% end %>
               </td>
             </tr>
@@ -129,7 +130,7 @@
                   <% if can? :manage_modules_instances, ModuleProject %>
                     <%= link_to '', ge.ge_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
                     <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'ge_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                    <%= link_to '', ge.ge_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                    <%= link_to '', ge.ge_model_path(i, organization_id: @organization.id), data: { confirm: I18n.t('are_you_sure') }, method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
                   <% end %>
                 </td>
               </tr>
@@ -170,7 +171,7 @@
                   <% if can? :manage_modules_instances, ModuleProject %>
                     <%= link_to '', kb.kb_model_duplicate_path(i,organization_id: @organization.id), :class => 'fa fa-copy', :title => "Duplicate knowledge base", method: "post" %>
                     <%= link_to('', { :controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'kb_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                    <%= link_to '', kb.kb_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                    <%= link_to '', kb.kb_model_path(i, organization_id: @organization.id), data: { confirm: I18n.t('are_you_sure') }, method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
                   <% end %>
                 </td>
               </tr>
@@ -214,7 +215,7 @@
                   <% if can? :manage_modules_instances, ModuleProject %>
                     <%= link_to '', operation.operation_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
                     <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'operation_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                    <%= link_to '', operation.operation_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                    <%= link_to '', operation.operation_model_path(i, organization_id: @organization.id), data: { confirm: I18n.t('are_you_sure') }, method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
                   <% end %>
                 </td>
               </tr>
@@ -254,7 +255,7 @@
                 <% if can? :manage_modules_instances, ModuleProject %>
                   <%= link_to '', expert_judgement.instance_duplicate_expert_judgment_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
                   <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'expert_judgement_instance_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                  <%= link_to '', expert_judgement.instance_path(i, organization_id: @organization.id),  confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                  <%= link_to '', expert_judgement.instance_path(i, organization_id: @organization.id),  data: { confirm: I18n.t('are_you_sure') }, method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
                 <% end %>
               </td>
             </tr>
@@ -295,7 +296,7 @@
                 <% if can? :manage_modules_instances, ModuleProject %>
                   <%= link_to '', duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), method: :post, :class => 'fa fa-copy', :title => I18n.t(:duplicate_module) %>
                   <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'wbs_activity_id', :instance_model_id => wbs_activity.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                  <%= link_to '', wbs_activity, confirm: I18n.t(:are_you_sure), method: :delete, organization_id: @organization.id, :class => 'fa fa-trash', :title => I18n.t(:delete) %>
+                  <%= link_to '', wbs_activity, data: { confirm: I18n.t(:are_you_sure) }, method: :delete, organization_id: @organization.id, :class => 'fa fa-trash', :title => I18n.t(:delete) %>
                 <% end %>
               </td>
             </tr>
@@ -336,7 +337,7 @@
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to '', staffing.staffing_model_duplicate_path(i, organization_id: @organization.id), :class => 'fa fa-copy', :title => I18n.t(:duplicate_module), method: "post" %>
                 <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'staffing_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :class => 'fa fa-map-marker', :title => I18n.t('button_find_use')) %>
-                <%= link_to '', staffing.staffing_model_path(i, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                <%= link_to '', staffing.staffing_model_path(i, organization_id: @organization.id), data: { confirm: I18n.t('are_you_sure') }, method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>

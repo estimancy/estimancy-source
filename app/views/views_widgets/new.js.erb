@@ -9,6 +9,10 @@ $("#notifications").html("");
   $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/kpi_form") %>");
   $("#myModalLabel").css('font-size', 'larger');
   $("#myModalLabel").html('<%= I18n.t(:new_widget_kpi) %>');
+<% elsif params[:is_project_data_widget] == "true" %>
+    $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/project_data_widget_form") %>");
+    $("#myModalLabel").css('font-size', 'larger');
+    $("#myModalLabel").html('<%= I18n.t(:new_project_data_widget) %>');
 <% else %>
   $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/form") %>");
   $("#myModalLabel").css('font-size', 'larger');

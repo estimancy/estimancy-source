@@ -2254,3 +2254,5 @@ fr:
   use_dynamic_coefficient: "Utilise le coefficient dynamique"
   default_display_value: "Valeur par défaut à l'affichage"
   initial_cost_per_hour: "Coût initial"
+  new_project_data_widget: "Nouvelle vignette de données projet"
+  project_attribute_name: "Nom de l'attribut du projet"

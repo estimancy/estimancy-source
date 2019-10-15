@@ -2064,6 +2064,8 @@ es:
   use_dynamic_coefficient: "Use dynamic coefficient"
   default_display_value: "Default display value"
   initial_cost_per_hour: "Initial cost"
+  new_project_data_widget: "Add new project data widget"
+  project_attribute_name: "Project attribute name"
 
 
 
