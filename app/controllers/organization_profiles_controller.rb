@@ -119,7 +119,7 @@ class OrganizationProfilesController < ApplicationController
   end
 
   def maj_prix_profil
-    project = Project.where(title: "EBE001 Calcul Mixed Profiles").first
+    project = Project.where(title: "EBE001 (Calcul Mix Profil)").first
     organization = project.organization
     module_project = project.module_projects.last
 
@@ -128,7 +128,8 @@ class OrganizationProfilesController < ApplicationController
     mpres.each do |mpre|
       tjm = mpre.tjm.to_f.round(2)
 
-      mpre_wbs_activity_element_name = mpre.wbs_activity_element.name.to_s
+      mpre_wbs_activity_element = mpre.wbs_activity_element
+      mpre_wbs_activity_element_name = mpre_wbs_activity_element.name.to_s
       mpre_wbs_activity_element_name = mpre_wbs_activity_element_name[0..(mpre_wbs_activity_element_name.size-1)]
 
       op = OrganizationProfile.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).first
@@ -155,10 +156,23 @@ class OrganizationProfilesController < ApplicationController
                                                                guw_type_id: guw_type.id).all
 
             gcces.each do |gcce|
-              if (gcce.guw_coefficient_element.name.include?(mpre_wbs_activity_element_name)) || (gcce.guw_coefficient_element.name.include?("Paris") && mpre_wbs_activity_element_name.include?('PARIS')) || (gcce.guw_coefficient_element.name.include?("Province") && mpre_wbs_activity_element_name.include?('PROVINCE'))
-                unless tjm == 0.0
-                  gcce.value = tjm
-                  gcce.save
+
+              gcce_guw_coefficient_element = gcce.guw_coefficient_element
+
+              if (gcce_guw_coefficient_element.name.include?(mpre_wbs_activity_element_name)) ||
+                 (gcce_guw_coefficient_element.name.include?("Paris") && mpre_wbs_activity_element_name.include?('PARIS')) ||
+                 (gcce_guw_coefficient_element.name.include?("Province") && mpre_wbs_activity_element_name.include?('PROVINCE'))
+
+                if gcce_guw_coefficient_element.name.include?("SNCF")
+                  unless tjm == 0.0
+                    gcce.value = tjm + mpre_wbs_activity_element.description.to_i
+                    gcce.save
+                  end
+                else
+                  unless tjm == 0.0
+                    gcce.value = tjm
+                    gcce.save
+                  end
                 end
               end
             end
