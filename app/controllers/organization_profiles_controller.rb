@@ -132,13 +132,10 @@ class OrganizationProfilesController < ApplicationController
       mpre_wbs_activity_element = mpre.wbs_activity_element
       mpre_wbs_activity_element_name = mpre_wbs_activity_element.name.to_s
 
-      op = OrganizationProfile.where(organization_id: organization.id,
-                                     name: mpre_wbs_activity_element_name).first
+      op = OrganizationProfile.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).first
       unless op.nil?
-        if mpre_wbs_activity_element_name.include?("EVO CS Déploiement")
-          op.cost_per_hour = tjm
-          op.save
-        end
+        op.cost_per_hour = tjm
+        op.save
       end
 
       mpre_wbs_activity_element_name_without_localisation = mpre_wbs_activity_element_name.gsub(' PARIS', '').gsub(' PROVINCE', '').gsub('MCO', '')
