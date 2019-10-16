@@ -3,7 +3,11 @@
     <li><a href="#tabs-applications"><%= I18n.t(:applications) %></a></li>
     <li><a href="#tabs-project-areas"><%= I18n.t(:project_areas) %></a></li>
     <li><a href="#tabs-acquisition-categories"><%= I18n.t(:acquisition_categories) %></a></li>
-    <li><a href="#tabs-platform-categories"><%= I18n.t(:platform_categories) %></a></li>
+    <% if @organization.name.downcase.include?("distribution transporteur") %>
+        <li><a href="#tabs-platform-categories"><%= "TM" %></a></li>
+    <% else %>
+        <li><a href="#tabs-platform-categories"><%= I18n.t(:platform_categories) %></a></li>
+    <% end %>
     <li><a href="#tabs-project-categories"><%= I18n.t(:project_categories) %></a></li>
     <li><a href="#tabs-providers"><%= I18n.t(:providers) %></a></li>
 <!--    <li><a href="#tabs-wet"><%#= I18n.t(:label_WorkElementType) %></a></li>-->
