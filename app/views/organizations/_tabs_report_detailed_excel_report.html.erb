@@ -1,0 +1,25 @@
+<div id="tabs-detailed_excel_report" ><span><h2><%= I18n.t('detailed_excel_report') %></h2></span></div>
+  <div class="card-body" style="margin-left: 1rem;">
+
+    <%= form_tag generate_report_excel_path, method: "post" do %>
+
+      <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+      <div class="span3">
+        <%= label_tag "Budgets" %>
+        <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
+      </div>
+
+      </br>
+
+      <div class="span3">
+        <%= label_tag "Applications" %>
+        <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
+      </div>
+
+      <div class="container-fluid" style="margin-top: 1rem;margin-left: -1rem;">
+        <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+      </div>
+    <% end %>
+
+  </div>

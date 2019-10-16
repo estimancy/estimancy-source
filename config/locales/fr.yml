@@ -2511,3 +2511,11 @@ fr:
   show_module_name: "Afficher le nom du module"
 
   coefficients_list: "Liste des coefficients"
+
+  budget_report: "Rapport Budget"
+  budget_excel_report: "Rapport Excel Budget"
+  quote_creation_duration_kpi: "Quote Creation Duration"
+  fp_delivered_number_kpi: "Number of PFs delivered in 2019"
+  estimations_total_kpi: "Nombre de devis"
+  please_return_check_report_type: "Veuillez retourner cocher un type de rapport"
+  please_return_check_kpi_type: "Veuillez retourner cocher un type de kpi"

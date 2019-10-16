@@ -1,0 +1,129 @@
+<div id="tabs-budget_excel_report">
+  <span><h2><%= I18n.t('budget_report') %></h2></span></div>
+  <div class="card-body">
+
+    <h4><%= I18n.t(:generate_filtered_excel_report) %></h4>
+    <p>
+      <%= I18n.t(:selected_quotation_export) %>
+    </p>
+
+    <%= form_tag "generate_report_excel_estimations", method: "post" do %>
+
+      <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+      <br class="row-fluid">
+        <div class="span3 well well-rounded">
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:label_project_name) %>
+              <%= text_field_tag "title", "", class: "form-control" %>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:Product_Name) %>
+              <%# text_field_tag "application", "" %>
+              <%= select_tag "report[application_id]", options_for_select(@organization.applications.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:Start_date_organizations) %>
+              <%= text_field_tag "report_date[start_date]", "", class: 'date-picker form-control' %>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:end_date_organizations) %>
+              <%= text_field_tag "report_date[end_date]", "", class: 'date-picker form-control' %>
+            </div>
+          </div>
+
+          </br>
+
+        </div>
+
+        <div class="span3 well well-rounded">
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:Platform_Categorie_organization) %>
+              <%= select_tag "report[platform_category_id]", options_for_select(@organization.platform_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:Project_Category) %>
+              <%= select_tag "report[project_category_id]", options_for_select(@organization.project_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:Category_acquistion) %>
+              <%= select_tag "report[acquisition_category_id]", options_for_select(@organization.acquisition_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:project_area) %>
+              <%= select_tag "report[project_area_id]", options_for_select(@organization.project_areas.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="row-fluid">
+            <div class="col-12">
+              Estimation Status
+              <%= select_tag "report[estimation_status_id]", options_for_select(@organization.estimation_statuses.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent), class: "form-control" %>
+            </div>
+          </div>
+
+          </br>
+
+        </div>
+
+        <div class="span4 well well-rounded">
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:counting_details) %>
+              <%= check_box_tag "detail", "checked", true %>
+            </div>
+          </div>
+
+          </br>
+
+          <div class="row-fluid">
+            <div class="col-12">
+              <%= label_tag I18n.t(:module_size_select) %>
+              <%= select_tag "guw_model_id", options_for_select(@organization.guw_models.map{|i| [i.name, i.id]}), class: "form-control" %>
+            </div>
+          </div>
+
+          </br>
+        </div>
+
+      <div class="row-fluid">
+        <div class="col-12">
+          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
+        </div>
+      </div>
+    <% end %>
+  </div>

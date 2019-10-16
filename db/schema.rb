@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20190927144743) do
+ActiveRecord::Schema.define(version: 20191008092713) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1806,6 +1806,8 @@ ActiveRecord::Schema.define(version: 20190927144743) do
     t.boolean  "allow_demand"
     t.string   "default_estimations_sort_column", limit: 255
     t.string   "default_estimations_sort_order",  limit: 255
+    t.string   "show_reports",                    limit: 255
+    t.string   "show_kpi",                        limit: 255
   end
 
   create_table "organizations_users", force: :cascade do |t|

@@ -12,67 +12,123 @@
   <!--<%# end %>-->
 <!--</table>-->
 
-<div class="row" style="margin-top: 30px;">
-  <div class="col-4">
-    <%= I18n.t(:organization).to_s.upcase %>
-  </div>
-  <div class="col">
-    <%= I18n.t(:number_estimates_per_year).to_s.upcase %>
-  </div>
-  <span style="float: right; margin-left: auto; margin-right: 20px;">
-    <%= link_to 'PDF', "/projects_quantity.pdf", :class => 'btn btn-primary pull-right' %>
-  </span>
-</div>
+<section class="card card-content-bloc estimancy-form">
+    <div class="mb-5">
+      <div class="effort-bloc">
+        <div class="card-body">
 
-<div class="card card-widget card-indicator card-indicator-with-module">
-  <div class="card-body">
-    <!--<div class="mb-5">-->
-      <% @current_user.organizations.each do |organization| %>
-          <% projects_per_years = organization.projects.group_by{ |t| t.created_at.year }#.sort {|k, v| k[1] <=> v[1] }  %>
-         <% projects_per_year = Hash.new %>
-          <% years_range = 2017..DateTime.now.year  %>
-          <% years_range.step(1) do |year|
-              if projects_per_years.has_key?(year)
+          <div class="edition-bloc-left">
+            <div class="edition-bloc-title row" style="flex: 1">
+
+              <div class="col-6">
+                <h3>
+                  <%= I18n.t(:number_estimates_per_year) %>
+                </h3>
+              </div>
+            </div>
+          </div>
+
+          <% years_range = (2017..DateTime.now.year).to_a.reverse %>
+<!--          <span style="float:right; margin-bottom:1rem;">-->
+              <%#= link_to 'PDF', "/projects_quantity.pdf", :class => 'btn btn-primary pull-right' %>
+<!--          </span>-->
+          <table class="table tablesorter table-list table-sm" style="width:100%;overflow:auto;">
+            <tr>
+              <th style="width:250px;"><%= I18n.t(:organization).to_s.upcase %></th>
+              <% years_range.each do |year| %>
+                <th style="width:150px;"><%= year %></th>
+              <% end %>
+            </tr>
+
+            <% @current_user.organizations.each do |organization| %>
+              <% projects_per_years = organization.projects.group_by{ |t| t.created_at.year }#.sort {|k, v| k[1] <=> v[1] }  %>
+              <% projects_per_year = Hash.new %>
+
+              <% years_range.each do |year| %>
+                <% if projects_per_years.has_key?(year) %>
+                  <% projects_per_year[year] = projects_per_years[year] %>
+                <% else %>
+                  <% projects_per_year[year] = [] %>
+                <% end %>
+              <% end %>
+              <tr>
+                <td><h4><%= organization %></h4></td>
+                <% projects_per_year.each do |year, array| %>
+                  <% value = array.size %>
+                  <% unless value.is_a?(Hash) %>
+                    <td><%= value.nil? ? '-' : value %></td>
+                  <% end %>
+                <% end %>
+              </tr>
+            <% end %>
+          </table>
+
+        </div>
+      </div>
+    </div>
+</section>
+
+<!--<div class="row" style="margin-top: 30px;">-->
+<!--  <div class="col-4">-->
+    <%#= I18n.t(:organization).to_s.upcase %>
+<!--  </div>-->
+<!--  <div class="col">-->
+    <%#= I18n.t(:number_estimates_per_year).to_s.upcase %>
+<!--  </div>-->
+<!--  <span style="float: right; margin-left: auto; margin-right: 20px;">-->
+    <%#= link_to 'PDF', "/projects_quantity.pdf", :class => 'btn btn-primary pull-right' %>
+<!--  </span>-->
+<!--</div>-->
+
+<!--<div class="card card-widget card-indicator card-indicator-with-module">-->
+<!--  <div class="card-body">-->
+<!--    <!--<div class="mb-5">-->
+      <%# @current_user.organizations.each do |organization| %>
+          <%# projects_per_years = organization.projects.group_by{ |t| t.created_at.year }#.sort {|k, v| k[1] <=> v[1] }  %>
+         <%# projects_per_year = Hash.new %>
+          <%# years_range = 2017..DateTime.now.year  %>
+<!--          <#% years_range.step(1) do |year|-->
+              <%#=if projects_per_years.has_key?(year)
                    projects_per_year[year] = projects_per_years[year]
                else
                    projects_per_year[year] = []
               end
           end %>
 
-          <div class="widgets-list">
+<!--          <div class="widgets-list">-->
 
-            <div class="widget-list-content">
-              <div class="row" style="width: -webkit-fill-available;">
-                <div class="col-3">
-                    <h4><%= organization %></h4>
-                </div>
-                <div class="col">
-                  <div class="widget-group">
-                    <ul class="widget-group-list" style="height: 100px; display: flex; flex-direction: column; flex-wrap: wrap;">
-                      <% projects_per_year.each do |year, array| %>
-                          <% value = array.size %>
-                          <% unless value.is_a?(Hash) %>
-                              <li>
-                                <div class="card card-widget card-indicator card-indicator-with-module">
-                                  <div class="card-body">
-                                    <div class="card-indicator-type"></div>
-                                    <div class="card-indicator-text"><%= year %> </div>
-                                    <div class="card-indicator-quantity">
-                                      <span><%= value.nil? ? '-' : value %></span>
-                                    </div>
-                                  </div>
-                                </div>
-                              </li>
-                          <% end %>
-                      <% end %>
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-      <% end %>
-    <!--</div>-->
-  </div>
-</div>
+<!--            <div class="widget-list-content">-->
+<!--              <div class="row" style="width: -webkit-fill-available;">-->
+<!--                <div class="col-3">-->
+<!--                    <h4><%#= organization %></h4>-->
+<!--                </div>-->
+<!--                <div class="col">-->
+<!--                  <div class="widget-group">-->
+<!--                    <ul class="widget-group-list" style="height: 100px; display: flex; flex-direction: column; flex-wrap: wrap;">-->
+                      <%# projects_per_year.each do |year, array| %>
+                          <%# value = array.size %>
+                          <%# unless value.is_a?(Hash) %>
+<!--                              <li>-->
+<!--                                <div class="card card-widget card-indicator card-indicator-with-module">-->
+<!--                                  <div class="card-body">-->
+<!--                                    <div class="card-indicator-type"></div>-->
+<!--                                    <div class="card-indicator-text"><%#= year %> </div>-->
+<!--                                    <div class="card-indicator-quantity">-->
+<!--                                      <span><%#= value.nil? ? '-' : value %></span>-->
+<!--                                    </div>-->
+<!--                                  </div>-->
+<!--                                </div>-->
+<!--                              </li>-->
+                          <%# end %>
+                      <%# end %>
+<!--                    </ul>-->
+<!--                  </div>-->
+<!--                </div>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+      <%# end %>
+<!--    <!--</div>-->
+<!--  </div>-->
+<!--</div>-->
 

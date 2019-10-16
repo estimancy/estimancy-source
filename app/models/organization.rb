@@ -24,10 +24,12 @@ class Organization < ActiveRecord::Base
   attr_accessible :name, :description, :is_image_organization, :number_hours_per_day, :number_hours_per_month, :cost_per_hour, :currency_id, :inflation_rate,
                   :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history, :headband_title, :automatic_quotation_number,
                   :limit1_coef, :limit2_coef, :limit3_coef, :limit4_coef,
-                  :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit, :allow_demand
+                  :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit, :allow_demand, :show_reports, :show_kpi
 
 
   serialize :project_selected_columns, Array
+  serialize :show_reports, Hash
+  serialize :show_kpi, Hash
 
   #has_and_belongs_to_many :users
   #Groups created on local, will be attached to an organization

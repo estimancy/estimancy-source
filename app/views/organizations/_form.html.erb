@@ -20,7 +20,7 @@
 
       <li class="nav-item">
         <a class="nav-link"  data-toggle="pill" id="pills-kpi-tab" href="#pills-kpi" role="tab" aria-selected="false">
-          KPI Configuration
+          Restitution
         </a>
       </li>
     </ul>
@@ -238,16 +238,77 @@
             </div>
           </div>
 
-          <!-- KPI Configuration -->
+          <!-- Restitution -->
           <div class="tab-pane fade" id="pills-kpi" role="tabpanel" aria-labelledby="pills-kpi-tab">
             <div class="card-body">
+
               <div class="edition-bloc-left">
                 <div class="edition-bloc-title">
-                  <h1>
-                    <%= "KPI Configuration" %>
-                  </h1>
+                  <h4>
+                    <%= "Choisissez les rapports à afficher" %>
+                  </h4>
                 </div>
               </div>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  <% @reports_list.each do |report| %>
+                    <div class="form-row">
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <%= check_box_tag "show_reports[#{report}]", @organization.show_reports[report], @organization_show_reports_keys.include?(report) %>
+                          <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
+                            <%= I18n.t("#{report}") %>
+                          </label>
+
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+
+                </div>
+              </div>
+
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h4>
+                    <%= "Choisissez les indicateurs à afficher" %>
+                  </h4>
+                </div>
+              </div>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+
+                  <% @kpi_list.each do |kpi| %>
+                    <div class="form-row">
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= check_box_tag "show_kpi[#{kpi}]", @organization.show_kpi["#{kpi}"], @organization_show_kpi_keys.include?(kpi) %>
+                          <label class="mdl-textfield__label" for='#{kpi}' style="margin-left:1.5rem; margin-top:-0.75rem;">
+                            <%= I18n.t("#{kpi}") %>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-12">
+                  <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
+                    <% if action_name == 'edit' %>
+                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                    <% end %>
+                    <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                  <% end %>
+                  <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
+
+                </div>
+              </div>
+
             </div>
           </div>
 

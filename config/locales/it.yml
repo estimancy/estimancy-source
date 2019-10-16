@@ -1941,6 +1941,7 @@ it:
 
   coefficients_list: "Liste des coefficients"
   hide_all: "Masquer l'entête de la WBS"
+  show_all: "Afficher l'entête de la WBS"
   variable_name: "Nom de la variable"
   percentage_of_input: "Pourcentage de l'entrée"
   new_complexity: "Nouvelle complexité"

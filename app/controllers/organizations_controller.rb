@@ -1930,6 +1930,10 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:report) => ""
     check_if_organization_is_image(@organization)
     @projects = @current_organization.projects.where(is_model: false)
+    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "budget_report", "raw_data_extract", "budget_excel_report"]
+    @organization_show_reports_keys = @organization.show_reports.keys
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
 
     unless params[:budget_id].nil? || params[:application_id].nil?
       @application = Application.find(params[:application_id])
@@ -2186,7 +2190,6 @@ class OrganizationsController < ApplicationController
     end
 
   end
-
 
   private def check_for_projects(start_number, desired_size)
 
@@ -3260,6 +3263,12 @@ class OrganizationsController < ApplicationController
     @organization_profiles = @organization.organization_profiles
     @work_element_types = @organization.work_element_types
 
+    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "budget_report", "raw_data_extract", "budget_excel_report"]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi"]
+
+    @organization_show_reports_keys = @organization.show_reports.keys
+    @organization_show_kpi_keys = @organization.show_kpi.keys
+
     # get organization estimations per year
     #@projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort_by{|created_at, _extras| created_at }
     @projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] }
@@ -3455,7 +3464,7 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
 
-    if @organization.update_attributes(params[:organization])
+    if @organization.update_attributes(params[:organization].merge(show_reports: params[:show_reports], show_kpi: params[:show_kpi]))
       flash[:notice] = I18n.t (:notice_organization_successful_updated)
       redirect_to redirect_apply(edit_organization_path(@organization), nil, '/all_organizations')
     else
@@ -4059,6 +4068,10 @@ class OrganizationsController < ApplicationController
       budget_header = ["Budgets"]
       organization_budget_types = @organization.budget_types
       @nb_series = organization_budget_types.all.size
+      @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi"]
+      @organization_show_kpi_keys = @organization.show_kpi.keys
+      @partial_name = params[:partial_name]
+      @item_title = params[:item_title]
 
       organization_budget_types.each do |bt|
         budget_header << bt.name
@@ -4099,6 +4112,26 @@ class OrganizationsController < ApplicationController
         #budget_values << ''
         @data_for_global_budget << budget_values
       end
+  end
+
+  def save_show_reports
+    @organization = Organization.find(params[:organization_id])
+    @show_reports = @organization.show_reports
+    @show_kpi = @organization.show_kpi
+    @show_reports = Hash.new
+    @show_kpi = Hash.new
+
+    @show_reports["allow_filtered_excel"] = 1
+    @show_reports["allow_detailed_excel"] = 1
+    @show_reports["allow_detailed_pdf"] = 1
+    @show_reports["allow_budget_report"] = 1
+    @show_reports["allow_raw_data_extraction"] = 1
+    @show_reports["allow_extraction_impression"] = 1
+
+    @show_kpi["allow_quote_creation_duration_img"] = 1
+    @show_kpi["allow_fp_delivered_number_img"] = 1
+    @show_kpi["allow_global_budget"] = 1
+    @show_kpi["allow_estimations_total"] = 1
   end
 
   #########   END Organization settings pages  ###################

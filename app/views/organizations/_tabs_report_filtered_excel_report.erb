@@ -1,0 +1,30 @@
+<div id="tabs-filtered_excel_report"><span><h2><%= I18n.t('filtered_excel_report') %></h2></span></div>
+    <div class="card-body">
+
+      <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
+        <div class="row-fluid">
+          <div class="col-12">
+            <%= label_tag 'Date min' %>
+            <%= text_field_tag 'date_min', "", :class => 'form-control'%>
+          </div>
+        </div>
+
+        </br>
+
+        <div class="row-fluid">
+          <div class="col-12">
+            <%= label_tag 'Date max' %>
+            <%= text_field_tag 'date_max', "", :class => 'form-control' %>
+          </div>
+        </div>
+
+        </br>
+
+        <div class="row-fluid">
+          <div class="col-12">
+            <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary btn-estimancy" %>
+          </div>
+        </div>
+      <% end %>
+
+    </div>

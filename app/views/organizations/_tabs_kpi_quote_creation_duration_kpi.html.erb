@@ -1,0 +1,23 @@
+<div class="edition-bloc-left">
+  <div class="edition-bloc-title">
+    <h2>
+      <%= I18n.t(:printing_extraction) %>
+    </h2>
+  </div>
+</div>
+
+<br>
+
+<div id="tabs-quote_creation_duration_kpi" class="card card-widget card-indicator card-indicator-with-module">
+  <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <div class="card-body">
+      <div class="mb-8">
+        <div class="widgets-list">
+          <%= link_to show_original_image_path(image_name: "temps_realisation_devis_SLA_en.png"), class: :popup_link, remote: true do %>
+            <%= image_tag "temps_realisation_devis_SLA_en.png", id: "temps_realisation_devis_SLA", alt: "Quote creation duration", style: 'height:20em; width:100%;' %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

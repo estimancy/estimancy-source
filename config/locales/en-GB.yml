@@ -1930,3 +1930,6 @@ en-gb:
   hide_all: "Hide All"
   new_complexity: "New complexity"
   settings_super_admin: "Super Administrator"
+
+  please_return_check_report_type: "Please return check a report type"
+  please_return_check_kpi_type: "Please return check a kpi type"

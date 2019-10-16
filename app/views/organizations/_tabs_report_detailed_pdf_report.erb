@@ -1,0 +1,53 @@
+<div id="tabs-detailed_pdf_report"><span><h2><%= I18n.t('detailed_pdf_report') %></h2></span></div>
+  <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+      <div class="card-body" style="margin-left: 1rem;">
+
+        <%= form_tag "generate_budget_report", method: "post" do %>
+
+          <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+          <div class="span3">
+            <%= label_tag "Budgets"  %>
+            <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
+          </div>
+
+          </br>
+
+          <div class="span3">
+            <%= label_tag "Applications" %>
+            <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
+          </div>
+
+          <div class="container-fluid" style="margin-top: 1rem;margin-left: -1rem;">
+            <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
+          </div>
+
+        <% end %>
+
+        <br/>
+
+        <div class="row">
+
+          <% bt_colors = Hash.new %>
+
+          <% unless params[:budget_id].nil? || params[:application_id].nil? %>
+
+            <% data = Budget::fetch_project_field_data(@organization, @budget, @application) %>
+
+            <% BudgetTypeStatus.where(application_id: @application.id,
+                                      organization_id: @organization.id).all.each do |bts| %>
+              <% unless bts.budget_type.nil? %>
+                <% bt_colors[bts.budget_type.name] = bts.budget_type.color %>
+              <% end %>
+            <% end %>
+
+            <%= data %>
+
+            <div class="span4">
+              <%= pie_chart data, colors: bt_colors.values.map{|i| "##{i}"}.flatten %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+  </div>

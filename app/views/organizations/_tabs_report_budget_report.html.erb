@@ -1,0 +1,52 @@
+<div id="tabs-budget_report">
+  <span><h2><%= I18n.t(:quotation_PDF_export) %></h2></span></div>
+  <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <div class="card-body">
+    <!--    <h4>-->
+          <%#= I18n.t(:quotation_PDF_export) %>
+    <!--    </h4>-->
+
+        <div class="row-fluid">
+          <div class="col-12">
+            <% @projects = @organization.projects %>
+            <%= form_tag multiple_export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form', target: "_blank" do %>
+              <div class="modal-body" style="height: inherit;">
+
+                <p>
+                  <label>
+                    <b> <%= I18n.t :business_need %></b>
+                  </label>
+                  <%= select_tag "business_need", options_for_select(@projects.map(&:business_need).uniq.compact), class: "form-control" %>
+                </p>
+
+                <p>
+                  <label>
+                    <b><%= I18n.t :request_number %></b>
+                  </label>
+                  <%= select_tag "request_number", options_for_select(@projects.map(&:request_number).uniq.compact), class: "form-control" %>
+                </p>
+
+                <label>
+                  <b><%= I18n.t :title %></b>
+                </label>
+                <%= text_field_tag :title, '', class: "form-control" %>
+
+                </br>
+
+                <label><b><%= 'Date min' %></b></label>
+                <%= text_field_tag :date_min, '', class: 'date-picker form-control' %>
+
+                </br>
+
+                <label><b><%= 'Date max' %></b></label>
+                <%= text_field_tag :date_max, '', class: 'date-picker form-control' %>
+
+              </div>
+
+              <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
+
+            <% end %>
+          </div>
+        </div>
+    </div>
+</div>
