@@ -4338,7 +4338,7 @@ public
         unless model.nil?
           if model.title == "IFPUG Sourcing"
 
-            from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "To check").first
+            from_es = EstimationStatus.where(organization_id: @current_organization.id, name: "AI Check").first
 
             to_es_controled = EstimationStatus.where(organization_id: @current_organization.id, name: "Controled").first
             to_es_to_correct = EstimationStatus.where(organization_id: @current_organization.id, name: "To correct").first
