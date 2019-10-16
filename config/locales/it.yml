@@ -1677,3 +1677,4 @@ it:
   use_dynamic_coefficient: "Utilise le coefficient dynamique"
   default_display_value: "Valeur par défaut à l'affichage"
   initial_cost_per_hour: "Coût initial"
+  project_attribute_name: "Nom de l'attribut du projet"

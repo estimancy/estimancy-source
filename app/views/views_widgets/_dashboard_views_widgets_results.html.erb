@@ -21,6 +21,7 @@
                       <%= link_to "", main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-th-large icon-large icon_margin_right", title: I18n.t(:label_add_new_view_widget), remote: true %>
                       <%= link_to "", main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true), class: "icon icon-text-width icon-large icon_margin_right", title: I18n.t(:label_add_new_widget_comment), remote: true %>
                       <%= link_to "", main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true), class: "icon icon-superscript icon-large icon_margin_right", title: I18n.t(:label_add_new_kpi_widget), remote: true %>
+                      <%= link_to "", main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_project_data_widget: true), class: "icon icon-tasks icon-large icon_margin_right", title: I18n.t(:label_add_new_project_data_widget), remote: true %>
                       <%# link_to "", main_app.edit_module_project_view_config_path(module_project_id: module_project.id, view_id: module_project.view_id), class: "icon icon-cog icon-large icon_padding_right", title: I18n.t(:label_parameters), remote: true %>
                     <% end %>
                   </div>
@@ -37,6 +38,8 @@
                               <% view_widget_data = get_label_widget_data(view_widget.id) %>
                             <% elsif view_widget.is_kpi_widget? %>
                               <% view_widget_data = get_kpi_widget_data(view_widget.id) %>
+                              <% elsif view_widget.is_project_data_widget? %>
+                                  <% view_widget_data = get_project_data_widget_value(view_widget.id, @project.id) %>
                             <% else %>
                               <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
                                 <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id) %>
@@ -109,7 +112,7 @@
 
                                   <span id="show_view_widget_params_<%= view_widget.id %>" class="span3 widget_icon_edit">
                                     <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
-                                      <%= link_to('', main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
+                                      <%= link_to('', main_app.views_widget_path(view_widget), data: { confirm: I18n.t('are_you_sure') }, method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
                                       <%= link_to '', main_app.edit_views_widget_path(view_widget, module_project_id: module_project.id, view_id: module_project.view_id), class: 'icon-pencil icon_smaller', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
                                     <% end %>
                                     <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>

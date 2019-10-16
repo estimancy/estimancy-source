@@ -23,7 +23,8 @@ class ViewsWidget < ActiveRecord::Base
   attr_accessible :color, :icon_class, :module_project_id, :name, :pbs_project_element_id, :estimation_value_id, :pe_attribute_id,
                   :show_min_max, :view_id, :widget_id, :position, :position_x, :position_y, :width, :height, :widget_type,
                   :show_name, :show_wbs_activity_ratio, :from_initial_view, :is_label_widget, :comment, :formula, :kpi_unit,
-                  :is_kpi_widget, :use_organization_effort_unit, :equation, :show_tjm, :min_value, :max_value, :validation_text
+                  :is_kpi_widget, :is_project_data_widget, :use_organization_effort_unit, :equation, :show_tjm,
+                  :min_value, :max_value, :validation_text, :project_attribute_name
 
   serialize :equation, Hash
 
@@ -40,7 +41,7 @@ class ViewsWidget < ActiveRecord::Base
 
   has_many :project_fields, dependent: :delete_all
 
-  validates :name, :module_project_id, :estimation_value_id, :presence => { :unless => lambda { self.is_label_widget? || self.is_kpi_widget? }}
+  validates :name, :module_project_id, :estimation_value_id, :presence => { :unless => lambda { self.is_label_widget? || self.is_kpi_widget? || self.is_project_data_widget? }}
 
   validates :max_value, numericality: {:greater_than => :min_value}, :allow_nil => true
   validates :min_value, numericality: {:lower_than => :max_value}, :allow_nil => true

@@ -381,6 +381,27 @@ module ViewsWidgetsHelper
   #   end
   # end
 
+
+  def get_project_data_widget_value(view_widget_id, project_id)
+    widget_data = {}
+    begin
+      view_widget = ViewsWidget.find(view_widget_id)
+      project = Project.find(project_id)
+      attribute_name = view_widget.project_attribute_name
+      element_class_name = attribute_name.gsub('_id', '').classify
+      element_id =  project.send(attribute_name)
+      value_to_show = element_class_name.constantize.find(element_id)
+
+      widget_data[:value_to_show] = value_to_show
+    rescue
+      widget_data[:value_to_show] = "-"
+    end
+
+    widget_data
+  end
+
+
+
   def get_kpi_widget_data(view_widget_id)
     view_widget = ViewsWidget.find(view_widget_id)
     widget_data = {}
