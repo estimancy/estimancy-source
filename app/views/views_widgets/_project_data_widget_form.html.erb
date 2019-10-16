@@ -44,17 +44,17 @@
           <div class="row-fluid">
             <div class="span6">
               <%= f.input :project_attribute_name, as: :select, label: I18n.t(:project_attribute_name),
-                          :collection => [ [I18n.t(:project_areas), 'project_area_id'], [I18n.t(:project_category), 'project_category_id'], ['TM', 'platform_category_id'], [I18n.t(:acquisition_category), 'acquisition_category_id'] ],
+                          :collection => [ [I18n.t(:application), 'application_id'], [I18n.t(:project_areas), 'project_area_id'], [I18n.t(:project_category), 'project_category_id'], ['TM', 'platform_category_id'], [I18n.t(:acquisition_category), 'acquisition_category_id'], [I18n.t(:provider), 'provider_id'] ],
                           input_html: { class: "input-xlarge", include_blank: false } %>
             </div>
 
-            <div class="span6">
-              <h6 style="margin-bottom: 1rem"><%= I18n.t :fields %></h6>
-              <% selected = @views_widget.project_fields.first %>
-              <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None",
-                             disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?),
+            <!--<div class="span6">-->
+              <!--<h6 style="margin-bottom: 1rem"><%#= I18n.t :fields %></h6>-->
+              <!--<%# selected = @views_widget.project_fields.first %>-->
+              <%#= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None",
+#                              disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?),
                              label: I18n.t(:fields), class: "field_margin_top"%>
-            </div>
+            <!--</div>-->
           </div>
 
         </div>
