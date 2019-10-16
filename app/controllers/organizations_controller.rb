@@ -38,20 +38,35 @@ class OrganizationsController < ApplicationController
   def calculate_mixed_profiles
     @organization = Organization.where(id: params[:organization_id]).first
 
-    real_profiles_with_dynamic_coeff = @organization.organization_profiles.where(is_real_profile: true, use_dynamic_coefficient: true)
-    profiles_price_to_use = HashWithIndifferentAccess.new
-    r_value = 0.25
-    tm_value = 0.5
-    r_value = params[:r_value].to_f
-    tm_value = params[:tm_value].to_f
+    OrganizationProfile.transaction do
+      begin
+        real_profiles_with_dynamic_coeff = @organization.organization_profiles.where(is_real_profile: true, use_dynamic_coefficient: true)
+        r_value = 0.25
+        tm_value = 0.5
+        r_value = params[:r_value].to_f
+        tm_value = params[:tm_value].to_f
 
-    real_profiles_with_dynamic_coeff.all.each do |profile|
-      used_cost = profile.initial_cost_per_hour.to_f * (1 - (tm_value * r_value))
-      profile.cost_per_hour = used_cost
-      profile.r_value = r_value
-      profile.tm_value = tm_value
-      profile.formula = "#{profile.cost_per_hour.to_f} * #{(1 - (tm_value * r_value))}"
-      profile.save
+        real_profiles_with_dynamic_coeff.all.each do |profile|
+          used_cost = profile.initial_cost_per_hour.to_f * (1 - (tm_value * r_value))
+          profile.cost_per_hour = used_cost
+          profile.r_value = r_value
+          profile.tm_value = tm_value
+          profile.formula = "#{profile.cost_per_hour.to_f} * #{(1 - (tm_value * r_value))}"
+          profile.save
+        end
+
+        #MAJ de la valeur de TM dans le projet
+        platform_category = @organization.platform_categories.first #_or_create(name: "#{tm_value*100} %")
+        if platform_category
+          platform_category.name = "#{tm_value*100}%"
+          platform_category.save
+        else
+          @organization.platform_categories.create(name: "#{tm_value*100}%")
+        end
+
+      rescue
+        flash[:error] = "Erreur MAJ profils"
+      end
     end
 
     redirect_to edit_organization_path(@organization, anchor: "tabs-dt")
