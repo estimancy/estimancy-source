@@ -143,9 +143,9 @@
       <div class="span12">
 
         <div>
-          <p>
+          <h5>
             <strong>#1</strong> Prise en compte de la contribution espagnole dans les profils :
-          </p>
+          </h5>
             <% if @current_user.super_admin? %>
                 <div class="well component_tree" style="background-color: transparent">
                   <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
@@ -160,30 +160,29 @@
             <% end %>
         </div>
 
-        <p>
-          <strong>#2</strong>
-          <%= link_to "Mettre à jour des TJM dans les modèles Abaque et DE", maj_mix_profil_path %>
-        </p>
-
-        <p>
+        <h5>
           <% project = Project.where(title: "EBE001 (Calcul Mix Profil)").first %>
           <% unless project.nil? %>
-            <strong>#3</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
+            <strong>#2</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
           <% end %>
-        </p>
+        </h5>
 
-        <p>
+        <h5>
+          <strong>#3</strong>
+          <%= link_to "Mettre à jour des TJM Dire d'Expert, MCO & Services Abaques", maj_mix_profil_path %>
+        </h5>
+
+        <h5>
           <% project = Project.where(title: "EBE0001 TJM Petites Evol.").first %>
           <% unless project.nil? %>
             <strong>#4</strong> <%= link_to "Calculer les TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
           <% end %>
-        </p>
+        </h5>
 
-        <p>
+        <h5>
           <strong>#5</strong>
-          <%= link_to "Mettre à jour dans les modèles PE", maj_mix_profil_path %>
-        </p>
-
+          <%= link_to "Mettre à jour les TJM Petites Evolutions", maj_pe_path %>
+        </h5>
 
       </div>
     </div>
