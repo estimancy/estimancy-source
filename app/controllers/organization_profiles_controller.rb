@@ -221,6 +221,7 @@ class OrganizationProfilesController < ApplicationController
         end
       end
     end
+    redirect_to main_app.edit_organization_path(organization)
   end
 
 end
