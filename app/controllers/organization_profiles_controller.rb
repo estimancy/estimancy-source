@@ -118,8 +118,8 @@ class OrganizationProfilesController < ApplicationController
     end
   end
 
-  def maj_prix_profil
-    # MIX PROFIL
+  def maj_mix_profil
+    # MIX_PROFIL
     project = Project.where(title: "EBE001 (Calcul Mix Profil)").first
     organization = project.organization
     module_project = project.module_projects.last
@@ -183,9 +183,11 @@ class OrganizationProfilesController < ApplicationController
         end
       end
     end
+    redirect_to main_app.edit_organization_path(organization)
+  end
 
+  def maj_pe
     #PETITES EVOLUTIONS
-
     project = Project.where(title: "EBE0001 TJM Petites Evol.").first
     organization = project.organization
     module_project = project.module_projects.last
@@ -218,10 +220,7 @@ class OrganizationProfilesController < ApplicationController
           end
         end
       end
-
     end
-
-    redirect_to main_app.edit_organization_path(organization)
   end
 
 end
