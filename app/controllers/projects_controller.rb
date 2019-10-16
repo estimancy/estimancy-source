@@ -2248,6 +2248,8 @@ class ProjectsController < ApplicationController
                                           comment: view_widget.comment,
                                           is_kpi_widget: view_widget.is_kpi_widget,
                                           kpi_unit: view_widget.kpi_unit,
+                                          is_project_data_widget: view_widget.is_project_data_widget,
+                                          project_attribute_name: view_widget.project_attribute_name,
                                           icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
                                           width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type,
                                           position: view_widget.position, position_x: view_widget.position_x, position_y: view_widget.position_y,
