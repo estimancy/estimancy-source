@@ -2793,7 +2793,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         tab.each_with_index do |row, index|
           unless row.nil?
-            unless row[13].nil?
+            unless row[12].nil?
               if index > 0
 
                 if default_group.blank?
@@ -2802,7 +2802,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                 project_id: @project.id,
                                                                 module_project_id: module_project.id,
                                                                 pbs_project_element_id: @component.id,
-                                                                name: row[11].nil? ? '-' : row[11].value).first_or_create
+                                                                name: row[10].nil? ? '-' : row[10].value).first_or_create
                 else
                   guw_uow_group = Guw::GuwUnitOfWorkGroup.where(organization_id: @organization.id,
                                                                 guw_model_id: @guw_model.id,
@@ -2817,7 +2817,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 @guw_type = Guw::GuwType.where(organization_id: @organization.id,
                                                guw_model_id: @guw_model.id,
-                                               name: row[14].nil? ? '' : row[14].value).first
+                                               name: row[13].nil? ? '' : row[13].value).first
                 if @guw_type.nil?
                   @guw_type = Guw::GuwType.where(organization_id: @organization.id,
                                                  guw_model_id: @guw_model.id,
@@ -2833,32 +2833,32 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[12].nil? ? nil : row[12].value).to_i == 1),
-                                                  name: row[13].nil? ? nil : row[13].value,
-                                                  comments: row[15].nil? ? nil : row[15].value,
+                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[11].nil? ? nil : row[11].value).to_i == 1),
+                                                  name: row[12].nil? ? nil : row[12].value,
+                                                  comments: row[14].nil? ? nil : row[14].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
                                                   organization_id: @organization.id,
                                                   guw_model_id: @guw_model.id,
                                                   project_id: @project.id,
                                                   module_project_id: module_project.id,
                                                   pbs_project_element_id: @component.id,
-                                                  tracking: row[17].nil? ? 1 : row[17].value,
+                                                  tracking: row[16].nil? ? 1 : row[16].value,
                                                   quantity: 1,
                                                   size: nil,
                                                   ajusted_size: nil,
-                                                  intermediate_percent: row[19].nil? ? nil : row[19].value,
-                                                  intermediate_weight: row[19].nil? ? nil : row[19].value,
+                                                  intermediate_percent: row[18].nil? ? nil : row[18].value,
+                                                  intermediate_weight: row[18].nil? ? nil : row[18].value,
                                                   guw_type_id: @guw_type.id)
 
                 guw_uow.save(validate: false)
 
                 #Je dois le retirer, a tester avant
-                unless row[18].blank?
+                unless row[17].blank?
                   unless @guw_type.nil?
                     guw_complexity = Guw::GuwComplexity.where(organization_id: @organization.id,
                                                               guw_model_id: @guw_model.id,
                                                               guw_type_id: @guw_type.id,
-                                                              name: row[18].value).first
+                                                              name: row[17].value).first
                   end
                   guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
                   guw_uow.save(validate: false)
@@ -2876,7 +2876,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 @guw_attributes.each do |gac|
 
-                  ((18 + @guw_outputs.size + @guw_coefficients.size)..100).each do |ind|
+                  ((17 + @guw_outputs.size + @guw_coefficients.size)..100).each do |ind|
 
                     unless row[ind].nil?
 
@@ -3087,7 +3087,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
 
                 if @guw_type.allow_complexity == true
-                  unless row[18].blank? || row[18].nil?
+                  unless row[17].blank? || row[17].nil?
                     unless @guw_type.nil?
                       guw_complexity = Guw::GuwComplexity.where(organization_id: @organization.id,
                                                                 guw_model_id: @guw_model.id,
