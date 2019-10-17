@@ -3,7 +3,7 @@
     *= require font-awesome/font-awesome
     *= require cookies_eu
     *= require bootstrap/bootstrap.css
-    *= require bootstrap-responsive.css
+    /*require bootstrap-responsive.css
     *= require dashboard.css
     *= require datepicker.css
     *= require font-awesome.css
@@ -15,7 +15,7 @@
     *= require jquery.tablesorter.pager.css
     *= require jquery-ui-1.8.17.custom.css
     *= require default/_normalize.scss
-    *= require spectrum.scss
+    /* require spectrum.scss
     *= require spk_multiwidget.css
     *= require table-sorter.css
 */
