@@ -530,6 +530,30 @@
 
     var root_mp_ratio_element_id = $("#root_mp_ratio_element_id").val();
 
+    // Gestion changement du ratio
+      $("#ratio").change(function() {
+          if ($(this).val() !== "") {
+              return $.ajax({
+                  url: "/refresh_dashboard_module_project_ratio_elements",
+                  method: "GET",
+                  data: {
+                      wbs_activity_ratio_id: $(this).val(),
+                      dashboard_selected_ratio_id: $("#dashboard_selected_ratio_id").val()
+                  },
+
+                  success: function(data) {
+                      $("#dashboard_selected_ratio_id").val($(this).val());
+                      return $(".total-ratio").html(data);
+                  },
+                  error: function(XMLHttpRequest, testStatus, errorThrown) {
+                      return alert("Error! :" +  errorThrown);
+                  }
+              });
+          }
+      });
+    // Fin Gestion changement du ratio
+
+
     $(".selected_phase").change(function(){
 
       var val = this.value;
