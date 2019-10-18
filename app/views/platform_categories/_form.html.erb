@@ -1,6 +1,10 @@
 <div class="tabs">
   <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:platform_category) %> </a></li>
+    <% if @organization.name.downcase.include?("distribution transporteur") %>
+        <li><a href="#tabs-1"><%= "TM" %> </a></li>
+    <% else %>
+        <li><a href="#tabs-1"><%= I18n.t(:platform_category) %> </a></li>
+    <% end %>
   </ul>
 
   <div id="tabs-1">

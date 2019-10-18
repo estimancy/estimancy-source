@@ -248,7 +248,11 @@
 
       <div class="row-fluid">
         <div class="span4">
-          <b><%= I18n.t(:platform_category) %></b>
+          <% if project.organization.name.to_s.downcase.include?("distribution transporteur") %>
+            <b><%= "TM" %></b>
+          <% else %>
+            <b><%= I18n.t(:platform_category) %></b>
+          <% end %>
         </div>
         <div class="span8">
           <%= project.platform_category %>
