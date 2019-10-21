@@ -38,7 +38,7 @@
                   <%= link_to('', {:controller => 'pe_attributes',
                                    :action => 'find_use_attribute',
                                    :pe_attribute_id => attribute.id}, :remote => true, "data-pe_attribute_id" => attribute.id, :class => 'icon-info', :id => 'find_use_pe_attribute', :title => I18n.t('button_find_use')) %>
-                  <%= link_to '', attribute, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                  <%= link_to '', attribute, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
                 </td>
               </tr>
           <% end %>

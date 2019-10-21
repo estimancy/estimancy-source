@@ -381,7 +381,7 @@
                     <%= link_to "", guw.guw_unit_of_work_down_path(guow), class: "fa fa-arrow-down", title: I18n.t(:down) %>
                     <%= link_to "", guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg, position: guow.display_order), class: "fa fa-plus", title: I18n.t(:add) %>
                     <%= link_to "", guw.edit_guw_model_guw_unit_of_work_path(@guw_model, guow, g: uowg), class: "fa fa-pencil", title: I18n.t(:edit) %>
-                    <%= link_to "", guw.guw_unit_of_work_path(guow), method: "delete", confirm: I18n.t('are_you_sure'), class: "fa fa-trash", title: I18n.t(:delete) %>
+                    <%= link_to "", guw.guw_unit_of_work_path(guow), method: "delete", data: {confirm: I18n.t('are_you_sure')}, class: "fa fa-trash", title: I18n.t(:delete) %>
                   <% end %>
                 </td>
               </tr>

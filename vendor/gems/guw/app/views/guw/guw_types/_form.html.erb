@@ -45,7 +45,7 @@
       <div class="actions-tabs">
         <% if can? :manage_modules_instances, ModuleProject %>
           <%= f.button :submit, I18n.t('save'), class: "btn btn-primary"  %>
-          <%= link_to I18n.t(:delete), @guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "btn btn-danger pull-right" %>
+          <%= link_to I18n.t(:delete), @guw_type, method: :delete, data: {confirm: I18n.t(:are_you_sure)}, class: "btn btn-danger pull-right" %>
         <% end %>
         <%= link_to I18n.t(:back), :back, class: "btn" %>
       </div>

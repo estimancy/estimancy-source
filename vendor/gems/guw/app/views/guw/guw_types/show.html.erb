@@ -37,7 +37,7 @@
             <%= guw_cplx.name %> <%= guw_cplx.default_value == true ? '(par défault)' : '' %> -
             <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type, guw_cplx) %>
             <% if can? :manage_modules_instances, ModuleProject %>
-              - <%= link_to I18n.t(:delete), guw_cplx, method: :delete, confirm: I18n.t(:are_you_sure) %>
+              - <%= link_to I18n.t(:delete), guw_cplx, method: :delete, data: {confirm: I18n.t(:are_you_sure)} %>
             <% end %>
           </th>
         <% end %>
@@ -260,7 +260,7 @@
               <%= type_complexity.name %> (<%= type_complexity.value %>) -
               <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_type_complexity_path(@guw_model, @guw_type, type_complexity) %>
               <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, confirm: I18n.t(:are_you_sure) %>
+                <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, data: {confirm: I18n.t(:are_you_sure)} %>
               <% end %>
             </th>
           <% end %>

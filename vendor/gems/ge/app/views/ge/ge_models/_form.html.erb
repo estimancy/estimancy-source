@@ -245,7 +245,7 @@
                     <%= I18n.t(:data_filename, filename: @ge_model.ge_factors.first.data_filename) %>
                     <br>
                     <%= link_to I18n.t(:export), ge.ge_model_data_export_path(@ge_model), :class => 'btn', title: I18n.t(:export_generic_effort_model) %>
-                    <%= link_to I18n.t(:delete_factors_data), ge.ge_model_delete_all_factors_data_path(@ge_model), class: 'btn pull-right', confirm: I18n.t(:confirm) %>
+                    <%= link_to I18n.t(:delete_factors_data), ge.ge_model_delete_all_factors_data_path(@ge_model), class: 'btn pull-right', data: {confirm: I18n.t(:confirm)} %>
                 <% else %>
                     <%= I18n.t(:any_factor) %>
                 <% end %>

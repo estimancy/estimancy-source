@@ -59,7 +59,7 @@
           <td><%= perm.object_associated.blank? ? 'All' : perm.object_associated %></td>
           <td class="center">
             <%= link_to '', edit_permission_path(perm), :class => 'icon-pencil', :title => I18n.t('edit') %>
-            <%= link_to '', perm, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+            <%= link_to '', perm, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
           </td>
         </tr>
       <% end %>
