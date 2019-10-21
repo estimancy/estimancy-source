@@ -30,7 +30,7 @@
           <a href="#myWBSModal" role="button" class="btn" title="Import applications from excel" data-toggle="modal">
             <%= I18n.t(:import) %>
           </a>
-          <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn'%>
+          <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :method => 'get', :class => 'btn'%>
         </div>
 
           <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
@@ -59,6 +59,8 @@
         <tr>
           <th><%= I18n.t('name') %></th>
           <th><%= I18n.t('ignored_application') %></th>
+          <th><%= I18n.t('coefficient_name') %></th>
+          <th><%= I18n.t('coefficient_value') %></th>
           <th class="action"><%= I18n.t(:actions) %></th>
         </tr>
         </thead>
@@ -68,6 +70,8 @@
           <tr>
             <td><%= app.name %></td>
             <td class="center"><%= app.is_ignored == true ? I18n.t(:yes) : I18n.t(:no) %></td>
+            <td><%= app.coefficient_name %></td>
+            <td><%= app.coefficient_value %></td>
             <td class="center">
               <% if can? :manage, Application %>
                 <%= link_to '', edit_organization_application_path(@organization, app), :class => 'icon-pencil' %>

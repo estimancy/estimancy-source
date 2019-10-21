@@ -2031,6 +2031,7 @@ fr:
   allow_intermediate_value: "Autoriser la modification"
   weighting_coefficients: "Les coefficients de pondération"
   coefficient_name: "Nom du coefficient"
+  coefficient_value: "Valeur du coefficient"
   allow_subtotal: "Calculer les sous-totaux"
   standard_coefficient: "Coefficient Standard de Conversion (Effort uniquement)"
   config_type: "Type de configuration"

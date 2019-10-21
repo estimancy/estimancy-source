@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191015123124) do
+ActiveRecord::Schema.define(version: 20191021084840) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -60,12 +60,13 @@ ActiveRecord::Schema.define(version: 20191015123124) do
   end
 
   create_table "applications", force: :cascade do |t|
-    t.string   "name",            limit: 255
-    t.integer  "organization_id", limit: 4
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.string   "name",              limit: 255
+    t.integer  "organization_id",   limit: 4
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
     t.boolean  "is_ignored"
-    t.float    "coefficient",     limit: 24
+    t.string   "coefficient_name",  limit: 255
+    t.float    "coefficient_value", limit: 24
   end
 
   add_index "applications", ["organization_id", "name"], name: "by_organization_name", using: :btree

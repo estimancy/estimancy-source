@@ -1678,3 +1678,5 @@ it:
   default_display_value: "Valeur par défaut à l'affichage"
   initial_cost_per_hour: "Coût initial"
   project_attribute_name: "Nom de l'attribut du projet"
+  coefficient_name: "Nom du coefficient"
+  coefficient_value: "Valeur du coefficient"
