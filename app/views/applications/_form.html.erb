@@ -19,14 +19,9 @@
         </div>
       </div>
 
-      <div class="row-fluid">
-        <div class="span3">
-            <%= f.input :coefficient_name, :label => I18n.t('coefficient_name'), :input_html => { :class => 'input-xlarge'} %>
-        </div>
-        <div class="span3">
-          <%= f.input :coefficient_value, :label => I18n.t('coefficient_value'), :input_html => { :class => 'input-xlarge'} %>
-        </div>
-      </div>
+       <%= f.input :criticality, :label => I18n.t('criticality'), :input_html => { :class => 'input-xlarge'} %>
+       <%= f.input :coefficient, :label => I18n.t('coefficient_value'), :input_html => { :class => 'input-xlarge'} %>
+       <%= f.input :coefficient_label, :label => I18n.t('coefficient_label'), :input_html => { :class => 'input-xlarge'} %>
 
       <div class="actions-tabs">
         <% if action_name.in?(%w(new create)) %>
