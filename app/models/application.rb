@@ -1,5 +1,5 @@
 class Application < ActiveRecord::Base
-  attr_accessible :name, :organization_id, :is_ignored, :coefficient
+  attr_accessible :name, :organization_id, :is_ignored, :coefficient_name, :coefficient_value
   belongs_to :organization
 
   has_and_belongs_to_many :projects

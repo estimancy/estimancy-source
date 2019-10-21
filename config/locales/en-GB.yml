@@ -1783,3 +1783,5 @@ en-gb:
   initial_cost_per_hour: "Initial cost"
   new_project_data_widget: "Add new project data widget"
   project_attribute_name: "Project attribute name"
+  coefficient_name: "Coefficient name"
+  coefficient_value: "Coefficient value"
