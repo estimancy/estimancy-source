@@ -231,7 +231,7 @@ module WbsActivityElementsHelper
       if element.attributes.has_key? 'record_status_id'
         res << link_to('', new_wbs_activity_element_path(:selected_parent_id => element.id, :activity_id => element.wbs_activity_id), :class => 'button_attribute_tooltip icon-plus pull-left', :title => I18n.t('button_add'))
         res << link_to('', edit_wbs_activity_element_path(element, :activity_id => element.wbs_activity_id), :class => 'button_attribute_tooltip icon-pencil pull-left', :title => I18n.t('edit'))
-        res << link_to('', element, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'button_attribute_tooltip icon-trash pull-left', :title => I18n.t('delete'))
+        res << link_to('', element, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'button_attribute_tooltip icon-trash pull-left', :title => I18n.t('delete'))
       else
         res << link_to_unless(element.cannot_get_new_child_link?, '', new_wbs_project_element_path(:selected_parent_id => element.id, :project_id => @project.id), :class => 'button_attribute_tooltip icon-plus pull-left', :title => I18n.t('button_add'))
         res << link_to_unless(element.is_root?, '', edit_wbs_project_element_path(element, :project_id => @project.id), :class => 'button_attribute_tooltip icon-pencil pull-left', :title => I18n.t('edit'))

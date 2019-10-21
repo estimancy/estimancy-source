@@ -23,7 +23,7 @@
             <td><%= auth_method.name %></td>
             <td class="center">
               <%= link_to '', edit_auth_method_path(auth_method), :class => 'icon-pencil', :title => I18n.t('edit') %>
-              <%= link_to '', auth_method, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+              <%= link_to '', auth_method, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
             </td>
           </tr>
       <% end %>

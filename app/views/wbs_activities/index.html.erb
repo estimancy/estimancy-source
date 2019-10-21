@@ -35,7 +35,7 @@
             <%= link_to '', edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-1'), :class => 'button_attribute_tooltip icon-pencil', :title => I18n.t(:edit) %>
             <% if can? :manage_modules_instances, ModuleProject %>
               <%= link_to('', "wbs_activities/#{wbs_activity.id}/duplicate_wbs_activity", :class => 'button_attribute_tooltip icon-copy', :title => 'Duplicate') %>
-              <%= link_to '', wbs_activity, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'button_attribute_tooltip icon-trash', :style => 'color:red', :title => I18n.t(:delete) %>
+              <%= link_to '', wbs_activity, data: {confirm: I18n.t(:are_you_sure)}, method: :delete, :class => 'button_attribute_tooltip icon-trash', :style => 'color:red', :title => I18n.t(:delete) %>
             <% end %>
           </td>
         </tr>

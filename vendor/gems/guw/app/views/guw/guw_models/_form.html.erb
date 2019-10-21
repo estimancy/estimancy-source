@@ -385,7 +385,7 @@ $(document).ready(function() {
             </b>
 
             <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", confirm: I18n.t(:are_you_sure) %>
+              <%= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", data: {confirm: I18n.t(:are_you_sure)} %>
             <% end %>
             <%= link_to "", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
 

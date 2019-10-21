@@ -39,7 +39,7 @@
                 <%= link_to('', unlock_user_path(user), :class => 'icon-lock', :title => "Bloquer/Débloquer", method: "POST") %>
               <% end %>
               <%= link_to('', edit_user_path(user, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit')) %>
-              <%= link_to(' ', user, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete')) %>
+              <%= link_to(' ', user, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete')) %>
             <% end %>
           </td>
         </tr>

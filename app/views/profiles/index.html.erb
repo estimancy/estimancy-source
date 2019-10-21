@@ -29,7 +29,7 @@
 
             <td class="center">
               <%= link_to '', edit_profile_path(profile), :class => 'icon-pencil', :title => I18n.t('edit') %>
-              <%= link_to '', profile, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+              <%= link_to '', profile, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
             </td>
           </tr>
       <% end %>

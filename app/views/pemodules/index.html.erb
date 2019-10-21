@@ -36,7 +36,7 @@
                   <% if can? :manage, Pemodule %>
                     <%= link_to '', edit_pemodule_path(pemodule, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
                     <%= link_to('', {:controller => 'pemodules', :action => 'find_use_pemodule', :pemodule_id => pemodule.id}, :remote => true, :class => 'icon-info', :title => I18n.t('button_find_use')) %>
-                    <%= link_to '', pemodule, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                    <%= link_to '', pemodule, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
                   <% end %>
                 </td>
               </tr>

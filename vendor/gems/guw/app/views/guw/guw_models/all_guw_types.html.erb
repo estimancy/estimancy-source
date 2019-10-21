@@ -28,7 +28,7 @@
           </td>
           <td class="center">
             <%= link_to "", guw.edit_guw_model_guw_type_path(@guw_model, guw_type), class: "fa fa-edit" %>
-            <%= link_to "", guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "fa fa-trash" %>
+            <%= link_to "", guw_type, method: :delete, data: {confirm: I18n.t(:are_you_sure)}, class: "fa fa-trash" %>
           </td>
         </tr>
       <% end %>

@@ -23,7 +23,7 @@
             <td class="span1"><%= language.locale %></td>
             <td class="center">
               <%= link_to '', edit_language_path(language), :class => 'icon-pencil', :title => I18n.t('edit') %>
-              <%= link_to '', language, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+              <%= link_to '', language, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
             </td>
           </tr>
       <% end %>
