@@ -19,6 +19,9 @@
 
         <%= f.input :description, input_html: { class: 'tinymce', rows: 10, cols: 20 } %>
 
+        <%= f.input :minimum %>
+        <%= f.input :maximum %>
+
         <%= f.input :allow_criteria, label: I18n.t(:Changing_the_count_enter) %>
         <%= f.input :attribute_type, as: :select, label: "Type de calcul pour les attributs", collection: ["Coefficient", "Pourcentage"] %>
 
