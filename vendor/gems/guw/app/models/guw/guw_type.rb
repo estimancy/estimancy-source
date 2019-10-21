@@ -26,7 +26,8 @@ module Guw
                     :organization_id, :guw_model_id, :copy_id, :allow_quantity,
                     :allow_retained, :allow_complexity, :allow_quantity, :allow_criteria,
                     :display_threshold, :attribute_type, :is_default,
-                    :color_code, :color_priority, :allow_line_color, :mandatory_comments
+                    :color_code, :color_priority, :allow_line_color, :mandatory_comments,
+                    :minimum, :maximum
 
     belongs_to :guw_model
 

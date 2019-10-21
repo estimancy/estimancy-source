@@ -1231,7 +1231,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           # @oc = Guw::GuwOutputComplexity.where(guw_complexity_id: guw_unit_of_work_guw_complexity,
           #                                      guw_output_id: guw_output.id,
           #                                      value: 1).first
-          #
           # @oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_unit_of_work.guw_complexity_id,
           #                                                     guw_output_id: guw_output.id).first
 
@@ -1249,9 +1248,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             # weight = (guw_unit_of_work.guw_complexity.weight.nil? ? 1 : guw_unit_of_work.guw_complexity.weight.to_f)
             if guw_unit_of_work_guw_complexity.enable_value == false
               if @oc.nil?
-                @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
+                @final_value = 0
               else
-                @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * weight
+                @final_value = (@oc.value.nil? ? 1 : @oc.value.to_f) * weight
               end
             else
               if params["complexity_coeff_ajusted"].present?
@@ -1278,9 +1277,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
 
               if @oc.nil?
-                @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
+                @final_value = 0
               else
-                @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f) + (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent) + (weight_b.nil? ? 0 : weight_b.to_f)
+                @final_value = (@oc.value.nil? ? 1 : @oc.value.to_f) * (weight.nil? ? 1 : weight.to_f) * (intermediate_percent.nil? ? 1 : intermediate_percent) + (weight_b.nil? ? 0 : weight_b.to_f)
               end
 
             end
@@ -1594,7 +1593,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           end
 
-          inter_value = oa_value.compact.sum.to_f
+          inter_value = oa_value.compact.sum.to_f + (@oci.nil? ? 0 : @oci.init_value.to_f)
 
           #Attention changement, a confirmer
           unless @final_value.nil?
