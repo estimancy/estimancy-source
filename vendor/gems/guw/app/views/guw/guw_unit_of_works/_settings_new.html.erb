@@ -61,9 +61,11 @@
     <hr>
 
     <% begin %>
-      <div class="pull-left label label-warning">
-        <%= @project.application.coefficient_label %>
-      </div>
+      <% unless @project.application.coefficient_label.nil? %>
+        <div class="pull-left label label-warning">
+          <%= @project.application.coefficient_label %>
+        </div>
+      <% end %>
     <% rescue %>
     <% end %>
 
