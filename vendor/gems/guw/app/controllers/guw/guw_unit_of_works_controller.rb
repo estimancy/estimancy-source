@@ -51,59 +51,64 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
     @organization = @guw_model.organization
 
-    @guw_outputs = @guw_model.guw_outputs
-    @guw_unit_of_work = Guw::GuwUnitOfWork.new(name: params[:name],
-                                               comments: params[:comments],
-                                               guw_type_id: params[:guw_type_id],
-                                               organization_id: params[:organization_id],
-                                               guw_model_id: @guw_model.id,
-                                               project_id: params[:project_id],
-                                               module_project_id: params[:module_project_id],
-                                               guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id])
-
     module_project = ModuleProject.where(organization_id: @organization.id, id: params[:module_project_id]).first #.find(params[:module_project_id])
     @project = module_project.project
 
-    @guw_unit_of_work.guw_model_id = @guw_model.id
-    @guw_unit_of_work.pbs_project_element_id = current_component.id
-    @guw_unit_of_work.selected = true
-
-    @guw_unit_of_work.ajusted_size = {}
-    @guw_unit_of_work.size = {}
-    @guw_unit_of_work.effort = {}
-    @guw_unit_of_work.cost = {}
-
-    @group = @guw_unit_of_work.guw_unit_of_work_group
-
-    @position = params[:hidden_position]
-
-    if @position.blank?
-      begin
-        @guw_unit_of_work.display_order = @group.guw_unit_of_works.where(organization_id: @organization.id, guw_model_id: @guw_model.id).order("display_order ASC").last.display_order.to_i + 1
-      rescue
-        @guw_unit_of_work.display_order = 0
-      end
+    if module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
+      render js: "alert('Vous ne pouvez pas créer plus de #{@guw_type.maximum.to_s} composants pour #{@guw_type.to_s}.')";
     else
-      @guw_unit_of_work.display_order = params[:hidden_position].to_i
-    end
 
-    @guw_unit_of_work.save
+      @guw_outputs = @guw_model.guw_outputs
+      @guw_unit_of_work = Guw::GuwUnitOfWork.new(name: params[:name],
+                                                 comments: params[:comments],
+                                                 guw_type_id: params[:guw_type_id],
+                                                 organization_id: params[:organization_id],
+                                                 guw_model_id: @guw_model.id,
+                                                 project_id: params[:project_id],
+                                                 module_project_id: params[:module_project_id],
+                                                 guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id])
 
-    reorder @group
+      @guw_unit_of_work.guw_model_id = @guw_model.id
+      @guw_unit_of_work.pbs_project_element_id = current_component.id
+      @guw_unit_of_work.selected = true
 
-    current_module_project_guw_unit_of_works = module_project.guw_unit_of_works.where(organization_id: @organization.id, guw_model_id: @guw_model.id, project_id: @project.id)
-    @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
-    @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
-                                                                                         selected: true).size} / #{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id).size}"
+      @guw_unit_of_work.ajusted_size = {}
+      @guw_unit_of_work.size = {}
+      @guw_unit_of_work.effort = {}
+      @guw_unit_of_work.cost = {}
 
-    @guw_model.guw_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).all.each do |gac|
-      Guw::GuwUnitOfWorkAttribute.create(organization_id: @organization.id,
-                                         guw_model_id: @guw_model.id,
-                                         project_id: @project.id,
-                                         module_project_id: module_project.id,
-                                         guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
-                                         guw_unit_of_work_id: @guw_unit_of_work.id,
-                                         guw_attribute_id: gac.id)
+      @group = @guw_unit_of_work.guw_unit_of_work_group
+
+      @position = params[:hidden_position]
+
+      if @position.blank?
+        begin
+          @guw_unit_of_work.display_order = @group.guw_unit_of_works.where(organization_id: @organization.id, guw_model_id: @guw_model.id).order("display_order ASC").last.display_order.to_i + 1
+        rescue
+          @guw_unit_of_work.display_order = 0
+        end
+      else
+        @guw_unit_of_work.display_order = params[:hidden_position].to_i
+      end
+
+      @guw_unit_of_work.save
+
+      reorder @group
+
+      current_module_project_guw_unit_of_works = module_project.guw_unit_of_works.where(organization_id: @organization.id, guw_model_id: @guw_model.id, project_id: @project.id)
+      @selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(selected: true).size} / #{current_module_project_guw_unit_of_works.size}"
+      @group_selected_of_unit_of_works = "#{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id,
+                                                                                           selected: true).size} / #{current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: @group.id).size}"
+
+      @guw_model.guw_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).all.each do |gac|
+        Guw::GuwUnitOfWorkAttribute.create(organization_id: @organization.id,
+                                           guw_model_id: @guw_model.id,
+                                           project_id: @project.id,
+                                           module_project_id: module_project.id,
+                                           guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                           guw_unit_of_work_id: @guw_unit_of_work.id,
+                                           guw_attribute_id: gac.id)
+      end
     end
 
     # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
@@ -711,29 +716,34 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @guw_unit_of_work.guw_model
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
 
-    @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id).all.each do |gac|
-      finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
-                                                 guw_model_id: @guw_model.id,
-                                                 guw_attribute_id: gac.id,
-                                                 guw_type_id: @guw_type.id,
-                                                 project_id: @guw_unit_of_work.project_id,
-                                                 module_project_id: @guw_unit_of_work.module_project_id,
-                                                 guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
-      finder.save
+    if @guw_unit_of_work.module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
+      render js: "alert('Vous ne pouvez pas créer plus de #{@guw_type.maximum.to_s} composants pour #{@guw_type.to_s}.')";
+    else
+
+      @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id).all.each do |gac|
+        finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+                                                   guw_model_id: @guw_model.id,
+                                                   guw_attribute_id: gac.id,
+                                                   guw_type_id: @guw_type.id,
+                                                   project_id: @guw_unit_of_work.project_id,
+                                                   module_project_id: @guw_unit_of_work.module_project_id,
+                                                   guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
+        finder.save
+      end
+
+
+      technology = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq.first
+      @guw_unit_of_work.organization_technology_id = technology.nil? ? nil : technology.id
+
+      @guw_unit_of_work.guw_type_id = @guw_type.id
+      @guw_unit_of_work.effort = nil
+      @guw_unit_of_work.guw_complexity_id = nil
+      @guw_unit_of_work.save
+
+      #Changer le libelle du popup avec la description du nouveau type d'UO sélectionne
+      @guw_types = @guw_model.guw_types.includes(:guw_complexities)
+      @new_popup_title = (@guw_type.description.blank? ? @guw_type.name : @guw_type.description)
     end
-
-
-    technology = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq.first
-    @guw_unit_of_work.organization_technology_id = technology.nil? ? nil : technology.id
-
-    @guw_unit_of_work.guw_type_id = @guw_type.id
-    @guw_unit_of_work.effort = nil
-    @guw_unit_of_work.guw_complexity_id = nil
-    @guw_unit_of_work.save
-
-    #Changer le libelle du popup avec la description du nouveau type d'UO sélectionne
-    @guw_types = @guw_model.guw_types.includes(:guw_complexities)
-    @new_popup_title = (@guw_type.description.blank? ? @guw_type.name : @guw_type.description)
   end
 
   def change_work_unit
