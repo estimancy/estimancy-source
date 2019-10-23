@@ -394,8 +394,8 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 18, "Coût retenu (€)")
 
 
-        fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)"]).first
-        fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
+        fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)", "Charge totale (j)"]).first
+        fc = Field.where(organization_id: @organization.id, name: ["Coût (k€)", "Coût total (k€)"]).first
 
         if params[:date_min].present? && params[:date_min].present?
           mpres = ModuleProjectRatioElement.where(organization_id: @organization.id,
