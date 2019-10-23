@@ -2068,6 +2068,8 @@ es:
   project_attribute_name: "Project attribute name"
   coefficient_name: "Coefficient name"
   coefficient_value: "Coefficient value"
+  coefficient_label: "Coefficient label"
+  criticality: "Criticality"
 
 
 

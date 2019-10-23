@@ -1324,11 +1324,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                                                             project_id: @project.id,
                                                                                                                             module_project_id: @module_project.id,
                                                                                                                             guw_unit_of_work_id: guw_unit_of_work.id)
-
-                # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
-                #                                                   guw_coefficient_id: guw_coefficient.id,
-                #                                                   module_project_id: current_module_project.id,
-                #                                                   guw_coefficient_element_id: guw_coefficient.guw_coefficient_elements.first.id).first_or_create
               end
 
               begin
@@ -1619,6 +1614,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           else
             tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           end
+
+          tmp = tmp * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
 
           if params["ajusted_size"].present?
             if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?

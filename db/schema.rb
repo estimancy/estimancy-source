@@ -65,8 +65,9 @@ ActiveRecord::Schema.define(version: 20191021131010) do
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
     t.boolean  "is_ignored"
-    t.string   "coefficient_name",  limit: 255
-    t.float    "coefficient_value", limit: 24
+    t.float    "coefficient",       limit: 24
+    t.string   "criticality",       limit: 255
+    t.string   "coefficient_label", limit: 255
   end
 
   add_index "applications", ["organization_id", "name"], name: "by_organization_name", using: :btree
@@ -884,6 +885,7 @@ ActiveRecord::Schema.define(version: 20191021131010) do
     t.integer  "color_priority",             limit: 4
     t.boolean  "allow_line_color"
     t.boolean  "mandatory_comments",                       default: true
+    t.integer  "minimum",                    limit: 4
     t.integer  "maximum",                    limit: 4
   end
 

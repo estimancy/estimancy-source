@@ -59,8 +59,9 @@
         <tr>
           <th><%= I18n.t('name') %></th>
           <th><%= I18n.t('ignored_application') %></th>
-          <th><%= I18n.t('coefficient_name') %></th>
+          <th><%= I18n.t('criticality') %></th>
           <th><%= I18n.t('coefficient_value') %></th>
+          <th><%= I18n.t('coefficient_label') %></th>
           <th class="action"><%= I18n.t(:actions) %></th>
         </tr>
         </thead>
@@ -70,8 +71,9 @@
           <tr>
             <td><%= app.name %></td>
             <td class="center"><%= app.is_ignored == true ? I18n.t(:yes) : I18n.t(:no) %></td>
-            <td><%= app.coefficient_name %></td>
-            <td><%= app.coefficient_value %></td>
+            <td><%= app.criticality %></td>
+            <td><%= app.coefficient %></td>
+            <td><%= app.coefficient_label %></td>
             <td class="center">
               <% if can? :manage, Application %>
                 <%= link_to '', edit_organization_application_path(@organization, app), :class => 'icon-pencil' %>

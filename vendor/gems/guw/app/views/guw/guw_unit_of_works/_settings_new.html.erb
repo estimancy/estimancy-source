@@ -59,6 +59,11 @@
 
   <div class="row-fluid">
     <hr>
+
+    <div class="pull-left label label-warning">
+      <%= @project.application.coefficient_label %>
+    </div>
+
     <div class="pull-right">
       <% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
       <% @guw_outputs_with_subtotal = @guw_outputs.where(allow_subtotal: true) %>

@@ -1823,3 +1823,5 @@ fr1:
   project_attribute_name: "Nom de l'attribut du projet"
   coefficient_name: "Nom du coefficient"
   coefficient_value: "Valeur du coefficient"
+  coefficient_label: "Libellé du coefficient"
+  criticality: "Criticité"

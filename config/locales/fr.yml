@@ -2257,3 +2257,5 @@ fr:
   initial_cost_per_hour: "Coût initial"
   new_project_data_widget: "Nouvelle vignette de données projet"
   project_attribute_name: "Nom de l'attribut du projet"
+  coefficient_label: "Libellé du coefficient"
+  criticality: "Criticité"
