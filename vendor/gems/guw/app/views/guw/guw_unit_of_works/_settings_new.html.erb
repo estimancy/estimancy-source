@@ -60,9 +60,12 @@
   <div class="row-fluid">
     <hr>
 
-    <div class="pull-left label label-warning">
-      <%= @project.application.coefficient_label %>
-    </div>
+    <% begin %>
+      <div class="pull-left label label-warning">
+        <%= @project.application.coefficient_label %>
+      </div>
+    <% rescue %>
+    <% end %>
 
     <div class="pull-right">
       <% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
