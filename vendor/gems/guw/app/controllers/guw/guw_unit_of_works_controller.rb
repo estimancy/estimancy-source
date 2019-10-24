@@ -1615,7 +1615,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           end
 
-          tmp = tmp * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
+          if @project.application.nil?
+            tmp = tmp
+          else
+            tmp = tmp * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
+          end
 
           if params["ajusted_size"].present?
             if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
