@@ -1307,7 +1307,81 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           selected_coefficient_values = Hash.new {|h,k| h[k] = [] }
 
           @guw_coefficients.each do |guw_coefficient|
-            if guw_coefficient.coefficient_type == "Pourcentage"
+            if guw_coefficient.coefficient_type == "Application"
+
+              ceuw = ceuws[guw_coefficient.id]
+              if ceuw.nil?
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                  guw_model_id: @guw_model.id,
+                                                                  guw_coefficient_id: guw_coefficient.id,
+                                                                  guw_coefficient_element_id: nil,
+                                                                  project_id: @project.id,
+                                                                  module_project_id: @module_project.id,
+                                                                  guw_unit_of_work_id: guw_unit_of_work.id).first_or_create(organization_id: @organization.id,
+                                                                                                                            guw_model_id: @guw_model.id,
+                                                                                                                            guw_coefficient_id: guw_coefficient.id,
+                                                                                                                            guw_coefficient_element_id: nil,
+                                                                                                                            project_id: @project.id,
+                                                                                                                            module_project_id: @module_project.id,
+                                                                                                                            guw_unit_of_work_id: guw_unit_of_work.id)
+              end
+
+              begin
+                pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].blank? ? 1 : params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+              rescue
+                if ceuw.percent.nil?
+                  ce = ces[guw_coefficient.id]
+                  if ce.nil?
+                    ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id,
+                                                          guw_model_id: @guw_model.id,
+                                                          guw_coefficient_id: guw_coefficient.id).first
+                  end
+
+                  if ce.nil?
+                    pc = 1
+                  else
+                    pc = ce.value.to_f
+                  end
+
+                else
+                  pc = ceuw.percent.to_f
+                end
+              end
+
+              guw_coefficient.guw_coefficient_elements.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |guw_coefficient_element|
+
+                cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}"]
+                if cce.nil?
+                  cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                                                                   guw_model_id: @guw_model.id,
+                                                                   guw_output_id: guw_output.id,
+                                                                   guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+                                                                   guw_coefficient_element_id: guw_coefficient_element.id).first
+                end
+
+
+                unless cce.blank?
+                  percents << pc.to_f
+                  percents << (cce.value.nil? ? 1 : cce.value.to_f)
+
+                  v = (guw_coefficient_element.value.nil? ? 1 : guw_coefficient_element.value).to_f
+                  selected_coefficient_values["#{guw_output.id}"] << v
+
+                else
+                  percents << 1
+                end
+              end
+
+              ceuw.percent = pc.to_f
+              ceuw.guw_coefficient_id = guw_coefficient.id
+              ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+              ceuw.module_project_id = @module_project.id
+
+              if ceuw.changed?
+                ceuw.save
+              end
+
+            elsif guw_coefficient.coefficient_type == "Pourcentage"
 
               ceuw = ceuws[guw_coefficient.id]
               if ceuw.nil?
@@ -1330,9 +1404,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 pc = params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].blank? ? 100 : params["guw_coefficient_percent"]["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
               rescue
                 if ceuw.percent.nil?
-                  # ce = Guw::GuwCoefficientElement.where(guw_coefficient_id: guw_coefficient.id,
-                  #                                       guw_model_id: @guw_model.id,
-                  #                                       default: true).first
                   ce = ces[guw_coefficient.id]
                   if ce.nil?
                     ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id,
