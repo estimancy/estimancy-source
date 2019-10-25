@@ -384,7 +384,7 @@
                   </script>
                 <% end %>
               <% end %>
-            <% else %>
+            <% elsif @guw_coefficient.coefficient_type == "Liste" %>
 
               <% unless @guw_type.nil? %>
                 <% results = @guw_coefficient_guw_coefficient_elements.map do |i|
