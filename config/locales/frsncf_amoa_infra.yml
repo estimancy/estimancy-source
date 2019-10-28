@@ -2273,15 +2273,11 @@ frsncf_amoa_infra:
   quotation_PDF_export: "Exporter tous les devis en PDF"
   raw_data_range_dates: "Extraction des données brutes comprises dans une fourchette de dates:"
 
-
   #organizations/edit
   technical_informations: "Informations techniques"
   printing_extraction: "Impression et extraction"
-
   extracting_organizations_and_their_numbers_of_quotations: "Extraire les organisations et leur nombres de devis"
-
   deselect_all_modules: "Désélectionner tous les modules"
-
   calculation_phases: "Calcul des phases"
 
   #organizations/estimations
@@ -2295,10 +2291,8 @@ frsncf_amoa_infra:
 
   date_min: "Date min"
   date_max: "Date max"
-
   val_min: "Valeur min"
   val_max: "Valeur max"
-
 
   #demands
   description: "Description"
@@ -2327,7 +2321,6 @@ frsncf_amoa_infra:
 
   #_user_account.html.erb
   setting_demands: "Paramétrage demandes"
-
   # setting_demand
   demands: "Demandes"
   demands_types: "Demandes Types"
@@ -2335,13 +2328,9 @@ frsncf_amoa_infra:
   demands_statuses: "Demandes Statuts"
 
   service_id: "Services"
-
   manage_demands_statuses_workflow: "Gestion de statuts de demande workflow"
-
   text_explain_demand_status_workflow: "Texte explication statuts de demande workflow"
-
   urgent_project: "Devis urgent"
-
   component: "Composant"
   cplx_coeff: "Coeff. de complexité"
   complexity: "Complexité"
@@ -2360,11 +2349,8 @@ frsncf_amoa_infra:
   host_group: "Groupe d'accueil"
 
   allow_export_pdf: "Autoriser l'export PDF"
-
   forfait_mco: "Forfait MCO"
-
   month_number: "Nombre du mois"
-
   nb_selected_projects: "Nombre de projets sélectionnée"
   average_rates: "Taux moyen"
   revised: "révisé"
@@ -2402,7 +2388,6 @@ frsncf_amoa_infra:
 
   subscription_end_date_has_expired: "Attention %{resource_name}. \n Votre abonnement a expiré depuis le (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Demande de réabonnement</a>"
   subscription_end_date_has_expired_in: "Bienvenue %{resource_name}. \n Votre compte expire dans %{duration} (le %{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Demande de réabonnement</a>"
-
   can_not_access_the_estimates_of_an_image_organization: "Vous ne pouvez pas accéder aux estimations d'une organization image"
   not_authorized_to_access_this_organization: "Vous n'êtes pas autorisé à accéder à cette organisation"
   account_associated_with_external_authentication: "Ce compte est associé à une authentification externe"
@@ -2435,7 +2420,8 @@ frsncf_amoa_infra:
   fp_delivered_number_kpi: "Number of PFs delivered in 2019"
   estimations_total_kpi: "Nombre de devis"
   please_return_check_report_type: "Veuillez retourner cocher un type de rapport"
-  please_return_check_kpi_type: "Veuillez retourner cocher un type de kpi"  please_wait: "Veuillez patienter..."
+  please_return_check_kpi_type: "Veuillez retourner cocher un type de kpi"
+  please_wait: "Veuillez patienter..."
   submit_requests: "Soumettre vos demandes"
   your_configuration: "Votre configuration"
 

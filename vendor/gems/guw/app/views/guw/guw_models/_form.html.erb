@@ -5,11 +5,9 @@
 
       <div class="mb-5">
         <div class="effort-bloc">
-
           <br>
 
           <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
-
             <li class="nav-item">
               <a class="nav-link show active"  data-toggle="pill" id="tabs-model_tab" href="#tabs-model" role="tab" aria-selected="true">Propriétés</a>
             </li>
@@ -56,7 +54,6 @@
                           <% else %>
                             <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary btn-estimancy' %>
                           <% end %>
-
                         </div>
                       <% else %>
                         <a href="#import" role="button" class="btn btn-primary float-md-right" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
@@ -460,7 +457,7 @@
 
                   <div class="col-9">
 
-                    <#% if can? :manage_modules_instances, ModuleProject %>
+                    <%# if can? :manage_modules_instances, ModuleProject %>
                         <%#= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", data: {confirm: I18n.t(:are_you_sure)} %>
                     <%# end %>
                     <%#= link_to "", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>

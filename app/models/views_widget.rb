@@ -24,9 +24,7 @@ class ViewsWidget < ActiveRecord::Base
                   :show_min_max, :view_id, :widget_id, :position, :position_x, :position_y, :width, :height, :widget_type,
                   :show_name, :show_wbs_activity_ratio, :from_initial_view, :is_label_widget, :comment, :formula, :kpi_unit,
                   :is_kpi_widget, :is_project_data_widget, :use_organization_effort_unit, :equation, :show_tjm,
-                  :min_value, :max_value, :validation_text, :project_attribute_name
-                  :use_organization_effort_unit, :equation, :show_tjm, :min_value, :max_value, :validation_text,
-                  :estimation_status_id, :show_module_name
+                  :min_value, :max_value, :validation_text, :project_attribute_name, :estimation_status_id, :show_module_name
 
   serialize :equation, Hash
 

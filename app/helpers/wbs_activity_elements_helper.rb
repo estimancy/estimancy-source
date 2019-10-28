@@ -230,11 +230,11 @@ module WbsActivityElementsHelper
       if element.attributes.has_key? 'record_status_id'
         res << link_to(raw("<i class='material-icons'>add</i>"), new_wbs_activity_element_path(:selected_parent_id => element.id, :activity_id => element.wbs_activity_id), :class => 'material-icons;.d-none', :title => I18n.t('button_add'))
         res << link_to(raw("<i class='material-icons'>edit</i>"), edit_wbs_activity_element_path(element, :activity_id => element.wbs_activity_id), :class => 'material-icons', :title => I18n.t('edit'))
-        res << link_to(raw("<i class='material-icons'>delete</i>"), element, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete'))
+        res << link_to(raw("<i class='material-icons'>delete</i>"), element, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete'))
         else
         res << link_to_unless(element.cannot_get_new_child_link?, '', new_wbs_project_element_path(:selected_parent_id => element.id, :project_id => @project.id), :class => 'button_attribute_tooltip icon-plus pull-left', :title => I18n.t('button_add'))
         res << link_to_unless(element.is_root?, '', edit_wbs_project_element_path(element, :project_id => @project.id), :class => 'button_attribute_tooltip icon-pencil pull-left', :title => I18n.t('edit'))
-        res << link_to_unless(element.is_root?, '', wbs_project_element_path(element, :project_id => @project.id), confirm: I18n.t('are_you_sure'), method: :delete, :project_id => @project.id, :class => 'button_attribute_tooltip icon-trash pull-left', :title => I18n.t('delete')) unless  !element.destroy_leaf
+        res << link_to_unless(element.is_root?, '', wbs_project_element_path(element, :project_id => @project.id), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :project_id => @project.id, :class => 'button_attribute_tooltip icon-trash pull-left', :title => I18n.t('delete')) unless  !element.destroy_leaf
         res << link_to_if(element.is_added_wbs_root, '', "wbs_project_elements/#{element.id}/change_wbs_project_ratio", :wbs_project_element_id => element.id, :project_id => @project.id, :class => 'button_attribute_tooltip icon-share pull-left', :title => I18n.t('change_ratio'), :remote => true)
       end
     end

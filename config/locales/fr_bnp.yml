@@ -2370,11 +2370,8 @@ fr_bnp:
   demands_statuses: "Demandes Statuts"
 
   service_id: "Services"
-
   manage_demands_statuses_workflow: "Gestion de statuts de demande workflow"
-
   text_explain_demand_status_workflow: "Texte explication statuts de demande workflow"
-
   urgent_project: "Devis urgent"
 
   component: "Composant"
@@ -2462,23 +2459,9 @@ fr_bnp:
   fp_delivered_number_kpi: "Number of PFs delivered in 2019"
   estimations_total_kpi: "Nombre de devis"
   please_return_check_report_type: "Veuillez retourner cocher un type de rapport"
-  please_return_check_kpi_type: "Veuillez retourner cocher un type de kpi"  please_wait: "Veuillez patienter..."
+  please_return_check_kpi_type: "Veuillez retourner cocher un type de kpi"
+  please_wait: "Veuillez patienter..."
   submit_requests: "Soumettre vos demandes"
-
-  3_months: "3 mois"
-  1_month: "1 mois"
-  15_days: "15 jours"
-  1_week: "1 semaine"
-  3_days: "3 jours"
-  2_days: "2 jours"
-  1_day: "1 jour"
-
-  subscription_end_date_has_expired: "Attention %{resource_name}. \n Votre abonnement a expiré depuis le (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Demande de réabonnement</a>"
-  subscription_end_date_has_expired_in: "Bienvenue %{resource_name}. \n Votre compte expire dans %{duration} (le %{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Demande de réabonnement</a>"
-
-  can_not_access_the_estimates_of_an_image_organization: "Vous ne pouvez pas accéder aux estimations d'une organization image"
-  not_authorized_to_access_this_organization: "Vous n'êtes pas autorisé à accéder à cette organisation"
-  account_associated_with_external_authentication: "Ce compte est associé à une authentification externe"
 
   text_automatic_created_version: "Version créée automatiquement par l'automatisme de changement de version."
   text_automatic_changed_status: "Changement automatique de statut des anciennes versions lors du passage de la version"

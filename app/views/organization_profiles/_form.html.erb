@@ -7,8 +7,7 @@
         </h1>
       </div>
     </div>
-
-
+    
     <%= simple_form_for(@organization_profile) do |f| %>
         <%= f.error_notification %>
 
@@ -24,34 +23,20 @@
                    <%= select_tag 'profile_id_for_organization', options_for_select(Profile.all.map { |i| [i.name, i.id] }, :selected => nil), prompt: "#{I18n.t("helpers.select.prompt")} #{I18n.t(:profile)}", :class => 'input-xlarge btn btn-info' %>
                 </div>
 
-          <%#= f.input :profile_id, label: I18n.t(:profiles), as: :select, collection: Profile.all, selected: @organization_profile.profile_id||nil, prompt: I18n.t("helpers.select.prompt"), input_html: { class: 'input-xxlarge'} %>
-          <%= f.input :name, :label => I18n.t(:name), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-
-          <div class="row-fluid">
-            <div class="span2"><%= f.input :is_real_profile, as: :boolean, :label => I18n.t(:is_real_profile) %></div>
-            <div class="span2"><%= f.input :use_dynamic_coefficient, as: :boolean, :label => I18n.t(:use_dynamic_coefficient) %></div>
-          </div>
-
-          <%= f.input :associated_services, :label => I18n.t(:associated_services), :input_html => {:class => 'input-xxlarge'} %>
-          <%= f.input :description, :label => I18n.t(:description), :input_html => {:class => 'input-xxlarge', :rows => 8 }  %>
-          <%= f.input :initial_cost_per_hour, label: "#{I18n.t(:initial_cost_per_hour)} (#{@organization.currency})" %>
-
-          <div class="row-fluid">
-            <div class="span2">
-              <%= f.input :r_value, :label => "R", :input_html => {:class => 'input-large'}  %>
-            </div>
-            <div class="span2">
-              <%= f.input :tm_value, :label => "TM", :input_html => {:class => 'input-large'}  %>
-            </div>
-          </div>
-
-          <%= f.input :formula, :label => I18n.t(:formula), :input_html => {:class => 'input-xxlarge'}  %>
-          <%= f.input :cost_per_hour, label: "#{I18n.t(:used_cost)} (#{@organization.currency})" %>
-
-                  <%#= f.input :profile_id, label: I18n.t(:profiles), as: :select, collection: Profile.all, selected: @organization_profile.profile_id||nil, prompt: I18n.t("helpers.select.prompt"), input_html: { class: 'input-xxlarge'} %>
+                <%#= f.input :profile_id, label: I18n.t(:profiles), as: :select, collection: Profile.all, selected: @organization_profile.profile_id||nil, prompt: I18n.t("helpers.select.prompt"), input_html: { class: 'input-xxlarge'} %>
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
                   <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                </div>
+
+                <div class="row-fluid">
+                  <div class="span2"><%= f.input :is_real_profile, as: :boolean, :label => I18n.t(:is_real_profile) %></div>
+                  <div class="span2"><%= f.input :use_dynamic_coefficient, as: :boolean, :label => I18n.t(:use_dynamic_coefficient) %></div>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :associated_services, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
+                  <label class="mdl-textfield__label" for="associated_services"><%= I18n.t(:associated_services) %></label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -60,10 +45,35 @@
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :cost_per_hour, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
-                  <label class="mdl-textfield__label" for="cost_per_hour"><%= "#{I18n.t(:cost_per_hour)} (#{@organization.currency})"  %></label>
+                  <%= f.input :initial_cost_per_hour, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
+                  <label class="mdl-textfield__label" for="initial_cost_per_hour"><%= "#{I18n.t(:initial_cost_per_hour)} (#{@organization.currency})" %></label>
                 </div>
 
+              <div class="row-fluid">
+                <div class="span2">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :r_value, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
+                    <label class="mdl-textfield__label" for="r_value"><%= "R" %></label>
+                  </div>
+                </div>
+                <div class="span2">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :tm_value, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
+                    <label class="mdl-textfield__label" for="tm_value"><%= "TM" %></label>
+                  </div>
+                </div>
+              </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :formula, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
+                  <label class="mdl-textfield__label" for="formula"><%= I18n.t(:formula) %></label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :cost_per_hour, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
+                  <label class="mdl-textfield__label" for="cost_per_hour"><%= "#{I18n.t(:used_cost)} (#{@organization.currency})"  %></label>
+                </div>
+                  <%#= f.input :profile_id, label: I18n.t(:profiles), as: :select, collection: Profile.all, selected: @organization_profile.profile_id||nil, prompt: I18n.t("helpers.select.prompt"), input_html: { class: 'input-xxlarge'} %>
               </div>
             </div>
           </div>
