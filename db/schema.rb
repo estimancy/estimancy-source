@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191015123124) do
+ActiveRecord::Schema.define(version: 20191021131010) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -172,16 +172,18 @@ ActiveRecord::Schema.define(version: 20191015123124) do
   end
 
   create_table "applications", force: :cascade do |t|
-    t.string   "name",            limit: 255
-    t.integer  "organization_id", limit: 4
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.string   "name",              limit: 255
+    t.integer  "organization_id",   limit: 4
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
     t.boolean  "is_ignored"
-    t.float    "forfait_mco",     limit: 24
-    t.integer  "month_number",    limit: 4
+    t.float    "forfait_mco",       limit: 24
+    t.integer  "month_number",      limit: 4
     t.datetime "start_date"
     t.datetime "end_date"
-    t.float    "coefficient",     limit: 24
+    t.float    "coefficient",       limit: 24
+    t.string   "criticality",       limit: 255
+    t.string   "coefficient_label", limit: 255
   end
 
   add_index "applications", ["organization_id", "name"], name: "by_organization_name", using: :btree
@@ -1171,6 +1173,8 @@ ActiveRecord::Schema.define(version: 20191015123124) do
     t.integer  "service_id",                    limit: 4
     t.boolean  "allow_to_suggest_a_correction"
     t.boolean  "allow_to_add_to_knowledge_db"
+    t.integer  "minimum",                       limit: 4
+    t.integer  "maximum",                       limit: 4
   end
 
   add_index "guw_guw_types", ["organization_id", "guw_model_id", "is_default"], name: "by_organization_guw_model_default", using: :btree
