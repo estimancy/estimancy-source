@@ -2356,9 +2356,7 @@ en:
   demands_statuses: "Demands Statuses"
 
   service_id: "Services"
-
   manage_demands_statuses_workflow: "Manage demand statuses workflow"
-
   text_explain_demand_status_workflow: "Text explanation demand statuses workflow"
 
   new_unit_of_work: "New component"
@@ -2381,16 +2379,11 @@ en:
 
   extract_raw_data: "Extract raw data"
   setting_estimations: "Estimation settings"
-
   urgent_project: "Devis urgent"
-
   Autoriser l'export PDF: "Allow export pdf"
-
   forfait_mco : "Forfait MCO"
   month_number : "Month number"
-
   "Nombre de projets sélectionnée": "Number of selected projects"
-
   adaptation_input_value: "Input value adaptation"
   average_rates: "Average rates"
   revised: "révised"
@@ -2468,21 +2461,6 @@ en:
   date_max: Date max
   submit_requests: "Submit your requests"
   your_configuration: "Your configuration"
-
-  3_months: "3 months"
-  1_month: "1 month"
-  15_days: "15 days"
-  1_week: "1 week"
-  3_days: "3 days"
-  2_days: "2 days"
-  1_day: "1 day"
-
-  subscription_end_date_has_expired: "Warning %{resource_name}. \n Your subscription has expired since (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Request for renewal subscription</a>"
-  subscription_end_date_has_expired_in: "Welcome %{resource_name}. \n Your account expires in %{duration} (%{subscription_end_date}). \n <a href='mailto:support@estimancy.com'>Request for renewal subscription</a>"
-
-  can_not_access_the_estimates_of_an_image_organization: "You can not access the estimates of an image organization"
-  not_authorized_to_access_this_organization: "You are not authorized to access this organization"
-  account_associated_with_external_authentication: "This account is associated with external authentication"
 
   text_automatic_created_version: "Version automatically created by the version change automation."
   text_automatic_changed_status: "Automatic change of status of old versions when versioning"

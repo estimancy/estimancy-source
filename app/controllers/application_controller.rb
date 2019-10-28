@@ -790,8 +790,8 @@ class ApplicationController < ActionController::Base
       when "status_name"
         projects = Project.unscoped
                         .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                        .where(organization_id: @organization.id, id: project_ids)
-                        .order("estimation_statuses.name #{s}")
+                        .where(organization_id: organization.id, id: project_ids)
+                        .order("estimation_statuses.name #{s}, created_at DESC")
       when "creator"
         projects = Project.unscoped
                         .joins("LEFT JOIN users ON projects.creator_id = users.id")
