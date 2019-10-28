@@ -7,6 +7,7 @@
     <%= stylesheet_link_tag 'application', media: 'screen' %>
 
     <%= csrf_meta_tag %>
+    <%#= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '', 'data-turbolinks-track': 'reload' %>
 
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
@@ -336,10 +337,12 @@
       <% if current_user.allow_full_screen_dashboard %>
         <div class="container-fluid">
           <%= yield %>
+          <%= content_for :render_async %>
         </div>
       <% else %>
         <div class="container">
           <%= yield %>
+          <%= content_for :render_async %>
         </div>
       <% end %>
     <% end %>

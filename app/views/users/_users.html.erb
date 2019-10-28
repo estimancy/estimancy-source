@@ -48,7 +48,7 @@
                 <%= link_to raw("<i class='material-icons'>check_circle</i>"), unlock_user_path(user) , :class => 'material-icons', :title => I18n.t('unconfirm') %>
               <% end %>
                 <%= link_to raw("<i class='material-icons'>edit</i>"), edit_user_path(user, :anchor => 'tabs-1') , :class => 'material-icons', :title => I18n.t('edit') %>
-                <%= link_to raw("<i class='material-icons'>delete</i>"), user, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), user, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
             <% end %>
           </td>
         </tr>

@@ -22,7 +22,7 @@
 class Organization < ActiveRecord::Base
 
   attr_accessible :name, :description, :is_image_organization, :number_hours_per_day, :number_hours_per_month, :cost_per_hour, :currency_id, :inflation_rate,
-                  :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history, :headband_title, :automatic_quotation_number,
+                  :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history, :headband_title, :automatic_quotation_number, :support_contact,
                   :limit1_coef, :limit2_coef, :limit3_coef, :limit4_coef,
                   :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit, :allow_demand, :show_reports, :show_kpi
 
@@ -82,6 +82,14 @@ class Organization < ActiveRecord::Base
   # Results view
   has_many :views, dependent: :destroy
   has_many :applications, dependent: :destroy
+
+  has_many :guw_coefficients, class_name: "Guw::GuwCoefficient", dependent: :destroy
+  has_many :guw_coefficient_elements, class_name: "Guw::GuwCoefficientElement", dependent: :destroy
+  has_many :guw_complexity_coefficient_elements, class_name: "Guw::GuwComplexityCoefficientElement", dependent: :destroy
+  has_many :guw_output_associations, class_name: "Guw::GuwOutputAssociation", dependent: :destroy
+  has_many :guw_output_complexities, class_name: "Guw::GuwOutputComplexity", dependent: :destroy
+  has_many :guw_output_complexity_initializations, class_name: "Guw::GuwOutputComplexityInitialization", dependent: :destroy
+  has_many :guw_output_types, class_name: "Guw::GuwOutputType", dependent: :destroy
 
   has_many :providers
   has_many :versions, class_name: "PaperTrail::Version", dependent: :destroy

@@ -18,6 +18,14 @@
         <a class="nav-link"  data-toggle="pill" id="pills-technical_informations-tab" href="#pills-technical_informations" role="tab" aria-selected="false"><%= I18n.t(:technical_informations) %></a>
       </li>
 
+      <% if @organization.name == "CDS DISTRIBUTION TRANSPORTEUR" || @organization.name == "06_DSI Voyage_CdS Distribution Transporteur" %>
+          <li class="nav-item">
+            <a class="nav-link"  data-toggle="pill" id="pills-dt-tab" href="#pills-dt" role="tab" aria-selected="false">
+              MaJ des prix (CDS DT)
+            </a>
+          </li>
+      <% end %>
+
       <li class="nav-item">
         <a class="nav-link"  data-toggle="pill" id="pills-kpi-tab" href="#pills-kpi" role="tab" aria-selected="false">
           Restitution
@@ -84,6 +92,13 @@
                         <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
                         <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
                       </div>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :support_contact, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                      <label class="mdl-textfield__label" for="support_contact"><%= I18n.t(:contactsupport) %></label>
                     </div>
                   </div>
 
@@ -238,6 +253,65 @@
             </div>
           </div>
 
+          <!-- Mise à jour des Prix -->
+          <div class="tab-pane fade" id="pills-dt" role="tabpanel" aria-labelledby="pills-dt-tab">
+            <div class="card-body">
+
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h4>
+                    <%= "Prise en compte de la contribution espagnole dans les profils :" %>
+                  </h4>
+                </div>
+              </div>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  
+                  <% if @current_user.super_admin? %>
+                      <div class="well component_tree" style="background-color: transparent">
+                        <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
+                            <%= hidden_field_tag :organization_id, @organization.id %>
+                            <%#= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
+                            R :  <%= text_field_tag :r_value, "0.25" %>
+                            TM : <%= text_field_tag :tm_value %>
+
+                            <%= submit_tag I18n.t('calculate'), :class => 'btn btn-primary' %>
+                        <% end %>
+                      </div>
+                  <% end %>
+
+                  
+                  <h5>
+                    <% project = Project.where(title: "EBE001 (Calcul Mix Profil)").first %>
+                    <% unless project.nil? %>
+                        <strong>#2</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
+                    <% end %>
+                  </h5>
+
+                  <h5>
+                    <strong>#3</strong>
+                    <%= link_to "Mettre à jour des TJM Dire d'Expert, MCO & Services Abaques", maj_mix_profil_path %>
+                  </h5>
+
+                  <h5>
+                    <% project = Project.where(title: "EBE0001 TJM Petites Evol.").first %>
+                    <% unless project.nil? %>
+                        <strong>#4</strong> <%= link_to "Calculer les TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
+                    <% end %>
+                  </h5>
+
+                  <h5>
+                    <strong>#5</strong>
+                    <%= link_to "Mettre à jour les TJM Petites Evolutions", maj_pe_path %>
+                  </h5>
+                  
+                </div>
+              </div>
+              
+            </div>
+          </div>
+          
           <!-- Restitution -->
           <div class="tab-pane fade" id="pills-kpi" role="tabpanel" aria-labelledby="pills-kpi-tab">
             <div class="card-body">

@@ -20,7 +20,8 @@
 #############################################################################
 
 class OrganizationProfile < ActiveRecord::Base
-  attr_accessible :cost_per_hour, :description, :name, :organization_id, :profile_id, :wbs_activity_ids, :copy_id
+  attr_accessible :initial_cost_per_hour, :cost_per_hour, :description, :name, :organization_id, :profile_id, :wbs_activity_ids, :copy_id,
+                  :is_real_profile, :use_dynamic_coefficient, :associated_services, :r_value, :tm_value, :formula
 
   default_scope { order(:name) }
 

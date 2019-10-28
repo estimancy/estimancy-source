@@ -247,6 +247,7 @@
 
 <%
    module_project = current_module_project
+   organization_id = module_project.organization_id
    attribute = module_project.pemodule.pe_attributes.where(alias: "effort").first
 
    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
@@ -254,7 +255,7 @@
    if attribute.nil?
      effort = 0
    else
-       ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => module_project.id, :in_out => "input").first
+       ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => module_project.id, :pe_attribute_id => attribute.id, :in_out => "input").first
 
        unless ev.nil?
            ev_effort_value = ev.string_data_probable[current_component.id]
@@ -263,7 +264,7 @@
              if !ev.estimation_value_id.nil?
                ev = EstimationValue.find(ev.estimation_value_id)
              else
-                ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => module_project.previous.last, :in_out => "output").first
+                ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => module_project.previous.last, :pe_attribute_id => attribute.id, :in_out => "output").first
              end
 
              begin

@@ -1,5 +1,9 @@
 <div class="row pb-5">
 
+<% @guw_outputs = @guw_model.guw_outputs.where(organization_id: @organization.id, guw_model_id: @guw_model.id).order("display_order ASC") %>
+<% guw_type_guw_complexities = @guw_type.guw_complexities.where(organization_id: @organization.id, guw_model_id: @guw_model.id) %>
+<% guw_type_guw_type_complexities = @guw_type.guw_type_complexities.where(organization_id: @organization.id, guw_model_id: @guw_model.id) %>
+<% guw_model_guw_attributes = @guw_model.guw_attributes.where(organization_id: @organization.id) %>
   <div class="col-10">
     <% guw_model_guw_types = @guw_model.guw_types %>
     <% guw_model_guw_attributes = @guw_model.guw_attributes %>
@@ -26,8 +30,8 @@
           <% end %>
         </div>
 
-        <% guw_type_guw_complexities = guw_type.guw_complexities %>
-        <% guw_type_guw_type_complexities = guw_type.guw_type_complexities %>
+        <%# guw_type_guw_complexities = guw_type.guw_complexities %>
+        <%# guw_type_guw_type_complexities = guw_type.guw_type_complexities %>
 
         <%= simple_format(guw_type.description) %>
 
@@ -50,7 +54,7 @@
                   <%= guw_cplx.name %> <%= guw_cplx.default_value == true ? '(par défault)' : '' %> -
                   <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type, guw_cplx) %>
                   <% if can? :manage_modules_instances, ModuleProject %>
-                    - <%= link_to I18n.t(:delete), guw_cplx, method: :delete, confirm: I18n.t(:are_you_sure) %>
+                    - <%= link_to I18n.t(:delete), guw_cplx, method: :delete, data: {confirm: I18n.t(:are_you_sure)} %>
                   <% end %>
                 </th>
               <% end %>
@@ -104,8 +108,12 @@
                 <% guw_outputs.each do |guw_output| %>
                   <td class="align-center">
 
-                    <% oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_complexity.id,
+                    <%# oci = Guw::GuwOutputComplexityInitialization.where(guw_complexity_id: guw_complexity.id,
                                                                           guw_output_id: guw_output.id).first %>
+                    <% oci = Guw::GuwOutputComplexityInitialization.where(organization_id: @organization.id,
+                                                                          guw_model_id: @guw_model.id,
+                                                                          guw_output_id: guw_output.id,
+                                                                          guw_complexity_id: guw_complexity.id).first %>
 
                     <%= text_field_tag "value_init[#{guw_complexity.id}][#{guw_output.id}]", oci.nil? ? '' : oci.init_value, class: "form-control" %>
                   </td>
@@ -118,8 +126,12 @@
                 <% guw_outputs.each do |guw_output| %>
                   <td class="align-center">
 
-                    <% oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_complexity.id,
+                    <%# oc = Guw::GuwOutputComplexity.where( guw_complexity_id: guw_complexity.id,
                                                             guw_output_id: guw_output.id).first %>
+                    <% oc = Guw::GuwOutputComplexity.where(organization_id: @organization.id,
+                                                           guw_model_id: @guw_model.id,
+                                                           guw_output_id: guw_output.id,
+                                                           guw_complexity_id: guw_complexity.id).first %>
 
                     <%= text_field_tag "value_cplx[#{guw_complexity.id}][#{guw_output.id}]", oc.nil? ? '' : oc.value, class: "form-control" %>
                   </td>
@@ -130,9 +142,11 @@
               <tr>
                 <td>
                   <%= aguw_output.name %>
-                  <% got = Guw::GuwOutputType.where(guw_model_id: @guw_model.id,
+                  <% got = Guw::GuwOutputType.where(organization_id: @organization.id,
+                                                    guw_model_id: @guw_model.id,
                                                     guw_output_id: aguw_output.id,
-                                                    guw_type_id: guw_type.id).first %>
+                                                    guw_type_id: @guw_type.id).first %>
+
                   &nbsp;
                   &nbsp;
                   <%= select_tag "display_modif[#{aguw_output.id}]",
@@ -145,10 +159,16 @@
                 <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
                   <% guw_outputs.each do |guw_output| %>
 
-                    <% oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
+                    <%# oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
                                                              guw_output_associated_id: aguw_output.id,
                                                              guw_output_id: guw_output.id).first %>
-                    <td class="align-center">
+                    <% oa = Guw::GuwOutputAssociation.where(organization_id: @organization.id,
+                                                            guw_model_id: @guw_model.id,
+                                                            guw_output_id: guw_output.id,
+                                                            guw_complexity_id: guw_complexity.id,
+                                                            guw_output_associated_id: aguw_output.id).first %>
+
+                        <td class="align-center">
                       <%= text_field_tag "config[#{guw_complexity.id}][#{guw_output.id}][#{aguw_output.id}]", oa.nil? ? '' : oa.value, class: "form-control" %>
                     </td>
                   <% end %>
@@ -156,9 +176,12 @@
               </tr>
             <% end %>
 
-            <% @guw_model.guw_coefficients.each do |guw_coefficient| %>
+            <%# @guw_model.guw_coefficients.each do |guw_coefficient| %>
+            <% @guw_model.guw_coefficients.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |guw_coefficient| %>
 
-              <% guw_coefficient_elements = guw_coefficient.guw_coefficient_elements %>
+
+          <%# guw_coefficient_elements = guw_coefficient.guw_coefficient_elements %>
+          <% guw_coefficient_elements = guw_coefficient.guw_coefficient_elements.where(organization_id: @organization.id, guw_model_id: @guw_model.id) %>
 
               <tr>
                 <th>
@@ -175,11 +198,11 @@
                 <% end %>
 
                 <% guw_complexity_coefficient_elements = {} %>
-                <% guw_type.guw_complexity_coefficient_elements.each do |gcce| %>
+                <% @guw_type.guw_complexity_coefficient_elements.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |gcce| %>
                   <% guw_complexity_coefficient_elements["#{gcce.guw_complexity_id}_#{gcce.guw_coefficient_element_id}_#{gcce.guw_output_id}"] = (gcce.value.nil? ? nil : gcce.value) %>
                 <% end %>
 
-                <% guw_coefficient_elements.each do |guw_coefficient_element| %>
+                <% guw_coefficient_elements.order('display_order asc').each do |guw_coefficient_element| %>
                   <tr>
                     <td>
                       <%= guw_coefficient_element.name %> (<%= guw_coefficient_element.value %>) (<%= guw_coefficient_element.default_display_value %>)
@@ -240,7 +263,7 @@
                     <%= type_complexity.name %> (<%= type_complexity.value %>) -
                     <%= link_to "#{I18n.t(:edit)} #{guw_type}", guw.edit_guw_model_guw_type_guw_type_complexity_path(@guw_model, guw_type, type_complexity) %>
                     <% if can? :manage_modules_instances, ModuleProject %>
-                      <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, confirm: I18n.t(:are_you_sure) %>
+                      <%= link_to "  - #{I18n.t(:delete)}", type_complexity, method: :delete, data: {confirm: I18n.t(:are_you_sure)} %>
                     <% end %>
                   </th>
                 <% end %>
@@ -266,8 +289,13 @@
                 <tr>
                   <td class="align-center">
 
-                    <% gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                    <%# gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
                                                          guw_attribute_id: guw_attribute.id).first_or_create %>
+
+                    <% gat = Guw::GuwAttributeType.where(organization_id: @organization.id,
+                                                         guw_model_id: @guw_model.id,
+                                                         guw_attribute_id: guw_attribute.id,
+                                                         guw_type_id: @guw_type.id).first_or_create %>
 
                     <% if gat.nil? %>
                       <%= link_to guw_attribute, "#" %>
@@ -275,11 +303,15 @@
                       <%= link_to "#{guw_attribute} (#{gat.default_value})", guw.edit_guw_model_guw_type_guw_attribute_type_path(@guw_model, guw_type, gat) %>
                     <% end %>
                   </td>
+                  
                   <% guw_type_guw_type_complexities.order("display_order ASC").each do |type_complexity| %>
 
-                    <% ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: guw_attribute.id, guw_type_id: guw_type, guw_type_complexity_id: type_complexity.id).first %>
+                    <%# ac = Guw::GuwAttributeComplexity.where(guw_attribute_id: guw_attribute.id, guw_type_id: guw_type, guw_type_complexity_id: type_complexity.id).first %>
+                    <% ac = Guw::GuwAttributeComplexity.where(organization_id: @organization.id, guw_model_id: @guw_model.id,
+                                                                guw_attribute_id: guw_attribute.id, guw_type_id: @guw_type, guw_type_complexity_id: type_complexity.id).first %>
 
-                    <td class="align-center">
+
+                      <td class="align-center">
                       <%= check_box_tag "enable[#{guw_attribute.id}][#{type_complexity.id}]", "enable", ac.nil? ? false : ac.enable_value, class: "form-control" %>
                     </td>
                     <td class="align-center">

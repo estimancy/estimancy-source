@@ -143,6 +143,7 @@
                           <%= f.input :auth_type, :label => false, :as => :select, :collection => AuthMethod.all, :include_blank => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
                         <% else %>
                           <%= f.input :auth_type, :label => false, :as => :select, :collection => AuthMethod.all, :disabled => true, :include_blank => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                          <%= f.hidden_field :auth_type %>
                         <% end %>
                         <label class="mdl-textfield__label" for="auth_type"><%= I18n.t(:auth_type) %></label>
                       </div>
@@ -371,7 +372,7 @@
                         <td class="center">
                           <% if can?(:manage, User) && can?(:manage, Group) %>
                             <%= link_to '', edit_group_path(group, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
-                            <%= link_to '', group, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+                            <%= link_to '', group, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
                           <% end %>
                         </td>
                       </tr>

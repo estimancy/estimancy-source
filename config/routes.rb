@@ -54,6 +54,8 @@ Projestimate::Application.routes.draw do
   get 'show_widget_effort_display_unit' => 'views_widgets#show_widget_effort_display_unit', :as => 'show_widget_effort_display_unit'
   get 'export_vignette' => 'views_widgets#export_vignette' , :as => 'export_vignette'
 
+  # get 'vw_pf_script' => 'views_widgets#vw_pf_script' , :as => 'vw_pf_script'
+
   post 'save_budget/:organization_id' => 'budgets#save_budget', as: 'save_budget'
 
   resources :widgets
@@ -73,6 +75,8 @@ Projestimate::Application.routes.draw do
   resources :organization_profiles
   get 'refresh_organization_profiles' => 'organization_profiles#refresh_organization_profiles', as: 'refresh_organization_profiles'
   get 'refresh_organization_profile_data' => 'organization_profiles#refresh_organization_profile_data', as: 'refresh_organization_profile_data'
+  get 'maj_mix_profil' => 'organization_profiles#maj_mix_profil', as: 'maj_mix_profil'
+  get 'maj_pe' => 'organization_profiles#maj_pe', as: 'maj_pe'
 
 
   resources :profiles
@@ -133,7 +137,6 @@ Projestimate::Application.routes.draw do
   get 'display_states' => 'users#display_states', :as => 'display_states'
   post 'send_feedback' => 'users#send_feedback', :as => 'send_feedback'
 
-
   resources :password_resets
 
   #resources :sessions
@@ -186,6 +189,7 @@ Projestimate::Application.routes.draw do
 
   resources :wbs_activity_elements
   post 'wbs_activities/:wbs_activity_id/duplicate_wbs_activity' => 'wbs_activities#duplicate_wbs_activity', :as => :duplicate_wbs_activity
+  get 'refresh_wbs_profiles_list' => 'wbs_activities#refresh_wbs_profiles_list', :as => :refresh_wbs_profiles_list
   get 'update_status_collection' => 'wbs_activity_elements#update_status_collection', :as => 'update_status_collection'
 
   resources :wbs_activities do
@@ -218,7 +222,7 @@ Projestimate::Application.routes.draw do
   get 'selected_balancing_attribute' => 'module_projects#selected_balancing_attribute', :as => 'selected_balancing_attribute'
   get 'show_module_project_results_view' => 'module_projects#show_module_project_results_view', :as => 'show_module_project_results_view'
   get 'edit_module_project_view_config' => 'module_projects#edit_module_project_view_config', as: 'edit_module_project_view_config'
-  post 'update_module_project_view_config' => 'module_projects#update_module_project_view_config', as: 'update_module_project_view_config'
+  # post 'update_module_project_view_config' => 'module_projects#update_module_project_view_config', as: 'update_module_project_view_config'
   post 'module_projects_reassign' => 'module_projects#module_projects_reassign', as: 'module_projects_reassign'
   post 'associate_module_projects_inputs_outputs' => 'module_projects#associate_module_projects_inputs_outputs', as: 'associate_module_projects_inputs_outputs'
   get 'update_module_project_dynamic_connections' => 'module_projects#update_module_project_dynamic_connections', as: 'update_module_project_dynamic_connections'
@@ -247,8 +251,6 @@ Projestimate::Application.routes.draw do
   get 'find_use_attribute' => 'pe_attributes#find_use_attribute', :as => 'find_use_attribute'
 
   resources :currencies
-
-
 
   resources :organizations do
 
@@ -309,7 +311,10 @@ Projestimate::Application.routes.draw do
     get "setting_demand" => 'organizations#setting_demand'
     get "module_estimation" => 'organizations#module_estimation'
     get "users" => 'organizations#users', as: 'organization_users'
+
     get "estimations" => 'organizations#estimations'
+    get "async_estimations" => 'organizations#async_estimations'
+
     get "report" => 'organizations#report'
     get "kpi" => 'organizations#kpi'
 
@@ -356,6 +361,7 @@ Projestimate::Application.routes.draw do
   get 'update_available_inline_columns' => 'organizations#update_available_inline_columns', as: 'update_available_inline_columns'
   get 'set_available_inline_columns' => 'organizations#set_available_inline_columns', as: 'set_available_inline_columns'
   post 'organizations/:organization_id/confirm_organization_deletion' => 'organizations#confirm_organization_deletion', :as => :confirm_organization_deletion
+  post "calculate_mixed_profiles" => "organizations#calculate_mixed_profiles", as: 'calculate_mixed_profiles'
 
   get 'export_organization_reference' => 'organizations#export_organization_reference', :as => :export_organization_reference
   get 'export_to_pdf_security_audit_utilities' => 'organizations#export_to_pdf_security_audit_utilities', as: :export_to_pdf_security_audit_utilities
@@ -490,6 +496,8 @@ Projestimate::Application.routes.draw do
 
   get 'projects_quantity' => 'organizations#projects_quantity'
 
+  get "download/:organization_id" => 'projects#download', as: 'download'
+
   post 'delete' => 'demands#delete'
 
   get 'users/:id/confirm_user' => 'users#confirm_user', :as => 'confirm_user'
@@ -497,4 +505,3 @@ Projestimate::Application.routes.draw do
   get 'advanced_search' => 'projects#advanced_search', :as => 'advanced_search'
   get 'user_search' => 'projects#user_search', :as => 'user_search'
 end
-

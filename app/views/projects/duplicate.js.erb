@@ -1,5 +1,41 @@
-<% if @reload = "ok" %>
-  window.location.replace("<%= edit_project_url(@new_prj)%>");
-<% else %>
+<%
+   @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
 
-<% end %>
+   @pe_wbs_project_product = @project.pe_wbs_projects.products_wbs.first
+   #@pe_wbs_project_activity = @project.pe_wbs_projects.activities_wbs.first
+
+   # Get the max X and Y positions of modules
+   @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+   @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+
+   @guw_module = Pemodule.where(alias: "guw").first
+   @kb_module = Pemodule.where(alias: "kb").first
+   @skb_module = Pemodule.where(alias: "skb").first
+   @ge_module = Pemodule.where(alias: "ge").first
+   @operation_module = Pemodule.where(alias: "operation").first
+   @staffing_module = Pemodule.where(alias: "staffing").first
+   @ej_module = Pemodule.where(alias: "expert_judgement").first
+   @ebd_module = Pemodule.where(alias: "effort_breakdown").first
+
+   @guw_modules = @guw_module.nil? ? [] : @project.organization.guw_models.map{|i| [i, "#{i.id},#{@guw_module.id}"] }
+   @ge_models = @ge_module.nil? ? [] : @project.organization.ge_models.map{|i| [i, "#{i.id},#{@ge_module.id}"] }
+   @operation_models = @operation_module.nil? ? [] : @project.organization.operation_models.map{|i| [i, "#{i.id},#{@operation_module.id}"] }
+   @kb_models = @kb_module.nil? ? [] : @project.organization.kb_models.map{|i| [i, "#{i.id},#{@kb_module.id}"] }
+   @skb_models = @skb_module.nil? ? [] : @project.organization.skb_models.map{|i| [i, "#{i.id},#{@skb_module.id}"] }
+   @staffing_modules = @staffing_module.nil? ? [] : @project.organization.staffing_models.map{|i| [i, "#{i.id},#{@staffing_module.id}"] }
+   @ej_modules = @ej_module.nil? ? [] : @project.organization.expert_judgement_instances.map{|i| [i, "#{i.id},#{@ej_module.id}"] }
+   @wbs_instances = @ebd_module.nil? ? [] : @project.organization.wbs_activities.map{|i| [i, "#{i.id},#{@ebd_module.id}"] } %>
+
+window.history.pushState("", "", "/projects/<%= @project.id %>/edit#tabs-1");
+
+$("#edit_component").modal("hide");
+$("#main").html("<%= j(render partial: "projects/form") %>");
+
+$('.tabs-project').tabs({
+    activate: function (event, ui) {
+        var scrollTop = $(window).scrollTop();
+        var active = $('.tabs-project').tabs('option', 'active');
+        window.location.hash = $(".tabs-project ul>li a").eq(active).attr("href");
+        $(window).scrollTop(scrollTop);
+    }
+});

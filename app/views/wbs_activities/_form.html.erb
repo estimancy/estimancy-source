@@ -57,6 +57,25 @@
                             </div>
                           </div>
 
+                            <% other_wbs_for_config = @organization.wbs_activities.where(wbs_for_config: true).first
+                               exist_wbs_for_config = other_wbs_for_config.nil? ? false : true
+                            %>
+                            <div class="form-row">
+                              <div class="col-5" style="margin-left:1rem;">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                  <%= f.input :wbs_for_config, as: :boolean, :label => I18n.t(:wbs_for_config) %>
+                                  <label class="mdl-textfield__label" for="wbs_for_config" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:wbs_for_config) %></label>
+                                </div>
+                              </div>
+                              <div class="col-5">
+                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                  <%= f.input :use_real_profiles, as: :boolean, :label => I18n.t(:use_real_profiles) %>
+                                  <label class="mdl-textfield__label" for="use_real_profiles" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:use_real_profiles) %></label>
+                                </div>
+                              </div>
+                            </div>
+                            
+                            
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input', rows: "5"} %>
@@ -215,6 +234,25 @@
                                     $('div.block_label.selected_pbs').css('width', '100%');
                                 }
                             );
+
+                            // Update the profiles with the Real profiles list
+                            $("#wbs_activity_use_real_profiles").change(function() {
+                                var use_real_profiles = false;
+                                if (this.checked){
+                                    use_real_profiles = true;
+                                }
+                                //if ($(this).val() !== ""){
+                                return $.ajax({
+                                    url: "/refresh_wbs_profiles_list",
+                                    method: "GET",
+                                    data: {
+                                        wbs_activity_id: '<%= @wbs_activity.id %>',
+                                        use_real_profiles: use_real_profiles
+                                    }
+                                });
+                                //}
+                            });
+                            
                         });
                       </script>
 
@@ -253,7 +291,7 @@
                         <%= link_to raw("<i class='material-icons'>file_copy</i>"), duplicate_wbs_activity_ratio_path(wbs_activity_ratio),
                                     :class => 'materials-icons', :title => I18n.t('duplicate_ratio'), :method => "POST" %>
                         <%= link_to raw("<i class='material-icons'>delete</i>"), wbs_activity_ratio,
-                                    confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                                    data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
                         <%#= link_to 'Supprimer', wbs_activity_ratio, confirm: I18n.t(:are_you_sure), method: :delete, :class => 'button_attribute_tooltip icon-trash', :style => 'color:red', :title => I18n.t(:delete) %>
                         <%#= link_to 'Exporter', export_wbs_activity_ratios_path(wbs_activity_ratio), :class => 'button_attribute_tooltip icon-download', :title => I18n.t(:export) %>
                         <%= link_to raw("<i class='material-icons'>archive</i>"), export_wbs_activity_ratios_path(wbs_activity_ratio), :class => 'button_attribute_tooltip icon-download', title: I18n.t(:export), method: :post %>

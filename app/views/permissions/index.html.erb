@@ -76,7 +76,7 @@
                     <td><%= perm.object_associated.blank? ? 'All' : perm.object_associated %></td>
                     <td class="center">
                       <%= link_to raw("<i class='material-icons'>edit</i>"), edit_permission_path(perm), :class => 'material-icon', :title => I18n.t('edit') %>
-                      <%= link_to raw("<i class='material-icons'>delete</i>"), perm, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                      <%= link_to raw("<i class='material-icons'>delete</i>"), perm, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
                     </td>
                   </tr>
                 <% end %>

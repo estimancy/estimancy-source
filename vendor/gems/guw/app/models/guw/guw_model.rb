@@ -103,8 +103,8 @@ module Guw
         end
 
         if is_organization_copy == true
-          guw_model.module_projects.each do |module_project|
-            module_project.estimation_values.where(pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
+          guw_model.module_projects.where(organization_id: guw_model_organization.id).each do |module_project|
+            module_project.estimation_values.where(organization_id: guw_model_organization.id, pe_attribute_id: old_pe_attribute.id).each do |estimation_value|
 
               estimation_value.pe_attribute_id = new_pe_attribute.id
               estimation_value.save
@@ -125,84 +125,98 @@ module Guw
         # Copy the complexities technologies
         guw_type.guw_complexities.each do |guw_complexity|
           # Copy the complexities technologie
-          guw_complexity.guw_complexity_technologies.each do |guw_complexity_technology|
-            new_organization_technology = guw_model_organization.organization_technologies.where(copy_id: guw_complexity_technology.organization_technology_id).first
-            unless new_organization_technology.nil?
-              guw_complexity_technology.update_attribute(:organization_technology_id, new_organization_technology.id)
-            end
-            guw_complexity_technology.update_attribute(:guw_type_id, guw_type.id)
-          end
-
+          # guw_complexity.guw_complexity_technologies.each do |guw_complexity_technology|
+          #   new_organization_technology = guw_model_organization.organization_technologies.where(copy_id: guw_complexity_technology.organization_technology_id).first
+          #   unless new_organization_technology.nil?
+          #     guw_complexity_technology.update_attribute(:organization_technology_id, new_organization_technology.id)
+          #   end
+          #   guw_complexity_technology.update_attribute(:guw_type_id, guw_type.id)
+          # end
+          #
           # Copy the complexities units of works
-          guw_complexity.guw_complexity_work_units.each do |guw_complexity_work_unit|
-            new_guw_work_unit = guw_model.guw_work_units.where(copy_id: guw_complexity_work_unit.guw_work_unit_id).first
-            unless new_guw_work_unit.nil?
-              guw_complexity_work_unit.update_attribute(:guw_work_unit_id, new_guw_work_unit.id)
-            end
-          end
+          # guw_complexity.guw_complexity_work_units.each do |guw_complexity_work_unit|
+          #   new_guw_work_unit = guw_model.guw_work_units.where(copy_id: guw_complexity_work_unit.guw_work_unit_id).first
+          #   unless new_guw_work_unit.nil?
+          #     guw_complexity_work_unit.update_attribute(:guw_work_unit_id, new_guw_work_unit.id)
+          #   end
+          # end
+          #
+          # # Copy the complexities units of works
+          # guw_complexity.guw_complexity_weightings.each do |guw_complexity_weighting|
+          #   new_guw_weighting = guw_model.guw_weightings.where(copy_id: guw_complexity_weighting.guw_weighting_id).first
+          #   unless new_guw_weighting.nil?
+          #     guw_complexity_weighting.update_attribute(:guw_weighting_id, new_guw_weighting.id)
+          #   end
+          # end
+          #
+          # # Copy the complexities units of works
+          # guw_complexity.guw_complexity_factors.each do |guw_complexity_factor|
+          #   new_guw_factor = guw_model.guw_factors.where(copy_id: guw_complexity_factor.guw_factor_id).first
+          #   unless new_guw_factor.nil?
+          #     guw_complexity_factor.update_attribute(:guw_factor_id, new_guw_factor.id)
+          #   end
+          # end
 
-          # Copy the complexities units of works
-          guw_complexity.guw_complexity_weightings.each do |guw_complexity_weighting|
-            new_guw_weighting = guw_model.guw_weightings.where(copy_id: guw_complexity_weighting.guw_weighting_id).first
-            unless new_guw_weighting.nil?
-              guw_complexity_weighting.update_attribute(:guw_weighting_id, new_guw_weighting.id)
-            end
-          end
-
-          # Copy the complexities units of works
-          guw_complexity.guw_complexity_factors.each do |guw_complexity_factor|
-            new_guw_factor = guw_model.guw_factors.where(copy_id: guw_complexity_factor.guw_factor_id).first
-            unless new_guw_factor.nil?
-              guw_complexity_factor.update_attribute(:guw_factor_id, new_guw_factor.id)
-            end
-          end
+          guw_complexity.guw_model_id = guw_model.id
+          guw_complexity.save
 
           guw_complexity.guw_output_associations.each do |new_goa|
 
-            go = GuwOutput.where(guw_model_id: guw_model.id,
-                                 copy_id: new_goa.guw_output_id).first
-
-            goa = GuwOutput.where(guw_model_id: guw_model.id,
-                                  copy_id: new_goa.guw_output_associated_id).first
+            go = GuwOutput.where(copy_id: new_goa.guw_output_id).first
+            goa = GuwOutput.where(copy_id: new_goa.guw_output_associated_id).first
 
             new_goa.guw_output_id = go.nil? ? nil : go.id
             new_goa.guw_output_associated_id =  goa.nil? ? nil : goa.id
+
+            new_goa.guw_model_id = guw_model.id
+            new_goa.organization_id = guw_model_organization.id
 
             new_goa.save(validate: false)
           end
 
           guw_complexity.guw_output_complexities.each do |new_goc|
 
-            go = GuwOutput.where(guw_model_id: guw_model.id,
-                                 copy_id: new_goc.guw_output_id).first
+            go = GuwOutput.where(copy_id: new_goc.guw_output_id).first
 
             new_goc.guw_output_id = go.nil? ? nil : go.id
+
+            new_goc.guw_model_id = guw_model.id
+            new_goc.organization_id = guw_model_organization.id
 
             new_goc.save(validate: false)
           end
 
           guw_complexity.guw_output_complexity_initializations.each do |new_goci|
 
-            go = GuwOutput.where(guw_model_id: guw_model.id,
-                                 copy_id: new_goci.guw_output_id).first
+            go = GuwOutput.where(copy_id: new_goci.guw_output_id).first
 
             new_goci.guw_output_id = go.nil? ? nil : go.id
+
+            new_goci.organization_id = guw_model_organization.id
+            new_goci.guw_model_id = guw_model.id
 
             new_goci.save(validate: false)
           end
         end
 
         #Guw UnitOfWorkAttributes && Guw UnitOfWorks AJUSTED_SIZE and SIZE update if is_organization_copy=true
-        guw_type.guw_unit_of_works.each do |guw_unit_of_work|
+        guw_type.guw_unit_of_works.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id).each do |guw_unit_of_work|
 
-          guw_unit_of_work.guw_unit_of_work_attributes.each do |guw_uow_attr|
-            new_guw_type = guw_model.guw_types.where(copy_id: guw_uow_attr.guw_type_id).first
+          guw_unit_of_work.guw_unit_of_work_attributes.where(organization_id: guw_model_organization.id,
+                                                             guw_model_id: guw_model.id).each do |guw_uow_attr|
+            new_guw_type = guw_model.guw_types.where(organization_id: guw_model_organization.id,
+                                                     copy_id: guw_uow_attr.guw_type_id).first
             new_guw_type_id = new_guw_type.nil? ? nil : new_guw_type.id
 
-            new_guw_attribute = guw_model.guw_attributes.where(copy_id: guw_uow_attr.guw_attribute_id).first
+            new_guw_attribute = guw_model.guw_attributes.where(organization_id: guw_model_organization.id,
+                                                               guw_model_id: guw_model.id,
+                                                               copy_id: guw_uow_attr.guw_attribute_id).first
             new_guw_attribute_id = new_guw_attribute.nil? ? nil : new_guw_attribute.id
 
-            guw_uow_attr.update_attributes(guw_type_id: new_guw_type_id, guw_attribute_id: new_guw_attribute_id)
+            guw_uow_attr.update_attributes(organization_id: guw_model_organization.id,
+                                           guw_model_id: guw_model.id,
+                                           guw_type_id: new_guw_type_id,
+                                           guw_attribute_id: new_guw_attribute_id)
           end
 
 
@@ -211,7 +225,7 @@ module Guw
             if guw_unit_of_work.ajusted_size.is_a?(Hash)
               new_ajusted_size = Hash.new
               guw_unit_of_work.ajusted_size.each do |guw_output_key, value|
-                new_guw_ouput = GuwOutput.where(guw_model_id: guw_model.id, copy_id: guw_output_key).first
+                new_guw_ouput = GuwOutput.where(copy_id: guw_output_key).first
                 unless new_guw_ouput.nil?
                   new_ajusted_size["#{new_guw_ouput.id}"] = value
                 end
@@ -223,7 +237,7 @@ module Guw
             if guw_unit_of_work.size.is_a?(Hash)
               new_size = Hash.new
               guw_unit_of_work.size.each do |guw_output_key, value|
-                new_guw_ouput = GuwOutput.where(guw_model_id: guw_model.id, copy_id: guw_output_key).first
+                new_guw_ouput = GuwOutput.where(copy_id: guw_output_key).first
                 unless new_guw_ouput.nil?
                   new_size["#{new_guw_ouput.id}"] = value
                 end
@@ -246,17 +260,28 @@ module Guw
           new_guw_type_id = new_guw_type.nil? ? nil : new_guw_type.id
 
           unless new_guw_type.nil?
-            new_guw_type_complexity = new_guw_type.guw_type_complexities.where(copy_id: guw_attr_complexity.guw_type_complexity_id).first
-            new_guw_type_complexity_id = new_guw_type_complexity.nil? ? nil : new_guw_type_complexity.id
 
-            guw_attr_complexity.update_attributes(guw_type_id: new_guw_type_id, guw_type_complexity_id: new_guw_type_complexity_id )
+            new_guw_type_complexity = new_guw_type.guw_type_complexities.where(copy_id: guw_attr_complexity.guw_type_complexity_id).first
+
+            guw_attr_complexity.organization_id = guw_model_organization.id
+            guw_attr_complexity.guw_model_id = guw_model.id
+            guw_attr_complexity.guw_type_id = new_guw_type_id
+            guw_attr_complexity.guw_type_complexity_id = new_guw_type_complexity.nil? ? nil : new_guw_type_complexity.id
+
+            guw_attr_complexity.save(validate: false)
 
           end
         end
       end
 
       guw_model.guw_coefficients.each do |guw_coefficient|
+
         guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+
+          guw_coefficient_element.guw_model_id = guw_model.id
+          guw_coefficient_element.organization_id = guw_model_organization.id
+          guw_coefficient_element.save
+
           guw_coefficient_element.guw_complexity_coefficient_elements.each do |gcce|
 
             new_guw_type = guw_model.guw_types.where(copy_id: gcce.guw_type_id).last
@@ -272,6 +297,9 @@ module Guw
             gcce.guw_output_id = new_guw_output_id
             gcce.guw_complexity_id = new_guw_complexity_id
 
+            gcce.guw_model_id = guw_model.id
+            gcce.organization_id = guw_model_organization.id
+
             gcce.save(validate: false)
 
           end
@@ -280,14 +308,20 @@ module Guw
 
       #update GuwOutputType
       old_model.guw_output_types.each do |output_type|
-        new_output = GuwOutput.where(guw_model_id: guw_model.id, copy_id: output_type.guw_output_id).first
-        new_type = GuwType.where(guw_model_id: guw_model.id, copy_id: output_type.guw_type_id).first
+        new_output = GuwOutput.where(copy_id: output_type.guw_output_id).first
+        new_type = GuwType.where(copy_id: output_type.guw_type_id).first
 
-        begin
-          GuwOutputType.create(guw_model_id: guw_model.id, guw_output_id: new_output.id, guw_type_id: new_type.id, display_type: output_type.display_type)
-        rescue
-          # ignored
+        unless new_output.nil? || new_type.nil?
+          GuwOutputType.create(organization_id: guw_model_organization.id,
+                               guw_model_id: guw_model.id,
+                               guw_output_id: new_output.id,
+                               guw_type_id: new_type.id,
+                               display_type: output_type.display_type)
         end
+
+        # rescue
+        #   # ignored
+        # end
       end
 
     end
@@ -327,7 +361,7 @@ module Guw
         unit = ''
       end
 
-      # begin
+      begin
         if pe_attribute.alias == "effort" && guw_model.config_type == "old"
           res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / guw_model.hour_coefficient_conversion.to_f).to_f, delimiter: ' ', precision: user.number_precision.nil? ? 2 : user.number_precision, locale: (user.language.locale rescue "fr"))} #{guw_model.effort_unit}"
         elsif pe_attribute.alias == "cost" && guw_model.config_type == "old"
@@ -337,9 +371,9 @@ module Guw
         else
           res = "#{ActionController::Base.helpers.number_with_precision((data_probable.to_f / (conv.nil? ? 1.0 : conv.to_f)).to_f, delimiter: ' ', precision: user.number_precision.nil? ? 2 : user.number_precision, locale: (user.language.locale rescue "fr"))} #{unit}"
         end
-      # rescue
-      #   #??
-      # end
+      rescue
+        #??
+      end
 
       return res
 

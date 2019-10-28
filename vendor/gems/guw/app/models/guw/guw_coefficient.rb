@@ -5,7 +5,7 @@ module Guw
 
     validates :name, :presence => true
 
-    attr_accessible :name, :coefficient_type, :guw_model_id,
+    attr_accessible :name, :coefficient_type, :guw_model_id, :organization_id,
                     :coefficient_calc, :allow_intermediate_value, :deported, :description, :allow_comments
 
     amoeba do

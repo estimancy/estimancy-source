@@ -19,7 +19,7 @@
           </td>
           <td class="center span3"><%= select_tag "in_out[#{ma.id}]", options_for_select([['input'], ['output'], ['both']], :selected => ma.in_out), :prompt => I18n.t('helpers.select.prompt'), :class => 'input-small', :disabled => (@pemodule == @initialization_module) %> </td>
           <td>
-            <%= link_to raw("<i class='material-icons'>delete</i>"), ma, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), ma, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
           </td>
         </tr>
     <% end %>

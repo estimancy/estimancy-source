@@ -34,6 +34,44 @@ class OrganizationsController < ApplicationController
   def report_management
   end
 
+  #Calculate Mixed Profiles
+  def calculate_mixed_profiles
+    @organization = Organization.where(id: params[:organization_id]).first
+
+    OrganizationProfile.transaction do
+      begin
+        real_profiles_with_dynamic_coeff = @organization.organization_profiles.where(is_real_profile: true, use_dynamic_coefficient: true)
+        r_value = 0.25
+        tm_value = 0.5
+        r_value = params[:r_value].to_f
+        tm_value = params[:tm_value].to_f
+
+        real_profiles_with_dynamic_coeff.all.each do |profile|
+          used_cost = profile.initial_cost_per_hour.to_f * (1 - (tm_value * r_value))
+          profile.cost_per_hour = used_cost
+          profile.r_value = r_value
+          profile.tm_value = tm_value
+          profile.formula = "#{profile.cost_per_hour.to_f} * #{(1 - (tm_value * r_value))}"
+          profile.save
+        end
+
+        #MAJ de la valeur de TM dans le projet
+        platform_category = @organization.platform_categories.first #_or_create(name: "#{tm_value*100} %")
+        if platform_category
+          platform_category.name = "#{tm_value*100}%"
+          platform_category.save
+        else
+          @organization.platform_categories.create(name: "#{tm_value*100}%")
+        end
+
+      rescue
+        flash[:error] = "Erreur MAJ profils"
+      end
+    end
+
+    redirect_to edit_organization_path(@organization, anchor: "tabs-dt")
+  end
+
   # Export PDF de la liste des changements
   def export_to_pdf_security_audit_utilities
     @organization = @current_organization  #Organization.find(params[:organization_id])
@@ -1011,7 +1049,7 @@ class OrganizationsController < ApplicationController
   end
 
 
-  def nizationimport_project_areas
+  def import_project_areas
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
     tab_error = []
@@ -1130,19 +1168,30 @@ class OrganizationsController < ApplicationController
       tab = workbook[0]
 
       tab.each_with_index do |row, index|
-        if index > 0 && !row[0].value.nil?
-
-          new_profile = OrganizationProfile.where(name: row[0].value, organization_id: @organization.id).first
-          if new_profile
-            tab_warning_messages << " \n\n #{new_profile.name} : #{I18n.t(:warning_already_exist)}"
-          else
-            new_profile = OrganizationProfile.new(name: row[0].value, description: row[1].value, cost_per_hour: row[2].value, organization_id: @organization.id)
-            unless new_profile.save
-              tab_error << index + 1
+        unless row.nil?
+          if index > 0 && !row[0].value.nil?
+            new_profile = OrganizationProfile.where(name: row[0].value, organization_id: @organization.id).first
+            if new_profile
+              tab_warning_messages << " \n\n #{new_profile.name} : #{I18n.t(:warning_already_exist)}"
+            else
+              #begin
+                #new_profile = OrganizationProfile.new(name: (row[0].value rescue nil), description: (row[1].value rescue nil), cost_per_hour: (row[2].value rescue nil), organization_id: @organization.id)
+                new_profile = OrganizationProfile.new(name: (row[0].value rescue nil), description: (row[1].value rescue nil), initial_cost_per_hour: (row[2].value rescue nil),
+                                                      is_real_profile: (row[3].value rescue nil), use_dynamic_coefficient: (row[4].value rescue nil),
+                                                      r_value: (row[5].value rescue nil), tm_value: (row[6].value rescue nil),
+                                                      formula: (row[7].value rescue nil), cost_per_hour: (row[8].value rescue nil),
+                                                      associated_services: (row[9].value rescue nil),
+                                                      organization_id: @organization.id)
+                unless new_profile.save
+                  tab_error << index + 1
+                end
+              # rescue
+              #   tab_error << index + 1
+              # end
             end
+          elsif row[0].value.nil?
+            tab_error << index + 1
           end
-        elsif row[0].value.nil?
-          tab_error << index + 1
         end
       end
     else
@@ -1308,7 +1357,13 @@ class OrganizationsController < ApplicationController
 
       tab.each_with_index do |row, index|
         if index > 0
-          new_app = Application.new(name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].value), organization_id: @organization.id)
+          new_app = Application.new(organization_id: @organization.id,
+                                    name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].value),
+                                    is_ignored: row[1].value,
+                                    criticality: row[2].value,
+                                    coefficient: row[3].value,
+                                    coefficient_label: row[4].value,
+                                   )
           unless new_app.save
             tab_error << index + 1
           end
@@ -1335,8 +1390,17 @@ class OrganizationsController < ApplicationController
     worksheet = workbook[0]
 
     worksheet.add_cell(0, 0, I18n.t(:name))
+    worksheet.add_cell(0, 1, I18n.t(:is_ignored))
+    worksheet.add_cell(0, 2, I18n.t(:criticality))
+    worksheet.add_cell(0, 3, I18n.t(:coefficient_value))
+    worksheet.add_cell(0, 4, I18n.t(:coefficient_label))
+
     organization_appli.each_with_index do |appli, index|
       worksheet.add_cell(index + 1, 0, appli.name)
+      worksheet.add_cell(index + 1, 1, appli.is_ignored ? 1 : 0)
+      worksheet.add_cell(index + 1, 2, appli.criticality)
+      worksheet.add_cell(index + 1, 3, appli.coefficient)
+      worksheet.add_cell(index + 1, 4, appli.coefficient_label)
     end
     send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Applications-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
@@ -1524,12 +1588,15 @@ class OrganizationsController < ApplicationController
 
             hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
               if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-                guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+                guw_coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, name: i[0]).first
                 unless guw_coefficient.nil?
                   unless guw_coefficient.guw_coefficient_elements.empty?
-                    ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
+                    ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                      guw_model_id: @guw_model.id,
                                                                       guw_coefficient_id: guw_coefficient.id,
-                                                                      module_project_id: mp.id).first
+                                                                      project_id: project.id,
+                                                                      module_project_id: mp.id,
+                                                                      guw_unit_of_work_id: guow.id).first
 
                     if guw_coefficient.coefficient_type == "Pourcentage"
                       worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
@@ -1540,9 +1607,8 @@ class OrganizationsController < ApplicationController
                     end
                   end
                 end
-              elsif Guw::GuwOutput.where(name: i[0]).first.class == Guw::GuwOutput
-                guw_output = Guw::GuwOutput.where(name: i[0],
-                                                  guw_model_id: @guw_model.id).first
+              elsif Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: i[0]).first.class == Guw::GuwOutput
+                guw_output = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: i[0]).first
                 unless guow.guw_type.nil?
                   unless guw_output.nil?
                     v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f.round(2)))
@@ -1555,12 +1621,18 @@ class OrganizationsController < ApplicationController
             ii = 0
             @guw_model.guw_attributes.order("name ASC").each_with_index do |guw_attribute, i|
               guw_type = guow.guw_type
-              guowa = Guw::GuwUnitOfWorkAttribute.where(guw_unit_of_work_id: guow.id,
+              guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: @organization.id,
+                                                        guw_model_id: @guw_model.id,
                                                         guw_attribute_id: guw_attribute.id,
-                                                        guw_type_id: guw_type.nil? ? nil : guw_type.id).first
+                                                        guw_type_id: guw_type.nil? ? nil : guw_type.id,
+                                                        project_id: project.id,
+                                                        module_project_id: mp.id,
+                                                        guw_unit_of_work_id: guow.id).first
 
               unless guowa.nil?
-                gat = Guw::GuwAttributeType.where(guw_type_id: guw_type.id,
+                gat = Guw::GuwAttributeType.where(organization_id: @organization.id,
+                                                  guw_model_id: @guw_model.id,
+                                                  guw_type_id: guw_type.id,
                                                   guw_attribute_id: guowa.guw_attribute_id).first
                 worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
                 worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
@@ -1578,9 +1650,9 @@ class OrganizationsController < ApplicationController
             end
 
             unless @wbs_activity.nil?
-              kk = header.size - @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size - 1 #-1 for TJM moyen
+              kk = header.size - @wbs_activity.wbs_activity_elements.where(organization_id: @organization.id).select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size - 1 #-1 for TJM moyen
 
-              @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.first
+              @wbs_activity_ratio = @wbs_activity.wbs_activity_ratios.where(organization_id: @organization.id).first
               @module_project_ratio_elements = @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, mp)
               @root_module_project_ratio_element = @module_project_ratio_elements.select{|i| i.root? }.first
 
@@ -1588,14 +1660,14 @@ class OrganizationsController < ApplicationController
 
               calculator = Dentaku::Calculator.new
 
-              @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
+              @wbs_activity.wbs_activity_elements.where(organization_id: @organization.id).select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-                guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
+                guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Charge RTU (jh)").first
 
                 if guw_output_effort.nil?
-                  guw_output_effort = Guw::GuwOutput.where(name: "Charge RIS (jh)", guw_model_id: @guw_model.id).first
+                  guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Charge RIS (jh)").first
                 end
-                guw_output_test = Guw::GuwOutput.where(name: "Assiette Test (jh)", guw_model_id: @guw_model.id).first
+                guw_output_test = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Assiette Test (jh)").first
 
                 mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
 
@@ -1604,7 +1676,10 @@ class OrganizationsController < ApplicationController
                   guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
                   guw_output_test_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_test.id}"].to_f.round(2)))
 
-                  corresponding_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', @wbs_activity_ratio.id, wbs_activity_element.id).first
+                  corresponding_ratio_elt = WbsActivityRatioElement.where(organization_id: @organization.id,
+                                                                          wbs_activity_id: @wbs_activity.id,
+                                                                          wbs_activity_ratio_id: @wbs_activity_ratio.id,
+                                                                          wbs_activity_element_id: wbs_activity_element.id).first
 
                   final_formula = corresponding_ratio_elt.formula
                                       .gsub("RTU", guw_output_effort_value.to_s)
@@ -1716,9 +1791,10 @@ class OrganizationsController < ApplicationController
     worksheet = workbook.worksheets[0]
     ind = 0
 
-    @current_organization.projects.each do |project|
+    @organization = @current_organization
+    @organization.projects.each do |project|
 
-      module_project = project.module_projects.select{|i| i.pemodule.alias == "guw" }.first
+      module_project = project.module_projects.where(organization_id: @organization.id).select{|i| i.pemodule.alias == "guw" }.first
 
       unless module_project.nil?
         @guw_model = module_project.guw_model
@@ -1729,7 +1805,8 @@ class OrganizationsController < ApplicationController
 
         unless @wbs_activity.nil?
           @component = current_component
-          @guw_unit_of_works = Guw::GuwUnitOfWork.where(module_project_id: module_project,
+          @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization.id,
+                                                        module_project_id: module_project,
                                                         guw_model_id: @guw_model)
 
           hash = @guw_model.orders
@@ -1811,13 +1888,13 @@ class OrganizationsController < ApplicationController
 
             hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
               if Guw::GuwCoefficient.where(name: i[0]).first.class == Guw::GuwCoefficient
-                guw_coefficient = Guw::GuwCoefficient.where(name: i[0], guw_model_id: @guw_model.id).first
+                guw_coefficient = Guw::GuwCoefficient.where(guw_model_id: @guw_model.id, name: i[0]).first
                 unless guw_coefficient.nil?
                   unless guw_coefficient.guw_coefficient_elements.empty?
                     unless module_project.nil?
-                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guow.id,
-                                                                        guw_coefficient_id: guw_coefficient.id,
-                                                                        module_project_id: module_project.id).first
+                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: module_project.id,
+                                                                        guw_unit_of_work_id: guow.id,
+                                                                        guw_coefficient_id: guw_coefficient.id).first
 
                       if guw_coefficient.coefficient_type == "Pourcentage"
                         worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f.round(2)).to_s)
@@ -1921,7 +1998,7 @@ class OrganizationsController < ApplicationController
       end
     end
 
-    send_data(workbook.stream.string, filename: "#{@current_organization.name}-#{@guw_model.name}-#{Time.now.strftime('%Y-%m-%d-%H-%M')}.xlsx", type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{@organization.name}-#{@guw_model.name}-#{Time.now.strftime('%Y-%m-%d-%H-%M')}.xlsx", type: "application/vnd.ms-excel")
   end
 
   def report
@@ -2033,8 +2110,6 @@ class OrganizationsController < ApplicationController
     @guw_models = @organization.guw_models.order("name asc")
     @skb_models = @organization.skb_models.order("name asc")
     @wbs_activities = @organization.wbs_activities.order("name asc")
-    #@technologies = @organization.organization_technologies.order("name asc")
-
   end
 
   def users
@@ -2043,6 +2118,115 @@ class OrganizationsController < ApplicationController
 
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_users, parameter: @organization)
+  end
+
+  def async_estimations
+    #
+    # @organization = Organization.find(params[:organization_id])
+    #
+    # if params[:filter_version].present?
+    #   @filter_version = params[:filter_version]
+    # else
+    #   @filter_version = '4'
+    # end
+    #
+    # @object_per_page = (current_user.object_per_page || 10)
+    #
+    # if params[:min].present? && params[:max].present?
+    #   @min = params[:min].to_i
+    #   @max = params[:max].to_i
+    # else
+    #   @min = 0
+    #   @max = @object_per_page
+    # end
+    #
+    # if session[:sort_action].blank?
+    #   session[:sort_action] = "true"
+    # end
+    #
+    # if session[:sort_column].blank?
+    #   session[:sort_column] = "start_date"
+    # end
+    #
+    # if session[:sort_order].blank?
+    #   session[:sort_order] ="desc"
+    # end
+    #
+    # @sort_action = params[:sort_action].blank? ? session[:sort_action] : params[:sort_action]
+    # @sort_column = params[:sort_column].blank? ? session[:sort_column] : params[:sort_column]
+    # @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
+    #
+    # @search_column = session[:search_column]
+    # @search_value = session[:search_value]
+    # @search_hash = (params['search'].blank? ? session[:search_hash] : params['search'])
+    # @search_hash ||=  {}
+    # @search_string = ""
+    #
+    # # Pour garder le tri même lors du rafraichissement de la page
+    # projects = @organization.projects.where(:is_model => [nil, false])
+    # organization_projects = get_sorted_estimations(@organization.id, projects, @sort_column, @sort_order, @search_hash)
+    #
+    # res = []
+    # organization_projects.each do |p|
+    #   if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+    #     res << p
+    #   end
+    #
+    #   # if can?(:see_project, p.project, estimation_status_id: p.project.estimation_status_id)
+    #   #   res << p.project
+    #   # end
+    # end
+    #
+    # @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    #
+    # last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    # @last_page_min = (last_page.to_i-1) * @object_per_page
+    # @last_page_max = @last_page_min + @object_per_page
+    #
+    # if params[:is_last_page] == "true" || (@min == @last_page_min)
+    #   @is_last_page = "true"
+    # else
+    #   @is_last_page = "false"
+    # end
+    #
+    # session[:sort_column] = @sort_column
+    # session[:sort_order] = @sort_order
+    # session[:sort_action] = @sort_action
+    # session[:is_last_page] = @is_last_page
+    # session[:search_column] = @search_column
+    # session[:search_value] = @search_value
+    # session[:search_hash] = @search_hash
+    #
+    # @fields_coefficients = {}
+    # @pfs = {}
+    #
+    # fields = @organization.fields
+    # ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
+    #   begin
+    #     if pf.field_id.in?(fields.map(&:id))
+    #       if pf.project && pf.views_widget
+    #         if pf.project_id == pf.views_widget.module_project.project_id
+    #           @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+    #         else
+    #           pf.delete
+    #         end
+    #       else
+    #         pf.delete
+    #       end
+    #     else
+    #       pf.delete
+    #     end
+    #
+    #   rescue
+    #     #puts "erreur"
+    #   end
+    # end
+    #
+    # fields.each do |f|
+    #   @fields_coefficients[f.id] = f.coefficient
+    # end
+    #
+    # render :partial => 'organizations/organization_projects', object: [@organization, @projects]
   end
 
   def estimations
@@ -2153,9 +2337,6 @@ class OrganizationsController < ApplicationController
     session[:search_value] = @search_value
     session[:search_hash] = @search_hash
 
-    # @projects = check_for_projects(@min, @max)
-    # @projects = check_for_projects(@min, @object_per_page)
-
     @fields_coefficients = {}
     @pfs = {}
 
@@ -2264,7 +2445,7 @@ class OrganizationsController < ApplicationController
     user = current_user
 
     #begin
-    old_prj = Project.find(project_id)
+    old_prj = Project.where(organization_id: new_organization_id, id: project_id).first #.find(project_id)
     new_organization = Organization.find(new_organization_id)
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
@@ -2285,9 +2466,8 @@ class OrganizationsController < ApplicationController
       old_prj.save #Original project copy number will be incremented to 1
 
       old_prj.applications.each do |application|
-        app = Application.where(name: application.name, organization_id: new_organization.id).first
-        ap = ApplicationsProjects.create(application_id: app.id,
-                                         project_id: new_prj.id)
+        app = Application.where(organization_id: new_organization.id, name: application.name).first
+        ap = ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
         # new_prj.application_id = app.id
         # new_prj.save(validate: false)
         ap.save
@@ -2313,14 +2493,14 @@ class OrganizationsController < ApplicationController
       #if params[:action_name] == "create_project_from_template"
       if old_prj.is_model
         unless old_prj.creator.nil?
-          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id)
+          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id, organization_id: new_organization.id)
           unless creator_securities.nil?
             creator_securities.update_attribute(:user_id, user.id)
           end
         end
       end
       #Other project securities for groups
-      new_prj.project_securities.where('group_id IS NOT NULL').each do |project_security|
+      new_prj.project_securities.where(organization_id: new_organization.id).where.not(group_id: nil).each do |project_security|
         new_security_level = new_organization.project_security_levels.where(copy_id: project_security.project_security_level_id).first
         new_group = new_organization.groups.where(copy_id: project_security.group_id).first
         if new_security_level.nil? || new_group.nil?
@@ -2331,7 +2511,7 @@ class OrganizationsController < ApplicationController
       end
 
       #Other project securities for users
-      new_prj.project_securities.where('user_id IS NOT NULL').each do |project_security|
+      new_prj.project_securities.where(organization_id: new_organization.id).where.not(user_id: nil).each do |project_security|
         new_security_level = new_organization.project_security_levels.where(copy_id: project_security.project_security_level_id).first
         if new_security_level.nil?
           project_security.destroy
@@ -2341,18 +2521,18 @@ class OrganizationsController < ApplicationController
       end
 
       # For ModuleProject associations
-      old_prj.module_projects.group(:id).each do |old_mp|
-        new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+      old_prj.module_projects.where(organization_id: new_organization.id).group(:id).each do |old_mp|
+        new_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: old_mp.id).first #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
 
         # ModuleProject Associations for the new project
         old_mp.associated_module_projects.each do |associated_mp|
-          new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
+          new_associated_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: associated_mp.id).first
           new_mp.associated_module_projects << new_associated_mp
         end
 
         ##========================== NEW =======
         # Wbs activity create module_project ratio elements
-        old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+        old_mp.module_project_ratio_elements.where(organization_id: new_organization.id).each do |old_mp_ratio_elt|
           mp_ratio_element = old_mp_ratio_elt.dup
           mp_ratio_element.module_project_id = new_mp.id
           mp_ratio_element.copy_id = old_mp_ratio_elt.id
@@ -2372,12 +2552,12 @@ class OrganizationsController < ApplicationController
             mp_ratio_element.wbs_activity_ratio_element_id = nil
           else
             # wbs_activity_element
-            new_wbs_activity_element = new_wbs_activity.wbs_activity_elements.where(copy_id: old_mp_ratio_elt.wbs_activity_element_id).first
+            new_wbs_activity_element = new_wbs_activity.wbs_activity_elements.where(organization_id: new_organization.id, copy_id: old_mp_ratio_elt.wbs_activity_element_id).first
             new_wbs_activity_element_id = new_wbs_activity_element.nil? ? nil : new_wbs_activity_element.id
             mp_ratio_element.wbs_activity_element_id = new_wbs_activity_element_id
 
             # wbs_activity_ratio
-            new_wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(copy_id: old_mp_ratio_elt.wbs_activity_ratio_id).first
+            new_wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(organization_id: new_organization.id, copy_id: old_mp_ratio_elt.wbs_activity_ratio_id).first
 
             if new_wbs_activity_ratio.nil?
               mp_ratio_element.wbs_activity_ratio_id = nil
@@ -2386,7 +2566,7 @@ class OrganizationsController < ApplicationController
               mp_ratio_element.wbs_activity_ratio_id = new_wbs_activity_ratio.id
 
               # wbs_activity_ratio_element
-              new_wbs_activity_ratio_element = new_wbs_activity_ratio.wbs_activity_ratio_elements.where(copy_id: old_mp_ratio_elt.wbs_activity_ratio_element_id).first
+              new_wbs_activity_ratio_element = new_wbs_activity_ratio.wbs_activity_ratio_elements.where(organization_id: new_organization.id, copy_id: old_mp_ratio_elt.wbs_activity_ratio_element_id).first
               wbs_activity_ratio_element_id = new_wbs_activity_ratio_element.nil? ? nil : new_wbs_activity_ratio_element.id
 
               mp_ratio_element.wbs_activity_ratio_element_id = wbs_activity_ratio_element_id
@@ -2396,7 +2576,7 @@ class OrganizationsController < ApplicationController
           mp_ratio_element.save
         end
 
-        new_mp_ratio_elements = new_mp.module_project_ratio_elements
+        new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: new_organization.id)
         new_mp_ratio_elements.each do |mp_ratio_element|
           #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
 
@@ -2497,14 +2677,14 @@ class OrganizationsController < ApplicationController
         if old_mp.view
           old_mp_view_widgets = old_mp.view.views_widgets.all
           old_mp_view_widgets.each do |view_widget|
-            new_view_widget_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, view_widget.module_project_id)
+            new_view_widget_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: view_widget.module_project_id).first  #.find_by_project_id_and_copy_id(new_prj.id, view_widget.module_project_id)
             new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
             widget_est_val = view_widget.estimation_value
             unless widget_est_val.nil?
               in_out = widget_est_val.in_out
               widget_pe_attribute_id = widget_est_val.pe_attribute_id
               unless new_view_widget_mp.nil?
-                new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
+                new_estimation_value = new_view_widget_mp.estimation_values.where(organization_id: new_organization_id, pe_attribute_id: widget_pe_attribute_id, in_out: in_out).last
                 estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
                 widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id,
                                                  name: view_widget.name, show_name: view_widget.show_name,
@@ -2513,6 +2693,8 @@ class OrganizationsController < ApplicationController
                                                  comment: view_widget.comment,
                                                  is_kpi_widget: view_widget.is_kpi_widget,
                                                  kpi_unit: view_widget.kpi_unit,
+                                                 is_project_data_widget: view_widget.is_project_data_widget,
+                                                 project_attribute_name: view_widget.project_attribute_name,
                                                  icon_class: view_widget.icon_class, color: view_widget.color,
                                                  show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
                                                  width: view_widget.width, height: view_widget.height, position: view_widget.position,
@@ -2534,10 +2716,10 @@ class OrganizationsController < ApplicationController
                       mp_id = view_widget.equation[letter].last
 
                       begin
-                        new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                        new_mpr = new_prj.module_projects.where(organization_id: new_organization_id, copy_id: mp_id).first
                         new_mpr_id = new_mpr.id
                         begin
-                          new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                          new_est_val_id = new_mpr.estimation_values.where(organization_id: new_organization_id, copy_id: est_val_id).first.id
                         rescue
                           new_est_val_id = nil
                         end
@@ -2572,7 +2754,7 @@ class OrganizationsController < ApplicationController
         ###end
 
         #Update the Unit of works's groups
-        new_mp.guw_unit_of_work_groups.each do |guw_group|
+        new_mp.guw_unit_of_work_groups.where(organization_id: new_organization_id, project_id: new_prj.id).each do |guw_group|
           new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
           new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
 
@@ -2585,8 +2767,9 @@ class OrganizationsController < ApplicationController
                                       project_id: new_prj.id, organization_id: new_organization_id)
 
           # Update the group unit of works and attributes
-          guw_group.guw_unit_of_works.each do |guw_uow|
-            new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+          guw_group.guw_unit_of_works.where(organization_id: new_organization_id, project_id: new_prj.id).each do |guw_uow|
+            #new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+            new_uow_mp = ModuleProject.where(organization_id: new_organization_id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first
             new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
 
             #PBS
@@ -2665,7 +2848,7 @@ class OrganizationsController < ApplicationController
             new_mp.wbs_activity_inputs.where(wbs_activity_id: old_wbs_activity_id).each do |activity_input|
               activity_input.wbs_activity_id = new_wbs_activity.id
 
-              wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(copy_id: activity_input.wbs_activity_ratio_id).first
+              wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(organization_id: new_organization_id, copy_id: activity_input.wbs_activity_ratio_id).first
               if wbs_activity_ratio.nil?
                 activity_input.wbs_activity_ratio_id = nil
               else
@@ -2682,7 +2865,7 @@ class OrganizationsController < ApplicationController
           new_mp_pemodule_attributes.each do |attr|
             old_prj.pbs_project_elements.each do |old_component|
               new_prj_components.each do |new_component|
-                ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
+                ev = new_mp.estimation_values.where(organization_id: new_organization_id, pe_attribute_id: attr.id, in_out: io).first
                 unless ev.nil?
 
                   ["low", "most_likely", "high", "probable"].each do |level|
@@ -2721,7 +2904,7 @@ class OrganizationsController < ApplicationController
                                 #puts "Ratio nul"
                               else
                                 wbs_activity = new_mp_ratio.wbs_activity
-                                new_element = new_mp.wbs_activity_elements.where(copy_id: element_id).first
+                                new_element = new_mp.wbs_activity_elements.where(organization_id: new_organization_id, wbs_activity_id: wbs_activity.id, copy_id: element_id).first
 
                                 if new_element
                                   temp_values[new_component.id][new_element.id] = values_hash
@@ -2768,55 +2951,10 @@ class OrganizationsController < ApplicationController
                         new_level_value[new_component.id.to_i] = old_level_value[old_component.id.to_i]
                         ev.send("string_data_#{level}=", new_level_value)
 
-                        # case level
-                        #   when "low"
-                        #     ev_low = ev.string_data_low.delete(old_component.id)
-                        #     ev.string_data_low[new_component.id.to_i] = ev_low
-                        #   when "most_likely"
-                        #     ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
-                        #     ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
-                        #   when "high"
-                        #     ev_high = ev.string_data_high.delete(old_component.id)
-                        #     ev.string_data_high[new_component.id.to_i] = ev_high
-                        #   when "probable"
-                        #     ev_probable = ev.string_data_probable.delete(old_component.id)
-                        #     ev.string_data_probable[new_component.id.to_i] = ev_probable
-                        # end
-
                       end
                     end
 
                   end  ###
-
-                  #puts "hello"
-                  #puts "hello2"
-
-                  # ev_low = ev.string_data_low.delete(old_component.id)
-                  # ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
-                  # ev_high = ev.string_data_high.delete(old_component.id)
-                  # ev_probable = ev.string_data_probable.delete(old_component.id)
-                  #
-                  # puts "low = #{ ev.string_data_low}"
-                  # puts "ml = #{ ev.string_data_most_likely}"
-                  # puts "high = #{ ev.string_data_high}"
-                  # puts "probable = #{ ev.string_data_probable}"
-
-                  # ev.string_data_low[new_component.id.to_i] = ev.string_data_low[old_component.id.to_i]
-                  # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely[old_component.id.to_i]
-                  # ev.string_data_high[new_component.id.to_i] = ev.string_data_high[old_component.id.to_i]
-                  # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable[old_component.id.to_i]
-
-                  # ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
-                  # ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
-                  # ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
-                  # ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
-
-                  # ev.string_data_low.delete(old_component.id)
-                  # ev.string_data_most_likely.delete(old_component.id)
-                  # ev.string_data_high.delete(old_component.id)
-                  # ev.string_data_probable.delete(old_component.id)
-
-                  # update ev attribute links (input attribute link from preceding module_project)
 
                   unless ev.estimation_value_id.nil?
                     project_id = new_prj.id
@@ -3482,7 +3620,6 @@ class OrganizationsController < ApplicationController
 
       render action: 'edit'
     end
-
   end
 
   def confirm_organization_deletion
@@ -3552,7 +3689,6 @@ class OrganizationsController < ApplicationController
         redirect_to organization_estimations_path(@organizations.first) and return
       end
     end
-
   end
 
   def export_user
@@ -3664,7 +3800,7 @@ class OrganizationsController < ApplicationController
                 group_index = 9
                 if can?(:manage, Group, :organization_id => @current_organization.id)
                    while row[group_index]
-                      group = Group.where(name: row[group_index].nil? ? '' : row[group_index].value, organization_id: @current_organization.id).first
+                      group = Group.where(organization_id: @current_organization.id, name: row[group_index].nil? ? '' : row[group_index].value).first
                       begin
                         if (group.is_protected_group != true || ( group.is_protected_group == true && ( @current_user.super_admin || @current_user.groups.include?(group)) ))
                           GroupsUsers.create(group_id: group.id, user_id: user.id)
@@ -4139,11 +4275,9 @@ class OrganizationsController < ApplicationController
   private
   def check_if_organization_is_image(organization)
     unless organization.new_record?
-      if organization.is_image_organization == true || (current_user.super_admin != true && !current_user.organization_ids.include?(organization.id))
-        redirect_to("/all_organizations",
-                    flash: {
-                        error: "Vous ne pouvez pas accéder aux estimations d'une organization image"
-                    }) and return
+      if organization.is_image_organization == true || !current_user.organization_ids.include?(organization.id)
+        error_message = (organization.is_image_organization == true)? I18n.t(:can_not_access_the_estimates_of_an_image_organization) : I18n.t(:not_authorized_to_access_this_organization)
+        redirect_to("/all_organizations", flash: { error: error_message }) and return
       end
     end
   end

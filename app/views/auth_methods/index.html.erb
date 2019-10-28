@@ -35,7 +35,7 @@
                     <td><%= auth_method.name %></td>
                     <td class="center">
                       <%= link_to raw("<i class='material-icons'>edit</i>"), edit_auth_method_path(auth_method), :class => 'material-icon', :title => I18n.t('edit') %>
-                      <%= link_to raw("<i class='material-icons'>delete</i>"), auth_method, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                      <%= link_to raw("<i class='material-icons'>delete</i>"), auth_method, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
                     </td>
                   </tr>
               <% end %>

@@ -241,6 +241,10 @@ class ViewsWidgetsController < ApplicationController
       end
     end
 
+    if params[:views_widget][:is_project_data_widget].present?
+      @views_widget.module_project_id = @module_project.id
+      @views_widget.is_project_data_widget = true
+    end
 
     respond_to do |format|
       if @views_widget.save
@@ -290,10 +294,10 @@ class ViewsWidgetsController < ApplicationController
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
 
-      @views_widget.min_value = params[:views_widget][:min_value]
-      @views_widget.max_value = params[:views_widget][:max_value]
+    @views_widget.min_value = params[:views_widget][:min_value]
+    @views_widget.max_value = params[:views_widget][:max_value]
 
-      project = @project
+    project = @project
 
     if params[:views_widget][:is_kpi_widget].present?
       @views_widget.is_kpi_widget = true
@@ -491,7 +495,6 @@ class ViewsWidgetsController < ApplicationController
     end
   end
 
-
   # Show the effort display unit if the attribute alias is part of Effort attributes
   def show_widget_effort_display_unit(module_project_id=nil, estimation_value_id=nil)
 
@@ -638,6 +641,60 @@ class ViewsWidgetsController < ApplicationController
   def get_module_project_attributes_input_output(module_project)
     estimation_values = module_project.get_module_project_estimation_values.group_by{ |attr| attr.in_out }.sort()
   end
+
+  # def vw_pf_script
+  #   include ProjectsHelper
+  #   include ViewsWidgetsHelper
+  #
+  #   o = Organization.find(69)
+  #   o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+  #     # effort
+  #     pf = ProjectField.where(project_id: project.id, field_id: 96).first_or_create
+  #     vw = ViewsWidget.where(name: "Charge Totale (jh)", module_project_id: project.module_project_ids).first
+  #     pf.views_widget_id = vw.id
+  #     value = get_kpi_value_without_unit(vw, project.root_component)
+  #
+  #     unless value.nil?
+  #       pf.value = value
+  #     end
+  #     pf.save
+  #   end
+  #
+  #   include ProjectsHelper
+  #   include ViewsWidgetsHelper
+  #   o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+  #     # cost
+  #     pf = ProjectField.where(project_id: project.id, field_id: 97).first_or_create
+  #     vw = ViewsWidget.where(name: "Coût Total (€)", module_project_id: project.module_project_ids).first
+  #     begin
+  #       pf.views_widget_id = vw.id
+  #       value = get_kpi_value_without_unit(vw, project.root_component)
+  #       unless value.nil?
+  #         pf.value = value
+  #       end
+  #       pf.save
+  #     rescue
+  #     end
+  #   end
+  #
+  #   # include ProjectsHelper
+  #   # include ViewsWidgetsHelper
+  #   # o.projects.where(original_model_id: [4067, 7827, 7828]).each do |project|
+  #     # localisation
+  #     # pf = ProjectField.where(project_id: project.id, field_id: 119).first_or_create
+  #     # vw = ViewsWidget.where(name: "Localisation", module_project_id: project.module_project_ids).first
+  #     # begin
+  #     #   pf.views_widget_id = vw.id
+  #     #   value = get_ev_value(vw.estimation_value.id, project.root_component)
+  #     #   unless value.nil? || value == 0
+  #     #     pf.value = value
+  #     #   end
+  #     #   pf.save
+  #     # rescue
+  #     # end
+  #   # end
+  #
+  # end
 
 end
 

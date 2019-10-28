@@ -15,7 +15,8 @@
               <%= simple_form_for(@guw_attribute) do |f| %>
                 <%= f.error_notification %>
 
-                <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+      <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+      <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
 
                 <div class="form-row">
                   <div class="col-5">

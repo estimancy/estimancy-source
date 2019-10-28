@@ -192,16 +192,10 @@ class ApplicationController < ActionController::Base
         end
       end
     end
+
   end
 
   def current_ability
-    # unless @project.nil?
-    #   if controller_name == "projects" and @project.persisted?
-    #     @current_organization = @project.organization
-    #   end
-    # end
-    #@current_ability ||= Ability.new(current_user, @current_organization, [@project])
-
     begin
       if current_user.organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
@@ -390,15 +384,15 @@ class ApplicationController < ActionController::Base
     if @project.nil?
       return nil
     else
+      organization = @project.organization
       pemodule = Pemodule.find_by_alias('initialization')
-      default_current_module_project = ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
+      default_current_module_project = ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id , project_id: @project.id).first
       if @project.module_projects.map(&:id).include?(session[:module_project_id].to_i)
         return session[:module_project_id].nil? ? default_current_module_project : ModuleProject.find(session[:module_project_id])
       else
         begin
-          # pemodule = Pemodule.find_by_alias('initialization')
-          # return ModuleProject.where('pemodule_id = ? AND project_id = ?', pemodule.id, @project.id).first
-          return @project.module_projects.first
+          pemodule = Pemodule.find_by_alias('initialization')
+          ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id, project_id: @project.id).first
         rescue
           return @project.module_projects.first
         end
@@ -734,13 +728,13 @@ class ApplicationController < ActionController::Base
     unless search_hash.blank?
       ###projects = get_search_results(organization_id, projects, search_column, search_value)
       organization_projects = get_multiple_search_results(organization_id, projects, search_hash)
-      projects = Project.where(id: organization_projects.map(&:id))
+      projects = Project.where(organization_id: organization_id, id: organization_projects.map(&:id))
     end
 
     project_ids = projects.map(&:id)
 
     if k.blank?
-      #projects =  projects.reorder("start_date desc").order('created_at desc')
+      #projects =  projects.reorder("start_date desc").order('created_at desc').order('created_at desc')
 
       project_selected_columns = organization.project_selected_columns
       default_sort_column = organization.default_estimations_sort_column rescue nil
@@ -853,5 +847,6 @@ class ApplicationController < ActionController::Base
 
     filtered_projects
   end
+
 
 end

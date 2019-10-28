@@ -50,7 +50,7 @@
                         <%= link_to(raw("<i class='material-icons'>info</i>"), {:controller => 'pe_attributes',
                                          :action => 'find_use_attribute',
                                          :pe_attribute_id => attribute.id}, :remote => true, "data-pe_attribute_id" => attribute.id, :class => 'material-icon', :id => 'find_use_pe_attribute', :title => I18n.t('button_find_use')) %>
-                        <%= link_to raw("<i class='material-icons'>delete</i>"), attribute, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
+                        <%= link_to raw("<i class='material-icons'>delete</i>"), attribute, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icon', :title => I18n.t('delete') %>
                       </td>
                     </tr>
                 <% end %>

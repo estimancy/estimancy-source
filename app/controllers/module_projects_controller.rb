@@ -332,6 +332,7 @@ class ModuleProjectsController < ApplicationController
   def update_module_project_view_config
     @module_project = ModuleProject.find(params[:module_project_id])
     @project = @module_project.project
+    organization_id = @project.organization_id
 
     authorize! :alter_estimation_plan, @project
 
@@ -358,13 +359,13 @@ class ModuleProjectsController < ApplicationController
               @module_project.update_attributes(view_id: selected_view.id, color: params['module_project']['color'])
             else
               #want to use another view, so need to copy the view with all its widgets
-              new_copied_view = View.new(name: "#{@project} - #{@module_project} view", description: "", pemodule_id: @module_project.pemodule_id, organization_id: @project.organization_id, initial_view_id: selected_view.id)
+              new_copied_view = View.new(name: "#{@project} - #{@module_project} view", description: "", pemodule_id: @module_project.pemodule_id, organization_id: organization_id, initial_view_id: selected_view.id)
               if new_copied_view.save
                 #Then copy the widgets
                 selected_view.views_widgets.each do |view_widget|
                   widget_est_val = view_widget.estimation_value
                   in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
-                  estimation_value = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
+                  estimation_value = @module_project.estimation_values.where(organization_id: organization_id, pe_attribute_id: view_widget.estimation_value.pe_attribute_id, in_out: in_out).last
                   estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
                   widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: @module_project.id, estimation_value_id: estimation_value_id,
                                                 name: view_widget.name, show_name: view_widget.show_name,
@@ -373,6 +374,8 @@ class ModuleProjectsController < ApplicationController
                                                 comment: view_widget.comment,
                                                 is_kpi_widget: view_widget.is_kpi_widget,
                                                 kpi_unit: view_widget.kpi_unit,
+                                                is_project_data_widget: view_widget.is_project_data_widget,
+                                                project_attribute_name: view_widget.project_attribute_name,
                                                 icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
                                                 width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type, position: view_widget.position,
                                                 position_x: view_widget.position_x,
@@ -439,7 +442,7 @@ class ModuleProjectsController < ApplicationController
               selected_view.views_widgets.each do |view_widget|
                 widget_est_val = view_widget.estimation_value
                 in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
-                estimation_value = @module_project.estimation_values.where('pe_attribute_id = ? AND in_out=?', view_widget.estimation_value.pe_attribute_id, in_out).last
+                #estimation_value = @module_project.estimation_values.where(organization_id: organization_id, pe_attribute_id: view_widget.estimation_value.pe_attribute_id, in_out: in_out).last
                 widget_copy = ViewsWidget.new(view_id: new_view_saved_as.id, module_project_id: @module_project.id, estimation_value_id: view_widget.estimation_value_id,
                                               name: view_widget.name, show_name: view_widget.show_name,
                                               show_tjm: view_widget.show_tjm,
@@ -447,6 +450,8 @@ class ModuleProjectsController < ApplicationController
                                               comment: view_widget.comment,
                                               is_kpi_widget: view_widget.is_kpi_widget,
                                               kpi_unit: view_widget.kpi_unit,
+                                              is_project_data_widget: view_widget.is_project_data_widget,
+                                              project_attribute_name: view_widget.project_attribute_name,
                                               icon_class: view_widget.icon_class, color: view_widget.color,
                                               show_min_max: view_widget.show_min_max,
                                               width: view_widget.width, height: view_widget.height,

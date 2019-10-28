@@ -12,7 +12,8 @@
         <%= simple_form_for([@guw_model, @guw_coefficient]) do |f| %>
           <%= f.error_notification %>
 
-          <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+      <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+      <%= f.input :organization_id, as: :hidden, input_html: { value: @guw_model.organization_id } %>
 
           <div class="form-row">
             <div class="col-5">
@@ -37,7 +38,7 @@
           <div class="form-row">
             <div class="col-5">
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-              <%= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient"],
+              <%= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient", "Application"],
                           :label => false,
                           :input_html => {:class => 'mdl-textfield__input'},
                           :include_blank => false %>

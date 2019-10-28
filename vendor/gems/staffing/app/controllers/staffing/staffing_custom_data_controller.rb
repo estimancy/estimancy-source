@@ -112,6 +112,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @component = current_component
     @module_project = current_module_project
     @staffing_model = @module_project.staffing_model
+    current_organization = @current_organization
 
     @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).first
 
@@ -160,13 +161,15 @@ class Staffing::StaffingCustomDataController < ApplicationController
     effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
 
     begin
-      current_ev = EstimationValue.where(:pe_attribute_id => attribute.id, :module_project_id => @module_project.id, :in_out => "input").first
+      current_ev = EstimationValue.where(:organization_id => current_organization.id, :module_project_id => @module_project.id, :pe_attribute_id => attribute.id, :in_out => "input").first
 
       if !current_ev.estimation_value_id.nil?
         ev = EstimationValue.find(current_ev.estimation_value_id)
       else
-        ev = EstimationValue.where(:pe_attribute_id => attribute.id,
-                                   :module_project_id => @module_project.previous.last, :in_out => "output").first
+        ev = EstimationValue.where(:organization_id => current_organization.id,
+                                   :module_project_id => @module_project.previous.last,
+                                   :pe_attribute_id => attribute.id,
+                                    :in_out => "output").first
       end
     rescue
       ev = nil
@@ -341,12 +344,12 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @module_project = current_module_project
     @project = @module_project.project
 
-    ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
+    ViewsWidget::update_field(@module_project, current_organization, @project, current_component)
 
     # Reset all view_widget results
     ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
     @module_project.all_nexts_mp_with_links.each do |module_project|
-      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
+      ViewsWidget::update_field(module_project, current_organization, @project, current_component, true)
     end
 
     redirect_to :back
@@ -586,12 +589,12 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @module_project = current_module_project
     @project = @module_project.project
 
-    ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
+    ViewsWidget::update_field(@module_project, current_organization, @project, current_component)
 
     # Reset all view_widget results
     ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
     @module_project.all_nexts_mp_with_links.each do |module_project|
-      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
+      ViewsWidget::update_field(module_project, current_organization, @project, current_component, true)
     end
 
     redirect_to :back
@@ -603,7 +606,9 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_model = @module_project.staffing_model
     @staffing_custom_data = Staffing::StaffingCustomDatum.where(staffing_model_id: @staffing_model.id, module_project_id: @module_project.id, pbs_project_element_id: @component.id).last #first
 
-    current_module_project.pemodule.attribute_modules.each do |am|
+    current_mp  = current_module_project
+
+    current_mp.pemodule.attribute_modules.each do |am|
       in_out = []
 
       if am.in_out == "both"
@@ -612,10 +617,10 @@ class Staffing::StaffingCustomDataController < ApplicationController
         in_out = ["#{am.in_out}"]
       end
 
-      evs = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id, in_out: in_out)
+      evs = EstimationValue.where(:organization_id => current_mp.organization_id, :module_project_id => current_mp.id, :pe_attribute_id => am.pe_attribute.id, in_out: in_out)
 
       evs.each do |ev|
-        #ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+        #ev = EstimationValue.where(:organization_id => current_mp.organization_id, :module_project_id => current_mp.id, :pe_attribute_id => am.pe_attribute.id).first
         tmp_prbl = Array.new
 
         ["low", "most_likely", "high"].each do |level|

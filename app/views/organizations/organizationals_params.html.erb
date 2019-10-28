@@ -1,0 +1,115 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t (:organizations) %></a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <% if can? :create_organizations, Organization %>
+      <div class="group_button">
+        <%# link_to "Exporter l'ensemble des champs", export_organization_reference_path, class: 'btn' %>
+        <%= link_to I18n.t('create_button'), new_organization_path, :class => 'btn' %>
+        <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn' %>
+      </div>
+
+      <div id="display_copy_message" style="display: none; text-align: center">
+          <p id="syncStarted" style="display:none">
+            <strong><h4 style="color: green">La copie de l'organisation a démaré, merci de patienter...</h4></strong>
+          </p>
+      </div>
+    <% end %>
+
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th><%= I18n.t (:name) %></th>
+          <% if current_user.super_admin? %>
+            <th><%= I18n.t(:is_image_organization) %></th>
+          <% end %>
+          <th><%= I18n.t (:description) %></th>
+          <th class="action"><%= I18n.t (:actions) %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @organizations.each do |i| %>
+          <tr>
+            <td class="span2">
+              <% if i.is_image_organization || i.copy_in_progress==true %>
+                <%= i.name %>
+              <% else %>
+                <% if !current_user.super_admin? && current_user.subscription_end_date <= Time.now %>
+                  <%= i.name %>
+                <% else %>
+                  <%= link_to i.name, organization_estimations_path(i) %>
+                <% end %>
+              <% end %>
+            </td>
+            <% if current_user.super_admin? %>
+              <td class="span1 center">
+                <%= i.is_image_organization ? I18n.t("simple_form.yes") : I18n.t("simple_form.no") %>
+              </td>
+            <% end %>
+
+            <td class="span6"><%= i.description %></td>
+            <td class="center">
+              <% if can? :show_organizations, Organization %>
+                <% if i.copy_in_progress != true %>
+                    <%= link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
+                    <% if can? :manage, Organization && !(!current_user.super_admin? && current_user.subscription_end_date <= Time.now) %>
+                        <%#= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy copy_an_organization", remote: true  %>
+                        <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"),
+                                  class: "icon icon-copy copy_an_organization", remote: true, data: {toggle: "modal", target: "#modal-window_copy_organization"}  %>
+                        <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :titles => I18n.t('delete'))  %>
+                    <% end %>
+
+                <% else %>
+                    <%= I18n.t(:copy_in_progress) %>
+                <% end %>
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+        <%= render :partial => 'layouts/footer_table' %>
+      </tbody>
+    </table>
+  </div>
+
+  <div id="modal-window_copy_organization" class="modal hide fade" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+    <%= render partial: "display_animation_ajax_loader" %>
+  </div>
+
+  <!--<div id="display_animation_ajax_loader" style="display: none">-->
+    <!--<p> <%#= I18n.t(:wait_for_new_organization_creation) %></p>-->
+  <!--</div>-->
+
+  <script>
+
+      $('#close_copy_modal').click(function() {
+          $('#modal-window_copy_organization').modal('hide');
+          window.location.replace('/organizationals_params');
+      });
+
+
+      $('#modal-window_copy_organization').on('shown', function(){
+
+          setTimeout(function () {
+              $("#modal-window_copy_organization").modal("hide");
+          }, 5000);
+
+          window.location.replace('/organizationals_params');
+      });
+
+
+      //      $('.copy_an_organization').bind('ajax:beforeSend', function() {
+//          //$('#display_copy_message').show();
+//      });
+//
+//
+//      $('.copy_an_organization').bind('ajax:complete', function() {
+//          //$('#display_copy_message').hide();
+//      });
+
+  </script>
+</div>
+
+
+

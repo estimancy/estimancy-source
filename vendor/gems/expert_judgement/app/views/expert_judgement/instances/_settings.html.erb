@@ -36,13 +36,15 @@
     </tr>
 
     <% module_project = current_module_project %>
+    <% organization_id = module_project.organization_id %>
+    <% current_pbs = current_component %>
 
     <% @expert_judgement_attributes.each do |eja| %>
 
-      <% ie = ExpertJudgement::InstanceEstimate.where( pe_attribute_id: eja.id,
-                                                       expert_judgement_instance_id: @expert_judgement_instance.id,
-                                                       module_project_id: module_project.id,
-                                                       pbs_project_element_id: current_component.id).first_or_create %>
+      <% ie = ExpertJudgement::InstanceEstimate.where(expert_judgement_instance_id: @expert_judgement_instance.id,
+                                                       pe_attribute_id: eja.id,
+                                                       pbs_project_element_id: current_pbs.id,
+                                                       module_project_id: module_project.id).first_or_create %>
       <%
         attr_unit_coefficient = 1
         pe_attribute = PeAttribute.find(eja.id)
@@ -57,14 +59,17 @@
         attr_unit_coefficient = attr_unit_coefficient.nil? ? 1 : attr_unit_coefficient.to_f
       %>
 
-      <% current_ev =  EstimationValue.where(:pe_attribute_id => eja.id,
+      <% current_ev =  EstimationValue.where(organization_id: organization_id,
                                              :module_project_id => module_project.id,
+                                             :pe_attribute_id => eja.id,
                                              :in_out => "input").first %>
 
       <% if current_ev && !current_ev.estimation_value_id.nil? %>
         <% ev = EstimationValue.find(current_ev.estimation_value_id) %>
       <% else %>
-        <% ev = EstimationValue.where(:pe_attribute_id => eja.id, :module_project_id => module_project.previous.first, :in_out => "output").first %>
+        <% ev = EstimationValue.where(organization_id: organization_id,
+                                      :module_project_id => module_project.previous.first,
+                                      :pe_attribute_id => eja.id,  :in_out => "output").first %>
         <% if ev.nil? %>
             <% ev =  current_ev %>
         <% end %>
@@ -109,15 +114,15 @@
           <span class="pull-left">
 
             <% if @expert_judgement_instance.three_points_estimation? %>
-              <%= text_field_tag "values[#{eja.id}][low][input]", ie.convert_effort_to_show("low", eja, ev, current_component, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+              <%= text_field_tag "values[#{eja.id}][low][input]", ie.convert_effort_to_show("low", eja, ev, current_pbs, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
               <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
             <% end %>
 
-            <%= text_field_tag "values[#{eja.id}][most_likely][input]", ie.convert_effort_to_show("most_likely", eja, ev, current_component, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+            <%= text_field_tag "values[#{eja.id}][most_likely][input]", ie.convert_effort_to_show("most_likely", eja, ev, current_pbs, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
             <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
 
             <% if @expert_judgement_instance.three_points_estimation? %>
-              <%= text_field_tag "values[#{eja.id}][high][input]", ie.convert_effort_to_show("high", eja, ev, current_component, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+              <%= text_field_tag "values[#{eja.id}][high][input]", ie.convert_effort_to_show("high", eja, ev, current_pbs, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
               <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
             <% end %>
 

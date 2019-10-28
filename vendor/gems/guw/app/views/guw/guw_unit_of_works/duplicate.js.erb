@@ -1,31 +1,37 @@
 <%
-  @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
-  @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).uniq.compact.max
-  @guw_types = @guw_model.guw_types
+ organization_id = @project.organization_id
+  @module_positions = ModuleProject.where(organization_id: organization_id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+  @module_positions_x = @project.module_projects.where(organization_id: organization_id).order(:position_x).all.map(&:position_x).max
+  @guw_types = @guw_model.guw_types.where(organization_id: organization_id)
   @guw_type = @guw_unit_of_work.guw_type
 %>
 
 <% @hash_guw_outputs = {} %>
-<% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
+<% Guw::GuwOutput.where(organization_id: organization_id,
+                        guw_model_id: @guw_model.id,
                         name: @guw_model.orders.map(&:first)).each do |guw_output| %>
 <% @hash_guw_outputs[guw_output.name] = guw_output %>
 <% end %>
 
 <% @hash_guw_coefficients = {} %>
-<% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
+<% Guw::GuwCoefficient.where(organization_id: organization_id,
+                             guw_model_id: @guw_model.id,
                              name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
 <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
 <% end %>
 
 <% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
-<% Guw::GuwCoefficientElementUnitOfWork.where(module_project_id: current_module_project.id).each do |gceuw| %>
+<% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                              guw_model_id: @guw_model.id,
+                                              project_id: @project.id,
+                                              module_project_id: current_module_project.id).each do |gceuw| %>
 <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
 <% end %>
 
 $('table.group_<%= @guw_unit_of_work.guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %></tr>");
 
 var my_array = [];
-$(document).ready(function(){
+$(document).ready(function() {
   var new_line = "<%= @guw_unit_of_work.id %>"
   my_array.push(new_line);
   $("#modified_guw_line_ids").val(my_array);

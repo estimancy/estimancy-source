@@ -1,77 +1,77 @@
 <%#= simple_form_for(@module_project) do |f| %>
-<%= simple_form_for @module_project, :url => update_module_project_view_config_path, :method => :post, remote: true do |f| %>
+<%#= simple_form_for @module_project, :url => update_module_project_view_config_path, remote: true do |f| %>
 
-    <% if @module_project.errors.any? %>
-        <div id="error_explanation" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
-          <h2><%= pluralize(@module_project.errors.count, 'error') %> prohibited this module_project from being saved:</h2>
-          <ul>
-            <% @module_project.errors.full_messages.each do |msg| %>
-                <li><%= msg %></li>
-            <% end %>
-          </ul>
-        </div>
-    <% end %>
+    <%# if @module_project.errors.any? %>
+<!--        <div id="error_explanation" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">-->
+<!--          <h2><%#= pluralize(@module_project.errors.count, 'error') %> prohibited this module_project from being saved:</h2>-->
+<!--          <ul>-->
+            <%# @module_project.errors.full_messages.each do |msg| %>
+<!--                <li><%#= msg %></li>-->
+            <%# end %>
+<!--          </ul>-->
+<!--        </div>-->
+    <%# end %>
 
-    <div id="notifications"></div>
+<!--    <div id="notifications"></div>-->
 
-    <%= hidden_field_tag :module_project_id, @module_project.id %>
+    <%#= hidden_field_tag :module_project_id, @module_project.id %>
 
-    <%= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic pull-left", type: 'color', value: @module_project.color || '#D3D3D3'} %> <br>
+<!--    <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic pull-left", type: 'color', value: @module_project.color || '#D3D3D3'} %> <br>-->
 
-    <div id="label_use_referenced_view" style="display: none"><h3><%= I18n.t(:change_current_view) %></h3></div>
-    <div id="label_reference_current_view" style="display: none"><h3><%= I18n.t(:save_as_another_view) %></h3></div>
+<!--    <div id="label_use_referenced_view" style="display: none"><h3><%#= I18n.t(:change_current_view) %></h3></div>-->
+<!--    <div id="label_reference_current_view" style="display: none"><h3><%#= I18n.t(:save_as_another_view) %></h3></div>-->
 
-    <% if @module_project.pemodule.alias != Projestimate::Application::INITIALIZATION %>
-        <div style="margin-bottom: 10px; margin-top: 20px;">
-          <%= link_to "#{I18n.t(:change_current_view)} >>", "#", id: "show_table_module_view_list", remote: true %>
-        </div>
+    <%# if @module_project.pemodule.alias != Projestimate::Application::INITIALIZATION %>
+<!--        <div style="margin-bottom: 10px; margin-top: 20px;">-->
+          <%#= link_to "#{I18n.t(:change_current_view)} >>", "#", id: "show_table_module_view_list", remote: true %>
+<!--        </div>-->
 
-        <div style="margin-bottom: 10px; margin-top: 20px;">
-          <%= link_to "#{I18n.t(:save_as_another_view)} >>", "#", id: "save_current_view_as", remote: true %>
-        </div>
-    <% end %>
+<!--        <div style="margin-bottom: 10px; margin-top: 20px;">-->
+          <%#= link_to "#{I18n.t(:save_as_another_view)} >>", "#", id: "save_current_view_as", remote: true %>
+<!--        </div>-->
+    <%# end %>
 
-    <div id="show_div_for_save_as">
-       <table>
-         <tr>
-           <td><label><%= I18n.t(:name) %></label></td>
-           <td> <%= text_field_tag "view_name", "" %></td>
-         </tr>
-         <tr>
-           <td><%= I18n.t(:description) %></td>
-           <td><%= text_area_tag "view_description", "", rows: 5, class: "input-xxlarge" %></td>
-         </tr>
-       </table>
-    </div>
+<!--    <div id="show_div_for_save_as">-->
+<!--       <table>-->
+<!--         <tr>-->
+<!--           <td><label><%#= I18n.t(:name) %></label></td>-->
+<!--           <td> <%#= text_field_tag "view_name", "" %></td>-->
+<!--         </tr>-->
+<!--         <tr>-->
+<!--           <td><%#= I18n.t(:description) %></td>-->
+<!--           <td><%#= text_area_tag "view_description", "", rows: 5, class: "input-xxlarge" %></td>-->
+<!--         </tr>-->
+<!--       </table>-->
+<!--    </div>-->
 
-    <div id="table_module_view_list">
-        <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
-          <thead>
-              <tr>
-                <th><%= I18n.t(:selected_view) %></th>
-                <th><%= I18n.t(:name) %></th>
-                <th><%= I18n.t(:description) %></th>
-                <th><%= I18n.t(:widgets) %></th>
-              </tr>
-          </thead>
-          <tbody>
-              <% @corresponding_views.each do |view| %>
-                  <tr class="">
-                    <td class="center"><%= f.radio_button :view_id, view.id, :checked => @module_project.view == view %></td>
-                    <td><%= view.name %></td>
-                    <td><%= view.description %></td>
-                    <td><%= view.views_widgets.join('; ') %></td>
-                  </tr>
-              <% end %>
-          </tbody>
-          <tfoot><%#= render :partial => 'layouts/footer_table' %></tfoot>
-        </table>
-    </div>
+<!--    <div id="table_module_view_list">-->
+<!--        <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">-->
+<!--          <thead>-->
+<!--              <tr>-->
+<!--                <th><%#= I18n.t(:selected_view) %></th>-->
+<!--                <th><%#= I18n.t(:name) %></th>-->
+<!--                <th><%#= I18n.t(:description) %></th>-->
+<!--                <th><%#= I18n.t(:widgets) %></th>-->
+<!--              </tr>-->
+<!--          </thead>-->
+<!--          <tbody>-->
+              <%# @corresponding_views.each do |view| %>
+<!--                  <tr class="">-->
+<!--                    <td class="center"><%#= f.radio_button :view_id, view.id, :checked => @module_project.view == view %></td>-->
+<!--                    <td><%#= view.name %></td>-->
+<!--                    <td><%#= view.description %></td>-->
+<!--                    <td><%#= view.views_widgets.join('; ') %></td>-->
+<!--                  </tr>-->
+              <%# end %>
+<!--          </tbody>-->
+<!--          <tfoot><%##= render :partial => 'layouts/footer_table' %></tfoot>-->
+<!--        </table>-->
+<!--    </div>-->
 
-    <div style="margin-top: 30px;">
-        <%= f.submit I18n.t('label_save'), name: 'save', class: 'btn', id: 'save_view_button' %>
-        <%= f.submit I18n.t('label_save'), name: 'save_as', class: 'btn', id: 'save_as_view_button' %>
+<!--    <div style="margin-top: 30px;">-->
+        <%#= f.submit I18n.t('label_save'), name: 'save', class: 'btn', id: 'save_view_button' %>
+        <%#= f.submit I18n.t('label_save'), name: 'save_as', class: 'btn', id: 'save_as_view_button' %>
         <%#= f.submit I18n.t('save_as'), name: 'save_as', class: 'btn', id: 'save_as_view_button' %>
-        <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
-    </div>
-<% end %>
+<!--        <button class="btn" data-dismiss="modal" aria-hidden="true"><%#= I18n.t(:close) %></button>-->
+<!--    </div>-->
+<%# end %>

@@ -443,8 +443,6 @@
                               <% end %>
                           </table>
                         </div>
-
-
                       <br>
 
                       <% if can? :manage_modules_instances, ModuleProject %>
@@ -455,12 +453,18 @@
                   </div>
                 </div>
               </div>
-
+                
               <div class="tab-pane fade" id="tabs-coefficients" role="tabpanel" aria-labelledby="tabs-coefficients_tab">
 
                 <div class="row pb-5" style="margin-top:2rem">
 
                   <div class="col-9">
+
+                    <#% if can? :manage_modules_instances, ModuleProject %>
+                        <%#= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", data: {confirm: I18n.t(:are_you_sure)} %>
+                    <%# end %>
+                    <%#= link_to "", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
+
 
                     <div id="guw_coefficients_tab">
                       <% if @guw_coefficient %>
@@ -473,7 +477,6 @@
                     <% end %>
 
                     <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn btn-secondary" %>
-
                   </div>
 
                   <div class="col-3">

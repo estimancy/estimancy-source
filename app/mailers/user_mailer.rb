@@ -23,6 +23,12 @@ class UserMailer < ActionMailer::Base
   default from: SETTINGS['FROM']
   OLD_LOCALE = I18n.locale
 
+  def send_raw_data_extraction(user, organization)
+    @organization = organization
+    @user = user
+    mail(:to => [user.email], :subject => "[ESTIMANCY] - Export des données brutes")
+  end
+
   def send_notification(project, estimation_status)
     @project = project
     @estimation_status = estimation_status

@@ -1,6 +1,6 @@
 <section class="card card-content-bloc estimancy-form">
     <%= simple_form_for([@organization, @application]) do |f| %>
-    <%= f.error_notification %>
+      <%= f.error_notification %>
 
     <div class="card-body">
       <div class="edition-bloc-left">
@@ -75,6 +75,10 @@
 <!--          <label class="mdl-checkbox__label" for="is_ignored"><%#= I18n.t('is_ignored') %></label>-->
 <!--        </label>-->
       </div>
+
+       <%= f.input :criticality, :label => I18n.t('criticality'), :input_html => { :class => 'input-xlarge'} %>
+       <%= f.input :coefficient, :label => I18n.t('coefficient_value'), :input_html => { :class => 'input-xlarge'} %>
+       <%= f.input :coefficient_label, :label => I18n.t('coefficient_label'), :input_html => { :class => 'input-xlarge'} %>
 
     <br>
 

@@ -58,12 +58,15 @@
                     <th><%= I18n.t(:last_name) %></th>
                     <th><%= I18n.t(:login_name) %></th>
                     <th><%= I18n.t(:email) %></th>
+                    <th><%= I18n.t(:Confirmed_at) %></th>
                     <th><%= I18n.t(:groups) %></th>
 
                     <% if current_user.super_admin? %>
-                      <th><%= I18n.t(:Confirmed_at) %></th>
+                      <!--<th><%#= I18n.t(:Confirmed_at) %></th>-->
+                      <th><%= I18n.t(:is_super_admin) %></th>  
                     <% end %>
-
+                    <th><%= I18n.t(:locked_at)%></th>
+                    <th><%= I18n.t(:subscription_end_date)%></th>
                     <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
                   </tr>
                 </thead>
@@ -86,11 +89,15 @@
 
                     <td><%= user.login_name %></td>
                     <td><%= user.email %></td>
+                    <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed')  : I18n.l(user.confirmed_at.to_date) %></td>
                     <td><%= user.groups.where(organization_id: @organization.id).join('; ') %></td>
 
                     <% if current_user.super_admin? %>
-                      <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed')  : I18n.l(user.confirmed_at.to_date) %></td>
+                        <td class="center"><%= check_box_tag "is_super_admin", user.super_admin, user.super_admin, disabled: true %></td>
                     <% end %>
+                    <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : I18n.l(user.locked_at.to_date) %></td>
+                    <td class="center"><%= user.subscription_end_date.nil? ? "-" : I18n.l(user.subscription_end_date.to_date) %></td></td>
+
 
                     <td class="align-center">
                       <% if can? :manage, User, :organization_id => @organization.id %>
@@ -109,7 +116,7 @@
                       <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
                       <% if can? :manage, User, :organization_id => @organization.id %>
                         <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-                        <%= link_to raw("<i class='material-icons'>delete</i>"), destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                        <%= link_to raw("<i class='material-icons'>delete</i>"), destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
                       <% end %>
                     </td>
                   </tr>

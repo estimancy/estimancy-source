@@ -142,7 +142,7 @@ class Operation::OperationModelsController < ApplicationController
     #   input_attribute_ids = PeAttribute.where(alias: Operation::OperationModel::DEFAULT_INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
     # end
 
-    current_mp_estimation_values = current_module_project.estimation_values
+    current_mp_estimation_values = current_module_project.estimation_values.where(organization_id: @project.organization_id)
     input_evs = current_mp_estimation_values.where(pe_attribute_id: input_attribute_ids, in_out: "input")
     output_evs = current_mp_estimation_values.where(pe_attribute_id: output_attribute_ids, in_out: "output")
 
@@ -312,7 +312,7 @@ class Operation::OperationModelsController < ApplicationController
     current_module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
 
-      ev = EstimationValue.where(:module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id, in_out: "output").first
+      ev = EstimationValue.where(:organization_id => @project.organization_id, :module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id, in_out: "output").first
       ["low", "most_likely", "high"].each do |level|
 
         if @operation_model.three_points_estimation?

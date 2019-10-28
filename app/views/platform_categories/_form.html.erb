@@ -3,7 +3,11 @@
     <div class="edition-bloc-left">
       <div class="edition-bloc-title">
         <h1>
-          <%= I18n.t(:platform_category) %>
+          <% if @organization.name.downcase.include?("distribution transporteur") %>
+              <%= "TM" %>
+          <% else %>
+              <%= I18n.t(:platform_category) %>
+          <% end %>
         </h1>
       </div>
     </div>

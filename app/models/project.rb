@@ -65,6 +65,14 @@ class Project < ActiveRecord::Base
   has_many :wbs_project_elements, :through => :pe_wbs_projects
 
   has_many :guw_unit_of_works, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
+
+  has_many :guw_model, :through => :module_projects, class_name: "Guw::GuwModel"
+  has_many :guw_coefficients, :through => :guw_model, class_name: "Guw::GuwCoefficient"
+  has_many :guw_attributes, :through => :guw_model, class_name: "Guw::GuwAttribute"
+  has_many :guw_types, :through => :guw_unit_of_works, class_name: "Guw::GuwType"
+  has_many :guw_unit_of_work_attributes, :through => :guw_unit_of_works, class_name: "Guw::GuwUnitOfWorkAttribute"
+  has_many :guw_coefficient_element_unit_of_works, :through => :guw_unit_of_works, class_name: "Guw::GuwCoefficientElementUnitOfWork"
+
   
   default_scope { order('title ASC, version_number ASC') }
 
@@ -86,7 +94,7 @@ class Project < ActiveRecord::Base
       new_project.copy_id = original_project.id
       new_project.title = "#{original_project.title}(#{new_copy_number})" ###"Copy_#{ original_project.copy_number.to_i+1} of #{original_project.title}"
       new_project.alias = "#{original_project.alias}(#{new_copy_number})" ###"Copy_#{ original_project.copy_number.to_i+1} of #{original_project.alias}"
-      new_project.description = " #{original_project.description} \n \n This project is a duplication of project \"#{original_project.title} (#{original_project.alias}) - #{original_project.version_number}\" "
+      new_project.description = " #{original_project.description} \n \n  #{I18n.t(:text_project_duplication_of)} \"#{original_project.title} (#{original_project.alias}) - #{original_project.version_number}\" "
       new_project.copy_number = 0
       original_project.copy_number = new_copy_number
     })
@@ -294,6 +302,7 @@ class Project < ActiveRecord::Base
 
   def create_new_version_when_changing_status(next_status, new_version_number=nil)
     current_user = User.find(User.current) rescue nil
+    last_estimation_status_name = self.estimation_status_id.nil? ? "" : self.estimation_status.name
 
     if new_version_number.blank?
       new_version_number = self.set_next_project_version
@@ -308,9 +317,10 @@ class Project < ActiveRecord::Base
 
     # On cree la nouvelle version
     new_project_version = self.checkout_project_base(current_user, self.description, new_version_number, automatic_change_old_versions)
+    new_estimation_status_name = next_status.nil? ? "" : next_status.name
 
     # Puis on lui change de statut
-    new_comments_for_version = "#{I18n.l(Time.now)} : Version créée automatiquement par l'automatisme de changement de version. \r\n" + "___________________________________________________________________________\r\n" + self.status_comment
+    new_comments_for_version = "#{I18n.l(Time.now)} : #{I18n.t(:text_automatic_created_version)}  \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + self.status_comment
     new_project_version.update_attributes(estimation_status_id: next_status.id, status_comment: new_comments_for_version)
     new_project_version
   end
@@ -388,16 +398,20 @@ class Project < ActiveRecord::Base
   def update_project_views_and_widgets(old_mp, new_mp)
 
     new_prj = self
+    organization_id = new_prj.organization_id
 
     #We have to copy all the selected view's widgets in a new view for the current module_project
     if old_mp.view
       #Copy the views and widgets for the new project
-      new_view = View.new(organization_id: new_prj.organization_id, pemodule_id: new_mp.pemodule_id , name: "#{new_prj} :  #{new_mp}", description: "")
+      new_view = View.new(organization_id: organization_id, pemodule_id: new_mp.pemodule_id , name: "#{new_prj} :  #{new_mp}", description: "")
 
       if new_view.save
         old_mp_view_widgets = old_mp.view.views_widgets.all
         old_mp_view_widgets.each do |old_view_widget|
-          new_view_widget_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_view_widget.module_project_id)
+          new_view_widget_mp = ModuleProject.where(organization_id: organization_id,
+                                                   project_id: new_prj.id,
+                                                   copy_id: old_view_widget.module_project_id).first
+
           new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
           widget_est_val = old_view_widget.estimation_value
           if old_view_widget.is_kpi_widget || widget_est_val.nil?
@@ -412,6 +426,8 @@ class Project < ActiveRecord::Base
                                               is_kpi_widget: old_view_widget.is_kpi_widget,
                                               kpi_unit: old_view_widget.kpi_unit,
                                               equation: old_view_widget.equation,
+                                              is_project_data_widget: old_view_widget.is_project_data_widget,
+                                              project_attribute_name: old_view_widget.project_attribute_name,
                                               icon_class: old_view_widget.icon_class,
                                               color: old_view_widget.color,
                                               show_min_max: old_view_widget.show_min_max,
@@ -434,10 +450,10 @@ class Project < ActiveRecord::Base
                 mp_id = old_view_widget.equation[letter].last
 
                 begin
-                  new_mpr = new_prj.module_projects.where(copy_id: mp_id).first
+                  new_mpr = new_prj.module_projects.where(organization_id: organization_id, copy_id: mp_id).first
                   new_mpr_id = new_mpr.id
                   begin
-                    new_est_val_id = new_mpr.estimation_values.where(copy_id: est_val_id).first.id
+                    new_est_val_id = new_mpr.estimation_values.where(organization_id: organization_id, copy_id: est_val_id).first.id
                   rescue
                     new_est_val_id = nil
                   end
@@ -465,7 +481,7 @@ class Project < ActiveRecord::Base
             in_out = widget_est_val.in_out
             widget_pe_attribute_id = widget_est_val.pe_attribute_id
             unless new_view_widget_mp.nil?
-              new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
+              new_estimation_value = new_view_widget_mp.estimation_values.where(organization_id: organization_id, pe_attribute_id: widget_pe_attribute_id , in_out: in_out).last
               estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
 
               new_view_widget = ViewsWidget.new(view_id: new_view.id,
@@ -480,6 +496,8 @@ class Project < ActiveRecord::Base
                                                 is_kpi_widget: old_view_widget.is_kpi_widget,
                                                 kpi_unit: old_view_widget.kpi_unit,
                                                 equation: old_view_widget.equation,
+                                                is_project_data_widget: old_view_widget.is_project_data_widget,
+                                                project_attribute_name: old_view_widget.project_attribute_name,
                                                 icon_class: old_view_widget.icon_class,
                                                 color: old_view_widget.color,
                                                 show_min_max: old_view_widget.show_min_max,
@@ -534,10 +552,7 @@ class Project < ActiveRecord::Base
       # On met à jour ce champs pour la gestion des Trigger
       new_prj.is_new_created_record = true
 
-      new_prj.version_number = version_number  #set_project_version(old_prj)
-      # if version_number.blank?
-      #   new_prj.version_number = set_project_version(old_prj)
-      # end
+      new_prj.version_number = version_number
 
       new_prj.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_version_from_to, from_version: old_prj.version_number, to_version: new_prj.version_number, current_user_name: (current_user.name rescue nil))}. \r\n"
 
@@ -589,25 +604,25 @@ class Project < ActiveRecord::Base
           end
 
           #For applications
-          old_prj.applications.each do |application|
+          old_prj.applications.where(organization_id: organization.id).each do |application|
             # Application.where(name: application.name, organization_id: @organization.id).first
             app = hash_apps[application.name]
             ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
           end
 
           # For ModuleProject associations
-          old_prj.module_projects.group(:id).each do |old_mp|
-            new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+          old_prj.module_projects.where(organization_id: organization.id).group(:id).each do |old_mp|
+            new_mp = ModuleProject.where(organization_id: organization.id, project_id: new_prj.id, copy_id: old_mp.id).first  #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
 
             # ModuleProject Associations for the new project
             old_mp.associated_module_projects.each do |associated_mp|
-              new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
+              new_associated_mp = ModuleProject.where(organization_id: organization.id, project_id: new_prj.id, copy_id: associated_mp.id).first
               new_mp.associated_module_projects << new_associated_mp
             end
 
             ### Wbs activity
             #create module_project ratio elements
-            old_mp.module_project_ratio_elements.each do |old_mp_ratio_elt|
+            old_mp.module_project_ratio_elements.where(organization_id: organization.id).each do |old_mp_ratio_elt|
 
               mp_ratio_element = old_mp_ratio_elt.dup
               mp_ratio_element.module_project_id = new_mp.id
@@ -621,7 +636,7 @@ class Project < ActiveRecord::Base
               mp_ratio_element.save
             end
 
-            new_mp_ratio_elements = new_mp.module_project_ratio_elements
+            new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: organization.id)
             new_mp_ratio_elements.each do |mp_ratio_element|
 
               #unless mp_ratio_element.is_root?
@@ -655,7 +670,6 @@ class Project < ActiveRecord::Base
             # if the module_project is nil
             unless old_mp.view.nil?
               #Update the new project/estimation views and widgets
-              #update_views_and_widgets(new_prj, old_mp, new_mp)
               new_prj.update_project_views_and_widgets(old_mp, new_mp)
             end
 
@@ -664,17 +678,21 @@ class Project < ActiveRecord::Base
             new_mp.guw_unit_of_work_groups.each do |guw_group|
               new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
               new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-              guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id, project_id: new_prj.id)
+              guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id,
+                                          project_id: new_prj.id,
+                                          guw_model_id: old_mp.guw_model_id,
+                                          organization_id: new_prj.organization_id)
 
               # Update the group unit of works and attributes
               guw_group.guw_unit_of_works.each do |guw_uow|
-                new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+                new_uow_mp = ModuleProject.where(organization_id: organization.id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first  #.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
                 new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
 
                 new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
                 new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
                 guw_uow.update_attributes(module_project_id: new_uow_mp_id,
                                           pbs_project_element_id: new_pbs_id,
+                                          organization_id: new_prj.organization_id,
                                           project_id: new_prj.id)
 
                 # copy des coefficient-elements-unit-of-works
@@ -682,6 +700,8 @@ class Project < ActiveRecord::Base
                   unless new_guw_coeff_elt_uow.nil?
                     new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
                     new_guw_coeff_elt_uow.module_project_id = new_mp.id
+                    new_guw_coeff_elt_uow.guw_model_id = old_mp.guw_model_id
+                    new_guw_coeff_elt_uow.project_id = new_prj.id
                     new_guw_coeff_elt_uow.save
                   end
                 end
@@ -691,7 +711,7 @@ class Project < ActiveRecord::Base
 
             new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
             old_prj_pbs_project_elements = old_prj.pbs_project_elements
-            new_mp_estimation_values = new_mp.estimation_values
+            new_mp_estimation_values = new_mp.estimation_values.where(organization_id: organization.id)
             hash_nmpevs = {}
 
             new_mp_estimation_values.where(pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"]).each do |nmpev|
@@ -743,7 +763,7 @@ class Project < ActiveRecord::Base
                 old_version = old_prj.version_number
                 project_ancestors.each do |ancestor|
                   ancestor.update_attribute(:estimation_status_id, archive_status.id)
-                  ancestor.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name rescue nil}. Nouveau statut : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
+                  ancestor.status_comment = "#{I18n.l(Time.now)} - #{I18n.t(:text_automatic_changed_status)}  #{old_version} #{I18n.t(:to)} #{new_prj.version_number} #{I18n.t(:by)} #{current_user.name rescue nil}. #{I18n.t(:text_new_status)} : #{archive_status.name} \r ___________________________________________________________________________\r\n" + ancestor.status_comment
                   ancestor.save
                 end
               end
@@ -758,12 +778,13 @@ class Project < ActiveRecord::Base
             if new_status
               old_version = old_prj.version_number
               new_prj.update_attribute(:estimation_status_id, new_status.id)
-              new_prj.status_comment = "#{I18n.l(Time.now)} - Changement automatique de statut des anciennes versions lors du passage de la version #{old_version} à #{new_prj.version_number} par #{current_user.name rescue nil}. Nouveau statut : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
+              new_prj.status_comment = "#{I18n.l(Time.now)} - #{I18n.t(:text_automatic_changed_status)}  #{old_version} #{I18n.t(:to)} #{new_prj.version_number} #{I18n.t(:by)} #{current_user.name rescue nil}. #{I18n.t(:text_new_status)} : #{new_status.name}\r ___________________________________________________________________________\r\n" + new_prj.status_comment
               new_prj.save
             end
           end
         end
       end
+
       new_prj
     # rescue
     #   nil
@@ -771,28 +792,27 @@ class Project < ActiveRecord::Base
   end
 
   # Sauvegarde avant la tâche sur la creation de version automatique lors du changement de statut
-  def commit_status_SAVE_13_02_2018
-    #Get the project's current status
-    current_status_number = self.estimation_status.status_number
-    # According to the status transitions map, only possible statuses will consider
-    possible_statuses = self.project_estimation_statuses(self.organization).map(&:status_number).sort #self.estimation_status.to_transition_statuses.map(&:status_number).uniq.sort
-    current_status_index = possible_statuses.index(current_status_number)
-    # By default the first possible status is candidate
-    next_status_number = possible_statuses.first
-    # If the current status is not the last element of the array, the next status is next element after the current status
-    if current_status_number != possible_statuses.last
-      next_status_number = possible_statuses[current_status_index+1]
-    end
-
-    begin
-      # Get the next status
-      next_status = self.organization.estimation_statuses.find_by_status_number(next_status_number)
-      self.update_attribute(:estimation_status_id, next_status.id)
-    rescue
-      # ignored
-    end
-  end
-
+  # def commit_status_SAVE_13_02_2018
+  #   #Get the project's current status
+  #   current_status_number = self.estimation_status.status_number
+  #   # According to the status transitions map, only possible statuses will consider
+  #   possible_statuses = self.project_estimation_statuses(self.organization).map(&:status_number).sort #self.estimation_status.to_transition_statuses.map(&:status_number).uniq.sort
+  #   current_status_index = possible_statuses.index(current_status_number)
+  #   # By default the first possible status is candidate
+  #   next_status_number = possible_statuses.first
+  #   # If the current status is not the last element of the array, the next status is next element after the current status
+  #   if current_status_number != possible_statuses.last
+  #     next_status_number = possible_statuses[current_status_index+1]
+  #   end
+  #
+  #   begin
+  #     # Get the next status
+  #     next_status = self.organization.estimation_statuses.find_by_status_number(next_status_number)
+  #     self.update_attribute(:estimation_status_id, next_status.id)
+  #   rescue
+  #     # ignored
+  #   end
+  # end
 
   #Return project value
   def project_value(attr)
@@ -830,158 +850,6 @@ class Project < ActiveRecord::Base
   # def update_associations_for_triggers
   #   ApplicationController.helpers.save_associations_event_changes(self)
   #   #puts self.changed?
-  # end
-
-  # Method that execute the duplication core
-  # def self.execute_duplication_SAVE_NOT_WORKING(project_id, parameters, create_from_template = nil)
-  #   #Project.transaction do
-  #     begin
-  #       old_prj = Project.find(project_id)
-  #
-  #       new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
-  #       new_prj.ancestry = nil
-  #       new_prj.is_model = false
-  #
-  #       #if creation from template
-  #       if !create_from_template.nil?   #!parameters[:create_project_from_template].nil?
-  #         new_prj.original_model_id = old_prj.id
-  #
-  #         #Update some parameters with the form input data
-  #         new_prj.title = parameters['project']['title']
-  #         new_prj.alias = parameters['project']['alias']
-  #         new_prj.version_number = parameters['project']['version_number']
-  #         new_prj.description = parameters['project']['description']
-  #         start_date = (parameters['project']['start_date'].nil? || parameters['project']['start_date'].blank?) ? Time.now.to_date : parameters['project']['start_date']
-  #         new_prj.start_date = start_date
-  #
-  #         #Only the securities for the generated project will be taken in account
-  #         new_prj.project_securities = new_prj.project_securities.where(is_model_permission: [false, nil])
-  #       end
-  #
-  #       if new_prj.save
-  #         old_prj.save #Original project copy number will be incremented to 1
-  #
-  #         #Update the project securities for the current user who create the estimation from model
-  #         #if parameters[:action_name] == "create_project_from_template"
-  #         if !create_from_template.nil?   #!parameters[:create_project_from_template].nil?
-  #           creator_securities = old_prj.creator.project_securities_for_select(new_prj.id)
-  #           unless creator_securities.nil?
-  #             creator_securities.update_attribute(:user_id, current_user.id)
-  #           end
-  #         end
-  #
-  #         #Managing the component tree : PBS
-  #         pe_wbs_product = new_prj.pe_wbs_projects.products_wbs.first
-  #
-  #         # For PBS
-  #         new_prj_components = pe_wbs_product.pbs_project_elements
-  #         new_prj_components.each do |new_c|
-  #           new_ancestor_ids_list = []
-  #           new_c.ancestor_ids.each do |ancestor_id|
-  #             ancestor_id = PbsProjectElement.find_by_pe_wbs_project_id_and_copy_id(new_c.pe_wbs_project_id, ancestor_id).id
-  #             new_ancestor_ids_list.push(ancestor_id)
-  #           end
-  #           new_c.ancestry = new_ancestor_ids_list.join('/')
-  #           new_c.save
-  #         end
-  #
-  #         # For ModuleProject associations
-  #         old_prj.module_projects.group(:id).each do |old_mp|
-  #           new_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
-  #
-  #           # ModuleProject Associations for the new project
-  #           old_mp.associated_module_projects.each do |associated_mp|
-  #             new_associated_mp = ModuleProject.where('project_id = ? AND copy_id = ?', new_prj.id, associated_mp.id).first
-  #             new_mp.associated_module_projects << new_associated_mp
-  #           end
-  #
-  #           #Copy the views and widgets for the new project
-  #           new_view = View.create(organization_id: new_prj.organization_id, name: "#{new_prj.to_s} : view for #{new_mp.to_s}", description: "")
-  #
-  #           #We have to copy all the selected view's widgets in a new view for the current module_project
-  #           if old_mp.view
-  #             old_mp_view_widgets = old_mp.view.views_widgets.all
-  #             old_mp_view_widgets.each do |view_widget|
-  #               new_view_widget_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, view_widget.module_project_id)
-  #               new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
-  #               widget_est_val = view_widget.estimation_value
-  #               unless widget_est_val.nil?
-  #                 in_out = widget_est_val.in_out
-  #                 widget_pe_attribute_id = widget_est_val.pe_attribute_id
-  #                 unless new_view_widget_mp.nil?
-  #                   new_estimation_value = new_view_widget_mp.estimation_values.where('pe_attribute_id = ? AND in_out=?', widget_pe_attribute_id, in_out).last
-  #                   estimation_value_id = new_estimation_value.nil? ? nil : new_estimation_value.id
-  #                   widget_copy = ViewsWidget.create(view_id: new_view.id, module_project_id: new_view_widget_mp_id, estimation_value_id: estimation_value_id, name: view_widget.name, show_name: view_widget.show_name, show_tjm: view_widget.show_tjm,
-  #                                                    icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max, widget_type: view_widget.widget_type,
-  #                                                    width: view_widget.width, height: view_widget.height, position: view_widget.position, position_x: view_widget.position_x, position_y: view_widget.position_y)
-  #
-  #
-  #                   pf = ProjectField.where(project_id: new_prj.id, views_widget_id: view_widget.id).first
-  #                   unless pf.nil?
-  #                     pf.views_widget_id = widget_copy.id
-  #                     pf.save
-  #                   end
-  #
-  #                 end
-  #               end
-  #             end
-  #           end
-  #           #update the new module_project view
-  #           new_mp.update_attribute(:view_id, new_view.id)
-  #
-  #           #Update the Unit of works's groups
-  #           new_mp.guw_unit_of_work_groups.each do |guw_group|
-  #             new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
-  #             new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-  #             guw_group.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
-  #
-  #             # Update the group unit of works and attributes
-  #             guw_group.guw_unit_of_works.each do |guw_uow|
-  #               new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
-  #               new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
-  #
-  #               new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
-  #               new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
-  #               guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id)
-  #             end
-  #           end
-  #
-  #           # new_mp.uow_inputs.each do |uo|
-  #           #   new_pbs_project_element = new_prj_components.find_by_copy_id(uo.pbs_project_element_id)
-  #           #   new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-  #           #
-  #           #   uo.update_attribute(:pbs_project_element_id, new_pbs_project_element_id)
-  #           # end
-  #
-  #           ["input", "output"].each do |io|
-  #             new_mp.pemodule.pe_attributes.each do |attr|
-  #               old_prj.pbs_project_elements.each do |old_component|
-  #                 new_prj_components.each do |new_component|
-  #                   ev = new_mp.estimation_values.where(pe_attribute_id: attr.id, in_out: io).first
-  #                   unless ev.nil?
-  #                     ev.string_data_low[new_component.id.to_i] = ev.string_data_low.delete old_component.id
-  #                     ev.string_data_most_likely[new_component.id.to_i] = ev.string_data_most_likely.delete old_component.id
-  #                     ev.string_data_high[new_component.id.to_i] = ev.string_data_high.delete old_component.id
-  #                     ev.string_data_probable[new_component.id.to_i] = ev.string_data_probable.delete old_component.id
-  #                     ev.save
-  #                   end
-  #                 end
-  #               end
-  #             end
-  #           end
-  #         end
-  #
-  #       else
-  #         new_prj = nil
-  #       end
-  #
-  #     rescue
-  #       #raise ActiveRecord::Rollback
-  #       new_prj = nil
-  #     end
-  #
-  #     new_prj
-  #   #end
   # end
 
 end

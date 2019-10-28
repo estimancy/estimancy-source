@@ -203,6 +203,7 @@
 
     $("#views_widget_widget_type").change(function() {
         var widget_type = $(this).val();
+
         if (widget_type == "text" || widget_type == "bar_chart"){
             $('#views_widget_show_min_max').removeAttr('disabled');
         }

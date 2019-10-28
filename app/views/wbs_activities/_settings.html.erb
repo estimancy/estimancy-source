@@ -41,29 +41,34 @@
   <% cev_output = EstimationValue.where(:pe_attribute_id => effort.id,
                                         :module_project_id => module_project.id,
                                         :in_out => "output").first unless effort.nil? %>
-
-  <% theorical_cev_input = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
-                                 :module_project_id => module_project.id,
-                                 :in_out => "input").first unless theoretical_effort.nil? %>
+  
+  <% theorical_cev_input = EstimationValue.where(organization_id: organization.id,
+                                                 :module_project_id => module_project.id,
+                                                 :pe_attribute_id => theoretical_effort.id,
+                                                 :in_out => "input").first unless theoretical_effort.nil? %>
 
   <% theorical_cev_output = EstimationValue.where(:pe_attribute_id => theoretical_effort.id,
                                         :module_project_id => module_project.id,
                                         :in_out => "output").first unless theoretical_effort.nil? %>
+  
+  <% ratio_output = EstimationValue.where(organization_id: organization.id,
+                                          :module_project_id => module_project.id,
+                                          :pe_attribute_id => ratio.id,
+                                          :in_out => "output").first unless ratio.nil? %>
 
-  <% ratio_output = EstimationValue.where(:pe_attribute_id => ratio.id,
-                                        :module_project_id => module_project.id,
-                                        :in_out => "output").first unless ratio.nil? %>
+  <% pev_save = EstimationValue.where(organization_id: organization.id,
+                                      :module_project_id => module_project.previous.first,
+                                      :pe_attribute_id => effort.id,
+                                      :in_out => "output").first unless effort.nil? %>
 
-  <% pev_save = EstimationValue.where(:pe_attribute_id => effort.id,
-                                 :module_project_id => module_project.previous.first,
-                                 :in_out => "output").first unless effort.nil? %>
 
   <% possible_module_projects = module_project.possible_previous_mp_for_attribute(effort) %>
 
   <% begin %>
-      <% pev = EstimationValue.where(:pe_attribute_id => effort.id,
-                                 :module_project_id => possible_module_projects.last.id,
-                                 :in_out => "output").first unless effort.nil? %>
+   <% pev = EstimationValue.where(organization_id: organization.id,
+                                     :module_project_id => possible_module_projects.last.id,
+                                     :pe_attribute_id => effort.id,
+                                     :in_out => "output").first unless effort.nil? %>
   <% rescue %>
     <% pev = nil %>
   <% rescue %>
@@ -107,7 +112,7 @@
   <% end %>
 
   <% effort_ids = PeAttribute.where(alias: WbsActivity::  INPUT_EFFORTS_ALIAS).map(&:id).flatten %>
-  <% current_inputs_evs = module_project.estimation_values.where(pe_attribute_id: effort_ids, in_out: "input") %>
+  <% current_inputs_evs = module_project.estimation_values.where(organization_id: organization.id, pe_attribute_id: effort_ids, in_out: "input") %>
 
   <% initial_entry_values = {} %>
   <% entry_values = {} %>
@@ -125,7 +130,7 @@
           <% current_inputs_evs.each do |ev| %>
               <% current_ev = ev.send("string_data_#{level}")[component_id] %>
               <% begin %>
-                  <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.find(ev.estimation_value_id) %>
+                  <% previous_mp_ev = ev.estimation_value_id.nil? ? nil : EstimationValue.where(organization_id: organization.id, id: ev.estimation_value_id).first %>
               <% rescue %>
                   <% previous_mp_ev = nil %>
               <% end %>
@@ -165,15 +170,15 @@
       <% end %>
   <% end %>
 
-  <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form' do %>
+  <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form', remote: true do %>
 
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
       <span class="no_uppercase"><%= @wbs_activity.name %></span>
       <div class="edition-bloc-tools">
         <% if can?(:execute_estimation_plan, @project) %>
-          <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "btn btn-primary" %>
-          <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "btn btn-secondary" %>
-        <% end %>
+            <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "btn btn-primary", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
+            <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "btn btn-secondary", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
+      <% end %>
       </div>
     </div>
 
@@ -532,6 +537,30 @@
     $(document).ready(function(){
 
       var root_mp_ratio_element_id = $("#root_mp_ratio_element_id").val();
+
+      // Gestion changement du ratio
+      $("#ratio").change(function() {
+          if ($(this).val() !== "") {
+              return $.ajax({
+                  url: "/refresh_dashboard_module_project_ratio_elements",
+                  method: "GET",
+                  data: {
+                      wbs_activity_ratio_id: $(this).val(),
+                      dashboard_selected_ratio_id: $("#dashboard_selected_ratio_id").val()
+                  },
+
+                  success: function(data) {
+                      $("#dashboard_selected_ratio_id").val($(this).val());
+                      return $(".total-ratio").html(data);
+                  },
+                  error: function(XMLHttpRequest, testStatus, errorThrown) {
+                      return alert("Error! :" +  errorThrown);
+                  }
+              });
+          }
+      });
+    // Fin Gestion changement du ratio
+
 
       $(".selected_phase").change(function(){
 

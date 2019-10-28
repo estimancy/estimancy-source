@@ -211,7 +211,8 @@ module ViewsWidgetsHelper
 
   # Final founction : A voir si c'est utile ou pas ... in progress
   private def compute_value(value, est_val, mp_id, use_organization_effort_unit=false)
-    module_project = ModuleProject.find(mp_id)
+    project_organization = @project.organization
+    module_project = ModuleProject.where(organization_id: project_organization.id, id: mp_id).first #.find(mp_id)
     est_val_pe_attribute = est_val.pe_attribute
     precision = est_val_pe_attribute.precision.nil? ? user_number_precision : est_val_pe_attribute.precision
 
@@ -255,28 +256,28 @@ module ViewsWidgetsHelper
           # By default use module instance effort unit
           if use_organization_effort_unit == true
             # Use orgnization effort unit
-            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, project_organization)
             "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)}"
           else
             # Use orgnization effort unit
             "#{convert_with_precision(convert_wbs_activity_value(value, effort_unit_coefficient), precision, true)}"
           end
         else
-          "#{convert_with_precision(convert(value, @project.organization), precision, true)}"
+          "#{convert_with_precision(convert(value, project_organization), precision, true)}"
         end
       elsif module_project.pemodule.alias == "staffing"
         staffing_model = module_project.staffing_model
         effort_standard_unit_coefficient = staffing_model.standard_unit_coefficient.nil? ? 1 : staffing_model.standard_unit_coefficient.to_f
         effort_unit = staffing_model.effort_unit
         if use_organization_effort_unit == true
-          organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, @project.organization)
+          organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(value, project_organization)
           "#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), precision, true)}"
         else
           "#{convert_with_standard_unit_coefficient(est_val, value, effort_standard_unit_coefficient, precision)}"
         end
 
       else
-        "#{convert_with_precision(convert(value, @project.organization), precision, true)}"
+        "#{convert_with_precision(convert(value, project_organization), precision, true)}"
       end
 
     elsif est_val_pe_attribute.alias == "ratio"
@@ -300,9 +301,9 @@ module ViewsWidgetsHelper
         when 'date'
           display_date(value)
         when 'float'
-          "#{ convert_with_precision(convert(value, @project.organization), precision, true) }"
+          "#{ convert_with_precision(convert(value, project_organization), precision, true) }"
         when 'integer'
-          "#{convert(value, @project.organization).round(precision)}"
+          "#{convert(value, project_organization).round(precision)}"
         else
           # guw_model = module_project.guw_model
           # conv = guw_model.hour_coefficient_conversion
@@ -383,6 +384,27 @@ module ViewsWidgetsHelper
   #     end
   #   end
   # end
+
+
+  def get_project_data_widget_value(view_widget_id, project_id)
+    widget_data = {}
+    begin
+      view_widget = ViewsWidget.find(view_widget_id)
+      project = Project.find(project_id)
+      attribute_name = view_widget.project_attribute_name
+      element_class_name = attribute_name.gsub('_id', '').classify
+      element_id =  project.send(attribute_name)
+      value_to_show = element_class_name.constantize.find(element_id)
+
+      widget_data[:value_to_show] = value_to_show
+    rescue
+      widget_data[:value_to_show] = "-"
+    end
+
+    widget_data
+  end
+
+
 
   def get_kpi_widget_data(view_widget_id)
     view_widget = ViewsWidget.find(view_widget_id)
@@ -722,10 +744,12 @@ module ViewsWidgetsHelper
   def get_view_widget_data(module_project_id, view_widget_id)
 
     # General data
-    view_widget = ViewsWidget.find(view_widget_id)
-    # pbs_project_elt = view_widget.pbs_project_element.nil? ? current_component : view_widget.pbs_project_element
+    project_organization = @project.organization
+    organization_id = project_organization.id
+    view_widget = ViewsWidget.where(module_project_id: module_project_id, id: view_widget_id).first #.find(view_widget_id)
+    pbs_project_elt = view_widget.pbs_project_element.nil? ? current_component : view_widget.pbs_project_element
     # pbs_project_elt = current_component
-    module_project = ModuleProject.find(module_project_id)
+    module_project = ModuleProject.where(organization_id: organization_id, id: module_project_id).first  #.find(module_project_id)
     project = module_project.project
     pbs_project_elt = project.root_component
     pemodule = module_project.pemodule
@@ -851,9 +875,10 @@ module ViewsWidgetsHelper
       est_val_in_out = view_widget_est_val.in_out
       view_widget_attribute = view_widget_est_val.pe_attribute #view_widget.pe_attribute
       view_widget_attribute_name = view_widget_attribute.nil? ? "" : get_attribute_human_name(view_widget_attribute) #view_widget_attribute.name
+      module_project_estimation_values = module_project.estimation_values.where(organization_id: organization_id)
 
       unless view_widget_attribute.nil?
-        estimation_value = module_project.estimation_values.where('pe_attribute_id = ? AND in_out = ?', view_widget_attribute.id, view_widget_est_val.in_out).last
+        estimation_value = module_project_estimation_values.where(pe_attribute_id: view_widget_attribute.id, in_out: view_widget_est_val.in_out).last
       end
 
       attribute_unit_label = get_attribute_unit(view_widget_attribute, view_widget_est_val)
@@ -1015,7 +1040,7 @@ module ViewsWidgetsHelper
 
               if view_widget.use_organization_effort_unit == true
                  min_effort_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
-                 organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, @project.organization)
+                 organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_effort_value, project_organization)
 
                  effort_unit_coefficient = organization_effort_limit_coeff
                  attribute_unit_label = organization_effort_unit
@@ -1058,7 +1083,7 @@ module ViewsWidgetsHelper
         if estimation_value.pe_attribute.alias.in?(Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS)
           if view_widget.use_organization_effort_unit == true
             min_value = data_low #get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, estimation_value.pe_attribute.alias)
-            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, @project.organization)
+            organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, project_organization)
 
             attribute_unit = organization_effort_unit
           end
@@ -1110,7 +1135,7 @@ module ViewsWidgetsHelper
             # # récuperer l'unité de l'effort de l'organisation
             if view_widget.use_organization_effort_unit == true
               # Use orgnization effort unit
-              organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(data_most_likely, @project.organization)
+              organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(data_most_likely, project_organization)
               #"#{convert_with_precision(convert_effort_with_organization_unit(value, organization_effort_limit_coeff, organization_effort_unit), user_precision, true)} #{organization_effort_unit}"
               bar_chart_level_values.each_with_index do |array, index|
                 bar_chart_level_values[index][1] = (array[1] / organization_effort_limit_coeff).round(user_precision)
@@ -1174,7 +1199,7 @@ module ViewsWidgetsHelper
 
             products.each_with_index do |element, i|
               dev = nil
-              est_val = module_project.estimation_values.where(pe_attribute_id: delay.id).last
+              est_val = module_project_estimation_values.where(pe_attribute_id: delay.id).last
               unless est_val.nil?
                 str_data_probable = est_val.string_data_probable
                 str_data_probable.nil? ? nil : (dev = str_data_probable[element.id])
@@ -1190,7 +1215,7 @@ module ViewsWidgetsHelper
                   dh = d.hours
                 end
 
-                end_date_ev = module_project.estimation_values.where(pe_attribute_id: end_date.id).last
+                end_date_ev = module_project_estimation_values.where(pe_attribute_id: end_date.id).last
                 unless end_date_ev.nil?
                   ed = end_date_ev.string_data_probable[element.id]
                 end
@@ -1325,6 +1350,7 @@ module ViewsWidgetsHelper
                                                         wbs_activity_elements: wbs_activity_elements
                                            })
               end
+
             end
 
           else
@@ -1809,10 +1835,11 @@ module ViewsWidgetsHelper
   def display_effort_or_cost_per_phase(pbs_project_element, module_project_id, estimation_value, view_widget_id, ratio_reference)
     res = String.new
     unless view_widget_id.nil?
-      view_widget = ViewsWidget.find(view_widget_id)
+      view_widget = ViewsWidget.where(module_project_id: module_project_id, id: view_widget_id).first #.find(view_widget_id)
     end
 
-    module_project = ModuleProject.find(module_project_id)
+    project_organization = @project.organization
+    module_project = ModuleProject.where(organization_id: project_organization.id, id: module_project_id).first  #.find(module_project_id)
     pemodule = module_project.pemodule
 
     precision = estimation_value.pe_attribute.precision.nil? ? user_number_precision : estimation_value.pe_attribute.precision
@@ -1850,7 +1877,7 @@ module ViewsWidgetsHelper
 
     res << "<th colspan='#{colspan}'>
               <span class='attribute_tooltip' title='#{estimation_value.pe_attribute.description} #{display_rule(estimation_value)}'>
-                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"]) ? "(#{@project.organization.currency})" : ''}
+                #{estimation_value.pe_attribute.name} #{estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"]) ? "(#{project_organization.currency})" : ''}
               </span>
             </th>"
 
@@ -1899,13 +1926,13 @@ module ViewsWidgetsHelper
                 if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
                   @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
                 else
-                  @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization)
+                  @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id][:value], project_organization)
                 end
               rescue
                 if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
                   @wbs_unit = get_attribute_unit(estimation_value.pe_attribute)
                 else
-                  @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id], @project.organization) unless pbs_estimation_values.nil?
+                  @wbs_unit = convert_label(pbs_estimation_values[wbs_activity_elt.id], project_organization) unless pbs_estimation_values.nil?
                 end
               end
             end
@@ -1918,7 +1945,7 @@ module ViewsWidgetsHelper
                   res << "#{convert_with_precision(pbs_estimation_values[wbs_activity_elt.id][:value], user_number_precision, true)} #{@wbs_unit}"
                 end
               else
-                res << "#{convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id][:value], @project.organization), user_number_precision, true)} #{@wbs_unit}"
+                res << "#{convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id][:value], project_organization), user_number_precision, true)} #{@wbs_unit}"
               end
             rescue
               if estimation_value.pe_attribute.alias.in?(["cost", "theoretical_cost"])
@@ -1928,7 +1955,7 @@ module ViewsWidgetsHelper
                   res << "#{ convert_with_precision(pbs_estimation_values[wbs_activity_elt.id], user_number_precision, true) } #{@wbs_unit}"
                 end
               else
-                res << " #{ convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id], @project.organization), user_number_precision, true) } #{@wbs_unit}" unless pbs_estimation_values.nil?
+                res << " #{ convert_with_precision(convert(pbs_estimation_values[wbs_activity_elt.id], project_organization), user_number_precision, true) } #{@wbs_unit}" unless pbs_estimation_values.nil?
               end
             end
 

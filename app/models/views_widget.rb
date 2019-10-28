@@ -23,7 +23,9 @@ class ViewsWidget < ActiveRecord::Base
   attr_accessible :color, :icon_class, :module_project_id, :name, :pbs_project_element_id, :estimation_value_id, :pe_attribute_id,
                   :show_min_max, :view_id, :widget_id, :position, :position_x, :position_y, :width, :height, :widget_type,
                   :show_name, :show_wbs_activity_ratio, :from_initial_view, :is_label_widget, :comment, :formula, :kpi_unit,
-                  :is_kpi_widget, :use_organization_effort_unit, :equation, :show_tjm, :min_value, :max_value, :validation_text,
+                  :is_kpi_widget, :is_project_data_widget, :use_organization_effort_unit, :equation, :show_tjm,
+                  :min_value, :max_value, :validation_text, :project_attribute_name
+                  :use_organization_effort_unit, :equation, :show_tjm, :min_value, :max_value, :validation_text,
                   :estimation_status_id, :show_module_name
 
   serialize :equation, Hash
@@ -44,7 +46,7 @@ class ViewsWidget < ActiveRecord::Base
 
   has_many :project_fields, dependent: :delete_all
 
-  validates :name, :module_project_id, :estimation_value_id, :presence => { :unless => lambda { self.is_label_widget? || self.is_kpi_widget? }}
+  validates :name, :module_project_id, :estimation_value_id, :presence => { :unless => lambda { self.is_label_widget? || self.is_kpi_widget? || self.is_project_data_widget? }}
 
   validates :max_value, numericality: {:greater_than => :min_value}, :allow_nil => true
   validates :min_value, numericality: {:lower_than => :max_value}, :allow_nil => true
@@ -70,11 +72,12 @@ class ViewsWidget < ActiveRecord::Base
 
 
   def self.reset_nexts_mp_estimation_values(module_project, pbs_project_element)
+    organization_id = module_project.organization_id
     module_project_all_nexts_mp_with_links = module_project.all_nexts_mp_with_links
 
     module_project_all_nexts_mp_with_links.each do |mp|
 
-        mp.estimation_values.where(in_out: "output").each do |ev|
+        mp.estimation_values.where(organization_id: organization_id, in_out: "output").each do |ev|
           ["low", "most_likely", "high"].each do |level|
             ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
           end
@@ -86,7 +89,7 @@ class ViewsWidget < ActiveRecord::Base
 
         # reset module_project_ratio_elements for EffortBreakdown module
         if mp.pemodule.alias == "effort_breakdown"
-          mp.module_project_ratio_elements.each do |mp_ratio_elt|
+          mp.module_project_ratio_elements.where(organization_id: organization_id, pbs_project_element_id: pbs_project_element.id).each do |mp_ratio_elt|
             ["theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"].each do |attribute|
               ["low", "most_likely", "high", "probable"].each do |level|
                 mp_ratio_elt.send("#{attribute}_#{level}=", nil)
@@ -147,15 +150,13 @@ class ViewsWidget < ActiveRecord::Base
         borne_min = view_widget.min_value
         borne_max = view_widget.max_value
 
-        unless borne_min.nil? || borne_max.nil? || @value.nil?
-          if @value <= borne_min || @value >= borne_max
+
+        unless borne_min.nil? || borne_max.nil?
+          if @value.to_f < borne_min || @value.to_f > borne_max
             project.is_locked = true
           else
             project.is_locked = false
           end
-          project.save
-        else
-          project.is_locked = false
           project.save
         end
 

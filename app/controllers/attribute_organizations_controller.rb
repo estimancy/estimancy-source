@@ -35,9 +35,10 @@ class AttributeOrganizationsController < ApplicationController
         unless @initialization_module.nil?
           #Delete all estimations of its related projects
           @organization_projects.each do |project|
-            project_cap_module_projects = project.module_projects.where("pemodule_id = ?", @initialization_module.id)
+            project_cap_module_projects = project.module_projects.where(organization_id: @organization.id, pemodule_id: @initialization_module.id)
+
             project_cap_module_projects.each do |module_project|
-              project_est_values = module_project.estimation_values.where("pe_attribute_id = ?", m.pe_attribute_id)
+              project_est_values = module_project.estimation_values.where(organization_id: @organization.id, pe_attribute_id: m.pe_attribute_id)
               project_est_values.destroy_all
             end
           end
@@ -61,7 +62,7 @@ class AttributeOrganizationsController < ApplicationController
           unless module_project.nil?
             #Create corresponding Estimation_value
             ['input', 'output'].each do |in_out|
-              mpa = EstimationValue.where(:pe_attribute_id => g.to_i, :module_project_id => module_project.id, :in_out => in_out).first_or_initialize
+              mpa = EstimationValue.where(:organization_id => @organization.id, :module_project_id => module_project.id, :pe_attribute_id => g.to_i, :in_out => in_out).first_or_initialize
               mpa.update_attributes( :is_mandatory => attr_org.is_mandatory,
                                      :description => attr_org.pe_attribute.description,
                                      :string_data_low => {:pe_attribute_name => attr_org.pe_attribute.name, :default_low => ""},

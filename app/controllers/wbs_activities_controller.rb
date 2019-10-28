@@ -28,6 +28,18 @@ class WbsActivitiesController < ApplicationController
   include ModuleProjectsHelper
   load_resource
 
+  # Refresh the profiles list according to if it use real_profiles or not
+  def refresh_wbs_profiles_list
+    @wbs_activity = WbsActivity.where(id: params[:wbs_activity_id]).first
+    use_real_profiles = params[:use_real_profiles]
+    @organization = @current_organization
+    if use_real_profiles.to_s == "true" || use_real_profiles.to_s == "1"
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: true)
+    else
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
+    end
+  end
+
 
   def refresh_ratio_elements
 
@@ -82,6 +94,12 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity = WbsActivity.find(params[:id])
     @organization_id = @wbs_activity.organization_id
     @organization = @wbs_activity.organization
+
+    if @wbs_activity.use_real_profiles
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: true)
+    else
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
+    end
 
     set_page_title I18n.t(:edit_wbs_activity, value: @wbs_activity.name)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:wbs_modules) => main_app.organization_module_estimation_path(@organization, anchor: "activite"), @wbs_activity.name => ""
@@ -173,6 +191,13 @@ class WbsActivitiesController < ApplicationController
     else
       @organization = @wbs_activity_organization
       @wbs_activity_elements_list = @wbs_activity.wbs_activity_elements
+
+      if @wbs_activity.use_real_profiles
+        @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: true)
+      else
+        @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
+      end
+
       render :edit
     end
   end
@@ -181,6 +206,7 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity = WbsActivity.new
     @organization_id = params['organization_id']
     @organization = Organization.find(params[:organization_id])
+    @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
     set_page_title I18n.t(:new_wbs_activity)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:wbs_modules) => main_app.organization_module_estimation_path(params['organization_id'], anchor: "activite"), I18n.t(:new) => ""
   end
@@ -189,6 +215,11 @@ class WbsActivitiesController < ApplicationController
     @wbs_activity = WbsActivity.new(params[:wbs_activity])
     @organization_id = params['wbs_activity']['organization_id']
     @organization = Organization.find(@organization_id)
+    if @wbs_activity.use_real_profiles
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: true)
+    else
+      @organization_profiles_list = @organization.organization_profiles.where(is_real_profile: [false, nil])
+    end
 
     if @wbs_activity.save
       @wbs_activity_element = WbsActivityElement.new(:name => @wbs_activity.name, :wbs_activity_id => @wbs_activity.id, :description => 'Root Element', :is_root => true)
@@ -343,7 +374,9 @@ class WbsActivitiesController < ApplicationController
     @pbs_project_element = current_component
     current_component_id = @pbs_project_element.id
 
+    #@module_project = ModuleProject.find(params[:module_project_id])
     @module_project = current_module_project
+
     @project = @module_project.project
     @organization = @project.organization
     @wbs_activity = @module_project.wbs_activity
@@ -372,13 +405,13 @@ class WbsActivitiesController < ApplicationController
       wai.save
     end
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(organization_id: @organization.id,
-                                                                                         wbs_activity_ratio_id: @ratio_reference.id,
-                                                                                         pbs_project_element_id: @pbs_project_element.id)
+                                                                                         pbs_project_element_id: @pbs_project_element.id,
+                                                                                         wbs_activity_ratio_id: @ratio_reference.id)
 
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
 
     level_estimation_value = Hash.new
-    current_pbs_estimations = current_module_project.estimation_values
+    current_pbs_estimations = current_module_project.estimation_values.where(organization_id: @organization.id)
     input_effort_for_global_ratio = 0.0
     effort_total_for_global_ratio = 0.0
     initialize_calculation = false
@@ -419,7 +452,7 @@ class WbsActivitiesController < ApplicationController
                   # type code here
               end
 
-              retained_attribute_est_val = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => retained_attribute.id, :in_out => in_out).first
+              retained_attribute_est_val = EstimationValue.where(:organization_id => @organization.id, :module_project_id => @module_project.id, :pe_attribute_id => retained_attribute.id, :in_out => in_out).first
               if retained_attribute_est_val
                 ["low", "most_likely", "high", "probable"].each do |level|
                   theoretical_est_val[:"string_data_#{level}"] = retained_attribute_est_val[:"string_data_#{level}"]
@@ -731,7 +764,7 @@ class WbsActivitiesController < ApplicationController
                 # type code here
             end
 
-            #retained_est_val = EstimationValue.where(:pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
+            #retained_est_val = EstimationValue.where(:organization_id => @organization.id, :pe_attribute_id => retained_attribute.id, :module_project_id => @module_project.id, :in_out => "output").first_or_create
 
             ["low", "most_likely", "high"].each do |level|
               #28092017
@@ -1149,7 +1182,14 @@ class WbsActivitiesController < ApplicationController
 
 
     @wbs_activity_ratio = @ratio_reference
-    redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')
+    # redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')
+
+    respond_to do |format|
+      format.html { redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form') }
+      format.js {}
+    end
+
+
   end
 
 
@@ -1226,7 +1266,9 @@ class WbsActivitiesController < ApplicationController
         model_worksheet.sheet_name = "Model"
 
         first_page = [[I18n.t(:model_name),  @wbs_activity.name],
-                      [I18n.t(:model_description), @wbs_activity.description ],
+                      [I18n.t(:model_description), @wbs_activity.description],
+                      [I18n.t(:wbs_for_config), @wbs_activity.wbs_for_config ? 1 : 0 ],
+                      [I18n.t(:use_real_profiles), @wbs_activity.use_real_profiles ? 1 : 0 ],
                       [I18n.t(:three_points_estimation), @wbs_activity.three_points_estimation ? 1 : 0],
                       [I18n.t(:modification_entry_valur), @wbs_activity.enabled_input ? 1 : 0 ],
                       [I18n.t(:hide_wbs_header), @wbs_activity.hide_wbs_header],
@@ -1243,7 +1285,7 @@ class WbsActivitiesController < ApplicationController
 
         first_page.each_with_index do |row, index|
           model_worksheet.add_cell(index, 0, row[0])
-          model_worksheet.add_cell(index, 1, row[1]).change_horizontal_alignment('center')
+          model_worksheet.add_cell(index, 1, row[1])#.change_horizontal_alignment('center')
           ["bottom", "right"].each do |symbole|
             model_worksheet[index][0].change_border(symbole.to_sym, 'thin')
             model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
@@ -1252,7 +1294,7 @@ class WbsActivitiesController < ApplicationController
         # model_worksheet.change_column_bold(0,true)
         model_worksheet.change_column_width(0, 60)
         model_worksheet.change_column_width(1, 100)
-        model_worksheet.sheet_data[1][1].change_horizontal_alignment('left')
+        model_worksheet.sheet_data[1][1].change_horizontal_alignment('left') rescue nil
 
 
         # WBS ACTIVITY ELEMENTS  : activity_elements_worksheet
@@ -1267,7 +1309,7 @@ class WbsActivitiesController < ApplicationController
 
         # elements_worksheet.change_row_bold(0,true)
 
-        elements_worksheet.change_row_horizontal_alignment(0, 'center')
+        elements_worksheet.change_row_horizontal_alignment(0, 'center') rescue nil
         @wbs_activity_elements.each_with_index do |activity_element, index|
 
           elements_worksheet.add_cell(index + 1, 0, activity_element.position)
@@ -1317,7 +1359,7 @@ class WbsActivitiesController < ApplicationController
         ratios_worksheet.add_cell(0, 4, I18n.t(:comment_required_if_modifiable))
         # ratios_worksheet.change_row_bold(0,true)
 
-        ratios_worksheet.change_row_horizontal_alignment(0, 'center')
+        ratios_worksheet.change_row_horizontal_alignment(0, 'center') rescue nil
         @wbs_activity_ratios.each_with_index do |ratio, index|
           ratios_worksheet.add_cell(index + 1, 0, ratio.name)
           ratios_worksheet.add_cell(index + 1, 1, ratio.description)
@@ -1376,7 +1418,7 @@ class WbsActivitiesController < ApplicationController
 
           ratio_variable_attributes.each_with_index do |variable_attr, index|
             column_number = index + 1
-            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{variable_attr}")).change_horizontal_alignment('center')
+            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{variable_attr}"))#.change_horizontal_alignment('center')
             ratio_elements_worksheet.change_column_width(column_number, I18n.t("#{variable_attr}").size)
 
             ["bottom", "right"].each do |symbole|
@@ -1418,7 +1460,7 @@ class WbsActivitiesController < ApplicationController
           ratio_elements_attributes.each_with_index do |attr, index|
             column_number = index + 1
 
-            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}")).change_horizontal_alignment('center')
+            ratio_elements_worksheet.add_cell(counter_line, column_number, I18n.t("#{attr}"))#.change_horizontal_alignment('center')
             ratio_elements_worksheet.change_column_width(column_number, I18n.t("#{attr}").size)
 
             line_number = counter_line + 1
@@ -1470,8 +1512,8 @@ class WbsActivitiesController < ApplicationController
           wbs_activity_profiles = wbs_organization_profiles
 
           ratio_elements_worksheet.add_cell(counter_line, 0, "Valeurs des ratios par profils")
-          ratio_elements_worksheet.add_cell(counter_line, 1, I18n.t(:position)).change_horizontal_alignment('center')
-          ratio_elements_worksheet.add_cell(counter_line, 2, "Phases").change_horizontal_alignment('center')
+          ratio_elements_worksheet.add_cell(counter_line, 1, I18n.t(:position))#.change_horizontal_alignment('center')
+          ratio_elements_worksheet.add_cell(counter_line, 2, "Phases")#.change_horizontal_alignment('center')
 
           column_number = 2
 
@@ -1480,7 +1522,7 @@ class WbsActivitiesController < ApplicationController
             ratio_profile_attributes << profile.name
 
             column_number += 1
-            ratio_elements_worksheet.add_cell(counter_line, column_number, profile.name).change_horizontal_alignment('center')
+            ratio_elements_worksheet.add_cell(counter_line, column_number, profile.name)#.change_horizontal_alignment('center')
 
             column_width = ratio_elements_worksheet.get_column_width(column_number)
             if profile.name.to_s.size > column_width
@@ -1545,7 +1587,6 @@ class WbsActivitiesController < ApplicationController
 
     authorize! :manage_modules_instances, ModuleProject
 
-
     @organization = Organization.find(params[:organization_id])
     organization_profiles = @organization.organization_profiles
 
@@ -1565,7 +1606,7 @@ class WbsActivitiesController < ApplicationController
 
           else
             #there is no model, we will create new model from the model attributes data of the file to import
-            model_sheet_order_attributes = ["name", "description", "three_points_estimation", "enabled_input", "hide_wbs_header", "average_rate_wording", "effort_unit", "effort_unit_coefficient",
+            model_sheet_order_attributes = ["name", "description", "wbs_for_config", "use_real_profiles", "three_points_estimation", "enabled_input", "hide_wbs_header", "average_rate_wording", "effort_unit", "effort_unit_coefficient",
                                             "wbs_organization_profiles"]
 
             model_sheet_order = Hash.new
@@ -1578,6 +1619,8 @@ class WbsActivitiesController < ApplicationController
             if !model_worksheet.nil?
               @wbs_activity = WbsActivity.new
               @wbs_activity.organization = @organization
+              wbs_for_config = 0
+              use_real_profiles = 0
 
               model_worksheet.each_with_index do | row, index |
                 row && row.cells.each do |cell|
@@ -1585,22 +1628,37 @@ class WbsActivitiesController < ApplicationController
                     if cell.column == 1
                       val = cell && cell.value
 
-                      if index <= 8  ### Ligne des profiles
+                      if index <= 10 #8  ### Ligne des profiles
+
                         attr_name = model_sheet_order["#{index}".to_sym]
-                        #begin
-                          if attr_name != "wbs_organization_profiles"
-                            @wbs_activity["#{attr_name}"] = val unless attr_name.nil?
-                          end
-                        # rescue
-                        # end
+
+                        if attr_name != "wbs_organization_profiles"
+                          @wbs_activity["#{attr_name}"] = val unless attr_name.nil?
+                        end
+
+                        if attr_name == "wbs_for_config" && val.to_s == "1"
+                          wbs_for_config = 1
+                        end
+
+                        # on teste si c'est une WBS de configuration/ et si elle utilise les vrais profils
+                        if wbs_for_config && attr_name == "use_real_profiles" && val.to_s == "1"
+                          use_real_profiles = 1
+                        end
                       else
                         # Gestion dse profils
                         if row.cells[0].value.include?("Profil")
                           organization_profile = organization_profiles.where(name: val).first
                           if organization_profile.nil?
-                            organization_profile = OrganizationProfile.create(organization_id: @organization.id, name: val, description: val, cost_per_hour: 0)
+                            organization_profile = OrganizationProfile.create(organization_id: @organization.id,
+                                                                              name: val,
+                                                                              is_real_profile: use_real_profiles,
+                                                                              description: val,
+                                                                              initial_cost_per_hour: 0,
+                                                                              cost_per_hour: 0)
+
                             @organization.organization_profiles << organization_profile
                             @organization.save(validate: false)
+
                             organization_profiles = @organization.organization_profiles
                           end
 
@@ -1635,6 +1693,7 @@ class WbsActivitiesController < ApplicationController
                                                                  name: row[2].nil? ? nil : row[2].value,
                                                                  description: row[3].nil? ? nil : row[3].value,
                                                                  is_root: row[4].nil? ? nil : row[4].value)
+
                     elements_parents["#{activity_element.id}"] = row[5].nil? ? nil : row[5].value
                   end
                 end
@@ -1718,7 +1777,7 @@ class WbsActivitiesController < ApplicationController
                       if index > 0
                         case index
                           # Wbs-activity_ratio-variables
-                          when ratio_variables_line+1..ratio_variables_line+4
+                          when ratio_variables_line + 1..ratio_variables_line + 4
 
                             WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id,
                                                             name: row[1].nil? ? nil : row[1].value,
@@ -1730,9 +1789,10 @@ class WbsActivitiesController < ApplicationController
                                                             wbs_activity_id: @wbs_activity.id)
 
                           # Elements formulas
-                          when formulas_line+1..formulas_line+@wbs_activity_elements.size
+                          when formulas_line + 1..formulas_line + @wbs_activity_elements.size
 
                             wbs_activity_element = @wbs_activity_elements.where(name: row[3].nil? ? nil : row[3].value).first
+
                             WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id,
                                                            wbs_activity_element_id: wbs_activity_element.id,
                                                            is_optional: row[5].nil? ? nil : row[5].value,
@@ -1938,7 +1998,7 @@ class WbsActivitiesController < ApplicationController
 
       #== UPDATE THE RETAINED ATTRIBUTE ESTIMATION VALUES ===
       @module_project.pemodule.attribute_modules.each do |am|
-        @estimation_values = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "output").all
+        @estimation_values = EstimationValue.where(organization_id: @wbs_activity.organization_id, :module_project_id => @module_project.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "output").all
 
         pe_attribute_alias =  am.pe_attribute.alias
         output_effort_or_cost = Hash.new
@@ -2123,7 +2183,7 @@ class WbsActivitiesController < ApplicationController
   #
   #     #== UPDATE THE RETAINED ATTRIBUTE ESTIMATION VALUES ===
   #     @module_project.pemodule.attribute_modules.each do |am|
-  #       @estimation_values = EstimationValue.where(:module_project_id => @module_project.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "output").all
+  #       @estimation_values = EstimationValue.where(organization_id: @wbs_activity.organization_id, :module_project_id => @module_project.id, :pe_attribute_id => am.pe_attribute.id, :in_out => "output").all
   #
   #       pe_attribute_alias =  am.pe_attribute.alias
   #       output_effort_or_cost = Hash.new

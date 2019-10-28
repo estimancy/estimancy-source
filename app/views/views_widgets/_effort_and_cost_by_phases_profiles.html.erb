@@ -5,8 +5,9 @@
 
 <%
    project = module_project.project
+   project_organization = project.organization
    in_out = estimation_value.in_out
-   view_widget = ViewsWidget.find(view_widget_id)
+   view_widget = ViewsWidget.where(module_project_id: module_project.id, id: view_widget_id).first    #.find(view_widget_id)
    pe_attribute_alias = estimation_value.pe_attribute.alias
 
    if pe_attribute_alias.in?(["cost", "effort"])
@@ -21,7 +22,7 @@
 
    effort_pe_attribute = module_project_attributes.where(alias: effort_attribute_alias).last
    cost_pe_attribute = module_project_attributes.where(alias: cost_attribute_alias).last
-   mp_estimation_values = module_project.estimation_values
+   mp_estimation_values = module_project.estimation_values.where(organization_id: project_organization.id)
 
    effort_estimation_value = mp_estimation_values.where('pe_attribute_id = ? AND in_out = ?', effort_pe_attribute.id, in_out).last rescue nil
    cost_estimation_value = mp_estimation_values.where('pe_attribute_id = ? AND in_out = ?', cost_pe_attribute.id, in_out).last rescue nil
@@ -34,12 +35,12 @@
 
    # Get effort and cost unit
    effort_unit = wbs_activity.effort_unit
-   cost_unit = project.organization.currency.nil? ? nil.to_s : "#{project.organization.currency.sign}"
+   cost_unit = project_organization.currency.nil? ? nil.to_s : "#{project_organization.currency.sign}"
 
    # Get min value and organization effort unit coeff
    if view_widget.use_organization_effort_unit == true
      min_value = get_min_effort_value_from_mp_ratio_elements(module_project_ratio_elements, effort_attribute_alias)
-     organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, project.organization)
+     organization_effort_limit_coeff, organization_effort_unit = get_organization_effort_limit_and_unit(min_value, project_organization)
      effort_unit = organization_effort_unit
      effort_unit_coefficient = organization_effort_limit_coeff
    end
@@ -148,7 +149,10 @@
                       <% unless effort_wbs_probable_value.nil? || cost_wbs_probable_value.nil? %>
                           <!-- Get the profile ratio percentage -->
                           <% unless wbs_activity_elt_id.nil?
-                               wbs_activity_ratio_elt = WbsActivityRatioElement.where('wbs_activity_ratio_id = ? and wbs_activity_element_id = ?', ratio_reference.id, wbs_activity_elt_id).first
+                               wbs_activity_ratio_elt = WbsActivityRatioElement.where(organization_id: project_organization.id,
+                                                                                      wbs_activity_id: wbs_activity.id,
+                                                                                      wbs_activity_ratio_id: ratio_reference.id,
+                                                                                      wbs_activity_element_id: wbs_activity_elt_id).first
                              end %>
                           <%# wbs_estimation_profiles_values = wbs_probable_value["profiles"] %>
                           <% effort_wbs_estimation_profiles_values = effort_wbs_probable_value["profiles"] %>

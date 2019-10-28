@@ -344,7 +344,11 @@ class Skb::SkbModelsController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @skb_model = Skb::SkbModel.find(params[:skb_model_id])
-    @skb_input = @skb_model.skb_inputs.where(module_project_id: current_module_project.id).first_or_create
+    @module_project = current_module_project
+    @project = @module_project.project
+    organization_id = @project.organization_id
+
+    @skb_input = @skb_model.skb_inputs.where(module_project_id: @module_project.id).first_or_create
 
     @skb_input.data = params[:data].to_i
     @skb_input.processing = params[:processing].to_i
@@ -352,10 +356,11 @@ class Skb::SkbModelsController < ApplicationController
 
     @skb_input.save
 
-    current_module_project.pemodule.attribute_modules.each do |am|
+    @module_project.pemodule.attribute_modules.each do |am|
       tmp_prbl = Array.new
 
-      ev = EstimationValue.where(module_project_id: current_module_project.id,
+      ev = EstimationValue.where(:organization_id => organization_id,
+                                 module_project_id: @module_project.id,
                                  pe_attribute_id: am.pe_attribute.id,
                                  in_out: "output").first
 
@@ -384,8 +389,6 @@ class Skb::SkbModelsController < ApplicationController
       end
     end
 
-    @module_project = current_module_project
-    @project = @module_project.project
 
     ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
 
@@ -396,11 +399,13 @@ class Skb::SkbModelsController < ApplicationController
     end
 
     size_attr = PeAttribute.find_by_alias("retained_size")
-    size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                             :module_project_id => current_module_project.previous.first.id,
+    size_previous_ev = EstimationValue.where(:organization_id => organization_id,
+                                             :module_project_id => @module_project.previous.first.id,
+                                             :pe_attribute_id => size_attr.id,
                                              :in_out => "output").first
-    size_current_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
-                                            :module_project_id => current_module_project.id,
+    size_current_ev = EstimationValue.where(:organization_id => organization_id,
+                                            :module_project_id => @module_project.id,
+                                            :pe_attribute_id => size_attr.id,
                                             :in_out => "input").first
 
     @size = Skb::SkbModel::display_size(size_previous_ev, size_current_ev, "most_likely", current_component.id)

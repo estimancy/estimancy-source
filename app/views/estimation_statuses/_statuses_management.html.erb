@@ -40,7 +40,7 @@
             <td class="center">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_estimation_status_path(estimation_status), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, EstimationStatus %>
-                <%= link_to raw("<i class='material-icons'>delete</i>"), estimation_status, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), estimation_status, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>

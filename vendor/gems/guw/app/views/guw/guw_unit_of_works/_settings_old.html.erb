@@ -157,9 +157,6 @@
               <% unless @guw_model.factors_label.blank? %>
                 <th class=""><%= @guw_model.factors_label.to_s %></th>
               <% end %>
-              <% if @guw_model.allow_technology == true %>
-                <th class=""><%= I18n.t :technology %></th>
-              <% end %>
 
               <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
                 <th class=""><%= I18n.t :quantity %></th>
@@ -289,26 +286,6 @@
                   </td>
                 <% end %>
 
-                <% if @guw_model.allow_technology == true %>
-                  <td class="span2">
-                    <span class="technology_<%= guow.id %>" >
-                      <% results = Guw::GuwComplexityTechnology.where(guw_type_id: guow.guw_type_id).select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq %>
-                      <% unless results.empty? %>
-                        <% begin %>
-                          <%= select_tag "guw_technology[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                                          selected: guow.organization_technology.nil? ?
-                                                                                                  uowg.organization_technology_id : guow.organization_technology.id),
-                                         class: "guw_technology input-xsmall",
-                                         guw: guow.id,
-                                         required: true,
-                                         readonly: !can?(:execute_estimation_plan, @project) %>
-                        <% rescue %>
-                        <% end %>
-                      <% end %>
-                    </span>
-                  </td>
-                <% end %>
-
                 <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
                   <td class="span2 quantity_label_<%= guow.id %>">
                     <% unless guow.guw_type.nil? %>
@@ -404,7 +381,7 @@
                     <%= link_to "", guw.guw_unit_of_work_down_path(guow), class: "fa fa-arrow-down", title: I18n.t(:down) %>
                     <%= link_to "", guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg, position: guow.display_order), class: "fa fa-plus", title: I18n.t(:add) %>
                     <%= link_to "", guw.edit_guw_model_guw_unit_of_work_path(@guw_model, guow, g: uowg), class: "fa fa-pencil", title: I18n.t(:edit) %>
-                    <%= link_to "", guw.guw_unit_of_work_path(guow), method: "delete", confirm: I18n.t('are_you_sure'), class: "fa fa-trash", title: I18n.t(:delete) %>
+                    <%= link_to "", guw.guw_unit_of_work_path(guow), method: "delete", data: {confirm: I18n.t('are_you_sure')}, class: "fa fa-trash", title: I18n.t(:delete) %>
                   <% end %>
                 </td>
               </tr>

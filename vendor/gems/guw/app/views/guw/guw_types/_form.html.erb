@@ -44,6 +44,24 @@
                 <div class="form-row">
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :minimum, label: false, :input_html => {:class => 'mdl-textfield__input form-control'}  %>
+                      <label class="mdl-textfield__label" for="minimum"><%= I18n.t(:minimum) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :maximum, label: false, :input_html => {:class => 'mdl-textfield__input form-control'}  %>
+                      <label class="mdl-textfield__label" for="maximum"><%= I18n.t(:maximum) %></label>
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :attribute_type, as: :select, label: false, collection: ["Coefficient", "Pourcentage"], input_html: { class: 'mdl-textfield__input form-control'} %>
                       <label class="mdl-textfield__label" for="attribute_type"><%= "Type de calcul pour les attributs" %></label>
                     </div>
@@ -151,7 +169,7 @@
               <div class="actions-tabs">
                 <% if can? :manage_modules_instances, ModuleProject %>
                   <%= f.button :submit, I18n.t('save'), class: "btn btn-primary"  %>
-                  <%= link_to I18n.t(:delete), @guw_type, method: :delete, confirm: I18n.t(:are_you_sure), class: "btn btn-danger float-right", style:"margin-right:30px;" %>
+                  <%= link_to I18n.t(:delete), @guw_type, method: :delete, data: {confirm: I18n.t(:are_you_sure)}, class: "btn btn-danger float-right", style:"margin-right:30px;" %>
                 <% end %>
                 <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
               </div>

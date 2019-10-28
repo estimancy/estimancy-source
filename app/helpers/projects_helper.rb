@@ -380,7 +380,7 @@ module ProjectsHelper
     end
     res << '</tr>'
 
-    module_project.estimation_values.where('in_out = ?', 'output').order('display_order ASC').each do |est_val|
+    module_project.estimation_values.where(organization_id: module_project.organization_id, in_out: 'output').order('display_order ASC').each do |est_val|
       est_val_pe_attribute = est_val.pe_attribute
       res << "<tr><td><span class='attribute_tooltip tree_element_in_out' title='#{est_val_pe_attribute.description} #{display_rule(est_val)}'>#{est_val_pe_attribute.name} (#{get_attribute_unit(est_val_pe_attribute)})</span></td>"
       ['low', 'most_likely', 'high', 'probable'].each do |level|
@@ -404,6 +404,7 @@ module ProjectsHelper
 
   #The view to display result with ACTIVITIES
   def display_results_with_activities(module_project)
+    organization_id = module_project.organization_id
     res = String.new
     pbs_project_element = @pbs_project_element || current_component
 
@@ -418,8 +419,9 @@ module ProjectsHelper
     # Get the module_project probable estimation values for showing element consistency
     probable_est_value_for_consistency = nil
     pbs_level_data_for_consistency = Hash.new
+    module_project_estimation_values = module_project.estimation_values.where(organization_id: organization_id)
 
-    module_project.estimation_values.order('display_order ASC').each do |est_val|
+    module_project_estimation_values.order('display_order ASC').each do |est_val|
       if (est_val.in_out == 'output' or est_val.in_out=='both') and est_val.module_project.id == module_project.id
         probable_est_value_for_consistency = est_val.send("string_data_probable")
         res << "<th colspan='4'><span class='attribute_tooltip' title='#{est_val.pe_attribute.description} #{display_rule(est_val)}'> #{est_val.pe_attribute.name} (#{get_attribute_unit(est_val.pe_attribute)})</span></th>"
@@ -481,7 +483,7 @@ module ProjectsHelper
 
       ['low', 'most_likely', 'high', 'probable'].each do |level|
         res << '<td>'
-        module_project.estimation_values.where('in_out = ?', 'output').each do |est_val|
+        module_project_estimation_values.where(in_out: 'output').each do |est_val|
           if (est_val.in_out == 'output' or est_val.in_out=='both') and est_val.module_project.id == module_project.id
             level_estimation_values = Hash.new
             level_estimation_values = est_val.send("string_data_#{level}")
@@ -507,7 +509,7 @@ module ProjectsHelper
 
     # Show the probable values
     res << "<tr><td colspan='4'><strong> #{current_component.name} (Probable Value) </strong> </td>"
-    module_project.estimation_values.each do |est_val|
+    module_project_estimation_values.each do |est_val|
       if (est_val.in_out == 'output' or est_val.in_out=='both') and est_val.module_project_id == module_project.id
         res << "<td>"
         level_probable_value = est_val.send('string_data_probable')
@@ -536,7 +538,7 @@ module ProjectsHelper
 
       # Get the current balancing attribute
       @current_balancing_attribute = current_balancing_attribute
-      mp_attr_est_values = module_project.estimation_values.where('in_out = ? AND pe_attribute_id = ?', "output", @current_balancing_attribute)
+      mp_attr_est_values = module_project.estimation_values.where(organization_id: module_project.organization_id, pe_attribute_id: @current_balancing_attribute, in_out: "output")
       est_val = nil
       res << '<tr>
                 <th></th>'
@@ -571,6 +573,8 @@ module ProjectsHelper
 
   def display_effort_balancing_output(module_project)
     pbs_project_element = @pbs_project_element || current_component
+    module_project_estimation_values = module_project.estimation_values.where(organization_id: module_project.organization_id)
+
     res = String.new
     if module_project.compatible_with(current_component.work_element_type.alias) || current_component
       pemodule = Pemodule.find(module_project.pemodule.id)
@@ -578,7 +582,7 @@ module ProjectsHelper
 
       res << '<tr>
                 <th></th>'
-      module_project.estimation_values.each do |est_val|
+      module_project_estimation_values.each do |est_val|
         if (est_val.in_out == 'output' or est_val.in_out=='both') and est_val.module_project.id == module_project.id
           res << "<th><span class='attribute_tooltip' title='#{est_val.pe_attribute.description} #{display_rule(est_val)}' rel='tooltip'>#{est_val.pe_attribute.name} (#{get_attribute_unit(est_val.pe_attribute)})</span></th>"
         end
@@ -591,7 +595,7 @@ module ProjectsHelper
                     <td>
                       <span class='tree_element_in_out' style='margin-left:#{wbs_project_elt.depth}em;'>#{wbs_project_elt.name}</span></td>"
         res << '</td>'
-        module_project.estimation_values.select { |i| i.in_out == 'output' or i.in_out=='both' }.each do |est_val|
+        module_project_estimation_values.select { |i| i.in_out == 'output' or i.in_out=='both' }.each do |est_val|
           level_estimation_values = Hash.new
           level_estimation_values = est_val.send("string_data_probable")
 
@@ -639,6 +643,7 @@ module ProjectsHelper
       pbs_project_element = current_component
 
       @project = current_module_project.project
+      current_organization = @project.organization
       current_module_project_pemodule = current_module_project.pemodule
 
       ##if module_project.pemodule.with_activities
@@ -657,12 +662,12 @@ module ProjectsHelper
             refer_module_potential_ids = current_module_project.associated_module_projects
             refer_attribute = PeAttribute.where("alias = ? AND record_status_id = ?", "effort", @defined_status.id).first
 
-            refer_modules_project = ModuleProject.joins(:project, :pbs_project_elements).where("pemodule_id = ? AND  project_id =? AND pbs_project_elements.id = ?", effort_breakdown_module.id, @project.id, pbs_project_element.id)
+            refer_modules_project = ModuleProject.joins(:project, :pbs_project_elements).where("organization_id = ? AND pemodule_id = ? AND  project_id =? AND pbs_project_elements.id = ?", current_organization.id, effort_breakdown_module.id, @project.id, pbs_project_element.id)
             refer_module_project = refer_modules_project.where(["module_project_id IN (?)", refer_module_potential_ids]).last
 
             unless refer_module_project.nil?
               # Get the estimation_value corresponding to the linked Effort_breakdown module (if there is one)
-              last_estimation_results = EstimationValue.where('in_out = ? AND pe_attribute_id = ? AND module_project_id = ?', 'output', refer_attribute.id, refer_module_project.id).first
+              last_estimation_results = EstimationValue.where(organization_id: current_organization.id, module_project_id: refer_module_project.id, pe_attribute_id: refer_attribute.id, in_out: 'output').first
 
               if last_estimation_results.nil?
                 last_estimation_result = Hash.new
@@ -677,7 +682,7 @@ module ProjectsHelper
 
                 # This will be completed only if WBS has one or more not coming from library
                 unless complement_children_ids.empty?
-                  current_mp_est_value = current_module_project.estimation_values.where("pe_attribute_id = ? AND in_out = ?", refer_attribute.id, "output").last
+                  current_mp_est_value = current_module_project.estimation_values.where(organization_id: current_organization.id, pe_attribute_id: refer_attribute.id, in_out: "output").last
                   ##new_created_estimation_value = EstimationValue.new
                   new_created_estimation_value = last_estimation_results
 
@@ -733,6 +738,7 @@ module ProjectsHelper
   # Display the Effort Balancing Input without activity
   def display_balancing_input(module_project, last_estimation_result)
     pbs_project_element = current_component
+    organization_id = module_project.organization_id
     #Get the current balancing attribute
     @current_balancing_attribute = current_balancing_attribute
 
@@ -772,7 +778,7 @@ module ProjectsHelper
         res << "<td>"
           level = "probable"
           # Get estimation_value of previous mp for same attribute
-          mp_attr_est_values = mp.estimation_values.where('in_out = ? AND pe_attribute_id = ?', "output", @current_balancing_attribute)
+          mp_attr_est_values = mp.estimation_values.where(organization_id: organization_id, pe_attribute_id: @current_balancing_attribute, in_out: "output")
           if mp_attr_est_values == nil || mp_attr_est_values.length==0
             res << "-"
           else
@@ -796,7 +802,7 @@ module ProjectsHelper
       end
 
       # Text_field the balancing value
-      balancing_attr_est_values = module_project.estimation_values.where('in_out = ? AND pe_attribute_id = ?', "input", @current_balancing_attribute)
+      balancing_attr_est_values = module_project.estimation_values.where(organization_id: organization_id, pe_attribute_id: @current_balancing_attribute,  in_out: "input")
       res << '<td>'
       balancing_attr_est_val = EstimationValue.new
       if !balancing_attr_est_values.nil? && balancing_attr_est_values.length !=0
@@ -845,6 +851,9 @@ module ProjectsHelper
   #Display the Effort Balancing Input
   def display_effort_balancing_input(module_project, last_estimation_result)
     pbs_project_element = current_component
+    organization_id = module_project.organization_id
+    module_project_estimation_values = module_project.estimation_values.where(organization_id: organization_id)
+
     res = String.new
     if module_project.compatible_with(current_component.work_element_type.alias) || current_component
       pemodule = Pemodule.find(module_project.pemodule.id)
@@ -856,7 +865,7 @@ module ProjectsHelper
         res << "<th>#{display_path([], module_project, i).reverse.join('<br>')}</th>"
       end
 
-      module_project.estimation_values.each do |est_val|
+      module_project_estimation_values.each do |est_val|
         if (est_val.in_out == 'input' or est_val.in_out=='both') and est_val.module_project.id == module_project.id
           res << "<th>"
             res << "<span class='attribute_tooltip' title='#{est_val.pe_attribute.description} #{display_rule(est_val)}' rel='tooltip'>#{est_val.pe_attribute.name}</span>"
@@ -899,7 +908,7 @@ module ProjectsHelper
           end
         end
 
-        module_project.estimation_values.select { |i| i.in_out == 'output' }.each do |est_val|
+        module_project_estimation_values.select { |i| i.in_out == 'output' }.each do |est_val|
           res << '<td>'
           level_estimation_values = Hash.new
           level_estimation_values = est_val.send("string_data_most_likely")
@@ -928,13 +937,15 @@ module ProjectsHelper
   #Display the Effort Balancing Output
   def display_inputs_with_activities(module_project, last_estimation_result=nil)
     pbs_project_element = current_component
+    module_project_estimation_values = module_project.estimation_values.where(organization_id: module_project.organization_id)
+
     res = String.new
     if module_project.compatible_with(current_component.work_element_type.alias)# || current_component
       pemodule = Pemodule.find(module_project.pemodule.id)
       res << "<table class='table table-condensed table-bordered'>"
       res << '<tr>
                 <th></th>'
-      module_project.estimation_values.order('display_order ASC').each do |est_val|
+      module_project_estimation_values.order('display_order ASC').each do |est_val|
         est_val_pe_attribute = est_val.pe_attribute
         est_val_in_out = est_val.in_out
         if (est_val_in_out == 'output' or est_val_in_out=='both') and est_val.module_project.id == module_project.id
@@ -961,7 +972,7 @@ module ProjectsHelper
 
         ['low', 'most_likely', 'high'].each do |level|
           res << '<td>'
-          module_project.estimation_values.where('in_out = ?', 'input').each do |est_val|
+          module_project_estimation_values.where('in_out = ?', 'input').each do |est_val|
             est_val_pe_attribute = est_val.pe_attribute
             est_val_in_out = est_val.in_out
             if (est_val_in_out == 'input' and est_val.module_project.id == module_project.id)
@@ -1060,6 +1071,7 @@ module ProjectsHelper
 
   # Display th inputs parameters view
   def display_inputs_without_activities(module_project)
+    organization_id = module_project.organization_id
     pbs_project_element = current_component
     res = String.new
 
@@ -1073,7 +1085,7 @@ module ProjectsHelper
         res << "<th>#{level.humanize}</th>"
       end
       res << '</tr>'
-      module_project.estimation_values.order('display_order ASC').each do |est_val|
+      module_project.estimation_values.where(organization_id: organization_id).order('display_order ASC').each do |est_val|
         est_val_pe_attribute = est_val.pe_attribute
         est_val_in_out = est_val.in_out
         if (est_val_in_out == 'input' or est_val_in_out == 'both') and (est_val.module_project.id == module_project.id) and est_val_pe_attribute
@@ -1318,8 +1330,9 @@ module ProjectsHelper
                        "data-module_project_id" => module_project.id,
                        :readonly => read_only_value
       else
-        estimation_value = EstimationValue.where(:pe_attribute_id => comm_attr.first.id,
+        estimation_value = EstimationValue.where(organization_id: organization.id,
                                                  :module_project_id => module_project.previous.first.id,
+                                                 :pe_attribute_id => comm_attr.first.id,
                                                  :in_out => "output").first
         new_level_estimation_values = estimation_value.send("string_data_#{level}")
         text_field_tag "[#{level}][#{est_val_pe_attribute.alias.to_sym}][#{module_project.id}]",

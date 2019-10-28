@@ -23,6 +23,29 @@ $(document).ready(function() {
         $(this).alert('close');
     });
 
+    //$("#ratio").change(function() {
+    //    if ($(this).val() !== "") {
+    //        return $.ajax({
+    //            url: "/refresh_dashboard_module_project_ratio_elements",
+    //            method: "GET",
+    //            data: {
+    //                wbs_activity_ratio_id: $(this).val(),
+    //                dashboard_selected_ratio_id: $("#dashboard_selected_ratio_id").val()
+    //            },
+    //
+    //            success: function(data) {
+    //                $("#dashboard_selected_ratio_id").val($(this).val());
+    //                return $(".total-ratio").html(data);
+    //            },
+    //            error: function(XMLHttpRequest, testStatus, errorThrown) {
+    //                return alert("Error! :" +  errorThrown);
+    //            }
+    //        });
+    //    }
+    //});
+});
+
+$(document).on('ready turbolinks:load', function() {
     //====================================================
 
     //$(".module_project11").draggable({
@@ -65,6 +88,10 @@ $(document).ready(function() {
     // $("#edit_component").draggable({
     //     handle: ".modal-header, .modal-body"
     // });
+
+    $("#edit_component").draggable({
+        handle: ".modal-header, .modal-body"
+    });
 
     // Modal bug
     $('.modal-backdrop').remove();
@@ -338,7 +365,7 @@ $(document).ready(function() {
     // $(".i").resizable({
     //     alsoResizeReverse: ".o"
     // });
-
+    
 //Need to disable or enable the custom_value field according to the record_status value
 //    $(".record_status").change(function(){
 //        var status_text = $('select.record_status :selected').text();

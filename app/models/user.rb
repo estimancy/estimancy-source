@@ -59,7 +59,6 @@ class User < ActiveRecord::Base
   end
 
   has_and_belongs_to_many :projects
-  has_and_belongs_to_many :permissions
   ###has_and_belongs_to_many :organizations  ##to comment if not working
 
   belongs_to :language, :foreign_key => 'language_id', :touch => true
@@ -376,10 +375,9 @@ class User < ActiveRecord::Base
   end
 
   #Load user project securities for selected project id
-  def project_securities_for_select(prj_id)
-    self.project_securities.select { |i| i.project_id == prj_id &&
-                                         i.is_model_permission == true &&
-                                         i.is_estimation_permission == false }.first
+  def project_securities_for_select(prj_id, organization_id)
+    ###self.project_securities.select { |i| i.project_id == prj_id && i.is_model_permission == true && i.is_estimation_permission == false }.first
+    self.project_securities.where(organization_id: organization_id, project_id: prj_id).select { |i| i.is_model_permission == true && i.is_estimation_permission == false }.first
   end
 
   def locale

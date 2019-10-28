@@ -7,9 +7,12 @@
     <div class="span12">
 
       <% effort = PeAttribute.find_by_alias("effort") %>
+      <% module_project =  current_module_project %>
+      <% organization_id =  module_project.organization_id %>
 
-      <% current_ev =  EstimationValue.where(:pe_attribute_id => effort.id,
-                                             :module_project_id => current_module_project.id,
+      <% current_ev =  EstimationValue.where(:organization_id => organization_id,
+                                             :module_project_id => module_project.id,
+                                             :pe_attribute_id => effort.id,
                                              :in_out => "input").first %>
       <% res = 0 %>
       <% @elements = Hash.new %>
@@ -34,7 +37,7 @@
                 <% if current_ev && !current_ev.estimation_value_id.nil?
                      ev = EstimationValue.find(current_ev.estimation_value_id) %>
                 <% else %>
-                  <% ev = EstimationValue.where(:pe_attribute_id => effort.id, :module_project_id => mp.id, :in_out => "output").first %>
+                  <% ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => mp.id, :pe_attribute_id => effort.id, :in_out => "output").first %>
                 <% end %>
 
                 <td>

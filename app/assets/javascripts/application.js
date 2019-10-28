@@ -10,6 +10,7 @@
 //= require Chart.bundle
 //= require chartkick
 //= require jquery
+//= require jquery.remotipart
 //= require jquery_ujs
 //= require pager.js
 //= require select_list_move
@@ -26,10 +27,9 @@
 //= require gridstack.js
 //= require gridstack.jQueryUI.js
 
-
 //= require bootstrap-datepicker
 //= require bootstrap-datepicker/core
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.fr.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.de.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.it.js
-
+//= require turbolinks

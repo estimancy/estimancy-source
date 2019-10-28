@@ -48,10 +48,6 @@
 #   end
 # end
 #
-# #
-#
-#
-
 # CLEAN DATABASE
 # ProjectField.where(value: nil).delete_all
 # Guw::GuwAttributeComplexity.where(value: nil, value_b: nil).delete_all
