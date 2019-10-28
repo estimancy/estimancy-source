@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191008092713) do
+ActiveRecord::Schema.define(version: 20191015123124) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -177,11 +177,11 @@ ActiveRecord::Schema.define(version: 20191008092713) do
     t.datetime "created_at",                  null: false
     t.datetime "updated_at",                  null: false
     t.boolean  "is_ignored"
-    t.integer  "criticality",     limit: 4
     t.float    "forfait_mco",     limit: 24
     t.integer  "month_number",    limit: 4
     t.datetime "start_date"
     t.datetime "end_date"
+    t.float    "coefficient",     limit: 24
   end
 
   add_index "applications", ["organization_id", "name"], name: "by_organization_name", using: :btree
@@ -1042,6 +1042,18 @@ ActiveRecord::Schema.define(version: 20191008092713) do
 
   add_index "guw_guw_models", ["organization_id", "name"], name: "index_guw_guw_models_on_organization_id_and_name", unique: true, using: :btree
 
+  create_table "guw_guw_output_applications", force: :cascade do |t|
+    t.integer  "organization_id",   limit: 4
+    t.integer  "guw_model_id",      limit: 4
+    t.integer  "guw_type_id",       limit: 4
+    t.integer  "guw_output_id",     limit: 4
+    t.integer  "application_id",    limit: 4
+    t.integer  "guw_complexity_id", limit: 4
+    t.float    "value",             limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "guw_guw_output_associations", force: :cascade do |t|
     t.integer  "organization_id",          limit: 4
     t.integer  "guw_model_id",             limit: 4
@@ -1722,13 +1734,20 @@ ActiveRecord::Schema.define(version: 20191008092713) do
   end
 
   create_table "organization_profiles", force: :cascade do |t|
-    t.integer  "organization_id", limit: 4
-    t.string   "name",            limit: 255
-    t.text     "description",     limit: 65535
-    t.float    "cost_per_hour",   limit: 24
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
-    t.integer  "copy_id",         limit: 4
+    t.integer  "organization_id",         limit: 4
+    t.string   "name",                    limit: 255
+    t.text     "description",             limit: 65535
+    t.float    "cost_per_hour",           limit: 24
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.integer  "copy_id",                 limit: 4
+    t.boolean  "is_real_profile"
+    t.boolean  "use_dynamic_coefficient"
+    t.string   "associated_services",     limit: 255
+    t.float    "r_value",                 limit: 24
+    t.float    "tm_value",                limit: 24
+    t.string   "formula",                 limit: 255
+    t.float    "initial_cost_per_hour",   limit: 24
   end
 
   add_index "organization_profiles", ["organization_id"], name: "index_organization_profiles_on_organization_id", using: :btree
@@ -2623,6 +2642,8 @@ ActiveRecord::Schema.define(version: 20191008092713) do
     t.string   "validation_text",              limit: 255
     t.integer  "estimation_status_id",         limit: 4
     t.boolean  "show_module_name"
+    t.boolean  "is_project_data_widget"
+    t.string   "project_attribute_name",       limit: 255
   end
 
   add_index "views_widgets", ["module_project_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree
@@ -2652,6 +2673,8 @@ ActiveRecord::Schema.define(version: 20191008092713) do
     t.integer  "phases_short_name_number", limit: 4,     default: 0
     t.string   "hide_wbs_header",          limit: 255
     t.string   "average_rate_wording",     limit: 255
+    t.boolean  "use_real_profiles"
+    t.boolean  "wbs_for_config"
   end
 
   add_index "wbs_activities", ["organization_id", "name"], name: "index_wbs_activities_on_organization_id_and_name", unique: true, using: :btree
