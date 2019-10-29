@@ -65,7 +65,7 @@
                     <%= link_to(raw("<i class='material-icons'>copy</i>"),
                                 main_app.duplicate_path(project, organization_id: @organization, action_name: 'duplication_model'),
                                 :title => I18n.t('button_duplicate_project'),
-                                :method => "POST") %>
+                                :method => :post) %>
                   <% end %>
 
                   <% if can_show_estimation?(project) %>
