@@ -258,7 +258,7 @@ class ProjectsController < ApplicationController
 
               worksheet_cf.add_cell(i, 13, guow.guw_type.nil? ? nil : guow.guw_type.name)
 
-              unless guow.guw_type.include?("SRV") || guow.guw_type.include?("MCO")
+              unless guow.guw_type.name.include?("SRV") || guow.guw_type.name.include?("MCO")
                 if guow.intermediate_percent.nil? && guow.intermediate_weight.nil?
                   @guw_coefficients.each do |gc|
                     if gc.coefficient_type == "Liste" && gc.name == "Taille"
