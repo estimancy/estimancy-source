@@ -258,36 +258,37 @@ class ProjectsController < ApplicationController
 
               worksheet_cf.add_cell(i, 13, guow.guw_type.nil? ? nil : guow.guw_type.name)
 
-              unless guow.guw_type.nil?
-                unless guow.guw_type.name.include?("SRV") || guow.guw_type.name.include?("MCO")
-                  if guow.intermediate_percent.nil? && guow.intermediate_weight.nil?
-                    @guw_coefficients.each do |gc|
-                      if gc.coefficient_type == "Liste" && gc.name == "Taille"
-                        ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id && i.module_project_id == guow.module_project_id && i.guw_unit_of_work_id == guow.id }.last
-                        unless ceuw.nil?
-                          guw_coefficient_element_name = ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name
-                        end
 
-                        worksheet_cf.add_cell(i, 14, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
-                        worksheet_cf.add_cell(i, 15, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
-                      end
+              if guow.intermediate_percent.nil? && guow.intermediate_weight.nil?
+                @guw_coefficients.each do |gc|
+                  if gc.coefficient_type == "Liste" && gc.name == "Taille"
+                    ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id && i.module_project_id == guow.module_project_id && i.guw_unit_of_work_id == guow.id }.last
+                    unless ceuw.nil?
+                      guw_coefficient_element_name = ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name
                     end
-                  else
-                    worksheet_cf.add_cell(i, 14, guow.intermediate_percent)
-                    worksheet_cf.add_cell(i, 15, guow.intermediate_weight)
+
+                    worksheet_cf.add_cell(i, 14, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
+                    worksheet_cf.add_cell(i, 15, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
                   end
                 end
+              else
+                worksheet_cf.add_cell(i, 14, guow.intermediate_percent)
+                worksheet_cf.add_cell(i, 15, guow.intermediate_weight)
               end
 
               j = 0
               @guw_coefficients.each do |gc|
                 if gc.coefficient_type == "Pourcentage"
+                  unless guow.guw_type.nil?
+                    unless guow.guw_type.name.include?("SRV") || guow.guw_type.name.include?("MCO")
 
-                  default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
-                  ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
-                  worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
-                  worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
-                  j = j + 2
+                      default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
+                      ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+                      worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
+                      worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
+                      j = j + 2
+                    end
+                  end
 
                   # Charge sans prod en colonne AI
                 elsif guw_charge_ss_prod_coefficient
