@@ -95,7 +95,8 @@
                   <input name='percents' id="percent" class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent %>">
                   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
                   <script>
-                      $(document).ready(function(){
+                      //$(document).ready(function(){
+                      $(document).on('turbolinks:load', function() {
                           $('.edition-bloc-slider-slider').slider({
                               slide: function (e, value) {
                                   $('.edition-bloc-slider-value').text(value);
@@ -265,7 +266,8 @@
 
     <% begin %>
       <script>
-        $(document).ready(function(){
+        //$(document).ready(function(){
+        $(document).on('turbolinks:load', function() {
             var staffing_trapeze = $("#new_staffing_trapeze").val();
             var staffing_rayleigh = $("#new_staffing_rayleigh").val();
 

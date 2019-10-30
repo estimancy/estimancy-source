@@ -398,7 +398,8 @@
               }]
           });
 
-          $(document).ready(function () {
+          //$(document).ready(function () {
+          $(document).on('turbolinks:load', function() {
               $(".date-picker").datepicker({
                   language: '<%= set_user_language_for_datepicker %>',
                   autoclose: true,

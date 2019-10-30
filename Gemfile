@@ -165,6 +165,7 @@ gem 'dentaku', '~> 2.0', '>= 2.0.9'
 
 gem 'passenger'
 gem 'turbolinks'
+gem 'jquery-turbolinks'
 
 gem 'delocalize'
 

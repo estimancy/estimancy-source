@@ -42,7 +42,8 @@ $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widget
 $("#modified_guw_line_ids").val("<%= @group.guw_unit_of_works.map(&:id).flatten.join(",") %>");
 
 var my_array = [];
-$(document).ready(function(){
+//$(document).ready(function(){
+$(document).on('turbolinks:load', function() {
 
   $("input#name").val("");
   $("textarea#comments").val("");

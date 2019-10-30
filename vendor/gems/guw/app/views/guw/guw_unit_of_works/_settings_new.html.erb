@@ -271,7 +271,8 @@
 
   <script>
     var my_array = [];
-    $(document).ready(function(){
+    //$(document).ready(function(){
+    $(document).on('turbolinks:load', function() {
         $(".new_guw_button").on('click', function(e){
             $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
             $("#hidden_position").val($(this).data("display-order"));
@@ -371,7 +372,8 @@
         }
     }
 
-    $(document).ready(function () {
+    //$(document).ready(function () {
+    $(document).on('turbolinks:load', function() {
 
 <!--        $('.selected').change(function(){-->
 <!--            $.ajax({-->
@@ -736,7 +738,8 @@
 
 
       <script>
-          $(document).ready(function(){
+          //$(document).ready(function(){
+          $(document).on('turbolinks:load', function() {
 
               $(".up,.down").click(function() {
                   var row = $(this).parents("tr.movable:first");
@@ -840,7 +843,8 @@
 </div>
 
 <script>
-  $(document).ready(function(){
+  //$(document).ready(function(){
+  $(document).on('turbolinks:load', function() {
     <% current_module_project.guw_unit_of_work_groups.each do |uowg| %>
       <% @guw_model.guw_outputs.each do |go| %>
         var sum = 0;
