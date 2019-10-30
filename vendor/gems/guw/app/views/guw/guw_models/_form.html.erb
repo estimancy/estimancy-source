@@ -387,6 +387,7 @@
 
                       <div class="actions-tabs">
                         <% if can? :manage_modules_instances, ModuleProject %>
+                          <%= link_to I18n.t(:create_button), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
                         <% end %>
                         <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn btn-secondary" %>
                       </div>
