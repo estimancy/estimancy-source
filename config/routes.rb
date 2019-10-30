@@ -463,7 +463,7 @@ Projestimate::Application.routes.draw do
   post 'projects/:id/display_estimation_plan' => 'projects#display_estimation_plan', :as => 'display_estimation_plan'
 
   # post 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
-  post 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
+  get 'projects/:project_id/duplicate' => 'projects#duplicate', :as => :duplicate
   post 'projects/:project_id/locked_plan' => 'projects#locked_plan', :as => :locked_plan
   get 'show_project_history' => 'projects#show_project_history', :as => :show_project_history
   get 'confirm_deletion' => 'projects#confirm_deletion', :as => :confirm_deletion
