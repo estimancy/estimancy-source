@@ -81,7 +81,7 @@ $("#dashboard_right_panel").html("<%= j(render 'module_projects/dashboard_right_
 
 var my_array = [];
 //$(document).ready(function(){
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
   $("table#guw input").keyup(function(e) {
     var new_line = $(this).closest("tr").data("guw-id");
     my_array.push(new_line);

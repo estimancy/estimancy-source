@@ -112,7 +112,7 @@
                                     </div>
                                     <script>
                                         //$(document).ready(function(){
-                                        $(document).on('turbolinks:load', function() {
+                                        $(document).ready(function() {
                                             var data_ids = <%= raw ids_list.to_json.html_safe %> ;
                                             var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
                                             var value_from = parseInt(<%= selected_value %>);  //parseInt(<%#= ids_list.index(selected_value) %>);

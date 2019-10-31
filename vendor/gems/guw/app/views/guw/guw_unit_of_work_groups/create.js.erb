@@ -43,7 +43,7 @@ $("#modified_guw_line_ids").val("<%= @group.guw_unit_of_works.map(&:id).flatten.
 
 var my_array = [];
 //$(document).ready(function(){
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
 
   $("input#name").val("");
   $("textarea#comments").val("");

@@ -54,7 +54,7 @@
     <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     <script>
         //$(document).ready(function() {
-        $(document).on('turbolinks:load', function() {
+        $(document).ready(function() {
             $('#query-columns').closest('form').submit(function(){
                 $('#selected_columns option').prop('selected', true);
 

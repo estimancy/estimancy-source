@@ -18,7 +18,7 @@
  #############################################################################**/
 
 //$(document).ready(function() {
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
 
     $(".alert").delay(4000).slideUp(200, function() {
         $(this).alert('close');
@@ -47,7 +47,7 @@ $(document).on('turbolinks:load', function() {
 });
 
 //$(document).on('ready turbolinks:load', function() {
-$(document).on('turbolinks:load', function() {
+$(document).ready(function() {
     //====================================================
 
     //$(".module_project11").draggable({
