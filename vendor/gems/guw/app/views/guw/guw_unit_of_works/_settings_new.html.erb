@@ -129,16 +129,6 @@
 
     <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
 
-    <hr>
-    <% begin %>
-        <% unless @project.application.coefficient_label.nil? %>
-            <div class="pull-left label label-warning">
-              <%= @project.application.coefficient_label %>
-            </div>
-        <% end %>
-    <% rescue %>
-    <% end %>
-
     <div class="card card-widget">
       <div class="card-body">
         <div class="edition-bloc-content pb-4">

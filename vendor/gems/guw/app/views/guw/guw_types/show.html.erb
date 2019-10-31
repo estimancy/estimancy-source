@@ -154,21 +154,21 @@
                                                      ["Afficher sans modification", "display"],
                                                      ["Afficher avec modification", "display_modif"],
                                                      ["Modifier seulement", "modif"]],
-                                                    selected: got.nil? ? nil : got.display_type), class: "form-control" %>
+                                                    selected: got.nil? ? nil : got.display_type),
+                                 class: "form-control",
+                                 style: "width: 160px;" %>
+
                 </td>
                 <% guw_type_guw_complexities.order("display_order asc").each do |guw_complexity| %>
                   <% guw_outputs.each do |guw_output| %>
 
-                    <%# oa = Guw::GuwOutputAssociation.where( guw_complexity_id: guw_complexity.id,
-                                                             guw_output_associated_id: aguw_output.id,
-                                                             guw_output_id: guw_output.id).first %>
                     <% oa = Guw::GuwOutputAssociation.where(organization_id: @organization.id,
                                                             guw_model_id: @guw_model.id,
                                                             guw_output_id: guw_output.id,
                                                             guw_complexity_id: guw_complexity.id,
                                                             guw_output_associated_id: aguw_output.id).first %>
 
-                        <td class="align-center">
+                    <td class="align-center">
                       <%= text_field_tag "config[#{guw_complexity.id}][#{guw_output.id}][#{aguw_output.id}]", oa.nil? ? '' : oa.value, class: "form-control" %>
                     </td>
                   <% end %>
