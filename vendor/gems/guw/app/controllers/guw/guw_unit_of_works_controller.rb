@@ -1502,7 +1502,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
 
                 unless cce.nil?
-                  selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value)
+                  selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value) * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
                 end
               end
 
@@ -1654,12 +1654,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           else
             tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
-          end
-
-          if @project.application.nil?
-            tmp = tmp
-          else
-            tmp = tmp * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
           end
 
           if params["ajusted_size"].present?

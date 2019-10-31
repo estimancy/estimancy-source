@@ -195,6 +195,9 @@
           <th>
             <b class="pull-left">
               x <%= link_to guw_coefficient.name, guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient) %>
+              <% if guw_coefficient.coefficient_type == "Application" %>
+                (Application)
+              <% end %>
             </b>
           </th>
           <% guw_type_guw_complexities.each do |gc| %>
@@ -214,7 +217,7 @@
         <% guw_coefficient_elements.order('display_order asc').each do |guw_coefficient_element| %>
           <tr>
             <td style="font-weight: <%= (guw_coefficient_element.default == true) ? 'bolder' : '' %>">
-              <%= guw_coefficient_element.name %> (<%= guw_coefficient_element.value %>) (<%= guw_coefficient_element.default_display_value %>)
+              <%= link_to guw_coefficient_element.name, guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element) %> (<%= guw_coefficient_element.value %>)
             </td>
             <% guw_type_guw_complexities.order("display_order asc").each do |guw_cplx| %>
               <% @guw_outputs.each do |guw_output| %>
