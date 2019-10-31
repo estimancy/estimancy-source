@@ -1060,7 +1060,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                  guw_coefficient_element_id: ce.id,
                                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
                 unless cce.nil?
-                  coefficient_value = nil
+                  coefficient_value = 1
                   case guw_coefficient.coefficient_type
                     when "Application"
                       coefficient_value = @project.application.coefficient
