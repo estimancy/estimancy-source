@@ -31,7 +31,8 @@
   <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
   <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
   <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
-  <% @guw_outputs = @guw_model.guw_outputs %>
+  <% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
+
 
   <% @hash_guw_coefficients = {} %>
   <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
@@ -127,6 +128,16 @@
     <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("display_order ASC") %>
 
     <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
+
+    <hr>
+    <% begin %>
+        <% unless @project.application.coefficient_label.nil? %>
+            <div class="pull-left label label-warning">
+              <%= @project.application.coefficient_label %>
+            </div>
+        <% end %>
+    <% rescue %>
+    <% end %>
 
     <div class="card card-widget">
       <div class="card-body">
