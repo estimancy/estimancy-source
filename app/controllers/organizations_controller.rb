@@ -1357,16 +1357,32 @@ class OrganizationsController < ApplicationController
 
       tab.each_with_index do |row, index|
         if index > 0
-          new_app = Application.new(organization_id: @organization.id,
-                                    name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].value),
-                                    is_ignored: row[1].value,
-                                    criticality: row[2].value,
-                                    coefficient: row[3].value,
-                                    coefficient_label: row[4].value,
-                                   )
-          unless new_app.save
-            tab_error << index + 1
+
+          app = Application.where(organization_id: @organization.id,
+                                  name: row[0].value).first
+
+          if app.nil?
+
+            new_app = Application.new(organization_id: @organization.id,
+                                      name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].value),
+                                      is_ignored: row[1].value,
+                                      criticality: row[2].value,
+                                      coefficient: row[3].value,
+                                      coefficient_label: row[4].value)
+
+            unless new_app.save
+              tab_error << index + 1
+            end
+
+          else
+            app.organization_id = @organization.id
+            app.is_ignored = row[1].nil? ? nil : row[1].value
+            app.criticality = row[2].nil? ? nil : row[2].value
+            app.coefficient = row[3].nil? ? nil : row[3].value
+            app.coefficient_label = row[4].nil? ? nil : row[4].value
+            app.save
           end
+
         end
       end
     else
@@ -1378,6 +1394,7 @@ class OrganizationsController < ApplicationController
     else
       flash[:error] = I18n.t(:error_impor_groups, parameter: tab_error.join(", "))
     end
+
     redirect_to :back
   end
 

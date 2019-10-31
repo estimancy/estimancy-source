@@ -121,7 +121,7 @@ class ProjectsController < ApplicationController
         # @organization_projects = [Project.where(id: 3307).first]
 
         worksheet_cf = workbook.worksheets[0]
-        worksheet_cf.sheet_name = 'Comp.  Abaques & Serv. Dire Exp'
+        worksheet_cf.sheet_name = 'Comp. Abaques & Serv. Dire Exp'
         worksheet_wbs = workbook.add_worksheet('Services avec ratio')
         worksheet_synt = workbook.add_worksheet('Synthèse')
 
@@ -261,6 +261,7 @@ class ProjectsController < ApplicationController
 
               worksheet_cf.add_cell(i, 13, guow.guw_type.nil? ? nil : guow.guw_type.name)
 
+
               if guow.intermediate_percent.nil? && guow.intermediate_weight.nil?
                 @guw_coefficients.each do |gc|
                   if gc.coefficient_type == "Liste" && gc.name == "Taille"
@@ -281,12 +282,16 @@ class ProjectsController < ApplicationController
               j = 0
               @guw_coefficients.each do |gc|
                 if gc.coefficient_type == "Pourcentage"
+                  unless guow.guw_type.nil?
+                    unless guow.guw_type.name.include?("SRV") || guow.guw_type.name.include?("MCO")
 
-                  default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
-                  ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
-                  worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
-                  worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
-                  j = j + 2
+                      default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
+                      ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+                      worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
+                      worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
+                      j = j + 2
+                    end
+                  end
 
                   # Charge sans prod en colonne AI
                 elsif guw_charge_ss_prod_coefficient
@@ -397,8 +402,11 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 18, "Coût retenu (€)")
 
 
-        fe = Field.where(organization_id: @organization.id, name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)"]).first
-        fc = Field.where(organization_id: @organization.id, name: "Coût (k€)").first
+        fe = Field.where(organization_id: @organization.id, 
+                         name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)", "Charge totale (j)"]).first
+
+        fc = Field.where(organization_id: @organization.id,
+                         name: ["Coût (k€)", "Coût total (k€)"]).first
 
         if params[:date_min].present? && params[:date_min].present?
           mpres = ModuleProjectRatioElement.where(organization_id: @organization.id,
