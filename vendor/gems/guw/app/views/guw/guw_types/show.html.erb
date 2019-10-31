@@ -188,7 +188,15 @@
                   <b class="pull-left">
                     x <%= link_to guw_coefficient.name, guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient) %>
                     <% if guw_coefficient.coefficient_type == "Application" %>
-                        (Application)
+                      (Application)
+                    <% elsif guw_coefficient.coefficient_type == "ProjectArea" %>
+                      (ProjectArea)
+                    <% elsif guw_coefficient.coefficient_type == "AcquisitionCategory" %>
+                      (AcquisitionCategory)
+                    <% elsif guw_coefficient.coefficient_type == "Provider" %>
+                      (Provider)
+                    <% elsif guw_coefficient.coefficient_type == "PlatformCategory" %>
+                      (PlatformCategory)
                     <% end %>
                   </b>
                 </th>

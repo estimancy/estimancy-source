@@ -884,10 +884,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                                                             module_project_id: @module_project.id,
                                                                                                                             guw_unit_of_work_id: guw_unit_of_work.id)
 
-                # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
-                #                                                   guw_coefficient_id: guw_coefficient.id,
-                #                                                   module_project_id: current_module_project.id,
-                #                                                   guw_coefficient_element_id: guw_coefficient.guw_coefficient_elements.first.id).first_or_create
               end
 
               begin
