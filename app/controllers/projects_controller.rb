@@ -634,8 +634,11 @@ class ProjectsController < ApplicationController
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
 
-    if @module_project.id == @initialization_module_project.id
-      session[:active_nav_link] = "activate_init_module_project"
+    begin
+      if @module_project.id == @initialization_module_project.id
+        session[:active_nav_link] = "activate_init_module_project"
+      end
+    rescue
     end
 
     # Pour les vignettes

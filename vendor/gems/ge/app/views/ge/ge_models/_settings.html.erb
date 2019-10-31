@@ -1,6 +1,6 @@
 <section class="estimation-modules-edition ge-model-estimation">
 
-  <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
+  <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form', method: "POST" do %>
 
     <% if @ge_model.ge_factors.size > 0 %>
       <h4>
