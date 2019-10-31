@@ -24,6 +24,16 @@
                 <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
               </div>
 
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :coefficient, label: false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                  <label class="mdl-textfield__label" for="coefficient"><%= I18n.t('coefficient_value') %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :coefficient_label, label: false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                  <label class="mdl-textfield__label" for="coefficient_label"><%= I18n.t('coefficient_label') %></label>
+              </div>
+
               </div>
             </div>
           </div>

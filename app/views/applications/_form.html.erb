@@ -43,7 +43,7 @@
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :month_number, label: false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <%= f.input :month_number, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
                 <label class="mdl-textfield__label" for="month_number"><%= I18n.t('month_number') %></label>
               </div>
 
@@ -65,8 +65,7 @@
                   });
               });
           </script>
-
-      </div>
+        </div>
         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
           <%= f.input :is_ignored, as: :boolean, label: false, id:"application[is_ignored]", :input_html => {:class => 'mdl-checkbox__inputs'}   %>
           <label class="mdl-textfield__label" for="is_ignored" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_ignored') %></label>
@@ -75,11 +74,19 @@
 <!--          <input type="checkbox" name="application[is_ignored]" id="application_is_ignored]" class="mdl-checkbox__input" as="boolean" >-->
 <!--          <label class="mdl-checkbox__label" for="is_ignored"><%#= I18n.t('is_ignored') %></label>-->
 <!--        </label>-->
-      </div>
 
-       <%= f.input :criticality, :label => I18n.t('criticality'), :input_html => { :class => 'input-xlarge'} %>
-       <%= f.input :coefficient, :label => I18n.t('coefficient_value'), :input_html => { :class => 'input-xlarge'} %>
-       <%= f.input :coefficient_label, :label => I18n.t('coefficient_label'), :input_html => { :class => 'input-xlarge'} %>
+        <%#= f.input :criticality, :label => I18n.t('criticality'), :input_html => { :class => 'input-xlarge'} %>
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <%= f.input :coefficient, label: false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+          <label class="mdl-textfield__label" for="coefficient"><%= I18n.t('coefficient_value') %></label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+          <%= f.input :coefficient_label, label: false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+          <label class="mdl-textfield__label" for="coefficient_label"><%= I18n.t('coefficient_label') %></label>
+        </div>
+
+      </div>
 
     <br>
 

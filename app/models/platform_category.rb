@@ -21,7 +21,7 @@
 
 #Master Data
 class PlatformCategory < ActiveRecord::Base
-  attr_accessible :name, :description, :organization_id
+  attr_accessible :name, :description, :organization_id, :coefficient, :coefficient_label
 
   has_many :projects
 
