@@ -1,5 +1,5 @@
 class Application < ActiveRecord::Base
-  attr_accessible :name, :organization_id, :is_ignored, :forfait_mco, :month_number, :start_date, :end_date, :criticality, :coefficient, :coefficient_label
+  attr_accessible :name, :organization_id, :is_ignored, :forfait_mco, :month_number, :start_date, :end_date, :coefficient, :coefficient_label
   belongs_to :organization
 
   has_and_belongs_to_many :projects

@@ -1366,9 +1366,8 @@ class OrganizationsController < ApplicationController
             new_app = Application.new(organization_id: @organization.id,
                                       name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].value),
                                       is_ignored: row[1].value,
-                                      criticality: row[2].value,
-                                      coefficient: row[3].value,
-                                      coefficient_label: row[4].value)
+                                      coefficient: row[2].value,
+                                      coefficient_label: row[3].value)
 
             unless new_app.save
               tab_error << index + 1
@@ -1377,9 +1376,8 @@ class OrganizationsController < ApplicationController
           else
             app.organization_id = @organization.id
             app.is_ignored = row[1].nil? ? nil : row[1].value
-            app.criticality = row[2].nil? ? nil : row[2].value
-            app.coefficient = row[3].nil? ? nil : row[3].value
-            app.coefficient_label = row[4].nil? ? nil : row[4].value
+            app.coefficient = row[2].nil? ? nil : row[2].value
+            app.coefficient_label = row[3].nil? ? nil : row[3].value
             app.save
           end
 
@@ -1408,16 +1406,14 @@ class OrganizationsController < ApplicationController
 
     worksheet.add_cell(0, 0, I18n.t(:name))
     worksheet.add_cell(0, 1, I18n.t(:is_ignored))
-    worksheet.add_cell(0, 2, I18n.t(:criticality))
-    worksheet.add_cell(0, 3, I18n.t(:coefficient_value))
-    worksheet.add_cell(0, 4, I18n.t(:coefficient_label))
+    worksheet.add_cell(0, 2, I18n.t(:coefficient_value))
+    worksheet.add_cell(0, 3, I18n.t(:coefficient_label))
 
     organization_appli.each_with_index do |appli, index|
       worksheet.add_cell(index + 1, 0, appli.name)
       worksheet.add_cell(index + 1, 1, appli.is_ignored ? 1 : 0)
-      worksheet.add_cell(index + 1, 2, appli.criticality)
-      worksheet.add_cell(index + 1, 3, appli.coefficient)
-      worksheet.add_cell(index + 1, 4, appli.coefficient_label)
+      worksheet.add_cell(index + 1, 2, appli.coefficient)
+      worksheet.add_cell(index + 1, 3, appli.coefficient_label)
     end
     send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Applications-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
