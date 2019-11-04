@@ -1,5 +1,6 @@
 <%= form_tag guw.save_uo_with_multiple_outputs_path, method: "post", remote: true, class: "uo_form" do %>
 
+  <% organization_id = @project.organization_id %>
   <% guw_type = @guw_type.nil? ? guow.guw_type : @guw_type %>
   <%= hidden_field_tag "guw_unit_of_work_id", guow.id %>
   <%# hidden_field_tag "guw_work_unit_id", guow.guw_work_unit_id %>
