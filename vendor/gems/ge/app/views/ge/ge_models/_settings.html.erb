@@ -1,6 +1,6 @@
 <section class="estimation-modules-edition ge-model-estimation">
 
-  <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form' do %>
+  <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form', method: "POST" do %>
 
     <% if @ge_model.ge_factors.size > 0 %>
       <h4>
@@ -111,7 +111,8 @@
 
                                     </div>
                                     <script>
-                                        $(document).ready(function(){
+                                        //$(document).ready(function(){
+                                        $(document).ready(function() {
                                             var data_ids = <%= raw ids_list.to_json.html_safe %> ;
                                             var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
                                             var value_from = parseInt(<%= selected_value %>);  //parseInt(<%#= ids_list.index(selected_value) %>);

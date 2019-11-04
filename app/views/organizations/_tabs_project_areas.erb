@@ -34,6 +34,8 @@
       <tr>
         <th><%= I18n.t('name') %></th>
         <th><%= I18n.t('description') %></th>
+        <th><%= I18n.t('coefficient_value') %></th>
+        <th><%= I18n.t('coefficient_label') %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -43,6 +45,8 @@
           <tr>
             <td><%= pa.name %></td>
             <td><%= pa.description %></td>
+            <td><%= pa.coefficient %></td>
+            <td><%= pa.coefficient_label %></td>
             <td class="center">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_project_area_path(@organization, pa), :class => 'icon-pencil', :title => I18n.t('edit') %>
               <% if can? :manage, ProjectArea %>

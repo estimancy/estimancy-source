@@ -4,6 +4,7 @@
 // It's not advisable to add code directly here, but if you do, it'll appear at the bottom of the
 // the compiled file.
 //
+
 //= require_self
 // require_tree .
 //= require cookies_eu
@@ -20,16 +21,16 @@
 //= require jquery-number
 //= require spectrum.js
 //= require jscolor
-
+//
 // require jquery-min.js
 //= require jquery-ui-min.js
-
+//
 //= require gridstack.js
 //= require gridstack.jQueryUI.js
-
+//
 //= require bootstrap-datepicker
 //= require bootstrap-datepicker/core
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.fr.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.de.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.it.js
-//= require turbolinks
+// require turbolinks

@@ -1,30 +1,60 @@
-<div class="tabs">
-  <ul>
-    <li><a href="#tabs-1"><%= I18n.t(:project_category) %> </a></li>
-  </ul>
-
-  <div id="tabs-1">
-    <%= simple_form_for([@organization, @project_category]) do |f| %>
-      <%= f.error_notification %>
-
-      <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
-
-      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
-      <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
-
-      <div class="actions-tabs">
-        <% if can? :manage, ProjectCategory %>
-          <% if action_name.in?(%w(new create)) %>
-              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <% elsif action_name == 'edit' || action_name=='update' %>
-              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-          <% end %>
-        <% end %>
-        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-project-categories', partial_name: 'tabs_project_categories'), :class => 'btn' %>
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1>
+          <%= I18n.t(:project_category) %>
+        </h1>
       </div>
+    </div>
+
+    <%= simple_form_for([@organization, @project_category]) do |f| %>
+        <%= f.error_notification %>
+
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+            <div class="form-row">
+              <div class="col-5">
+
+                <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>
+                  <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :description, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :rows => 5} %>
+                  <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :coefficient, label: false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                  <label class="mdl-textfield__label" for="coefficient"><%= I18n.t('coefficient_value') %></label>
+                </div>
+
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :coefficient_label, label: false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                  <label class="mdl-textfield__label" for="coefficient_label"><%= I18n.t('coefficient_label') %></label>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="actions-tabs">
+          <% if can? :manage, ProjectCategory %>
+              <% if action_name.in?(%w(new create)) %>
+                  <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <% elsif action_name == 'edit' || action_name=='update' %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <% end %>
+          <% end %>
+          <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-project-categories', partial_name: 'tabs_project_categories'), :class => 'btn' %>
+        </div>
     <% end %>
   </div>
-</div>
-
+</section>

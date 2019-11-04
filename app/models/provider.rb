@@ -1,5 +1,5 @@
 class Provider < ActiveRecord::Base
-  attr_accessible :name, :organization_id
+  attr_accessible :name, :organization_id, :coefficient, :coefficient_label
 
   validates :name, presence: true, uniqueness: { scope: :organization_id, case_sensitive: false }
 

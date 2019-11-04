@@ -33,6 +33,8 @@
       <thead>
       <tr>
         <th><%= I18n.t('name') %></th>
+        <th><%= I18n.t('coefficient_value') %></th>
+        <th><%= I18n.t('coefficient_label') %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -41,6 +43,8 @@
       <% @organization.providers.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |pr| %>
           <tr>
             <td><%= pr.name %></td>
+            <td><%= pr.coefficient %></td>
+            <td><%= pr.coefficient_label %></td>
             <td class="center">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_provider_path(@organization, pr), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, Provider %>

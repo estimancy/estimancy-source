@@ -884,10 +884,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                                                             module_project_id: @module_project.id,
                                                                                                                             guw_unit_of_work_id: guw_unit_of_work.id)
 
-                # ceuw = Guw::GuwCoefficientElementUnitOfWork.where(guw_unit_of_work_id: guw_unit_of_work.id,
-                #                                                   guw_coefficient_id: guw_coefficient.id,
-                #                                                   module_project_id: current_module_project.id,
-                #                                                   guw_coefficient_element_id: guw_coefficient.guw_coefficient_elements.first.id).first_or_create
               end
 
               begin
@@ -1045,6 +1041,67 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               if ceuw.changed?
                 ceuw.save
+              end
+
+            elsif guw_coefficient.coefficient_type.to_s.in?(["Application", "Provider", "ProjectArea", "ProjectCategory", "PlatformCategory", "AcquisitionCategory"])
+
+              ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"])
+
+              if ce.nil?
+                selected_coefficient_values["#{guw_output.id}"] << 0
+              else
+                cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                                                                 guw_model_id: @guw_model.id,
+                                                                 guw_output_id: guw_output.id,
+                                                                 guw_coefficient_element_id: ce.id,
+                                                                 guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
+                unless cce.nil?
+                  coefficient_value = 1
+                  case guw_coefficient.coefficient_type
+                    when "Application"
+                      coefficient_value = @project.application.coefficient
+                    when "Provider"
+                      coefficient_value = @project.provider.coefficient
+                    when "ProjectArea"
+                      coefficient_value = @project.project_area.coefficient
+                    when "ProjectCategory"
+                      coefficient_value = @project.project_category.coefficient
+                    when "PlatformCategory"
+                      coefficient_value = @project.platform_category.coefficient
+                    when "AcquisitionCategory"
+                      coefficient_value = @project.acquisition_category.coefficient
+                  end
+
+                  selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value) * (coefficient_value.nil? ? 1 : coefficient_value.to_f)
+                end
+              end
+
+              ceuw = ceuws_without_nil[guw_coefficient.id]
+              if ceuw.nil?
+                ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                  guw_model_id: @guw_model.id,
+                                                                  guw_coefficient_id: guw_coefficient.id,
+                                                                  project_id: @project.id,
+                                                                  module_project_id: @module_project.id,
+                                                                  guw_unit_of_work_id: guw_unit_of_work.id).first
+                if ceuw.nil?
+                  ceuw = Guw::GuwCoefficientElementUnitOfWork.create(organization_id: @organization.id,
+                                                                     guw_model_id: @guw_model.id,
+                                                                     guw_coefficient_id: guw_coefficient.id,
+                                                                     project_id: @project.id,
+                                                                     module_project_id: @module_project.id,
+                                                                     guw_unit_of_work_id: guw_unit_of_work.id)
+
+                end
+              end
+
+              unless ceuw.nil?
+                ceuw.guw_coefficient_id = guw_coefficient.id
+                ceuw.guw_unit_of_work_id = guw_unit_of_work.id
+                ceuw.module_project_id = @module_project.id
+                if ceuw.changed?
+                  ceuw.save
+                end
               end
 
             else

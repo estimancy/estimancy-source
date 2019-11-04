@@ -38,7 +38,8 @@
           <div class="form-row">
             <div class="col-5">
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-              <%= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient", "Application"],
+              <%#= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient", "Application"] %>
+              <%= f.input :coefficient_type, as: :select, collection: [["Liste", "Liste"], ["Pourcentage", "Pourcentage"], ["Coefficient", "Coefficient"], ["Application", "Application"], ["#{I18n.t(:provider)}", "Provider"], ["#{I18n.t(:project_area)}", "ProjectArea"], ["#{I18n.t(:project_category)}", "ProjectCategory"], ["#{I18n.t(:platform_category)}", "PlatformCategory"], ["#{I18n.t(:acquisition_category)}", "AcquisitionCategory"]],
                           :label => false,
                           :input_html => {:class => 'mdl-textfield__input'},
                           :include_blank => false %>

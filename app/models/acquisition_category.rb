@@ -21,7 +21,7 @@
 
 #Master Table
 class AcquisitionCategory < ActiveRecord::Base
-  attr_accessible :name, :description, :custom_value, :change_comment, :organization_id
+  attr_accessible :name, :description, :custom_value, :change_comment, :organization_id, :coefficient, :coefficient_label
 
   validates :name, :presence => true
 

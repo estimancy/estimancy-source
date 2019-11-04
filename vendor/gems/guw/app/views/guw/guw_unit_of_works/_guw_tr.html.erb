@@ -255,7 +255,8 @@
                                            title: guow.cplx_comments,
                                            step: 0.001 %>
                       <script>
-                        $(document).ready(function(){
+                        //$(document).ready(function(){
+                        $(document).ready(function() {
                           var previousSavedValue = $(".retained-guw-" + <%= guow.id %>).val();
 
                           $("#complexity_coeff_ajusted_" + <%= guow.id %>).on("change", function(event){
@@ -360,7 +361,8 @@
               <% if @guw_coefficient.allow_comments == true %>
                 <% if can? :execute_estimation_plan, @project %>
                   <script>
-                    $(document).ready(function(){
+                    //$(document).ready(function(){
+                    $(document).ready(function() {
                       var defaultValue = <%= @guw_coefficient_guw_coefficient_elements.first.default_display_value.to_f %>;
                       var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
                       var currentValue ;
@@ -549,11 +551,27 @@
       <% end %>
 
       <% unless default.nil? %>
-        <%= select_tag "guw_coefficient[#{guow.id}][#{hidden_guw_coefficient.id}]", options_for_select([[default.name, default.id]],
-                                                                                                       selected: default.value),
-                       class: "guw_coefficient guw-#{guow.id} form-control",
-                       guw: guow.id,
-                       readonly: !can?(:execute_estimation_plan, @project) %>
+        <% if default.nil? %>
+
+          <% selected = Guw::GuwCoefficientElement.where(guw_model_id: @guw_model.id,
+                                                         guw_coefficient_id: hidden_guw_coefficient.id).first %>
+
+          <% unless selected.nil? %>
+            <%= select_tag "guw_coefficient[#{guow.id}][#{hidden_guw_coefficient.id}]", options_for_select([["#{selected.name} (#{hidden_guw_coefficient.name})", selected.id]], selected: selected.value),
+                           class: "guw_coefficient guw-#{guow.id} form-control",
+                           guw: guow.id,
+                           readonly: !can?(:execute_estimation_plan, @project),
+                           style: "width: 80%;" %>
+          <% end %>
+
+        <% else %>
+          <%= select_tag "guw_coefficient[#{guow.id}][#{hidden_guw_coefficient.id}]", options_for_select([[default.name, default.id]],
+                                                                                                         selected: default.value),
+                         class: "guw_coefficient guw-#{guow.id}",
+                         guw: guow.id,
+                         readonly: !can?(:execute_estimation_plan, @project),
+                         style: "width: 80%;" %>
+        <% end %>
       <% end %>
     <% end %>
   <% end %>

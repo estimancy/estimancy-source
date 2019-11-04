@@ -32,6 +32,8 @@
       <tr>
         <th><%= I18n.t('name') %></th>
         <th><%= I18n.t('description') %></th>
+        <th><%= I18n.t('coefficient_value') %></th>
+        <th><%= I18n.t('coefficient_label') %></th>
         <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
       </tr>
       </thead>
@@ -41,6 +43,8 @@
           <tr>
             <td><%= i.name %></td>
             <td><%= i.description %></td>
+            <td><%= i.coefficient %></td>
+            <td><%= i.coefficient_label %></td>
             <td class="center">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_acquisition_category_path(@organization, i), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, AcquisitionCategory %>

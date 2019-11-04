@@ -14,7 +14,8 @@
           <td><%= f.input :end_date, as: :string, disabled: true, :label => I18n.t('end_date'), :input_html => {:class => 'input-large', rows: "2"} %></td>
 
           <script>
-            $(document).ready(function () {
+            //$(document).ready(function () {
+            $(document).ready(function() {
               $(".date-picker").datepicker({
                 language: '<%= set_user_language %>',
                 autoclose: true,

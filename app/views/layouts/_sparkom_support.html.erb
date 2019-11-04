@@ -116,6 +116,7 @@
     <% begin %>
       <% if @online_support == "1" %>
         // May use different displays
+        //$(document).ready(function() {
         $(document).ready(function() {
             var multiWidget = new SpkMultiWidget(29508);
             multiWidget.onWidgets(onWidgets);

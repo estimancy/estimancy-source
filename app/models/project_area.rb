@@ -22,7 +22,8 @@
 #Master Data
 #ProjectArea management
 class ProjectArea < ActiveRecord::Base
-  attr_accessible :name, :description, :acquisition_category_ids, :platform_category_ids, :project_category_ids, :labor_category_ids, :organization_id
+  attr_accessible :name, :description, :acquisition_category_ids, :platform_category_ids, :project_category_ids, :labor_category_ids,
+                  :organization_id, :coefficient, :coefficient_label
 
   has_many :projects
 

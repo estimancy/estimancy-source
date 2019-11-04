@@ -31,7 +31,8 @@
   <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
   <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
   <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
-  <% @guw_outputs = @guw_model.guw_outputs %>
+  <% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
+
 
   <% @hash_guw_coefficients = {} %>
   <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
@@ -226,13 +227,16 @@
 
               <tr style="height: 0px;">
                 <td colspan="3">
+                  <b>
+                    Sous total
+                  </b>
                 </td>
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% unless i[1].blank? %>
                     <% go = @hash_guw_outputs[i[0]] %>
                     <% if go.class == Guw::GuwOutput %>
                       <td>
-                        <strong class="center" id="total_<%= uowg.id %>_<%= go.id %>" style="padding-left: 5%;"></strong>
+                        <strong class="center" id="total_<%= uowg.id %>_<%= go.id %>" style="padding-left: 50%;"></strong>
                       </td>
                     <% else %>
                       <td></td>
@@ -271,7 +275,8 @@
 
   <script>
     var my_array = [];
-    $(document).ready(function(){
+    //$(document).ready(function(){
+    $(document).ready(function() {
         $(".new_guw_button").on('click', function(e){
             $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
             $("#hidden_position").val($(this).data("display-order"));
@@ -371,7 +376,8 @@
         }
     }
 
-    $(document).ready(function () {
+    //$(document).ready(function () {
+    $(document).ready(function() {
 
 <!--        $('.selected').change(function(){-->
 <!--            $.ajax({-->
@@ -736,7 +742,8 @@
 
 
       <script>
-          $(document).ready(function(){
+          //$(document).ready(function(){
+          $(document).ready(function() {
 
               $(".up,.down").click(function() {
                   var row = $(this).parents("tr.movable:first");
@@ -840,7 +847,8 @@
 </div>
 
 <script>
-  $(document).ready(function(){
+  //$(document).ready(function(){
+  $(document).ready(function() {
     <% current_module_project.guw_unit_of_work_groups.each do |uowg| %>
       <% @guw_model.guw_outputs.each do |go| %>
         var sum = 0;
