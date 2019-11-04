@@ -1,6 +1,5 @@
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
-<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
 
 <section class="estimation-modules-edition ge-model-estimation">
 
@@ -121,14 +120,6 @@
                                         var min_value = parseInt(<%= slide_min_value %>);
                                         var max_value = parseInt(<%= slide_max_value %>);
 
-                                        console.log(data_ids)
-                                        console.log(data_text_hash)
-                                        console.log(value_from)
-                                        console.log(default_value)
-                                        console.log(slide_current_value)
-                                        console.log(min_value)
-                                        console.log(max_value)
-
                                         <!-- Get the default value if value_from is NaN -->
                                         if(isNaN(value_from)){
                                             value_from = default_value;
@@ -147,6 +138,8 @@
                                         });
 
                                         $('#<%= "factor_#{key}" %>').on("change", function(data){
+
+                                            console.log("toto");
 
                                             var valuesToSubmit = $('form#ge_form').serialize();
                                             $.ajax({
@@ -448,8 +441,6 @@
             <div class="table estimation-table">
               <!--  NOUVEAU PARAMS SORTIE  -->
               <div>
-    <!--            <td>--> <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
-    <!--            </td>-->
                 <% ev_for_output_unit = current_outputs_evs.first %>
                 <% if @ge_model.three_points_estimation == true %>
                     <div class="row">
