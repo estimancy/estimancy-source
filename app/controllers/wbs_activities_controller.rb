@@ -1700,15 +1700,15 @@ class WbsActivitiesController < ApplicationController
 
                 # Update wbs-activity-element parent (ancestry)
                 elements_parents.each do |key, parent_name|
-                  #begin
+                  begin
                     activity_element = WbsActivityElement.find(key)
                     parent = WbsActivityElement.where(name: parent_name, wbs_activity_id: @wbs_activity.id).first
                     if !parent.nil?
                       activity_element.parent = parent
                     end
                     activity_element.save
-                  # rescue
-                  # end
+                  rescue
+                  end
                 end
 
                 # Update WBS Phase phases_short_name_number
