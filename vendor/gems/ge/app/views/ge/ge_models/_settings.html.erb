@@ -1,3 +1,7 @@
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+<link href="https://unpkg.com/gijgo@1.9.13/css/gijgo.min.css" rel="stylesheet" type="text/css" />
+
 <section class="estimation-modules-edition ge-model-estimation">
 
   <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form', method: "POST" do %>
@@ -98,7 +102,6 @@
                                     <% default_value = default_array.first.id %>
                                   <% end %>
 
-                                  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 
                                   <div class="edition-bloc-slider">
                                     <span class="edition-bloc-slider-value-<%= key %>"></span>
@@ -106,62 +109,57 @@
                                       <% slide_current_value =  selected_value.nil? ? default_value : selected_value %>
                                       <% slide_min_value =  ids_list.first %>
                                       <% slide_max_value =  ids_list.last %>
-                                      <%#= hidden_field_tag("#{scale_prod}_factor[#{key}]", default_value) %>
-                                      <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %> factor-slider" value="" />
 
+                                      <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %> factor-slider" value="" />
                                     </div>
                                     <script>
-                                        //$(document).ready(function(){
-                                        $(document).ready(function() {
-                                            var data_ids = <%= raw ids_list.to_json.html_safe %> ;
-                                            var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
-                                            var value_from = parseInt(<%= selected_value %>);  //parseInt(<%#= ids_list.index(selected_value) %>);
-                                            var default_value = parseInt(<%= default_value %>);
-                                            var ids_length = data_ids["length"];
-                                            var slide_current_value = parseInt(<%= slide_current_value %>);
-                                            var min_value = parseInt(<%= slide_min_value %>);
-                                            var max_value = parseInt(<%= slide_max_value %>);
+                                        var data_ids = <%= raw ids_list.to_json.html_safe %> ;
+                                        var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
+                                        var value_from = parseInt(<%= selected_value %>);  //parseInt(<%#= ids_list.index(selected_value) %>);
+                                        var default_value = parseInt(<%= default_value %>);
+                                        var slide_current_value = parseInt(<%= slide_current_value %>);
+                                        var min_value = parseInt(<%= slide_min_value %>);
+                                        var max_value = parseInt(<%= slide_max_value %>);
 
-                                            //console.log("slide_selected_value = "+ value_from);
-                                            //console.log("slide_default_value = "+ default_value);
-                                            //console.log("slide_current_value = "+ slide_current_value);
+                                        console.log(data_ids)
+                                        console.log(data_text_hash)
+                                        console.log(value_from)
+                                        console.log(default_value)
+                                        console.log(slide_current_value)
+                                        console.log(min_value)
+                                        console.log(max_value)
 
-                                            <!-- Get the default value if value_from is NaN -->
-                                            if(isNaN(value_from)){
-                                                value_from = default_value;
+                                        <!-- Get the default value if value_from is NaN -->
+                                        if(isNaN(value_from)){
+                                            value_from = default_value;
+                                        }
+
+                                        $('.edition-bloc-slider-slider-<%= key %>').slider({
+                                            range: true,
+                                            min: min_value,
+                                            max: max_value,
+                                            values: <%= raw ids_list.to_json.html_safe %>,
+                                            value: slide_current_value,
+
+                                            slide: function (e, value) {
+                                                $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[value]);
                                             }
-
-                                            $('.edition-bloc-slider-slider-<%= key %>').slider({
-                                                range: true,
-                                                min: min_value,
-                                                max: max_value,
-                                                values: data_ids,
-                                                value: slide_current_value,
-
-                                                slide: function (e, value) {
-                                                    $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[value]);
-                                                }
-                                            });
-
-                                            $('#<%= "factor_#{key}" %>').on("change", function(data){
-                                                //When value change, need to calculate again the Person Month effort value
-                                                //console.log("Action: " + $('form#ge_form').attr('action'));
-                                                //console.log("Params: " + $('form#ge_form').serialize());
-
-                                                var valuesToSubmit = $('form#ge_form').serialize();
-                                                $.ajax({
-                                                    type: "POST",
-                                                    //url: $('form#ge_form').attr('action'), //given url of the form
-                                                    url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
-                                                    data: valuesToSubmit,
-                                                    dataType: "script",
-                                                    format: "js",
-                                                    cache: true
-                                                });
-                                                return false;
-                                            })
-
                                         });
+
+                                        $('#<%= "factor_#{key}" %>').on("change", function(data){
+
+                                            var valuesToSubmit = $('form#ge_form').serialize();
+                                            $.ajax({
+                                                type: "POST",
+                                                //url: $('form#ge_form').attr('action'), //given url of the form
+                                                url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
+                                                data: valuesToSubmit,
+                                                dataType: "script",
+                                                format: "js",
+                                                cache: true
+                                            });
+                                            return false;
+                                        })
                                     </script>
                                   </div>
 
