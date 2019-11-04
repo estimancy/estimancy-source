@@ -26,7 +26,6 @@
       </ul>
 
       <br>
-
       <div class="tab-content" id="pills-tabContent">
         <div class="tab-pane fade show active" id="tabs-1" role="tabpanel" aria-labelledby="tabs-1_tab">
           <div class="card-body">
@@ -57,9 +56,9 @@
                             </div>
                           </div>
 
-                            <% other_wbs_for_config = @organization.wbs_activities.where(wbs_for_config: true).first
+                          <% other_wbs_for_config = @organization.wbs_activities.where(wbs_for_config: true).first
                                exist_wbs_for_config = other_wbs_for_config.nil? ? false : true
-                            %>
+                          %>
 
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -76,7 +75,6 @@
                           </div>
 
                             
-                            
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input', rows: "5"} %>
@@ -85,12 +83,12 @@
                           </div>
 
 
-                        <div class="col-5">
-                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <%= f.input :three_points_estimation, label: false %>
-                            <label class="mdl-textfield__label" for="three_points_estimation" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:three_points_estimation) %></label>
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :three_points_estimation, label: false %>
+                              <label class="mdl-textfield__label" for="three_points_estimation" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:three_points_estimation) %></label>
+                            </div>
                           </div>
-                        </div>
 
                         <div class="col-5">
                           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -176,10 +174,10 @@
                     <% unless @wbs_activity.new_record? %>
                       <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondary float-md-right' %>
                     <% else %>
-                      <!--<a href="#import" role="button" class="btn pull-right button_margin_right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal">-->
-                      <!--<%#= I18n.t(:import) %>-->
-                      <!--</a>-->
-                      <%= link_to I18n.t(:import), "#import", class: "btn float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
+                      <a href="#import" role="button" class="btn btn-primary float-right" title="<%= I18n.t(:import_from_excel)%>" data-toggle="modal">
+                        <%= I18n.t(:import) %>
+                      </a>
+                      <%#= link_to I18n.t(:import), "#import", class: "btn btn-primary float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
 
                       <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
