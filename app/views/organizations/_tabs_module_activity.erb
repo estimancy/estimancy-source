@@ -8,7 +8,7 @@
         <%= link_to I18n.t(:create_button), new_organization_wbs_activity_path(@organization),
                     :class => 'btn btn-primary float-md-right',
                     :style => 'margin-bottom:1rem;',
-                    :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+                    :title => "#{I18n.t(:guide_create_wbs_activity)}", data:{ turbolinks: false} %>
       <% end %>
 
       <table class="table table-list">
@@ -28,7 +28,7 @@
             </td>
             <td class="center" style="width:100px;">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'),
-                          confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
+                          confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit'), data:{ turbolinks: false}  %>
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to raw("<i class='material-icons'>file_copy</i>"), duplicate_wbs_activity_path(wbs_activity_id: wbs_activity.id, organization_id: @organization.id), method: :post,
                             :class => 'material-icons', :title => I18n.t(:duplicate_module) %>
