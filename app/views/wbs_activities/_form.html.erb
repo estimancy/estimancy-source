@@ -60,20 +60,21 @@
                             <% other_wbs_for_config = @organization.wbs_activities.where(wbs_for_config: true).first
                                exist_wbs_for_config = other_wbs_for_config.nil? ? false : true
                             %>
-                            <div class="form-row">
-                              <div class="col-5" style="margin-left:1rem;">
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                  <%= f.input :wbs_for_config, as: :boolean, :label => I18n.t(:wbs_for_config) %>
-                                  <label class="mdl-textfield__label" for="wbs_for_config" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:wbs_for_config) %></label>
-                                </div>
-                              </div>
-                              <div class="col-5">
-                                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                  <%= f.input :use_real_profiles, as: :boolean, :label => I18n.t(:use_real_profiles) %>
-                                  <label class="mdl-textfield__label" for="use_real_profiles" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:use_real_profiles) %></label>
-                                </div>
-                              </div>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :wbs_for_config, as: :boolean, :label => false %>
+                              <label class="mdl-textfield__label" for="wbs_for_config" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:wbs_for_config) %></label>
                             </div>
+                          </div>
+
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :use_real_profiles, as: :boolean, :label => false %>
+                              <label class="mdl-textfield__label" for="use_real_profiles" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:use_real_profiles) %></label>
+                            </div>
+                          </div>
+
                             
                             
                           <div class="col-5">
@@ -83,20 +84,21 @@
                             </div>
                           </div>
 
-                          <div class="form-row">
-                            <div class="col-5" style="margin-left:1rem;">
-                              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <%= f.input :three_points_estimation, label: false %>
-                                <label class="mdl-textfield__label" for="three_points_estimation" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:three_points_estimation) %></label>
-                              </div>
-                            </div>
-                            <div class="col-5">
-                              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                                <%= f.input :enabled_input, label: false %>
-                                <label class="mdl-textfield__label" for="enabled_input" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:modification_entry_valur) %></label>
-                              </div>
-                            </div>
+
+                        <div class="col-5">
+                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <%= f.input :three_points_estimation, label: false %>
+                            <label class="mdl-textfield__label" for="three_points_estimation" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:three_points_estimation) %></label>
                           </div>
+                        </div>
+
+                        <div class="col-5">
+                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <%= f.input :enabled_input, label: false %>
+                            <label class="mdl-textfield__label" for="enabled_input" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:modification_entry_valur) %></label>
+                          </div>
+                        </div>
+
 
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">

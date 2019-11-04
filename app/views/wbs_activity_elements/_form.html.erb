@@ -28,7 +28,7 @@
                     </div>
                   </div>
 
-                  <%= f.input :wbs_activity_id, :as => :hidden, :label => 'WBS-Activity', :input_html => {:value => @wbs_activity.id, :class => 'input-xxlarge'} %>
+                  <%= f.input :wbs_activity_id, :as => :hidden, :label => 'WBS-Activity', :input_html => {:value => @wbs_activity.id} %>
 
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -55,7 +55,7 @@
 
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <%= f.input :service_id, :label => false, :as => :select, :collection => @services, :selected => @wbs_activity_element.service_id, :input_html => {:class => 'mdl-textfield__input'} %>
+                      <%= f.input :service_id, :label => false, :as => :select, :collection => @services, :selected => @wbs_activity_element.service_id, :input_html => {:class => 'mdl-textfield__input form-control'} %>
                       <label class="mdl-textfield__label" for="service_id"><%= I18n.t('service_id') %></label>
                     </div>
                   </div>
