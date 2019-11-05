@@ -2895,6 +2895,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   intermediate_weight: row[18].nil? ? nil : row[18].value,
                                                   guw_type_id: @guw_type.id)
 
+                if module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
+                  guw_uow.selected = false
+                else
+                  guw_uow.selected = true
+                end
+
                 guw_uow.save(validate: false)
 
                 #Je dois le retirer, a tester avant
