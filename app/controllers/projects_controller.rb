@@ -1991,7 +1991,7 @@ class ProjectsController < ApplicationController
         end
       end
     else
-      redirect_to :back
+      redirect_to organization_estimations_path(@current_organization.id)
     end
   end
 
