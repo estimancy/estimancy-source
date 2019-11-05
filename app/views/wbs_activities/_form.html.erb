@@ -174,10 +174,10 @@
                     <% unless @wbs_activity.new_record? %>
                       <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondary float-md-right' %>
                     <% else %>
-                      <a href="#import" role="button" class="btn btn-primary float-right" title="<%= I18n.t(:import_from_excel)%>" data-toggle="modal">
-                        <%= I18n.t(:import) %>
-                      </a>
-                      <%#= link_to I18n.t(:import), "#import", class: "btn btn-primary float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
+                      <!--<a href="#import" role="button" class="btn pull-right button_margin_right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal" data-target="#import">-->
+                      <!--<%#= I18n.t(:import) %>-->
+                      <!--</a>-->
+                      <%= link_to I18n.t(:import), "#import", class: "btn btn-primary float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
 
                       <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
                         <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
