@@ -27,7 +27,12 @@
     end
  %>
 
-$("#estimation_graph_box").html("<%= j(render partial: "wbs_activities/settings", object: @wbs_activity_ratio) %>");
+//$("#estimation_graph_box").html("<%#= j(render partial: "wbs_activities/settings", object: @wbs_activity_ratio) %>");
+
+$("#module_project_ratio_section").html("<%= j(render partial: 'wbs_activities/dashbord_wbs_activity_ratio_elements_with_formula',
+                   object: [@wbs_activity_ratio_elements, @wbs_activity_ratio, @project_wbs_activity_elements],
+                   locals: { wbs_activity_ratio: @ratio_reference, wai: @wai, effort_unit_coeff: @effort_unit_coefficient, project_organization: @organization }) %>");
+
 $("#output_data_view_widgets_results").html("<%=raw j(render(partial: 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x])) %>");
 
 

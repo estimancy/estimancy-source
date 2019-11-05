@@ -404,12 +404,13 @@ class WbsActivitiesController < ApplicationController
 
       wai.save
     end
+    @wai = wai
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(organization_id: @organization.id,
                                                                                          pbs_project_element_id: @pbs_project_element.id,
                                                                                          wbs_activity_ratio_id: @ratio_reference.id)
 
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
-
+    @effort_unit_coefficient = effort_unit_coefficient
     level_estimation_value = Hash.new
     current_pbs_estimations = current_module_project.estimation_values.where(organization_id: @organization.id)
     input_effort_for_global_ratio = 0.0
