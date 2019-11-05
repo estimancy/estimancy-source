@@ -43,6 +43,7 @@
 
         <div class="tab-content" id="pills-tabContent">
           <% index = 0 %>
+          <% js_factor_data = Hash.new %>
           <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
             <% factor_values_per_type.each do |type, factor_values| %>
               <% if (factor_values.length == 1) && (factor_values.first.last.length == 1) %>
@@ -90,7 +91,6 @@
                                   </span>
 
                                   <% ids_list = values.map{ |f| f.id } %>
-                                  <% js_factor_data = Hash.new %>
                                   <% values.map{ |f| js_factor_data["#{f.id}"] = f.value_text }  %>
                                   <% @ge_input_values["#{key}"].nil? ? (selected_value = 0) : (selected_value = @ge_input_values["#{key}"][:ge_factor_value_id]) %>
 
@@ -139,7 +139,7 @@
 
                                         $('#<%= "factor_#{key}" %>').on("change", function(data){
 
-                                            console.log("toto");
+                                            $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[parseInt($('#<%= "factor_#{key}" %>').val())]);
 
                                             var valuesToSubmit = $('form#ge_form').serialize();
                                             $.ajax({
