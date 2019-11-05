@@ -192,10 +192,11 @@
                   <%= mp_ratio_element.wbs_activity_element.nil? ? nil : mp_ratio_element.wbs_activity_element.phase_short_name %>
                 </span>
               </td>
-              <td>
-                <%# padding_left = mp_ratio_element.depth.nil? ? 2 : mp_ratio_element.depth*2 %>
-                <% padding_left = mp_ratio_element.wbs_activity_element.nil? ? 1 : mp_ratio_element.wbs_activity_element.depth %>
-                <span class="pull-left estimancy" title="<%= wbs_activity_elt.description %>" style="padding-left:<%=gap+padding_left%>em">
+
+              <%# padding_left = mp_ratio_element.depth.nil? ? 2 : mp_ratio_element.depth*2 %>
+              <% padding_left = mp_ratio_element.wbs_activity_element.nil? ? 1 : (gap + mp_ratio_element.wbs_activity_element.depth*2) %>
+              <td style="padding-left:<%= padding_left %>em"><%= activity.wbs_activity_element.name %></td>
+                <span class="pull-left estimancy" title="<%= wbs_activity_elt.description %>">
                   <%#= name_to_show %> <%#= wbs_activity_elt.name %>
                   <% if mp_ratio_element.is_root? %>
                     <%= name_to_show %>
