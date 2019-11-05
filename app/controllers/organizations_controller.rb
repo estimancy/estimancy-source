@@ -1355,6 +1355,7 @@ class OrganizationsController < ApplicationController
 
     if params[:MYonglet] == "OrganizationProfile"
       # Export des OrganozationProfiles
+      organization_profiles = @organization.organization_profiles
       worksheet.add_cell(0, 0, I18n.t(:name))
       worksheet.add_cell(0, 1, I18n.t(:description))
       worksheet.add_cell(0, 2, I18n.t(:initial_cost_per_hour))
