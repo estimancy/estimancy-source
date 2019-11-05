@@ -169,36 +169,46 @@
                     <% end %>
                   </div>
 
-                  <!-- Test -->
-                  <div class="span3">
+                    <div class="col-3">
                     <% unless @wbs_activity.new_record? %>
                       <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondary float-md-right' %>
                     <% else %>
-                      <!--<a href="#import" role="button" class="btn pull-right button_margin_right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal" data-target="#import">-->
-                      <!--<%#= I18n.t(:import) %>-->
-                      <!--</a>-->
-                      <%= link_to I18n.t(:import), "#import", class: "btn btn-primary float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
 
-                      <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                        <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-                          <div class="modal-header modal-drag">
-                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                            <h3 id="myModalLabel"> <%= I18n.t(:import_from) %></h3>
-                          </div>
-                          <div class="modal-body">
-                            <%= hidden_field_tag "organization_id", @current_organization.id %>
-                            <%= file_field_tag :file %>
-                          </div>
-                          <div class="modal-footer">
-                            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
-                            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-                          </div>
-                          <div class="loading span11 hide">
-                            <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
-                          </div>
-                        <% end %>
-                      </div>
+                      <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                        <%= hidden_field_tag "organization_id", @current_organization.id %>
+                        <%= file_field_tag :file %>
+                        <br>
+                        <br>
+                        <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-sm', :onclick => "$('.loading').show();" %>
+                      <% end %>
+
+<!--                      <a href="#import" role="button" class="btn btn-primary float-right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal">-->
+                        <%#= I18n.t(:import) %>
+<!--                      </a>-->
+                      <%#= link_to I18n.t(:import), "#import", class: "btn btn-primary float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
+
+<!--                      <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
+                        <%#= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+<!--                          <div class="modal-header modal-drag">-->
+<!--                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
+<!--                            <h3 id="myModalLabel"> <%#= I18n.t(:import_from) %></h3>-->
+<!--                          </div>-->
+<!--                          <div class="modal-body">-->
+                            <%#= hidden_field_tag "organization_id", @current_organization.id %>
+                            <%#= file_field_tag :file %>
+<!--                          </div>-->
+<!--                          <div class="modal-footer">-->
+<!--                            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>-->
+                            <%#= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+<!--                          </div>-->
+<!--                          <div class="loading span11 hide">-->
+<!--                            <h4><%#= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>-->
+<!--                          </div>-->
+                        <%# end %>
+<!--                      </div>-->
+
                     <% end %>
+                  </div>
                   </div>
                 </div>
               </div>
