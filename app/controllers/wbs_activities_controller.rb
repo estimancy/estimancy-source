@@ -1701,14 +1701,15 @@ class WbsActivitiesController < ApplicationController
 
                 # Update wbs-activity-element parent (ancestry)
                 elements_parents.each do |key, parent_name|
-                  unless key.blank?
-                    activity_element = WbsActivityElement.find(key)
-                    parent = WbsActivityElement.where(name: parent_name, wbs_activity_id: @wbs_activity.id).first
-                    if !parent.nil?
-                      activity_element.parent = parent
+                  #begin
+                    unless key.blank?
+                      activity_element = WbsActivityElement.find(key)
+                      parent = WbsActivityElement.where(name: parent_name, wbs_activity_id: @wbs_activity.id).first
+                      if !parent.nil?
+                        activity_element.parent = parent
+                      end
+                      activity_element.save
                     end
-                    activity_element.save
-                  end
                   # rescue
                   #   key
                   # end
@@ -1821,7 +1822,7 @@ class WbsActivitiesController < ApplicationController
 
                             else
                               wbs_activity_element = @wbs_activity_elements.where(name: row[2].nil? ? nil : row[2].value).first
-                              begin
+                              #begin
                                 ratio_element = ratio.wbs_activity_ratio_elements.where(wbs_activity_element_id: wbs_activity_element.id).first
 
                                 @wbs_activity_profiles.each do |profile|
@@ -1836,9 +1837,8 @@ class WbsActivitiesController < ApplicationController
                                     WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)
                                   end
                                 end
-                              rescue
-
-                              end
+                              #rescue
+                              #end
                             end
                           else
                             # type code here

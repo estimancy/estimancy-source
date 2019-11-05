@@ -33,9 +33,12 @@
               <div class="edition-bloc-left">
                 <div class="edition-bloc-content">
 
-                  <div class="edition-bloc-form">
-                    <%= simple_form_for(@wbs_activity) do |f| %>
-                      <%= f.error_notification %>
+                  <div class="row">
+
+                    <div class="col-9">
+                      <div class="edition-bloc-form">
+                        <%= simple_form_for(@wbs_activity) do |f| %>
+                          <%= f.error_notification %>
 
                       <%= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
 
@@ -74,14 +77,12 @@
                             </div>
                           </div>
 
-                            
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input', rows: "5"} %>
                               <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
                             </div>
                           </div>
-
 
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -90,13 +91,12 @@
                             </div>
                           </div>
 
-                        <div class="col-5">
-                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <%= f.input :enabled_input, label: false %>
-                            <label class="mdl-textfield__label" for="enabled_input" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:modification_entry_valur) %></label>
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :enabled_input, label: false %>
+                              <label class="mdl-textfield__label" for="enabled_input" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:modification_entry_valur) %></label>
+                            </div>
                           </div>
-                        </div>
-
 
                           <div class="col-5">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -152,7 +152,6 @@
                           </div>
                         </div>
                       </div>
-
                       <br>
 
                       <div class="actions-tabs">
@@ -167,28 +166,27 @@
                         <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn btn-secondary' %>
                       </div>
                     <% end %>
-                  </div>
+                      </div>
+                    </div>
 
                     <div class="col-3">
-                    <% unless @wbs_activity.new_record? %>
-                      <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondary float-md-right' %>
-                    <% else %>
-
-                      <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
-                        <%= hidden_field_tag "organization_id", @current_organization.id %>
-                        <%= file_field_tag :file %>
-                        <br>
-                        <br>
-                        <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-sm', :onclick => "$('.loading').show();" %>
-                      <% end %>
+                      <% unless @wbs_activity.new_record? %>
+                        <%= link_to I18n.t(:export), wbs_activity_export_xlsx_path(@wbs_activity), :method => 'get', :class => 'btn btn-secondary float-md-right' %>
+                      <% else %>
+                        <%= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                          <%= hidden_field_tag "organization_id", @current_organization.id %>
+                          <%= file_field_tag :file %>
+                          <br><br>
+                          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary btn-sm', :onclick => "$('.loading').show();" %>
+                        <% end %>
 
 <!--                      <a href="#import" role="button" class="btn btn-primary float-right" title="<%#= I18n.t(:import_from_excel)%>" data-toggle="modal">-->
-                        <%#= I18n.t(:import) %>
+                           <%#= I18n.t(:import) %>
 <!--                      </a>-->
-                      <%#= link_to I18n.t(:import), "#import", class: "btn btn-primary float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
+                            <%#= link_to I18n.t(:import), "#import", class: "btn btn-primary float-right", title: I18n.t(:import_from_excel), "data-toggle" => "modal" %>
 
 <!--                      <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">-->
-                        <%#= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                            <%#= form_tag  import_wbs_from_xl_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
 <!--                          <div class="modal-header modal-drag">-->
 <!--                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>-->
 <!--                            <h3 id="myModalLabel"> <%#= I18n.t(:import_from) %></h3>-->
@@ -202,17 +200,15 @@
                             <%#= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
 <!--                          </div>-->
 <!--                          <div class="loading span11 hide">-->
-<!--                            <h4><%#= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>-->
+<!--                            <h4><%#= I18n.t(:please_wait_import) %><%#= image_tag 'ajax-loader.gif' %></h4>-->
 <!--                          </div>-->
-                        <%# end %>
+                            <%# end %>
 <!--                      </div>-->
-
-                    <% end %>
-                  </div>
+                      <% end %>
+                    </div>
                   </div>
                 </div>
               </div>
-
           </div>
         </div>
 
@@ -226,8 +222,7 @@
 
                       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
                       <script>
-                        //$(document).ready(function(){
-                        $(document).ready(function() {
+                        $(document).ready(function(){
                             $('.component_tree ul li, .widget-content ul li').hover(
                                 function () {
                                     $(this.children).css('display', 'inline');
@@ -263,7 +258,6 @@
                                 });
                                 //}
                             });
-                            
                         });
                       </script>
 

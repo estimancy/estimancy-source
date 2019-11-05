@@ -23,7 +23,7 @@
 
   <%# @wbs_activity_ratio_elements.each do |activity| %>
   <% wbs_activity_elements.each_with_index do |activity_element, i| %>
-    <% begin %>
+    <%# begin %>
     <% activity = @wbs_activity_ratio_elements.select {|e| e.wbs_activity_element_id == activity_element.id}.first %>
 
     <%= hidden_field_tag 'wbs_activity_ratio_id', activity.wbs_activity_ratio_id %>
@@ -60,8 +60,8 @@
         <td id='<%= "total_ratio_activity_#{activity.id}" %>' style="text-align: center"><%= activity.wbs_activity_element.is_root? ? "-" : "#{total_percentage_activity} %"  %></td>
       <% end %>
     </tr>
-    <% rescue %>
-    <% end %>
+    <%# rescue %>
+    <%# end %>
   <% end %>
 
 </table>

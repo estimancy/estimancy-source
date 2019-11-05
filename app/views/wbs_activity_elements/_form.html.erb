@@ -32,7 +32,11 @@
 
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <%= f.input :parent_id, :label => false, :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :selected => @selected_parent.nil? ? '' : @selected_parent.id, :input_html => {:class => 'mdl-textfield__input'} %>
+                      <% if @wbs_activity_element.new_record? %>
+                        <%= f.input :parent_id, :label => false, :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :selected => @selected_parent.nil? ? '' : @selected_parent.id, :input_html => {:class => 'mdl-textfield__input'} %>
+                      <% else %>
+                          <%= f.input :parent_id, :label => false, :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :input_html => {:class => 'mdl-textfield__input'} %>
+                      <% end %>
                       <label class="mdl-textfield__label" for="currency_id"><%= I18n.t(:parent) %></label>
                     </div>
                   </div>

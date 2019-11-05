@@ -26,6 +26,7 @@ module WbsActivityElementsHelper
   # activity_tree_hash: is an ordered hash
   def generate_activity_as_subtree(element, activity_tree_hash, tree)
     #Root is always display
+    gap = 1
     tree ||= String.new
     unless element.nil?
       if element.is_root?
@@ -45,7 +46,7 @@ module WbsActivityElementsHelper
         unless activity_tree_hash.nil?
           activity_tree_hash.each do |e, children|
             tree << "
-                     <li style='margin-left:#{element.depth}px;' >
+                     <li style='padding-left:#{gap + (element.depth*2)}em;' >
                       <div class='block_label'>
                         #{ show_element_name(e)}
                       </div>
@@ -68,6 +69,7 @@ module WbsActivityElementsHelper
   #Generate tree of Activity Element (wbs_activities/:id/edit)
   def generate_activity_element_tree(element, tree)
     #Root is always display
+    gap = 1
     tree ||= String.new
     unless element.nil?
       if element.is_root?
@@ -86,7 +88,7 @@ module WbsActivityElementsHelper
         tree << "<ul class='sortable'>"
         element.children.order("dotted_id ASC").each do |e|
           tree << "
-                   <li style='margin-left:#{element.depth}px;' >
+                   <li style='padding-left:#{gap+(element.depth*2)}em;' >
                     <div class='block_label'>
                       #{show_element_name(e)}
                     </div>
