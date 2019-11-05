@@ -203,8 +203,8 @@
             <% end %>
 
             <% if @project.is_model || @is_model %>
-              <%= f.input :use_automatic_quotation_number, :label => "#{I18n.t 'use_automatic_quotation_number'}", :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input form-control' } %>
-              <%= f.input :allow_export_pdf, :label => I18n.t("Autoriser l'export PDF"), :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input form-control' } %>
+              <%= f.input :use_automatic_quotation_number, :label => raw("&nbsp; #{I18n.t 'use_automatic_quotation_number'}"), :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), class: "mdl-textfield__input custom-control-input" %>
+              <%= f.input :allow_export_pdf, :label => raw("&nbsp; #{I18n.t("Autoriser l'export PDF")}"), :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model), class: "mdl-textfield__input custom-control-input"%>
             <% end %>
 
             <%= f.input :demand_id, as: :hidden, :input_html => { :value => params[:demand_id] } %>

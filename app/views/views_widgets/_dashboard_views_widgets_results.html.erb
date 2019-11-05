@@ -128,15 +128,19 @@
 
                           <div class="card card-widget card-indicator card-indicator-with-module" style="padding-right: 5px; padding-top: 3px;">
                             <div class="card-body">
-                                <% if view_widget.show_module_name == true %>
-                                  <div class="card-indicator-type" style="margin-top: -1rem;">
-                                    <%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %>
-                                  </div>
-                                <% end %>
+                              <% if view_widget.show_module_name == true %>
+                                <div class="card-indicator-type" style="margin-top: -1rem;">
+                                  <%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %>
+                                </div>
+                              <% end %>
 
                               <div class="card-indicator-text">
                                 <div class="dragme">
                                   <i class='material-icons grip' style="float: right;  margin-right: -1.5rem">drag_indicator</i>
+
+                                  <% unless view_widget.project_fields.empty? %>
+                                    <%= link_to raw("<i class='material-icons'>ac_unit</i>"), "#", class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name) %>
+                                  <% end %>
 
                                   <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
                                       <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
