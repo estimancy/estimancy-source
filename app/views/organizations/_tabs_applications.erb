@@ -4,28 +4,12 @@
 
         <!--<div id="tabs-applications" class="edition-page-group py-4"><span><%#= I18n.t('applications') %></span></div>-->
         <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn btn-primary' %>
-        <a href="#myWBSModal" role="button" class="btn btn-primary" title="Import applications from excel" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
         <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn btn-primary'%>
-        <hr>
 
-        <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="float-right">
           <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
-              <div class="modal-header modal-drag">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
-              </div>
-              <div class="modal-body">
-                <%= file_field_tag :file %>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
-                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-              </div>
-              <div class="loading span11 hide">
-                <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-              </div>
+            <%= file_field_tag :file %>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
           <% end %>
         </div>
     <% end %>
