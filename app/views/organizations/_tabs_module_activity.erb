@@ -21,7 +21,7 @@
 
         <% @wbs_activities.order("name asc").each do |wbs_activity| %>
           <tr>
-            <td><%= link_to(wbs_activity.name, edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-1'), confirm: I18n.t(:warning_edit_instance_module)) %></td>
+            <td><%= link_to(wbs_activity.name, edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-1'), data: {confirm: I18n.t(:warning_edit_instance_module)}) %></td>
             <td><%= wbs_activity.description %></td>
             <td class="span2 align-center">
               <%= wbs_activity.created_at.nil? ? '-' : I18n.l(wbs_activity.created_at) %>

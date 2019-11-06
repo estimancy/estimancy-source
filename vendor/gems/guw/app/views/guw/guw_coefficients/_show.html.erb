@@ -61,7 +61,7 @@
             <td class="align-center">
               <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), data: {confirm: I18n.t(:are_you_sure)}, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
               <% end %>
             </td>
           </tr>

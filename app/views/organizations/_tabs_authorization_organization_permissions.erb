@@ -74,7 +74,7 @@
 
             <% if can? :manage_organization_permissions, Permission %>
                 <%= submit_tag I18n.t('apply'), name: "organization_permissions", :class => 'btn btn-primary btn-estimancy' %>
-                <%= link_to I18n.t('back'), :back, :class => 'btn btn-default btn-estimancy'%>
+                <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary btn-estimancy'%>
             <% end %>
 
         <% else %>

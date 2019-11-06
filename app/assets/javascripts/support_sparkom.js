@@ -16,7 +16,7 @@
 //    var width = '250px';
 //    var textColor = '#206A7C';
 //    var html='<div class="dropdown">';
-//    html += '<a id="dLabel" role="button" style="width:'+width+';" data-toggle="dropdown" class="btn btn-default" data-target="#" href="/page.html">';
+//    html += '<a id="dLabel" role="button" style="width:'+width+';" data-toggle="dropdown" class="btn btn-primary" data-target="#" href="/page.html">';
 //    if(isEnglish) {
 //        html += 'Live chat support ';
 //    } else {
