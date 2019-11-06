@@ -1698,7 +1698,7 @@ class ProjectsController < ApplicationController
           # Get the project initialization module_project or create if it doesn't exist
           cap_module_project = @project.module_projects.find_by_pemodule_id(@initialization_module.id)
           if cap_module_project.nil?
-            cap_module_project = @project.module_projects.create(:pemodule_id => @initialization_module.id, :position_x => 0, :position_y => 0)
+            cap_module_project = @project.module_projects.create(:organization_id => @organization.id, :pemodule_id => @initialization_module.id, :position_x => 0, :position_y => 0)
           end
 
           # Create the project initialization module estimation_values if project organization has changed and not nil
