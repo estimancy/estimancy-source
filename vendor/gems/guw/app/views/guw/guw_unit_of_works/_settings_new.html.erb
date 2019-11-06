@@ -82,7 +82,7 @@
       <% end %>
 
       <% if @guw_model.view_data == true %>
-        <%= link_to "Visualiser les données", guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", class: "btn btn-primary", target: :_blank %>
+        <%= link_to image_tag("/assets/twotone-data-24px.svg", size: "24x24"), guw.guw_model_show_data_model_path(@guw_model, component_id: current_component.id, module_project_id: current_module_project.id), method: "get", target: :_blank, class: "float-right", title: I18n.t(:data_model) %>
       <% end %>
 
       <% if can? :execute_estimation_plan, @project %>
@@ -98,11 +98,11 @@
         &nbsp;
       </span>
 
-      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+      <%# if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+        <%# link_to image_tag("/assets/baseline-save2_alt-24px.svg", size: "24x24"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
+      <%# else %>
         <%= link_to image_tag("/assets/baseline-save2_alt-24px.svg", size: "24x24"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
-      <% else %>
-        <%= link_to raw("<i class='material-icons'>archive</i> &nbsp;"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
-      <% end %>
+      <%# end %>
 
       <% if can? :execute_estimation_plan, @project %>
         <% unless @guw_model.allow_excel == false && @guw_model.allow_jira == false && @guw_model.allow_redmine == false && @guw_model.allow_ml == false %>
