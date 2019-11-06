@@ -12,7 +12,7 @@
   <% @organization.agreements.each do |a| %>
     <div id="<%= a.id %>">
       <div class="row-fluid">
-        <%= link_to "Liste des demandes", organization_demands_path(@organization), class: "btn btn-default pull-right" %>
+        <%= link_to "Liste des demandes", organization_demands_path(@organization), class: "btn btn-primary pull-right" %>
         <% ["Janvier 2019", "Février 2019", "Mars 2019"].each do |mois| %>
           <div class="span3">
             <h4>

@@ -496,10 +496,10 @@ fr:
 
   #Project settings
   activity_categories: "Catégories d'activités"
-  acquisition_categories: "Catégories d'acquisitions"
-  platform_categories: "Catégories de plates-formes"
-  project_categories: "Catégories de projets"
-  project_areas: "Secteurs de projets"
+  acquisition_categories: "Risque technologique Editions"
+  platform_categories: "Risque technologique Batchs"
+  project_categories: "Risque technologique IHM"
+  project_areas: "Ancienneté de l'application"
   acquisition_category: "Risque technologique Editions"
   platform_category: "Risque technologique Batchs"
   project_category: "Risque technologique IHM"
@@ -2275,7 +2275,7 @@ fr:
 
   #Provider / fournisseur
   provider: "Risque technologique Services"
-  providers: "Fournisseurs"
+  providers: "Risque technologique Services"
 
   edit_provider: "Editer fournisseur \"%{value}\" ..."
   new_provider: "Créer un fournisseur"
@@ -2547,3 +2547,6 @@ fr:
   project_attribute_name: "Nom de l'attribut du projet"
   coefficient_label: "Libellé du coefficient"
   criticality: "Criticité"
+
+  replace: "Remplacer"
+  maximum: "Maximum"

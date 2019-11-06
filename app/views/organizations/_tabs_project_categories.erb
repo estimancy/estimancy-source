@@ -50,7 +50,7 @@
             <td class="center">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_project_category_path(@organization, i), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, ProjectCategory %>
-                  <%= link_to raw("<i class='material-icons'>delete</i>"), organization_project_category_path(@organization, i), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), organization_project_category_path(@organization, i), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>

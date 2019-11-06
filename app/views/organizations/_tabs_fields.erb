@@ -19,7 +19,7 @@
             <td class="center span3">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_field_path(@organization, field), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, Field %>
-                  <%= link_to raw("<i class='material-icons'>delete</i>"), field, confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), field, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>

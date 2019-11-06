@@ -25,7 +25,7 @@
           <td><%= service.livrable %></td>
           <td>
             <%= link_to '', edit_organization_service_path(@organization, service), class: 'fa fa-pencil' %>
-            <%= link_to '', organization_service_path(@organization, service), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+            <%= link_to '', organization_service_path(@organization, service), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
           </td>
         </tr>
     <% end %>

@@ -680,11 +680,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
-        if guw_unit_of_work.selected == false
-          guw_unit_of_work.selected = true
-        else
-          guw_unit_of_work.selected = false
-        end
+        # if guw_unit_of_work.selected == false
+        #   guw_unit_of_work.selected = true
+        # else
+        #   guw_unit_of_work.selected = false
+        # end
 
         guw_unit_of_work.save
 
@@ -1059,17 +1059,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   coefficient_value = 1
                   case guw_coefficient.coefficient_type
                     when "Application"
-                      coefficient_value = @project.application.coefficient
+                      coefficient_value = @project.application.coefficient rescue 1
                     when "Provider"
-                      coefficient_value = @project.provider.coefficient
+                      coefficient_value = @project.provider.coefficient rescue 1
                     when "ProjectArea"
-                      coefficient_value = @project.project_area.coefficient
+                      coefficient_value = @project.project_area.coefficient rescue 1
                     when "ProjectCategory"
-                      coefficient_value = @project.project_category.coefficient
+                      coefficient_value = @project.project_category.coefficient rescue 1
                     when "PlatformCategory"
-                      coefficient_value = @project.platform_category.coefficient
+                      coefficient_value = @project.platform_category.coefficient rescue 1
                     when "AcquisitionCategory"
-                      coefficient_value = @project.acquisition_category.coefficient
+                      coefficient_value = @project.acquisition_category.coefficient rescue 1
                   end
 
                   selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value) * (coefficient_value.nil? ? 1 : coefficient_value.to_f)

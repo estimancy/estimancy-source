@@ -277,6 +277,9 @@ Projestimate::Application.routes.draw do
     resources :demand_types do
       resources :agreements
     end
+
+    resources :demand_type
+
     resources :services
 
     resources :applications
