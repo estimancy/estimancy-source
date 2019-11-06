@@ -461,7 +461,7 @@
         <% end %>y
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %></button>
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><%= I18n.t(:close) %></button>
       </div>
     </div>
   </div>
@@ -491,7 +491,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><%= I18n.t(:close) %>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"><%= I18n.t(:close) %>
           </button>
           <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
         </div>
@@ -628,7 +628,7 @@
         </div>
 
         <div class="modal-footer">
-          <button type="button" class="btn btn-default" data-dismiss="modal"><% I18n.t(:close) %></button>
+          <button type="button" class="btn btn-secondary" data-dismiss="modal"><% I18n.t(:close) %></button>
           <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
         </div>
 
@@ -840,7 +840,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <button class="btn" data-dismiss="modal" aria-hidden="true"><% I18n.t(:close) %></button>
+      <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><% I18n.t(:close) %></button>
       <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
     </div>
   <% end %>

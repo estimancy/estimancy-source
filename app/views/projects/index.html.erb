@@ -2,7 +2,7 @@
 <%= select_tag 'filter_projects_version', options_for_select([[I18n.t(:label_filter_on_project_version_1),1], [I18n.t(:label_filter_on_project_version_2),2], [I18n.t(:label_filter_on_project_version_3),3], [I18n.t(:label_filter_on_project_version_4),4]], :selected => 1), :include_blank => false %>
 
 <% if can? :create_project_from_template, Project %>
-  <%= link_to I18n.t('new_project_from'), projects_from_path, :class => 'btn btn-mni pull-right' %>
+  <%= link_to I18n.t('new_project_from'), projects_from_path, :class => 'btn btn-primary btn-mni pull-right' %>
 <% end %>
 
 <%= render :partial => 'projects', :object => @projects -%>

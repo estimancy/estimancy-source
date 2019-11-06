@@ -7,8 +7,8 @@
     <% if can? :create_organizations, Organization %>
       <div class="group_button">
         <%# link_to "Exporter l'ensemble des champs", export_organization_reference_path, class: 'btn' %>
-        <%= link_to I18n.t('create_button'), new_organization_path, :class => 'btn' %>
-        <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn' %>
+        <%= link_to I18n.t('create_button'), new_organization_path, :class => 'btn btn-primary' %>
+        <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn btn-primary' %>
       </div>
 
       <div id="display_copy_message" style="display: none; text-align: center">

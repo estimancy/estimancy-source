@@ -74,7 +74,7 @@
 
         <% if can? :manage_global_permissions, Permission %>
             <%= submit_tag I18n.t('apply'), name: "global_permissions", :class => 'btn btn-primary btn-estimancy' %>
-            <%= link_to I18n.t('back'), :back, :class => 'btn'%>
+            <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary'%>
         <% end %>
 
     <% else %>
