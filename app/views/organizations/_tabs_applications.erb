@@ -1,20 +1,18 @@
 <% if can? :show_applications, Application %>
 
     <% if can? :manage, Application %>
+      <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn btn-primary' %>
+      <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn btn-primary'%>
 
-        <!--<div id="tabs-applications" class="edition-page-group py-4"><span><%#= I18n.t('applications') %></span></div>-->
-        <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn btn-primary' %>
-        <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn btn-primary'%>
-
-        <div class="float-right">
-          <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
-            <%= file_field_tag :file %>
-            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-          <% end %>
-        </div>
+      <div class="float-right">
+        <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <%= file_field_tag :file %>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+        <% end %>
+      </div>
     <% end %>
 
-    <table id="table_list_applications" class="table table-list">
+    <table id="table_list_applications" class="table table-list mt-2">
       <thead>
       <tr>
         <th><%= I18n.t('name') %></th>
