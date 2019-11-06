@@ -192,9 +192,9 @@
               </div>
 
               <% if @project.is_model %>
-                  <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn' %>
+                  <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
               <% else %>
-                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn' %>
+                  <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
               <% end %>
 
           <% end %>

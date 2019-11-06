@@ -175,7 +175,7 @@
                 <% end %>
               </div>
               <div class="span1">
-                <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn' %>
+                <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn btn-primary' %>
               </div>
               <div class="span8">
                 <%= form_tag kb.kb_model_save_filters_path(@kb_model) do %>

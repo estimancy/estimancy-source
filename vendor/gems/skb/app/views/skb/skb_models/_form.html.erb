@@ -96,7 +96,7 @@
         <% if can? :manage_modules_instances, ModuleProject %>
           <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
         <% end %>
-        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn" %>
+        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn btn-secondary" %>
       </div>
     <% end %>
   </div>
@@ -112,11 +112,11 @@
               <%= hidden_field_tag :skb_model_id, @skb_model.id %>
               <%= hidden_field_tag :organization_id, @organization.id %>
             </div>
-            <%= submit_tag I18n.t(:import), :class => 'btn' %>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary' %>
           <% end %>
         </div>
         <div class="span1">
-          <%= link_to I18n.t(:export), skb.skb_model_data_export_path(@skb_model), :class => 'btn' %>
+          <%= link_to I18n.t(:export), skb.skb_model_data_export_path(@skb_model), :class => 'btn btn-primary' %>
         </div>
         <div class="span8">
           <%= form_tag skb.skb_model_save_filters_path(@skb_model) do %>

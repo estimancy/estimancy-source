@@ -30,14 +30,14 @@
           <td class="align-center"><%= guw_cplx.top_range %></td>
           <td class="align-center"><%= guw_cplx.weight%></td>
           <td class="align-center">
-            <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type, guw_cplx), class: "btn btn-mini" %>
-            <%= link_to I18n.t(:delete), guw.guw_complexity_path(guw_cplx), method: :delete, class: "btn btn-mini" %>
+            <%= link_to I18n.t(:edit), guw.edit_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type, guw_cplx), class: "btn btn-primary btn-sm" %>
+            <%= link_to I18n.t(:delete), guw.guw_complexity_path(guw_cplx), method: :delete, class: "btn btn-sm" %>
           </td>
         </tr>
       <% end %>
     </table>
 
-    <%= link_to I18n.t(:new_complexity_for, parameter: guw_type) , new_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type), class: "btn" %>
-    <%= link_to I18n.t(:back), :back, class: "btn" %>
+    <%= link_to I18n.t(:new_complexity_for, parameter: guw_type) , new_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type), class: "btn btn-primary" %>
+    <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
   </div>
 </div>

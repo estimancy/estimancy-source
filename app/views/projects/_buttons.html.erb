@@ -3,10 +3,10 @@
     <% if can? :execute_estimation_plan, @project %>
       <% if current_module_project %>
         <% if current_module_project.pemodule.alias == "guw" %>
-          <%= link_to I18n.t(:Edit_configuration), edit_organization_path(@project.organization), :class => 'btn ' %>
-          <%= submit_tag(I18n.t(:run_estimation), :class => 'btn', :title => I18n.t(:tooltip_run_estimation), :id => 'run_estimation', :remote => true) if can_modify_estimation?(@project) %>
+          <%= link_to I18n.t(:Edit_configuration), edit_organization_path(@project.organization), :class => 'btn btn-primary' %>
+          <%= submit_tag(I18n.t(:run_estimation), :class => 'btn btn-primary', :title => I18n.t(:tooltip_run_estimation), :id => 'run_estimation', :remote => true) if can_modify_estimation?(@project) %>
         <% else %>
-          <%= submit_tag(I18n.t(:run_estimation), :class => 'btn', :title => I18n.t(:tooltip_run_estimation), :id => 'run_estimation', :remote => true) if can_modify_estimation?(@project) %>
+          <%= submit_tag(I18n.t(:run_estimation), :class => 'btn btn-primary', :title => I18n.t(:tooltip_run_estimation), :id => 'run_estimation', :remote => true) if can_modify_estimation?(@project) %>
         <% end %>
       <% end %>
     <% end %>
