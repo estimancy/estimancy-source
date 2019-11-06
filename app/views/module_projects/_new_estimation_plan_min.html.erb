@@ -29,12 +29,12 @@
             <div id="module_execution" class="collapse navbar-collapse">
               <ul class="nav nav-pills flex-column">
                 <% sorted_module_projects.each do |pmod| %>
-                    <li class="nav-item" title="<%= pmod.to_s %>">
-                      <!--<a class="nav-link <%#= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%#= activate_module_project_path(pmod) %>">-->
-                      <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">
-                        <span style="text-transform: none;"><%= pmod.to_s.truncate(22) %></span>
-                        <i class="material-icons">arrow_left</i></a>
-                    </li>
+                  <li class="nav-item" title="<%= pmod.to_s %>">
+                    <!--<a class="nav-link <%#= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%#= activate_module_project_path(pmod) %>">-->
+                    <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">
+                      <span style="text-transform: none;"><%= pmod.to_s.truncate(22) %></span>
+                      <i class="material-icons">arrow_left</i></a>
+                  </li>
                 <% end %>
               </ul>
             </div>
