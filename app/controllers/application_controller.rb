@@ -394,13 +394,14 @@ class ApplicationController < ActionController::Base
         begin
           pemodule = Pemodule.find_by_alias('initialization')
           current_mp = ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id, project_id: @project.id).first
+          return current_mp
         rescue
           return current_mp = @project.module_projects.first
         end
       end
 
       if current_mp.nil?
-        @project.module_projects.first
+        return @project.module_projects.first
       end
     end
   end
