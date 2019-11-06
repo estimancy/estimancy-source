@@ -1359,15 +1359,15 @@ class OrganizationsController < ApplicationController
         if index > 0
 
           app = Application.where(organization_id: @organization.id,
-                                  name: row[0].value).first
+                                  name: row[0].nil? ? "" : row[0].value).first
 
           if app.nil?
 
             new_app = Application.new(organization_id: @organization.id,
-                                      name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].value),
-                                      is_ignored: row[1].value,
-                                      coefficient: row[2].value,
-                                      coefficient_label: row[3].value)
+                                      name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].nil? ? nil : row[0].value),
+                                      is_ignored: row[1].nil? ? nil : row[1].value,
+                                      coefficient: row[2].nil? ? nil : row[2].value,
+                                      coefficient_label: row[3].nil? ? nil : row[3].value)
 
             unless new_app.save
               tab_error << index + 1

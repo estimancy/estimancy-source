@@ -384,18 +384,23 @@ class ApplicationController < ActionController::Base
     if @project.nil?
       return nil
     else
-      organization = @project.organization
+      organization = @project.organization || Organization.find(params[:organization_id]) rescue @current_organization
       pemodule = Pemodule.find_by_alias('initialization')
       default_current_module_project = ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id , project_id: @project.id).first
       if @project.module_projects.map(&:id).include?(session[:module_project_id].to_i)
-        return session[:module_project_id].nil? ? default_current_module_project : ModuleProject.find(session[:module_project_id])
+        return current_mp = session[:module_project_id].nil? ? default_current_module_project : ModuleProject.find(session[:module_project_id])
       else
         begin
           pemodule = Pemodule.find_by_alias('initialization')
-          ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id, project_id: @project.id).first
+          current_mp = ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id, project_id: @project.id).first
+          return current_mp
         rescue
-          return @project.module_projects.first
+          return current_mp = @project.module_projects.first
         end
+      end
+
+      if current_mp.nil?
+        return @project.module_projects.first
       end
     end
   end

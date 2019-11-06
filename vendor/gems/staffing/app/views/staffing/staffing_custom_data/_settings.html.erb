@@ -1,3 +1,6 @@
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://unpkg.com/gijgo@1.9.13/js/gijgo.min.js" type="text/javascript"></script>
+
 <%
    attribute = @module_project.pemodule.pe_attributes.where(alias: "effort").first
    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
@@ -85,25 +88,98 @@
             <div class="form-row">
               <div class="col-3">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">
-                  <input class="mdl-textfield__input" type="text" id="name">
-                  <label class="mdl-textfield__label" for="name">Time Cost Rate</label>
+                  <input class="mdl-textfield__input" type="text" id="name" value="<%= effort.to_f.round(2) %> <%= @staffing_model.effort_unit %>" disabled>
+                  <label class="mdl-textfield__label" for="name"></label>
                 </div>
               </div>
               <div class="col-9 pl-6">
                 <div class="edition-bloc-slider">
                   <span class="edition-bloc-slider-value"></span>
                   <input name='percents' id="percent" class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent %>">
-                  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
                   <script>
-                      //$(document).ready(function(){
-                      $(document).ready(function() {
-                          $('.edition-bloc-slider-slider').slider({
-                              slide: function (e, value) {
-                                  $('.edition-bloc-slider-value').text(value);
-                              },
-                              min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range %>,
-                              max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range %>
-                          });
+                      $('.edition-bloc-slider-slider').slider({
+                          slide: function (e, value) {
+                              $('.edition-bloc-slider-value').text(value);
+
+                              set_staffing_values({
+                                  min: "<%= @staffing_model.min_range %>",
+                                  max: "<%= @staffing_model.max_range %>",
+                                  from: $('#percent').val(),
+                                  grid: true,
+                                  postfix: "%"
+                              });
+
+                              // Get The Max-Staff value according to selected value from the Slider
+                              function set_staffing_values(data) {
+
+                                  var effort = $(".reference_effort").html();
+                                  var duration = $(".reference_duration").html();
+                                  var staffing_trapeze = $(".reference_staffing_trapeze").html();
+                                  var staffing_rayleigh = $(".reference_staffing_rayleigh").html();
+
+                                  $("#standard_effort").val(parseFloat(effort));
+
+                                  var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);
+                                  $(".effort").html(new_effort.toFixed(2));
+                                  $(".new_effort").val(new_effort.toFixed(2));
+
+                                  var new_duration = (duration * (parseFloat(data.from)) / 100);
+                                  $(".duration").html(new_duration.toFixed(2));
+                                  $(".new_duration").val(new_duration.toFixed(2));
+
+                                  x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
+                                      x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
+                                          x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
+                                              x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
+                                                  y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
+                                                      y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
+
+                                  var new_staffing_trapeze = (2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;
+
+                                  $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2));
+                                  $(".new_staffing_trapeze").val(new_staffing_trapeze.toFixed(2));
+
+
+                                  var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
+                                  var t_max_staffing = Math.sqrt(1/(2*form_coef));
+                                  var new_staffing_rayleigh = (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / (t_max_staffing * Math.sqrt(Math.exp(1)))
+                                  $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));
+                                  $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2));
+
+                                  $(".percent_effort").html(sign((((new_effort-effort)/new_effort)*100).toFixed(1)) + " %");
+                                  $(".percent_duration").html(sign((((new_duration-duration)/duration)*100).toFixed(1)) + " %");
+                                  $(".percent_trapeze").html(sign((((new_staffing_trapeze-staffing_trapeze)/staffing_trapeze)*100).toFixed(1)) + " %");
+                                  $(".percent_rayleigh").html(sign((((new_staffing_rayleigh-staffing_rayleigh)/staffing_rayleigh)*100).toFixed(1)) + " %");
+
+                                  $(".gap_effort").html(sign((new_effort-effort).toFixed(2)));
+                                  $(".gap_duration").html(sign((new_duration-duration).toFixed(2)));
+                                  $(".gap_trapeze").html(sign((new_staffing_trapeze-staffing_trapeze).toFixed(2)));
+                                  $(".gap_rayleigh").html(sign((new_staffing_rayleigh-staffing_rayleigh).toFixed(2)));
+
+                                  var date = new Date(<%= @project.start_date.year %>, <%= @project.start_date.month %>, <%= @project.start_date.day %>);
+                                  date.setDate(date.getDate() + (new_duration * 7));
+
+                                  var dd = date.getDate();
+                                  var mm = date.getMonth();
+                                  var y = date.getFullYear();
+
+                                  var someFormattedDate = dd + '/' + mm + '/' + y;
+                                  $(".end_date").html(someFormattedDate);
+                              }
+
+                              function sign(value){
+                                  if (value > 0) {
+                                      return value;
+                                  } else if (value < 0) {
+                                      return value;
+                                  } else {
+                                      return value;
+                                  }
+                              }
+
+                          },
+                          min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range %>,
+                          max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range %>
                       });
                   </script>
                 </div>
@@ -268,96 +344,96 @@
       <script>
         //$(document).ready(function(){
         $(document).ready(function() {
-            var staffing_trapeze = $("#new_staffing_trapeze").val();
-            var staffing_rayleigh = $("#new_staffing_rayleigh").val();
+            // var staffing_trapeze = $("#new_staffing_trapeze").val();
+            // var staffing_rayleigh = $("#new_staffing_rayleigh").val();
+            //
+            // if (staffing_trapeze == "0.0" || staffing_rayleigh == "0.0"){
+            //     var data_staff_from = { from: 100 };
+            //     set_staffing_values(data_staff_from);
+            // }
 
-            if (staffing_trapeze == "0.0" || staffing_rayleigh == "0.0"){
-                var data_staff_from = { from: 100 };
-                set_staffing_values(data_staff_from);
-            }
+<!--            $("#submit_staffing").on("click", function(){-->
+<!--                set_staffing_values({from: <%# @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>});-->
+<!--            });-->
 
-            $("#submit_staffing").on("click", function(){
-                set_staffing_values({from: <%= @staffing_custom_data.percent.nil? ? 100 : @staffing_custom_data.percent %>});
-            });
-
-            $('#percent').on("change", function(){
-                set_staffing_values({
-                    min: "<%= @staffing_model.min_range %>",
-                    max: "<%= @staffing_model.max_range %>",
-                    from: $('#percent').val(),
-                    grid: true,
-                    postfix: "%"
-                });
-                $("#submit_staffing").off("click");
-            });
-
-            function sign(value){
-                if (value > 0) {
-                    return value;
-                } else if (value < 0) {
-                    return value;
-                } else {
-                    return value;
-                }
-            }
+            // $('#percent').on("change", function(){
+<!--                set_staffing_values({-->
+<!--                    min: "<%# @staffing_model.min_range %>",-->
+<!--                    max: "<%# @staffing_model.max_range %>",-->
+<!--                    from: $('#percent').val(),-->
+<!--                    grid: true,-->
+<!--                    postfix: "%"-->
+<!--                });-->
+                // $("#submit_staffing").off("click");
+            // });
+            //
+            // function sign(value){
+            //     if (value > 0) {
+            //         return value;
+            //     } else if (value < 0) {
+            //         return value;
+            //     } else {
+            //         return value;
+            //     }
+            // }
 
             // Get The Max-Staff value according to selected value from the Slider
-            function set_staffing_values(data) {
+<!--            function set_staffing_values(data) {-->
 
-                var effort = $(".reference_effort").html();
-                var duration = $(".reference_duration").html();
-                var staffing_trapeze = $(".reference_staffing_trapeze").html();
-                var staffing_rayleigh = $(".reference_staffing_rayleigh").html();
+<!--                var effort = $(".reference_effort").html();-->
+<!--                var duration = $(".reference_duration").html();-->
+<!--                var staffing_trapeze = $(".reference_staffing_trapeze").html();-->
+<!--                var staffing_rayleigh = $(".reference_staffing_rayleigh").html();-->
 
-                $("#standard_effort").val(parseFloat(effort));
+<!--                $("#standard_effort").val(parseFloat(effort));-->
 
-                var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);
-                $(".effort").html(new_effort.toFixed(2));
-                $(".new_effort").val(new_effort.toFixed(2));
+<!--                var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);-->
+<!--                $(".effort").html(new_effort.toFixed(2));-->
+<!--                $(".new_effort").val(new_effort.toFixed(2));-->
 
-                var new_duration = (duration * (parseFloat(data.from)) / 100);
-                $(".duration").html(new_duration.toFixed(2));
-                $(".new_duration").val(new_duration.toFixed(2));
+<!--                var new_duration = (duration * (parseFloat(data.from)) / 100);-->
+<!--                $(".duration").html(new_duration.toFixed(2));-->
+<!--                $(".new_duration").val(new_duration.toFixed(2));-->
 
-                x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
-                x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
-                x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
-                x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
-                y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
-                y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
+<!--                x0 = <%#= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>-->
+<!--                x1 = <%#= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>-->
+<!--                x2 = <%#= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>-->
+<!--                x3 = <%#= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>-->
+<!--                y0 = <%#= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>-->
+<!--                y3 = <%#= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>-->
 
-                var new_staffing_trapeze = (2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;
+<!--                var new_staffing_trapeze = (2 * (new_effort * <%#= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;-->
 
-                $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2));
-                $(".new_staffing_trapeze").val(new_staffing_trapeze.toFixed(2));
+<!--                $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2));-->
+<!--                $(".new_staffing_trapeze").val(new_staffing_trapeze.toFixed(2));-->
 
 
-                var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
-                var t_max_staffing = Math.sqrt(1/(2*form_coef));
-                var new_staffing_rayleigh = (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / (t_max_staffing * Math.sqrt(Math.exp(1)))
-                $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));
-                $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2));
+<!--                var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);-->
+<!--                var t_max_staffing = Math.sqrt(1/(2*form_coef));-->
+<!--                var new_staffing_rayleigh = (new_effort * <%#= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / (t_max_staffing * Math.sqrt(Math.exp(1)))-->
+<!--                $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));-->
+<!--                $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2));-->
 
-                $(".percent_effort").html(sign((((new_effort-effort)/new_effort)*100).toFixed(1)) + " %");
-                $(".percent_duration").html(sign((((new_duration-duration)/duration)*100).toFixed(1)) + " %");
-                $(".percent_trapeze").html(sign((((new_staffing_trapeze-staffing_trapeze)/staffing_trapeze)*100).toFixed(1)) + " %");
-                $(".percent_rayleigh").html(sign((((new_staffing_rayleigh-staffing_rayleigh)/staffing_rayleigh)*100).toFixed(1)) + " %");
+<!--                $(".percent_effort").html(sign((((new_effort-effort)/new_effort)*100).toFixed(1)) + " %");-->
+<!--                $(".percent_duration").html(sign((((new_duration-duration)/duration)*100).toFixed(1)) + " %");-->
+<!--                $(".percent_trapeze").html(sign((((new_staffing_trapeze-staffing_trapeze)/staffing_trapeze)*100).toFixed(1)) + " %");-->
+<!--                $(".percent_rayleigh").html(sign((((new_staffing_rayleigh-staffing_rayleigh)/staffing_rayleigh)*100).toFixed(1)) + " %");-->
 
-                $(".gap_effort").html(sign((new_effort-effort).toFixed(2)));
-                $(".gap_duration").html(sign((new_duration-duration).toFixed(2)));
-                $(".gap_trapeze").html(sign((new_staffing_trapeze-staffing_trapeze).toFixed(2)));
-                $(".gap_rayleigh").html(sign((new_staffing_rayleigh-staffing_rayleigh).toFixed(2)));
+<!--                $(".gap_effort").html(sign((new_effort-effort).toFixed(2)));-->
+<!--                $(".gap_duration").html(sign((new_duration-duration).toFixed(2)));-->
+<!--                $(".gap_trapeze").html(sign((new_staffing_trapeze-staffing_trapeze).toFixed(2)));-->
+<!--                $(".gap_rayleigh").html(sign((new_staffing_rayleigh-staffing_rayleigh).toFixed(2)));-->
 
-                var date = new Date(<%= @project.start_date.year %>, <%= @project.start_date.month %>, <%= @project.start_date.day %>);
-                date.setDate(date.getDate() + (new_duration * 7));
+<!--                var date = new Date(<%#= @project.start_date.year %>, <%#= @project.start_date.month %>, <%#= @project.start_date.day %>);-->
+<!--                date.setDate(date.getDate() + (new_duration * 7));-->
 
-                var dd = date.getDate();
-                var mm = date.getMonth();
-                var y = date.getFullYear();
+<!--                var dd = date.getDate();-->
+<!--                var mm = date.getMonth();-->
+<!--                var y = date.getFullYear();-->
 
-                var someFormattedDate = dd + '/' + mm + '/' + y;
-                $(".end_date").html(someFormattedDate);
-            }
+<!--                var someFormattedDate = dd + '/' + mm + '/' + y;-->
+<!--                $(".end_date").html(someFormattedDate);-->
+<!--            }-->
         });
       </script>
     <% rescue Exception => e %>

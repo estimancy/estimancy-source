@@ -88,6 +88,7 @@
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <% if @project.is_model == true %>
                         <% apps = @project.applications %>
+
                         <% if @current_organization.applications.empty? and apps.empty? %>
                             <%= f.input :application_name,
                                         :label => false,
@@ -141,6 +142,7 @@
                 });
             </script>
 
+          <% unless @project.is_model %>
             <div class="form-row">
                 <div class="col-12">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -182,6 +184,7 @@
                   </div>
                 </div>
             </div>
+          <% end %>
 
             <div class="form-row">
                 <div class="col-12">
