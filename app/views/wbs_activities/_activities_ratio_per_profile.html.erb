@@ -23,6 +23,7 @@
 
   <%# @wbs_activity_ratio_elements.each do |activity| %>
   <% wbs_activity_elements.each_with_index do |activity_element, i| %>
+    <%# begin %>
     <% activity = @wbs_activity_ratio_elements.select {|e| e.wbs_activity_element_id == activity_element.id}.first %>
 
     <%= hidden_field_tag 'wbs_activity_ratio_id', activity.wbs_activity_ratio_id %>
@@ -36,29 +37,31 @@
       </td>
       <td style="padding-left:<%=gap+(activity.wbs_activity_element.depth*2)%>em"><%= activity.wbs_activity_element.name %></td>
       <% if @wbs_organization_profiles.length > 0 %>
-          <% @wbs_organization_profiles.each do |profile| %>
-              <% activity_profile = WbsActivityRatioProfile.where(wbs_activity_ratio_element_id: activity.id, organization_profile_id: profile.id).first %>
-              <% current_percentage =  activity_profile.nil? ? nil : activity_profile.ratio_value %>
-              <% total_percentage_activity += (current_percentage.nil? ? 0 : current_percentage.to_f) %>
-              <% if activity.wbs_activity_element.has_children? %>
-                <td style="text-align: center">
-                  <%= hidden_field_tag "activity_profile_percentage[#{activity.id}][#{profile.id}]", nil, :class => 'input-mini profiles_per_activity', 'data-activity_id' => activity.id, "data-profile_id" => profile.id %> -
-                </td>
-              <% else %>
-                <td style="text-align: center">
-                  <%= text_field_tag "activity_profile_percentage[#{activity.id}][#{profile.id}]", current_percentage, :class => 'input-mini profiles_per_activity', 'data-activity_id' => activity.id, "data-profile_id" => profile.id %>
-                </td>
-              <% end %>
+        <% @wbs_organization_profiles.each do |profile| %>
+          <% activity_profile = WbsActivityRatioProfile.where(wbs_activity_ratio_element_id: activity.id, organization_profile_id: profile.id).first %>
+          <% current_percentage =  activity_profile.nil? ? nil : activity_profile.ratio_value %>
+          <% total_percentage_activity += (current_percentage.nil? ? 0 : current_percentage.to_f) %>
+          <% if activity.wbs_activity_element.has_children? %>
+            <td style="text-align: center">
+              <%= hidden_field_tag "activity_profile_percentage[#{activity.id}][#{profile.id}]", nil, :class => 'input-mini profiles_per_activity', 'data-activity_id' => activity.id, "data-profile_id" => profile.id %> -
+            </td>
+          <% else %>
+            <td style="text-align: center">
+              <%= text_field_tag "activity_profile_percentage[#{activity.id}][#{profile.id}]", current_percentage, :class => 'profiles_per_activity', 'data-activity_id' => activity.id, "data-profile_id" => profile.id, style: "width: 80px;" %>
+            </td>
           <% end %>
+        <% end %>
       <% else %>
           <td></td>
       <% end %>
       <% if activity.wbs_activity_element.has_children? %>
-          <td style="text-align: center"> - </td>
+        <td style="text-align: center"> - </td>
       <% else %>
-          <td id='<%= "total_ratio_activity_#{activity.id}" %>' style="text-align: center"><%= activity.wbs_activity_element.is_root? ? "-" : "#{total_percentage_activity} %"  %></td>
+        <td id='<%= "total_ratio_activity_#{activity.id}" %>' style="text-align: center"><%= activity.wbs_activity_element.is_root? ? "-" : "#{total_percentage_activity} %"  %></td>
       <% end %>
     </tr>
+    <%# rescue %>
+    <%# end %>
   <% end %>
 
 </table>

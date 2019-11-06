@@ -404,12 +404,13 @@ class WbsActivitiesController < ApplicationController
 
       wai.save
     end
+    @wai = wai
     @module_project_ratio_elements = @module_project.module_project_ratio_elements.where(organization_id: @organization.id,
                                                                                          pbs_project_element_id: @pbs_project_element.id,
                                                                                          wbs_activity_ratio_id: @ratio_reference.id)
 
     effort_unit_coefficient = @wbs_activity.effort_unit_coefficient.nil? ? 1.0 : @wbs_activity.effort_unit_coefficient.to_f
-
+    @effort_unit_coefficient = effort_unit_coefficient
     level_estimation_value = Hash.new
     current_pbs_estimations = current_module_project.estimation_values.where(organization_id: @organization.id)
     input_effort_for_global_ratio = 0.0
@@ -1687,7 +1688,8 @@ class WbsActivitiesController < ApplicationController
 
                 elements_worksheet_tab.each_with_index do | row, index |
                   if index != 0 && !row.nil?
-                    activity_element = WbsActivityElement.create(wbs_activity_id: @wbs_activity.id, organization_id: @organization.id,
+                    activity_element = WbsActivityElement.create(wbs_activity_id: @wbs_activity.id,
+                                                                 organization_id: @organization.id,
                                                                  position: row[0].nil? ? 0 : row[0].value.to_f,
                                                                  phase_short_name: row[1].nil? ? nil : row[1].value,
                                                                  name: row[2].nil? ? nil : row[2].value,
@@ -1701,13 +1703,16 @@ class WbsActivitiesController < ApplicationController
                 # Update wbs-activity-element parent (ancestry)
                 elements_parents.each do |key, parent_name|
                   #begin
-                    activity_element = WbsActivityElement.find(key)
-                    parent = WbsActivityElement.where(name: parent_name, wbs_activity_id: @wbs_activity.id).first
-                    if !parent.nil?
-                      activity_element.parent = parent
+                    unless key.blank?
+                      activity_element = WbsActivityElement.find(key)
+                      parent = WbsActivityElement.where(name: parent_name, wbs_activity_id: @wbs_activity.id).first
+                      if !parent.nil?
+                        activity_element.parent = parent
+                      end
+                      activity_element.save
                     end
-                    activity_element.save
                   # rescue
+                  #   key
                   # end
                 end
 
@@ -1818,20 +1823,23 @@ class WbsActivitiesController < ApplicationController
 
                             else
                               wbs_activity_element = @wbs_activity_elements.where(name: row[2].nil? ? nil : row[2].value).first
-                              ratio_element = ratio.wbs_activity_ratio_elements.where(wbs_activity_element_id: wbs_activity_element.id).first
+                              #begin
+                                ratio_element = ratio.wbs_activity_ratio_elements.where(wbs_activity_element_id: wbs_activity_element.id).first
 
-                              @wbs_activity_profiles.each do |profile|
-                                k = profile_col_number["#{profile.name}"]
-                                unless k.nil?
-                                  if row[k].blank?
-                                    ratio_value = nil
-                                  else
-                                    ratio_value = (row[k].value.blank?) ? nil : row[k].value.to_f
+                                @wbs_activity_profiles.each do |profile|
+                                  k = profile_col_number["#{profile.name}"]
+                                  unless k.nil?
+                                    if row[k].blank?
+                                      ratio_value = nil
+                                    else
+                                      ratio_value = (row[k].value.blank?) ? nil : row[k].value.to_f
+                                    end
+
+                                    WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)
                                   end
-
-                                  WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)
                                 end
-                              end
+                              #rescue
+                              #end
                             end
                           else
                             # type code here

@@ -70,10 +70,10 @@
 </div>
 
 <div class="modal-footer">
-  <button type="button" class="btn btn-default" data-dismiss="modal" >
+  <button type="button" class="btn btn-secondary" data-dismiss="modal" >
     <%= I18n.t(:close_without_calculate) %>
   </button>
   <% if can? :execute_estimation_plan, @project %>
-    <button type="submit" class="btn btn-default" name="from_deported"> <%= I18n.t(:calculate) %></button>
+    <button type="submit" class="btn btn-primary" name="from_deported"> <%= I18n.t(:calculate) %></button>
   <% end %>
 </div>

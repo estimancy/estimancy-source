@@ -1,3 +1,4 @@
+<!--<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>-->
 
 <div class="row pb-5">
   <div class="col-12">
@@ -56,10 +57,10 @@
                           <% end %>
                         </div>
                       <% else %>
-                        <a href="#import" role="button" class="btn btn-primary float-md-right" title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
+                        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
                           <%= I18n.t(:import) %>
-                        </a>
-                        <div id="import" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                        </button>
+                        <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
                           <%= form_tag guw.import_new_config_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
                             <div class="modal-header modal-drag">
                               <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>

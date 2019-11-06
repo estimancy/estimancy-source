@@ -63,7 +63,7 @@
           <% if can?(:alter_estimation_plan, @project)%>
               <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
           <% end %>
-          <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+          <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
         </div>
     <% end %>
   </div>

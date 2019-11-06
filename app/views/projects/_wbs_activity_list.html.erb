@@ -3,6 +3,6 @@
       <label><%= I18n.t(:wbs_activities)%> </label>
       <%= select_tag 'wbs_activity_element', options_for_select(@wbs_activity_elements.map{|i| [i.name, i.id] } ), :prompt => I18n.t('helpers.select.prompt') %>
       <%= hidden_field_tag :project_id,  @project.id  %>
-      <%= submit_tag 'ADD', :class => 'btn' %>
+      <%= submit_tag 'ADD', :class => 'btn btn-primary' %>
     </p>
 <% end %>

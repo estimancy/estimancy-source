@@ -38,6 +38,6 @@
 <br>
 
 <% if can? :execute_estimation_plan, @project %>
-    <%= link_to I18n.t(:add_new_unit_of_work_group), guw.new_guw_model_guw_unit_of_work_group_path(params[:guw_model_id]), class: "btn" %>
+    <%= link_to I18n.t(:add_new_unit_of_work_group), guw.new_guw_model_guw_unit_of_work_group_path(params[:guw_model_id]), class: "btn btn-primary" %>
 <% end %>
-<%= link_to I18n.t(:back), main_app.dashboard_path(@project), class: "btn" %>
+<%= link_to I18n.t(:back), main_app.dashboard_path(@project), class: "btn btn-secondary" %>

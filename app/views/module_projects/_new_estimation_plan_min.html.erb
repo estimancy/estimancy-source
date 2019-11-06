@@ -1,6 +1,6 @@
 <div class="col-2 pr-0">
   <% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
-  <% sorted_module_projects =  module_projects.sort_by { |i| i.display_order } %>
+  <% sorted_module_projects =  module_projects.sort_by { |i| i.display_order.to_i } %>
   <%# first_module_project =  sorted_module_projects.first %>
 
   <div id="modules-sidebar" class="py-6">
@@ -8,7 +8,7 @@
     <ul class="nav navbar-nav flex-column">
       <li class="nav-item">
         <!--<a data-remote="true" class="nav-link blue_nav-link" href="<%#= edit_project_path(@project) %>">-->
-        <a class="nav-link blue_nav-link <%= (session[:active_nav_link] == "edit") ? 'active' : '' %>" href="<%= edit_project_path(@project) %>">
+        <a class="nav-link blue_nav-link <%= (session[:active_nav_link] == "edit") ? 'active' : '' %>" href="<%= edit_project_path(@project) %>" data-turbolinks="false">
           <span>
             <%= I18n.t(:properties) %>
           </span>

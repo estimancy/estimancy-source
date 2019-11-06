@@ -11,7 +11,7 @@
               <tr>
                 <td style="text-align:right;">
                   <a href="#myWBSModal" role="button" class="btn" title="<%= I18n.t(:guide_import_wbs_activity) %>" data-toggle="modal"><%= I18n.t(:import_wbs_activity) %></a>
-                  <%= link_to I18n.t(:new_wbs_activity), new_wbs_activity_path, :class => 'btn', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+                  <%= link_to I18n.t(:new_wbs_activity), new_wbs_activity_path, :class => 'btn btn-primary', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
                 </td>
               </tr>
             </table>
@@ -60,7 +60,7 @@
             <%= select_tag :encoding, options_for_select(Project::encoding, :selected => I18n.t(:general_csv_encoding)) %>
           </div>
           <div class="modal-footer">
-            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
             <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
           </div>
           <div class="loading span11 hide">

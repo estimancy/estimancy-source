@@ -3,5 +3,5 @@
     <%= hidden_field_tag 'project_id', @project.id %>
     <%= hidden_field_tag 'wbs_project_id', @wbs_project_element.id %>
     <%= select_tag 'wbs_activity_ratio_id', options_from_collection_for_select(@possible_wbs_activity_ratios, 'id', 'name', @wbs_project_element.wbs_activity_ratio_id), :prompt => I18n.t('helpers.select.prompt') %>
-    <%= submit_tag I18n.t('update'), :class => 'btn change_ratio' %>
+    <%= submit_tag I18n.t('update'), :class => 'btn btn-primary change_ratio' %>
 <% end %>

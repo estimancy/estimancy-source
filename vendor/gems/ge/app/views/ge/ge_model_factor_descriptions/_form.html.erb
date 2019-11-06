@@ -2,28 +2,24 @@
 <%= simple_form_for(@ge_model_factor_description, id: "factor_description_form_#{@ge_factor.alias}") do |f| %>
     <%= f.error_notification %>
     <div class="form-inputs">
-      <%= f.input :ge_model_id, as: :hidden, :input_html => { value: @ge_model.id } %>
+      <%= f.input :ge_model_id, as: :hidden, :input_html => { value: @ge_model.id, class: "form-control" } %>
       <%= f.input :ge_factor_id, as: :hidden, :input_html => { value: @ge_factor.id } %>
       <%#= f.input :organization_id, as: :hidden, :input_html => { value: @current_organization.id } %>
       <%= hidden_field_tag 'project_id', @project.id %>
-
-      <table>
-        <tr>
-          <td>
-            <%#= text_field_tag 'factor_index', 3, input_html: { id: "factor_index_#{@ge_factor.alias}"} %>
-            <%= f.input :description, label: I18n.t(:comments), input_html: { :class => 'input-xxlarge', rows: 16} %>
-            <%#= tinymce %>
-            <%#= f.input :description, label: I18n.t(:comments), input_html: { class: "input-xxlarge tinymce", rows: 10} %>
-          </td>
-        </tr>
-
-      </table>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
+        <div class="input text optional user_description">
+          <%= f.input :description, label: false, input_html: { :class => 'text optional mdl-textfield__input form-control', rows: "5"} %>
+        </div>
+        <label class="mdl-textfield__label" for="description">
+          <%= I18n.t :description %>
+        </label>
+      </div>
     </div>
 
     <div class="actions-tabs">
       <%# if can?(:alter_estimation_plan, @project) %>
-          <%= submit_tag I18n.t('save'), id: "submit_factor_description_#{@ge_factor.alias}", :class => 'btn' %>
+          <%= submit_tag I18n.t('save'), id: "submit_factor_description_#{@ge_factor.alias}", :class => 'btn btn-primary' %>
       <%# end %>
-      <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+      <button class="btn  btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
     </div>
 <% end %>

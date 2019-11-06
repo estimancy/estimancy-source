@@ -1,6 +1,6 @@
 <section class="card card-content-bloc estimancy-form">
   <%#= simple_form_for @new_project, :url => duplicate_path(params[:template_id]), :method => :post do |f| %>
-  <%= simple_form_for @new_project, :url => duplicate_path(params[:template_id]), remote: true do |f| %>
+  <%= simple_form_for @new_project, :url => duplicate_path(params[:template_id]) do |f| %>
 
       <%= f.error_notification %>
 

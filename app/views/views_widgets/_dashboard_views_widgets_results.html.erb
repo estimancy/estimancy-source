@@ -128,11 +128,11 @@
 
                           <div class="card card-widget card-indicator card-indicator-with-module" style="padding-right: 5px; padding-top: 3px;">
                             <div class="card-body">
-                                <% if view_widget.show_module_name == true %>
-                                  <div class="card-indicator-type" style="margin-top: -1rem;">
-                                    <%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %>
-                                  </div>
-                                <% end %>
+                              <% if view_widget.show_module_name == true %>
+                                <div class="card-indicator-type" style="margin-top: -1rem;">
+                                  <%= view_widget.module_project %><%= current_user.super_admin == true ? " (#{view_widget.position})" : "" %>
+                                </div>
+                              <% end %>
 
                               <div class="card-indicator-text">
                                 <div class="dragme">
@@ -148,6 +148,9 @@
                                 </div>
 
                                 <%= k %>
+                                <% unless view_widget.project_fields.empty? %>
+                                  *
+                                <% end %>
                               </div>
                               <div class="card-indicator-label">
                                   <span style="margin-top: 0.9rem"><%= value.nil? ? '-' : value %></span>

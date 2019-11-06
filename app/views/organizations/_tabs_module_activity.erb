@@ -8,7 +8,7 @@
         <%= link_to I18n.t(:create_button), new_organization_wbs_activity_path(@organization),
                     :class => 'btn btn-primary float-md-right',
                     :style => 'margin-bottom:1rem;',
-                    :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+                    :title => "#{I18n.t(:guide_create_wbs_activity)}", data:{ turbolinks: false} %>
       <% end %>
 
       <table class="table table-list">
