@@ -28,6 +28,9 @@ class DemandTypesController < ApplicationController
 
   def update
     @demand_type = DemandType.find(params[:id])
+    @organization = Organization.find(params[:organization_id])
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
     @demand_type.update(params[:demand_type])
 
     @organization = @demand_type.organization
@@ -117,6 +120,8 @@ class DemandTypesController < ApplicationController
     @demand_type = DemandType.find(params[:id])
     @demand_statuses = @demand_type.demand_statuses
     @organization = Organization.find(params[:organization_id])
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
   end
 
   def destroy

@@ -483,9 +483,9 @@
                               <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area", class: "form-control" %>
                             </div>
                             <div class="modal-footer">
-                              <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal" ><%= I18n.t(:close) %></button>
                               <% if can?(:execute_estimation_plan, @project) %>
-                                  <button type="submit" class="btn btn-default"><%= I18n.t(:save) %></button>
+                                  <button type="submit" class="btn btn-primary"><%= I18n.t(:save) %></button>
                               <% end %>
                             </div>
                           </div>

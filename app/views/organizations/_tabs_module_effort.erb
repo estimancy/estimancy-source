@@ -126,7 +126,7 @@
             </td>
             <td class="align-center">
               <%= link_to raw("<i class='material-icons'>edit</i>"), operation.edit_operation_model_path(i, organization_id: @organization.id),
-                          confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
+                          data: {confirm: I18n.t(:warning_edit_instance_module)}, :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to raw("<i class='material-icons'>file_copy</i>"), operation.operation_model_duplicate_path(i, organization_id: @organization.id),
                             :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>

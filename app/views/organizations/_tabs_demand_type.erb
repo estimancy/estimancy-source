@@ -1,0 +1,55 @@
+<%= simple_form_for([@organization, @demand_type]) do |f| %>
+  <div id="tabs-1">
+    <%= f.error_notification %>
+
+    <div class="edition-page-group py-4">
+      <span><%= I18n.t(:demand_type) %></span>
+    </div>
+
+    <div class="edition-bloc-content">
+      <div class="edition-bloc-form">
+        <div class="form-row">
+          <div class="col-5">
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+              <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :description, :as => :text, :label => false, :input_html => {:class => 'mdl-textfield__input', :rows => 5 } %>
+              <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :cost_from, as: :select, collection: ["Devis", "Saisie", "Cout associé à l'application"], :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+              <label class="mdl-textfield__label" for="cost_from">Provenance coût à facturer</label>
+            </div>
+
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :demand_status_id, as: :select, collection: @demand_statuses.map{|i| [i.name, i.id]} , :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+              <label class="mdl-textfield__label" for="demand_status_id">Statut de départ</label>
+            </div>
+
+            <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
+
+            <br>
+          </div>
+        </div>
+
+        <div class="actions-tabs">
+          <% if action_name == 'new' || action_name=="create" %>
+            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <% elsif action_name == 'edit' || action_name=="update" %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <% end %>
+          <%= link_to I18n.t('back'), organization_setting_demand_path(@organization, partial_name: 'tabs_demand_types', item_title: I18n.t('demands_types'), anchor: 'demandes_types'), :class => 'btn btn-secondary btn-estimancy' %>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+<% end %>

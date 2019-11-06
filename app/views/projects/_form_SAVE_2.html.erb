@@ -376,7 +376,7 @@
       <div id="tabs-5">
         <% if @project.is_model == true && current_user.super_admin == true %>
           <div class="row">
-            <%= link_to I18n.t("Copier les sécurités"), copy_security_path(@project), class: "btn btn-mini pull-right", method: "post" %>
+            <%= link_to I18n.t("Copier les sécurités"), copy_security_path(@project), class: "btn btn-sm pull-right", method: "post" %>
           </div>
         <% end %>
 

@@ -1,11 +1,11 @@
 <tfoot>
   <tr>
     <th colspan="100" class="pager form-horizontal">
-      <a class="btn btn-mini first" title="<%=I18n.t(:text_first_page)%>"> << </a>
-      <a class="btn btn-mini prev" title="<%=I18n.t(:text_previous_page)%>"> < </a>
+      <a class="btn btn-sm first" title="<%=I18n.t(:text_first_page)%>"> << </a>
+      <a class="btn btn-sm prev" title="<%=I18n.t(:text_previous_page)%>"> < </a>
       <span class="pagedisplay" title="<%=I18n.t(:text_result_index)%>"></span> <!-- this can be any element, including an input -->
-      <a class="btn btn-mini next" title="<%=I18n.t(:text_next_page)%>"> > </a>
-      <a class="btn btn-mini last" title="<%=I18n.t(:text_last_page)%>"> >> </a>
+      <a class="btn btn-sm next" title="<%=I18n.t(:text_next_page)%>"> > </a>
+      <a class="btn btn-sm last" title="<%=I18n.t(:text_last_page)%>"> >> </a>
       <%= select_tag :object_per_page, options_for_select([5,10,25,50,100], :selected => current_user.object_per_page || 10), :class => 'pagesize input-mini', :title => I18n.t(:text_select_page_size) %>
       <select class="pagenum input-mini" title="<%=I18n.t(:text_select_page_number)%>"></select>
     </th>
