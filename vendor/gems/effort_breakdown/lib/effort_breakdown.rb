@@ -745,7 +745,7 @@ module EffortBreakdown
                       normalized_formula_expression = nil
                     end
 
-                    formula_dependencies = calculator.calc.dependencies(normalized_formula_expression)
+                    formula_dependencies = calculator.dependencies(normalized_formula_expression)
                     if formula_dependencies.empty?
                       element_effort = calculator.evaluate(normalized_formula_expression)
                       output_effort[element.id] = element_effort
@@ -835,9 +835,11 @@ module EffortBreakdown
 
                 unless corresponding_ratio_elt.nil?
                   formula = corresponding_ratio_elt.formula
+                  element_phase_short_name = element.phase_short_name.downcase
 
                   if formula.blank? ###if current_output_effort.nil? || formula.blank?
                     output_effort[element.id] = nil
+                    calculator.store(:"#{element_phase_short_name}" => 0.0)
                   else
                     formula_expression = "#{formula.downcase}"
                     begin
@@ -847,13 +849,12 @@ module EffortBreakdown
                     end
 
                     # Add element short_name in calculator
-                    element_phase_short_name = element.phase_short_name.downcase
                     unless element_phase_short_name.nil?
                       if mp_ratio_element.selected == true
-                        all_formula_to_compute[:"#{element_phase_short_name.downcase}"] = normalized_formula_expression
+                        all_formula_to_compute[:"#{element_phase_short_name}"] = normalized_formula_expression
                       else
                         all_formula_to_compute[:"#{element.id}"] = normalized_formula_expression
-                        calculator.store(:"#{element_phase_short_name.downcase}" => 0.0)  #mettre a nil
+                        calculator.store(:"#{element_phase_short_name}" => 0.0)  #mettre a nil
                       end
                     end
                   end
@@ -884,9 +885,12 @@ module EffortBreakdown
           output_effort_with_dependencies = Hash.new
           all_formula_to_compute.each do |var, formula|
             begin
-              output_effort_with_dependencies[var] = calculator.evaluate(formula)
+              calculation_result = calculator.evaluate(formula)
+              output_effort_with_dependencies[var] = calculation_result
+              calculator.store(:"#{var.downcase}" => calculation_result)
             rescue
               output_effort_with_dependencies[var] = 0.0 #mettre a nil
+              calculator.store(:"#{var.downcase}" => 0.0)
             end
           end
         end
