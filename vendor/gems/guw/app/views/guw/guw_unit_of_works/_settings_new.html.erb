@@ -16,9 +16,8 @@
   <% project_id = @project.id %>
 
   <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
-                                                                                       # guw_model_id: @guw_model.id,
                                                                                        project_id: project_id,
-                                                                                       module_project_id: current_mp.id) %>
+                                                                                       module_project_id: current_mp.id).order("created_at DESC") %>
 
   <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
                                                                   project_id: project_id,
@@ -226,24 +225,24 @@
               <% end %>
 
               <tr style="height: 0px;">
-                <td colspan="3">
-                  <b>
-                    Sous total
-                  </b>
-                </td>
+<!--                <td colspan="3">-->
+<!--                  <b>-->
+<!--                    Sous total-->
+<!--                  </b>-->
+<!--                </td>-->
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% unless i[1].blank? %>
                     <% go = @hash_guw_outputs[i[0]] %>
                     <% if go.class == Guw::GuwOutput %>
-                      <td>
-                        <strong class="center" id="total_<%= uowg.id %>_<%= go.id %>" style="padding-left: 50%;"></strong>
-                      </td>
+<!--                      <td>-->
+<!--                        <strong class="center" id="total_<%#= uowg.id %>_<%#= go.id %>" style="padding-left: 50%;"></strong>-->
+<!--                      </td>-->
                     <% else %>
-                      <td></td>
+<!--                      <td></td>-->
                     <% end %>
                   <% end %>
                 <% end %>
-                <td></td>
+<!--                <td></td>-->
               </tr>
 
             </table>
@@ -846,21 +845,21 @@
   <% end %>
 </div>
 
-<script>
-  //$(document).ready(function(){
-  $(document).ready(function() {
-    <% current_module_project.guw_unit_of_work_groups.each do |uowg| %>
-      <% @guw_model.guw_outputs.each do |go| %>
-        var sum = 0;
-        $(".total_<%= uowg.id %>_<%= go.id %>").each(function() {
-            var value = $(this).val();
-            if(!isNaN(value) && value.length != 0) {
-                sum += Math.round(parseFloat(value));
-            }
-        });
+<!--<script>-->
+<!--  //$(document).ready(function(){-->
+<!--  $(document).ready(function() {-->
+    <%# current_module_project.guw_unit_of_work_groups.each do |uowg| %>
+      <%# @guw_model.guw_outputs.each do |go| %>
+<!--        var sum = 0;-->
+<!--        $(".total_<%# uowg.id %>_<%# go.id %>").each(function() {-->
+<!--            var value = $(this).val();-->
+<!--            if(!isNaN(value) && value.length != 0) {-->
+<!--                sum += Math.round(parseFloat(value));-->
+<!--            }-->
+<!--        });-->
 
-        $("#total_<%= uowg.id %>_<%= go.id %>").html(sum + " <%= go.unit %>");
-      <% end %>
-    <% end %>
-  });
-</script>
+<!--        $("#total_<%# uowg.id %>_<%# go.id %>").html(sum + " <%# go.unit %>");-->
+      <%# end %>
+    <%# end %>
+<!--  });-->
+<!--</script>-->
