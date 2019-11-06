@@ -1059,17 +1059,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   coefficient_value = 1
                   case guw_coefficient.coefficient_type
                     when "Application"
-                      coefficient_value = @project.application.coefficient
+                      coefficient_value = @project.application.coefficient rescue 1
                     when "Provider"
-                      coefficient_value = @project.provider.coefficient
+                      coefficient_value = @project.provider.coefficient rescue 1
                     when "ProjectArea"
-                      coefficient_value = @project.project_area.coefficient
+                      coefficient_value = @project.project_area.coefficient rescue 1
                     when "ProjectCategory"
-                      coefficient_value = @project.project_category.coefficient
+                      coefficient_value = @project.project_category.coefficient rescue 1
                     when "PlatformCategory"
-                      coefficient_value = @project.platform_category.coefficient
+                      coefficient_value = @project.platform_category.coefficient rescue 1
                     when "AcquisitionCategory"
-                      coefficient_value = @project.acquisition_category.coefficient
+                      coefficient_value = @project.acquisition_category.coefficient rescue 1
                   end
 
                   selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value) * (coefficient_value.nil? ? 1 : coefficient_value.to_f)
