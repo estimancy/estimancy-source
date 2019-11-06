@@ -385,7 +385,6 @@ class ApplicationController < ActionController::Base
       return nil
     else
       organization = @project.organization || Organization.find(params[:organization_id]) rescue @current_organization
-
       pemodule = Pemodule.find_by_alias('initialization')
       default_current_module_project = ModuleProject.where(organization_id: organization.id, pemodule_id: pemodule.id , project_id: @project.id).first
       if @project.module_projects.map(&:id).include?(session[:module_project_id].to_i)
