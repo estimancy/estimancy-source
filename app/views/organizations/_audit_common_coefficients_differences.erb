@@ -33,7 +33,7 @@
         <td>
           <% guw_model = Guw::GuwModel.where(id: difference[:guw_model_id]).first %>
           <%#= link_to guw_model.name, guw.guw_model_path(guw_model, organization_id: difference[:organization_id]), confirm: I18n.t(:warning_edit_instance_module) %>
-          <%= link_to guw_model.name, guw.edit_guw_model_path(guw_model, organization_id: difference[:organization_id], anchor: "tabs-attributs"), confirm: I18n.t(:warning_edit_instance_module) %>
+          <%= link_to guw_model.name, guw.edit_guw_model_path(guw_model, organization_id: difference[:organization_id], anchor: "tabs-attributs"), data: {confirm: I18n.t(:warning_edit_instance_module)} %>
         </td>
 
         <td><%= difference[:nature] %></td>

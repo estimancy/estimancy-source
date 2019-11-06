@@ -3122,7 +3122,7 @@ public
       else
         #if params[:action_name] == "create_project_from_template"
         if !params[:create_project_from_template].nil?
-          flash[:error] = I18n.t(:project_already_exist, value: new_prj.title)
+          flash[:warning] = I18n.t(:project_already_exist, value: new_prj.title)
           redirect_to projects_from_path(organization_id: @organization.id) and return
         else
           flash[:error] = I18n.t(:error_project_failed_duplicate)

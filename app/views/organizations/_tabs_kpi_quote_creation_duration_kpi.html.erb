@@ -13,8 +13,13 @@
     <div class="card-body">
       <div class="mb-8">
         <div class="widgets-list">
-          <%= link_to show_original_image_path(image_name: "temps_realisation_devis_SLA_en.png"), class: :popup_link, remote: true do %>
-            <%= image_tag "temps_realisation_devis_SLA_en.png", id: "temps_realisation_devis_SLA", alt: "Quote creation duration", style: 'height:20em; width:100%;' %>
+          <% if set_user_language.in?(["en", "en-gb"]) %>
+             <% img = "temps_realisation_devis_SLA_en" %>
+          <% else %>
+             <% img = "temps_realisation_devis_SLA" %>
+          <% end %>
+          <%= link_to show_original_image_path(image_name: "#{img}.png"), class: :popup_link, remote: true do %>
+            <%= image_tag "#{img}.png", id: "temps_realisation_devis_SLA", alt: "Quote creation duration", style: 'height:20em; width:100%;' %>
           <% end %>
         </div>
       </div>

@@ -97,7 +97,7 @@
 
                                   <span id="show_view_widget_params_<%= view_widget.id %>" class="col-3 widget_icon_edit">
                                     <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
-                                      <%= link_to('', main_app.views_widget_path(view_widget), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
+                                      <%= link_to('', main_app.views_widget_path(view_widget), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash icon_smaller', :title => I18n.t('delete')) %>
                                       <%= link_to '', main_app.edit_views_widget_path(view_widget, module_project_id: module_project.id, view_id: module_project.view_id), class: 'icon-pencil icon_smaller', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
                                     <% end %>
                                     <% if view_widget.widget_type == "effort_per_phases_profiles_table" || view_widget.widget_type == "table_effort_per_phase" || view_widget.widget_type == "table_effort_per_phase_without_zero" || view_widget.widget_type == "effort_per_phases_profiles_table_without_zero" %>

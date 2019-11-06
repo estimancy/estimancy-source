@@ -12,8 +12,13 @@
   <div class="card-body">
     <div class="mb-8">
       <div class="widgets-list">
-        <%= link_to show_original_image_path(image_name: "nb_PF_livre_en.png"), class: :popup_link, remote: true do %>
-          <%= image_tag "nb_PF_livre_en.png", id: "nb_PF_livre", alt: "No. of PFs delivered in 2019", style: 'height:20em; width:100%;' %>
+        <% if set_user_language.in?(["en", "en-gb"]) %>
+          <% img = "nb_PF_livre_en" %>
+        <% else %>
+          <% img = "nb_PF_livre" %>
+        <% end %>
+        <%= link_to show_original_image_path(image_name: "#{img}.png"), class: :popup_link, remote: true do %>
+          <%= image_tag  "#{img}.png", id: "nb_PF_livre", alt: "No. of PFs delivered in 2019", style: 'height:20em; width:100%;' %>
         <% end %>
       </div>
     </div>

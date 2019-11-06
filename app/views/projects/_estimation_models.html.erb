@@ -44,7 +44,7 @@
                 <%= link_to raw("<i class='material-icons'>edit</i>"), edit_project_path(project, is_model: true, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties'), :class => 'material-icons', :title => I18n.t('edit') %>
               <% end %>
               <% if can? :manage_estimation_models, Project %>
-                <%= link_to raw("<i class='material-icons'>delete</i>"), confirm_deletion_path(project_id: project.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), confirm_deletion_path(project_id: project.id), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
