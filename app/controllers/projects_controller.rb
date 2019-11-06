@@ -2396,6 +2396,7 @@ class ProjectsController < ApplicationController
     @project = Project.find(params[:project_id])
     @module_projects = @project.module_projects
 
+    #@initialization_module_project = ModuleProject.where(:organization_id => @project.organization_id, pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
     @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
 
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
@@ -4320,6 +4321,7 @@ public
     @project_organization = @project.organization
     @module_projects = @project.module_projects
     #Get the initialization module_project
+    #@initialization_module_project = ModuleProject.where(:organization_id => @project_organization.id, pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
     @initialization_module_project = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
 
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
