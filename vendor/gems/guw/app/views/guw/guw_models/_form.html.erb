@@ -435,7 +435,7 @@
                                     <td class="center">
                                       <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_output_path(@guw_model, guw_output), :class => 'material-icons', :title => I18n.t('edit') %>
                                       <% if can? :manage_modules_instances, ModuleProject %>
-                                        <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_output_path(@guw_model, guw_output), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                                        <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_output_path(@guw_model, guw_output), data: {confirm: I18n.t(:are_you_sure)}, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
                                       <% end %>
                                     </td>
                                   </tr>
