@@ -88,7 +88,7 @@
             <div class="form-row">
               <div class="col-3">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">
-                  <input class="mdl-textfield__input" type="text" id="name" value="<%= effort.to_f.round(2) %>">
+                  <input class="mdl-textfield__input" type="text" id="name" value="<%= effort.to_f.round(2) %> <%= @staffing_model.effort_unit %>" disabled>
                   <label class="mdl-textfield__label" for="name"></label>
                 </div>
               </div>
