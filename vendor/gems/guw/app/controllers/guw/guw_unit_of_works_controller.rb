@@ -680,11 +680,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
-        if guw_unit_of_work.selected == false
-          guw_unit_of_work.selected = true
-        else
-          guw_unit_of_work.selected = false
-        end
+        # if guw_unit_of_work.selected == false
+        #   guw_unit_of_work.selected = true
+        # else
+        #   guw_unit_of_work.selected = false
+        # end
 
         guw_unit_of_work.save
 
