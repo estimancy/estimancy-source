@@ -26,7 +26,7 @@
             <td><%= ds.name %></td>
             <td>
               <%= link_to '', edit_organization_demand_status_path(@organization, ds), class: 'fa fa-pencil' %>
-              <%= link_to '', '#', confirm: I18n.t('are_you_sure'), method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+              <%= link_to '', '#', data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
             </td>
           </tr>
         <% end %>

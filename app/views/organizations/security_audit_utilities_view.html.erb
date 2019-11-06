@@ -38,7 +38,7 @@
                   <%= submit_tag I18n.t(:export_pdf), :formtarget => "_blank", class: "btn btn-primary", :title => 'Exporter en PDF' %>
                   <%# Supprimer tout l'historique %>
                   <%= link_to "#{I18n.t :delete_all_history}", destroy_all_security_audit_utilities_path,
-                              confirm: "Voulez-vous vraiment supprimer tout l'historique ?", class: "btn btn-secondary" %>
+                              data: {confirm: "Voulez-vous vraiment supprimer tout l'historique ?"}, class: "btn btn-secondary" %>
                 </div>
               </div>
 

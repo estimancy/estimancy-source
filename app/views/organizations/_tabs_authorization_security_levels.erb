@@ -30,7 +30,7 @@
                   <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_project_security_level_path(@organization, project_security_level), :class => 'material-icons', :title => I18n.t('edit') %>
                   <% if can? :manage, ProjectSecurityLevel %>
                     <%#= link_to 'Supprimer', organization_project_security_level_path(@organization, project_security_level), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), organization_project_security_level_path(@organization, project_security_level), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+                    <%= link_to raw("<i class='material-icons'>delete</i>"), organization_project_security_level_path(@organization, project_security_level), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
                 <% end %>
                 </td>
               </tr>

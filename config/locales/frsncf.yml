@@ -2498,8 +2498,8 @@ frsncf:
 
   budget_report: "Rapport Budget"
   budget_excel_report: "Rapport Excel Budget"
-  quote_creation_duration_kpi: "Quote Creation Duration"
-  fp_delivered_number_kpi: "Number of PFs delivered in 2019"
+  quote_creation_duration_kpi: "Temps de Réalisation des devis"
+  fp_delivered_number_kpi: "Nombre PF Livrés en 2019"
   estimations_total_kpi: "Nombre de devis"
   please_return_check_report_type: "Veuillez retourner cocher un type de rapport"
   please_return_check_kpi_type: "Veuillez retourner cocher un type de kpi"

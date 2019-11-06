@@ -49,7 +49,7 @@
                           <% if @guw_model.default_display == "tab" %>
                             <%#= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary btn-estimancy' %>
                               <% unless @guw_model.guw_types.empty? %>
-                                <%= link_to I18n.t(:see_model), guw.guw_type_path(@guw_model.guw_types.first), :class => 'btn btn-secondary btn-estimancy', confirm: I18n.t(:warning_edit_instance_module) %>
+                                <%= link_to I18n.t(:see_model), guw.guw_type_path(@guw_model.guw_types.first), :class => 'btn btn-secondary btn-estimancy', data: {confirm: I18n.t(:warning_edit_instance_module)} %>
                               <% end %>
                           <% else %>
                             <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary btn-estimancy' %>
@@ -379,7 +379,7 @@
                             <td class="center">
                               <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute), :class => 'material-icons', :title => I18n.t('edit') %>
                               <% if can? :manage_modules_instances, ModuleProject %>
-                                <%= link_to raw("<i class='material-icons'>delete</i>"), guw_attribute, confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                                <%= link_to raw("<i class='material-icons'>delete</i>"), guw_attribute, data: {confirm: I18n.t(:are_you_sure)}, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
                             <% end %>
                             </td>
                           </tr>

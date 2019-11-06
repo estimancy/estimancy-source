@@ -68,7 +68,7 @@ module PeWbsProjectsHelper
                       #{ link_to "", new_pbs_project_element_path(:project_id => @project.id, :parent_id => pbs_project_element.id), :remote => true, :class => 'button_attribute_tooltip icon-plus ', :title => I18n.t('add_component') }
                       #{ link_to "", {:controller => 'pbs_project_elements', :action => 'up', :pbs_project_element_id => pbs_project_element.id, :pe_wbs_project_id => pbs_project_element.pe_wbs_project_id, :project_id => @project.id}, :remote => true, :class => 'button_attribute_tooltip icon-arrow-up ', :title => I18n.t('up') }
                       #{ link_to "", {:controller => 'pbs_project_elements', :action => 'down', :pbs_project_element_id => pbs_project_element.id, :pe_wbs_project_id => pbs_project_element.pe_wbs_project_id, :project_id => @project.id}, :remote => true, :class => 'button_attribute_tooltip icon-arrow-down ', :title => I18n.t('down') }
-                      #{ link_to "", pbs_project_element, confirm: I18n.t('are_you_sure'), method: :delete, :remote => true, :class => 'button_attribute_tooltip icon-trash', :title => I18n.t('delete')}
+                      #{ link_to "", pbs_project_element, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :remote => true, :class => 'button_attribute_tooltip icon-trash', :title => I18n.t('delete')}
                     </div>"
     end
     pbs_product << "</li>"

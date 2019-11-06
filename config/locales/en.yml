@@ -2291,6 +2291,8 @@ en:
   filtered_excel_report: "Filtered Excel report"
   detailed_excel_report: "Detailed Excel report"
   detailed_pdf_report: "Detailed PDF report"
+  budget_report: "Budget report"
+  budget_excel_report: "Budget excel report"
   generate_filtered_excel_report: "Generate a filtered Excel report"
   selected_quotation_export: "Only the selected quotations will be exported in a summary Excel file."
   counting_details: "Counting details"

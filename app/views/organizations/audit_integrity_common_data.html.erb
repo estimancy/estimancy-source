@@ -4,7 +4,7 @@
 
   <p>Organisation de référence : <%= @reference_organization.name %></p>
   <p> Module de Taille de référence :
-    <%= link_to @reference_guw_model.name, guw.edit_guw_model_path(@reference_guw_model, organization_id: @reference_organization.id, anchor: "tabs-attributs"), confirm: I18n.t(:warning_edit_instance_module) %>
+    <%= link_to @reference_guw_model.name, guw.edit_guw_model_path(@reference_guw_model, organization_id: @reference_organization.id, anchor: "tabs-attributs"), data: {confirm: I18n.t(:warning_edit_instance_module)} %>
   </p>
 
   <div style="margin: 10px;">
