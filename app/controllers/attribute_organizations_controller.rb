@@ -58,7 +58,7 @@ class AttributeOrganizationsController < ApplicationController
       #Update de Initialization module 's estimation_values
       unless @initialization_module.nil?
         @organization_projects.each do |project|
-          module_project = project.module_projects.where("pemodule_id = ?", @initialization_module.id).first
+          module_project = project.module_projects.where(:organization_id => @organization.id, pemodule_id: @initialization_module.id).first
           unless module_project.nil?
             #Create corresponding Estimation_value
             ['input', 'output'].each do |in_out|

@@ -29,7 +29,7 @@ class ViewsWidgetsController < ApplicationController
     @project_organization = @project.organization
     @module_projects ||= @project.module_projects
     #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where('pemodule_id = ? AND project_id = ?', @initialization_module.id, @project.id).first unless @initialization_module.nil?
+    @initialization_module_project ||= ModuleProject.where(organization_id: @project_organization.id, pemodule_id: @initialization_module.id, project_id: @project.id).first unless @initialization_module.nil?
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
     #end
