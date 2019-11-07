@@ -326,6 +326,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     # La copie des #guw_unit_of_work_attributes sera geree dans le amoeba_dup
     @guw_unit_of_work = @old_guw_unit_of_work.amoeba_dup
+
+    @guw_unit_of_work.created_at = @old_guw_unit_of_work.created_at - 1.second
     @guw_unit_of_work.save
 
     @guw_model = @guw_unit_of_work.guw_model
