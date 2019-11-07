@@ -1,30 +1,15 @@
 <!--<div id="tabs-acquisition-categories" class="edition-page-group py-4"><span><%#= I18n.t('acquisition_categories') %></span></div>-->
 <% if can? :show_acquisition_categories, AcquisitionCategory %>
     <% if can? :manage, AcquisitionCategory %>
-        <%= link_to I18n.t('create_button'), new_organization_acquisition_category_path(@organization), :class => 'btn btn-primary' %>
-        <a href="#import_acquisition_category" role="button" class="btn btn-primary" title="Import acquisition category from Excel" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
-        <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn btn-primary' %>
-        <hr>
-        <div id="import_acquisition_category" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-          <%= form_tag organization_import_acquisition_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
-              <div class="modal-header modal-drag">
-                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
-              </div>
-              <div class="modal-body">
-                <%= file_field_tag :file %>
-              </div>
-              <div class="modal-footer">
-                <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
-                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-              </div>
-              <div class="loading span11 hide">
-                <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-              </div>
-          <% end %>
-        </div>
+      <%= link_to I18n.t('create_button'), new_organization_acquisition_category_path(@organization), :class => 'btn btn-primary' %>
+      <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn btn-primary' %>
+      <div class="float-right">
+        <%= form_tag organization_import_acquisition_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <%= file_field_tag :file %>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+        <% end %>
+      </div>
+      <hr>
     <% end %>
 
     <table class="table table-list">

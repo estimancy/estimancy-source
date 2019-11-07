@@ -316,12 +316,12 @@
                 </td>
 
                 <% if @wbs_activity_ratio.do_not_show_cost %>
-                    <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely, :class => 'form-control form-control-sm retained_cost', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids %>
+                    <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", convert_with_precision(retained_cost_most_likely, user_number_precision), :class => 'form-control form-control-sm retained_cost', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids %>
                 <% else %>
                     <td>
-                      <%= text_field_tag "retained_cost_most_likely_visible[#{mp_ratio_element.id}]", retained_cost_most_likely, :class => 'form-control form-control-sm retained_cost_visible', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, :step => 0.000001, style: "width: 80px;" %>
+                      <%= text_field_tag "retained_cost_most_likely_visible[#{mp_ratio_element.id}]", convert_with_precision(retained_cost_most_likely, user_number_precision), :class => 'form-control form-control-sm retained_cost_visible', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, :step => 0.000001, style: "width: 80px;" %>
 
-                      <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely, :class => 'retained_cost', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, :step => 0.000001 %>
+                      <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", convert_with_precision(retained_cost_most_likely, user_number_precision), :class => 'retained_cost', 'data-mp_ratio_element_id' => mp_ratio_element.id, "data-level" => "most_likely", "data-mp_ratio_element_ancestor_ids" => mp_ratio_element_ancestor_ids, :step => 0.000001 %>
                     </td>
                 <% end %>
               <% else %>
@@ -331,11 +331,11 @@
                 </td>
 
                 <% if @wbs_activity_ratio.do_not_show_cost %>
-                    <%= hidden_field_tag "theoretical_cost_most_likely[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_most_likely %></td>
+                    <%= hidden_field_tag "theoretical_cost_most_likely[#{mp_ratio_element.id}]", convert_with_precision(mp_ratio_element.theoretical_cost_most_likely, user_number_precision) %></td>
                 <% else %>
                     <td>
-                      <%= text_field_tag "theoretical_cost_most_likely_visible[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_most_likely,  disabled: true, :step => 0.000001, class: "form-control form-control-sm", style: "width: 80px;" %>
-                      <%= hidden_field_tag "theoretical_cost_most_likely[#{mp_ratio_element.id}]", mp_ratio_element.theoretical_cost_most_likely,  readonly: true, :step => 0.000001 %>
+                      <%= text_field_tag "theoretical_cost_most_likely_visible[#{mp_ratio_element.id}]", convert_with_precision(mp_ratio_element.theoretical_cost_most_likely, user_number_precision),  disabled: true, :step => 0.000001, class: "form-control form-control-sm", style: "width: 80px;" %>
+                      <%= hidden_field_tag "theoretical_cost_most_likely[#{mp_ratio_element.id}]", convert_with_precision(mp_ratio_element.theoretical_cost_most_likely, user_number_precision),  readonly: true, :step => 0.000001 %>
                     </td>
                 <% end %>
                 <td>
@@ -350,13 +350,13 @@
                                        :class => "retained_effort", readonly: (!allow_modify_retained_effort || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
                 </td>
                 <% if @wbs_activity_ratio.do_not_show_cost %>
-                    <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely %>
+                    <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", convert_with_precision(retained_cost_most_likely, user_number_precision) %>
                 <% else %>
                     <td>
-                      <%= text_field_tag "retained_cost_most_likely_visible[#{mp_ratio_element.id}]", retained_cost_most_likely, :class => 'form-control form-control-sm retained_cost_visible',
+                      <%= text_field_tag "retained_cost_most_likely_visible[#{mp_ratio_element.id}]", convert_with_precision(retained_cost_most_likely, user_number_precision), :class => 'form-control form-control-sm retained_cost_visible',
                                              readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001, style: "width: 80px;" %>
 
-                      <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", retained_cost_most_likely, :class => 'form-control form-control-sm retained_cost',
+                      <%= hidden_field_tag "retained_cost_most_likely[#{mp_ratio_element.id}]", convert_with_precision(retained_cost_most_likely, user_number_precision), :class => 'form-control form-control-sm retained_cost',
                                            readonly: (!allow_modify_retained_cost || mp_ratio_element.id==root_mp_ratio_element_id), :step => 0.000001 %>
                     </td>
                 <% end %>

@@ -2,50 +2,37 @@
 <%= hidden_field_tag "organization_id", params[:id] %>
 
 <% if can? :manage, OrganizationProfile %>
-    <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn btn-primary' %>
-    <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :method => 'get', :class => 'btn btn-primary' %>
-    <a href="#ImportProjectProfile" role="button" class="btn btn-primary" title="Import project areas from excel" data-toggle="modal">
-    <%= I18n.t(:import) %>
-  </a>
-  <hr>
+  <%= link_to I18n.t('create_button'), new_organization_organization_profile_path(@organization), :class => 'btn btn-primary' %>
+  <%= link_to I18n.t('export'), organization_polyval_export_path(@organization, :MYonglet => "OrganizationProfile"), :method => 'get', :class => 'btn btn-primary' %>
 
-  <div id="ImportProjectProfile" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="float-right">
     <%= form_tag organization_import_project_profile_path(@organization), :multipart => true, :class => 'simple_form' do %>
-      <div class="modal-header modal-drag">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h3 id="myModalLabel"> <%= I18n.t(:import_data_from) %></h3>
-      </div>
-      <div class="modal-body">
-        <%= file_field_tag :file %>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
-        <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-      </div>
-      <div class="loading span11 hide">
-        <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-      </div>
+      <%= file_field_tag :file %>
+      <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
     <% end %>
   </div>
 
-<%end%>
+  <hr>
+
+
+<% end %>
 
 
 <table id="table_list_30" class="table table-list">
   <thead>
-  <tr>
-    <th><%= I18n.t(:name) %></th>
-    <th><%= I18n.t(:is_real_profile) %></th>
-    <th><%= I18n.t(:use_dynamic_coefficient) %></th>
-    <th><%= I18n.t(:associated_services) %></th>
-    <th><%= I18n.t(:description) %></th>
-    <th><%= I18n.t(:initial_cost_per_hour) %></th>
-    <th><%= "R" %></th>
-    <th><%= "TM" %></th>
-    <th><%= I18n.t(:formula) %></th>
-    <th><%= I18n.t(:used_cost) %></th>
-    <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
-  </tr>
+    <tr>
+      <th><%= I18n.t(:name) %></th>
+      <th><%= I18n.t(:is_real_profile) %></th>
+      <th><%= I18n.t(:use_dynamic_coefficient) %></th>
+      <th><%= I18n.t(:associated_services) %></th>
+      <th><%= I18n.t(:description) %></th>
+      <th><%= I18n.t(:initial_cost_per_hour) %></th>
+      <th><%= "R" %></th>
+      <th><%= "TM" %></th>
+      <th><%= I18n.t(:formula) %></th>
+      <th><%= I18n.t(:used_cost) %></th>
+      <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+    </tr>
   </thead>
 
   <tbody>
