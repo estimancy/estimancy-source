@@ -220,7 +220,6 @@
                   <% color = "#d3d3d34d;" %>
                 <% end %>
                 <tr style="background-color: <%= color %>" id="<%= guow.id %>" data-guw-id="<%= guow.id %>">
-                  <td><%= guow.display_order %></td>
                   <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
                 </tr>
               <% end %>
