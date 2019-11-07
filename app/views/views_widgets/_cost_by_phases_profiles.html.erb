@@ -65,12 +65,13 @@
           <%# end %>
 
           <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
+              <% font_weight =  wbs_activity_elt.is_childless? ? "normal" : "inherit" %>
               <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
               <% if mp_ratio_element %>
                   <% unless view_widget_type.to_s=="effort_per_phases_profiles_table_without_zero" && mp_ratio_element.nil? %>
                       <tr>
                         <td>
-                          <span style="float: left; margin-left:<%=wbs_activity_elt.depth%>em">
+                          <span style="float: left; font-weight:<%=font_weight%>; margin-left:<%=wbs_activity_elt.depth%>em">
                             <%= mp_ratio_element.name_to_show %>
                           </span>
                         </td>
@@ -91,6 +92,7 @@
           <% project_wbs_activity_elements.each do |wbs_activity_elt| %>
             <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
             <% if mp_ratio_element %>
+              <% font_weight =  wbs_activity_elt.is_childless? ? "normal" : "inherit" %>
               <% unless view_widget_type.to_s=="effort_per_phases_profiles_table_without_zero" && mp_ratio_element.nil? %>
                   <% effort_per_phase = nil %>
                   <% unless wbs_activity_elt.is_root? || mp_ratio_element.nil? %>
@@ -105,7 +107,7 @@
                           <% wbs_estimation_profiles_values = wbs_probable_value["profiles"] %>
                           <tr>
                             <td>
-                              <span style="float: left; margin-left:<%=wbs_activity_elt.depth%>em">
+                              <span style="float: left; font-weight:<%=font_weight%>; margin-left:<%=wbs_activity_elt.depth%>em">
                                   <%= wbs_activity_elt.name %>
                               </span>
                             </td>

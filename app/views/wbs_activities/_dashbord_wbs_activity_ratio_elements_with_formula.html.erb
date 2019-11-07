@@ -65,7 +65,7 @@
         <% end %>
       </th>
       <th class=""><%= I18n.t(:alias) %></th>
-      <th><%= I18n.t(:name) %></th>
+      <th style="text-align: left"><%= I18n.t(:name) %></th>
       <% unless @wbs_activity_ratio.do_not_show_cost %>
         <th><%= @wbs_activity.average_rate_wording.blank? ? "#{I18n.t(:average_rates)}" : @wbs_activity.average_rate_wording %></th>
       <% end %>

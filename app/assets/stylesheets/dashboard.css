@@ -1132,6 +1132,10 @@ table.table_effort_per_phase th{
     /*overflow: auto;*/
 }
 
+#profiles_per_activity th {
+    font-weight: normal;
+}
+
 /*.normal_font_weight{*/
     /*font-weight: normal;*/
 /*}*/
