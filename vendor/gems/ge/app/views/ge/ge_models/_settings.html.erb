@@ -329,9 +329,9 @@
             <% end %>
 
 
-            <div class="table estimation-table">
+
               <% ev_for_input_unit = current_inputs_evs.first %>
-              <div>
+
                 <!--  TEST NOUVEAU PARAMS ENTREES  -->
                 <% if current_module_project.ge_model.three_points_estimation? %>
                   <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
@@ -349,10 +349,10 @@
                           <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
                           <div class="col">
                             <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                                <%= number_field_tag "retained_size_low[#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", class: "form-control" %>
+                                <%= number_field_tag "retained_size_low[#{ev.id}]", entry_low_value.nil? ? nil : entry_low_value.to_f.round(user_number_precision), step: "any", class: "form-control form-control-sm" %>
                             <% else %>
                                 <%= hidden_field_tag "retained_size_low[#{ev.id}]", entry_low_value %>
-                                <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                                <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, class: "form-control form-control-sm" %>
                             <% end %>
                           </div>
                         <% end %>
@@ -374,10 +374,10 @@
                         <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
                           <div class="col">
                             <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                              <%= number_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any",  class: "form-control" %>
+                              <%= number_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any",  class: "form-control form-control-sm" %>
                             <% else %>
                               <%= hidden_field_tag "retained_size_most_likely[#{ev.id}]", entry_ml_value %>
-                              <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                              <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, class: "form-control form-control-sm" %>
                           <% end %>
                           </div>
                       <% end %>
@@ -398,10 +398,10 @@
                           <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
                             <div class="col">
                               <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                                <%= number_field_tag "retained_size_high[#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", class: "form-control" %>
+                                <%= number_field_tag "retained_size_high[#{ev.id}]", entry_high_value.nil? ? nil : entry_values["high"][ev.id].to_f.round(user_number_precision), step: "any", class: "form-control form-control-sm" %>
                               <% else %>
                                 <%= hidden_field_tag "retained_size_high[#{ev.id}]", entry_high_value %>
-                                <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                                <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, class: "form-control form-control-sm" %>
                               <% end %>
                             </div>
                         <% end %>
@@ -409,8 +409,6 @@
                     </div>
                 <% end %>
               </div>
-            </div>
-          </div>
 
 
           <div class="col-6">
@@ -438,9 +436,6 @@
             </h4>
             <hr>
 
-            <div class="table estimation-table">
-              <!--  NOUVEAU PARAMS SORTIE  -->
-              <div>
                 <% ev_for_output_unit = current_outputs_evs.first %>
                 <% if @ge_model.three_points_estimation == true %>
                     <div class="row">
@@ -453,10 +448,10 @@
                               <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
 
                               <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                                  <%= number_field_tag "effort_low[#{ev.id}]", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}", class: "form-control" %>
+                                  <%= number_field_tag "effort_low[#{ev.id}]", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}", class: "form-control form-control-sm" %>
                               <% else %>
                                   <%= hidden_field_tag "effort_low[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_low")[component_id]) %>
-                                  <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "form-control", disabled: true %>
+                                  <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_low")[component_id], user_number_precision), step: "any", id: "number_effort_most_low_#{ev.id}",  class: "form-control form-control-sm", disabled: true %>
                               <% end %>
                             </div>
 
@@ -474,10 +469,10 @@
                         <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
                           <div class="col">
                             <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                                <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil:  convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control" %>
+                                <%= number_field_tag "effort_most_likely[#{ev.id}]", ev.nil? ? nil:  convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control form-control-sm" %>
                             <% else %>
                                 <%= hidden_field_tag "effort_most_likely[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_most_likely")[component_id]) %>
-                                <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control", disabled: true %>
+                                <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_most_likely")[component_id], user_number_precision), step: "any", id: "number_effort_most_likely_#{ev.id}", class: "form-control form-control-sm", disabled: true %>
                             <% end %>
                           </div>
                       <% end %>
@@ -497,10 +492,10 @@
 
                           <div class="col">
                             <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
-                              <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control" %>
+                              <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control form-control-sm" %>
                             <% else %>
                               <%= hidden_field_tag "effort_high[#{ev.id}]", (ev.nil? ? '' : ev.send("string_data_high")[component_id]) %>
-                              <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control", disabled: true %>
+                              <%= text_field_tag "", ev.nil? ? '' : convert_ge_model_value_with_precision(@ge_model, ev, ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control form-control-sm", disabled: true %>
                             <% end %>
                         </div>
                       <% end %>
@@ -510,8 +505,6 @@
                 <%#= ge_effort_size_translation[ev.pe_attribute.alias] %>
               </div>
             </div>
-          </div>
-        </div>
 
         <div class="row">
           <div class="col-6"></div>
@@ -556,10 +549,11 @@
           </div>
         </div>
 
+        <hr>
         <div class="row">
           <div class="col">
             <% if can? :execute_estimation_plan, @project %>
-              <button type="submit" class="btn btn-primary pull-right">
+              <button type="submit" class="btn btn-secondary float-right">
                 <%= I18n.t(:calculate_button) %>
               </button>
             <% end %>

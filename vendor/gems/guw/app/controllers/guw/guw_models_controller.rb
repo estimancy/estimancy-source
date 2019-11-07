@@ -1926,7 +1926,7 @@ class Guw::GuwModelsController < ApplicationController
                                                   guw_model_id: @guw_model.id,
                                                   project_id: project_id,
                                                   module_project_id: current_mp.id,
-                                                  pbs_project_element_id: @component.id).order("display_order ASC")
+                                                  pbs_project_element_id: @component.id).order("created_at ASC")
 
      @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} 
      Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
@@ -2020,7 +2020,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(ind, 11, guow.selected ? 1 : 0)
       worksheet.add_cell(ind, 12, guow.name)
       worksheet.add_cell(ind, 13, (guow.guw_type.nil? ? '-' : guow.guw_type.name))
-      worksheet.add_cell(ind, 14, guow.comments.to_s.gsub!(/[^a-zA-ZàâäôéèëêïîçùûüÿæœÀÂÄÔÉÈËÊÏÎŸÇÙÛÜÆŒ ]/, ''))
+      worksheet.add_cell(ind, 14, guow.comments.to_s)
       worksheet.add_cell(ind, 15, guow.quantity)
       worksheet.add_cell(ind, 16, guow.tracking)
       worksheet.add_cell(ind, 17, cplx)
