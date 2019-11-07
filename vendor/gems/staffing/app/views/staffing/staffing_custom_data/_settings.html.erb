@@ -89,7 +89,7 @@
               <div class="col-3">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">
                   <input class="mdl-textfield__input" type="text" id="name" value="<%= effort.to_f.round(2) %> <%= @staffing_model.effort_unit %>" disabled>
-                  <label class="mdl-textfield__label" for="name"></label>
+                  <small>Effort (jh)</small>
                 </div>
               </div>
               <div class="col-9 pl-6">
@@ -128,11 +128,11 @@
                                   $(".new_duration").val(new_duration.toFixed(2));
 
                                   x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
-                                      x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
-                                          x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
-                                              x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
-                                                  y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
-                                                      y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
+                                  x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
+                                  x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
+                                  x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
+                                  y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
+                                  y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
 
                                   var new_staffing_trapeze = (2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;
 

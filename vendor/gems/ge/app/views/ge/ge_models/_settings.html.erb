@@ -556,10 +556,11 @@
           </div>
         </div>
 
+        <hr>
         <div class="row">
           <div class="col">
             <% if can? :execute_estimation_plan, @project %>
-              <button type="submit" class="btn btn-primary pull-right">
+              <button type="submit" class="btn btn-secondary float-right">
                 <%= I18n.t(:calculate_button) %>
               </button>
             <% end %>
