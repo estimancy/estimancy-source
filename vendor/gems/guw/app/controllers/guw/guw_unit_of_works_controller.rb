@@ -984,7 +984,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
 
                   if ce.nil?
-                    pc = 1
+                    pc = 0 #a verifier pour les autres modèles
                   else
                     pc = ce.value.to_f
                   end
