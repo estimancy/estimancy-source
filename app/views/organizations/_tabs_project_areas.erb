@@ -3,11 +3,7 @@
 
     <% if can? :manage, ProjectArea %>
         <%= link_to I18n.t('create_button'), new_organization_project_area_path(@organization), :class => 'btn btn-primary' %>
-        <a href="#ImportProjectAreas" role="button" class="btn btn-primary" title="Import project areas from excel" data-toggle="modal">
-          <%= I18n.t(:import) %>
-        </a>
         <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn btn-primary'%>
-
         <div class="float-right">
           <%= form_tag organization_import_project_areas_path(@organization), :multipart => true, :class => 'simple_form' do %>
             <%= file_field_tag :file %>
