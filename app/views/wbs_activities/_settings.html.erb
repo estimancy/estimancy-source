@@ -192,7 +192,7 @@
 
           <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
                                   selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
-                                  readonly: cannot?(:execute_estimation_plan, @project), class: "form-control" %>
+                                  readonly: cannot?(:execute_estimation_plan, @project), class: "form-control form-control-sm" %>
         </div>
       </div>
     <% end %>
@@ -266,7 +266,7 @@
                        <% current_inputs_evs.each do |ev| %>
                          <% entry_level_value =  initial_entry_values["#{level}"][ev.id] %>
                          <% unless entry_level_value.nil? %>
-                           <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px;", class: "form-control" %>
+                           <%= text_field_tag "", entry_level_value.nil? ? nil : convert_with_precision(entry_level_value, user_number_precision, true), disabled: true, style: "width: 60px;", class: "form-control form-control-sm" %>
                          <% end %>
                          <br>
                        <% end %>
@@ -287,7 +287,7 @@
                               <% entry_low_value =  entry_values["low"][ev.id] %>
                               <span>
                                 <%= hidden_field_tag "values[low][#{ev.id}]", entry_low_value %>
-                                <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                                <%= text_field_tag "", entry_low_value.nil? ? nil : convert_with_precision(entry_low_value, user_number_precision, true), disabled: true, class: "form-control form-control-sm" %>
                               </span><br>
                           <% end %>
                       <% end %>
@@ -324,7 +324,7 @@
                           <% unless entry_ml_value.nil? %>
                             <span class="float-left" style="word-wrap: break-word;overflow-wrap: break-word; width: 51%;">
                               <%= hidden_field_tag "values[most_likely][#{ev.id}]", entry_ml_value %>
-                              <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                              <%= text_field_tag "", entry_ml_value.nil? ? nil : convert_with_precision(entry_ml_value, user_number_precision, true), disabled: true, class: "form-control form-control-sm" %>
                             </span>
                             <br />
                           <% end %>
@@ -338,7 +338,7 @@
                       <% entry_ml_value = entry_values["most_likely"][ev.id] %>
                       <% unless entry_ml_value.nil? %>
                         <span>
-                          <%= number_field_tag "values[most_likely][#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", class: "form-control" %>
+                          <%= number_field_tag "values[most_likely][#{ev.id}]", entry_ml_value.nil? ? nil : entry_ml_value.to_f.round(user_number_precision), step: "any", class: "form-control form-control-sm" %>
                         </span> <br>
                       <% end %>
                     <% end %>
@@ -357,7 +357,7 @@
                           <% unless entry_high_value.nil? %>
                             <span>
                               <%= hidden_field_tag "values[high][#{ev.id}]", entry_high_value %>
-                              <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, class: "form-control" %>
+                              <%= text_field_tag "", entry_high_value.nil? ? nil : convert_with_precision(entry_high_value, user_number_precision, true), disabled: true, class: "form-control form-control-sm" %>
                             </span><br>
                           <% end %>
                       <% end %>
@@ -381,7 +381,7 @@
                     <td class="ratio_hide_wbs_header <%= ((@wbs_activity.hide_wbs_header != 'show_only_ratio' && @wbs_activity.wbs_activity_ratios.size > 1) ? 'float_left' : '') %>">
                       <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
                                      selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
-                                     readonly: cannot?(:execute_estimation_plan, @project), class: "form-control" %>
+                                     readonly: cannot?(:execute_estimation_plan, @project), class: "form-control form-control-sm" %>
                     </td>
                 <% end %>
 
@@ -480,7 +480,7 @@
                               </h4>
                             </div>
                             <div class="modal-body">
-                              <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area", class: "form-control" %>
+                              <%= text_area_tag "comment[#{wai.id}]", wai.comment, class: "attribute_note_area", class: "form-control form-control-sm" %>
                             </div>
                             <div class="modal-footer">
                               <button type="button" class="btn btn-secondary" data-dismiss="modal" ><%= I18n.t(:close) %></button>
