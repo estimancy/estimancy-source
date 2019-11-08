@@ -147,7 +147,7 @@ class OrganizationProfilesController < ApplicationController
 
         #guw_model.guw_types.where("LOWER(name) LIKE ?", "%#{ mpre_wbs_activity_element_name_without_localisation.downcase }%").each do |guw_type|
         guw_model.guw_types.each do |guw_type|
-          guw_type_name = guw_type.name.downcase
+          guw_type_name = guw_type.name.gsub('Etude ', '').downcase
           if guw_type_name.in?(mpre_wbs_activity_element_name_without_localisation.gsub('Etude ', '').downcase)
 
             guw_type_guw_complexity = guw_type.guw_complexities.first
