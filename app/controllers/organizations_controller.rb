@@ -1311,36 +1311,104 @@ class OrganizationsController < ApplicationController
     send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Provider-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
+
+  # def export_organization_profiles
+  #   @organization = Organization.find(params[:organization_id])
+  #   check_if_organization_is_image(@organization)
+  #   organization_profiles = @organization.organization_profiles
+  #
+  #   workbook = RubyXL::Workbook.new
+  #   worksheet = workbook[0]
+  #
+  #   worksheet.add_cell(0, 0, I18n.t(:name))
+  #   worksheet.add_cell(0, 1, I18n.t(:description))
+  #   worksheet.add_cell(0, 2, I18n.t(:initial_cost_per_hour))
+  #   worksheet.add_cell(0, 3, I18n.t(:is_real_profile))
+  #   worksheet.add_cell(0, 4, I18n.t(:use_dynamic_coefficient))
+  #   worksheet.add_cell(0, 5, I18n.t(:r_value))
+  #   worksheet.add_cell(0, 6, I18n.t(:tm_value))
+  #   worksheet.add_cell(0, 7, I18n.t(:formula))
+  #   worksheet.add_cell(0, 8, I18n.t(:cost_per_hour))
+  #   worksheet.add_cell(0, 8, I18n.t(:associated_services))
+  #
+  #   organization_profiles.each_with_index do |profile, index|
+  #     worksheet.add_cell(index + 1, 0, profile.name)
+  #     worksheet.add_cell(index + 1, 2, profile.description)
+  #     worksheet.add_cell(index + 1, 2, profile.initial_cost_per_hour)
+  #     worksheet.add_cell(index + 1, 2, profile.is_real_profile ? 1 : 0)
+  #     worksheet.add_cell(index + 1, 2, profile.use_dynamic_coefficient ? 1 : 0)
+  #     worksheet.add_cell(index + 1, 2, profile.r_value)
+  #     worksheet.add_cell(index + 1, 2, profile.tm_value)
+  #     worksheet.add_cell(index + 1, 2, profile.formula)
+  #     worksheet.add_cell(index + 1, 2, profile.cost_per_hour)
+  #     worksheet.add_cell(index + 1, 2, profile.associated_services)
+  #   end
+  #   send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Profiles-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+  # end
+
+
   def polyval_export
     @organization = Organization.find(params[:organization_id])
     check_if_organization_is_image(@organization)
-    case params[:MYonglet]
-      when "ProjectCategory"
-        polyval_var = ProjectCategory.where(organization_id: @organization.id)
-      when "WorkElementType"
-        polyval_var = WorkElementType.where(organization_id: @organization.id)
-      when "OrganizationTechnology"
-        polyval_var = OrganizationTechnology.where(organization_id: @organization.id)
-      when "OrganizationProfile"
-        polyval_var = OrganizationProfile.where(organization_id: @organization.id)
-      else
-        polyval_var = PlatformCategory.where(organization_id: @organization.id)
-    end
     workbook = RubyXL::Workbook.new
     worksheet = workbook[0]
 
-    worksheet.add_cell(0, 0, I18n.t(:name))
-    worksheet.add_cell(0, 1, params[:MYonglet] == "WorkElementType" || params[:MYonglet] == "OrganizationTechnology" ? I18n.t(:alias) : I18n.t(:description))
-    params[:MYonglet] == "OrganizationProfile" ? worksheet.add_cell(0, 2, I18n.t(:cost_per_hour)) : toto = 42
-    params[:MYonglet] == "WorkElementType" || params[:MYonglet] == "OrganizationTechnology" ? worksheet.add_cell(0, 2,I18n.t(:description)) : toto = 42
-    params[:MYonglet] == "OrganizationTechnology" ? worksheet.add_cell(0, 3, I18n.t(:productivity_ratio)) : toto = 42
-    polyval_var.each_with_index do |var, index|
-      worksheet.add_cell(index + 1, 0,var.name)
-      worksheet.add_cell(index + 1, 1, params[:MYonglet] == "WorkElementType" || params[:MYonglet] == "OrganizationTechnology" ? var.alias : var.description)
-      params[:MYonglet] == "OrganizationProfile" ? worksheet.add_cell(index + 1, 2, var.cost_per_hour) : toto = 42
-      params[:MYonglet] == "WorkElementType" || params[:MYonglet] == "OrganizationTechnology" ? worksheet.add_cell(index + 1, 2, var.description) : toto = 42
-      params[:MYonglet] == "OrganizationTechnology" ? worksheet.add_cell(index + 1, 3, var.productivity_ratio) : toto = 42
+    if params[:MYonglet] == "OrganizationProfile"
+      # Export des OrganozationProfiles
+      organization_profiles = @organization.organization_profiles
+      worksheet.add_cell(0, 0, I18n.t(:name))
+      worksheet.add_cell(0, 1, I18n.t(:description))
+      worksheet.add_cell(0, 2, I18n.t(:initial_cost_per_hour))
+      worksheet.add_cell(0, 3, I18n.t(:is_real_profile))
+      worksheet.add_cell(0, 4, I18n.t(:use_dynamic_coefficient))
+      worksheet.add_cell(0, 5, "R")
+      worksheet.add_cell(0, 6, "TM")
+      worksheet.add_cell(0, 7, I18n.t(:formula))
+      worksheet.add_cell(0, 8, I18n.t(:cost_per_hour))
+      worksheet.add_cell(0, 9, I18n.t(:associated_services))
+
+      organization_profiles.each_with_index do |profile, index|
+        worksheet.add_cell(index + 1, 0, profile.name)
+        worksheet.add_cell(index + 1, 1, profile.description)
+        worksheet.add_cell(index + 1, 2, profile.initial_cost_per_hour)
+        worksheet.add_cell(index + 1, 3, profile.is_real_profile ? 1 : 0)
+        worksheet.add_cell(index + 1, 4, profile.use_dynamic_coefficient ? 1 : 0)
+        worksheet.add_cell(index + 1, 5, profile.r_value)
+        worksheet.add_cell(index + 1, 6, profile.tm_value)
+        worksheet.add_cell(index + 1, 7, profile.formula)
+        worksheet.add_cell(index + 1, 8, profile.cost_per_hour)
+        worksheet.add_cell(index + 1, 9, profile.associated_services)
+      end
+
+    else
+      case params[:MYonglet]
+        when "ProjectCategory"
+          polyval_var = ProjectCategory.where(organization_id: @organization.id)
+        when "WorkElementType"
+          polyval_var = WorkElementType.where(organization_id: @organization.id)
+        when "OrganizationTechnology"
+          polyval_var = OrganizationTechnology.where(organization_id: @organization.id)
+        when "OrganizationProfile"
+          polyval_var = OrganizationProfile.where(organization_id: @organization.id)
+        else
+          polyval_var = PlatformCategory.where(organization_id: @organization.id)
+      end
+
+      worksheet.add_cell(0, 0, I18n.t(:name))
+      worksheet.add_cell(0, 1, params[:MYonglet] == "WorkElementType" || params[:MYonglet] == "OrganizationTechnology" ? I18n.t(:alias) : I18n.t(:description))
+      params[:MYonglet] == "OrganizationProfile" ? worksheet.add_cell(0, 2, I18n.t(:cost_per_hour)) : toto = 42
+      params[:MYonglet] == "WorkElementType" || params[:MYonglet] == "OrganizationTechnology" ? worksheet.add_cell(0, 2,I18n.t(:description)) : toto = 42
+      params[:MYonglet] == "OrganizationTechnology" ? worksheet.add_cell(0, 3, I18n.t(:productivity_ratio)) : toto = 42
+
+      polyval_var.each_with_index do |var, index|
+        worksheet.add_cell(index + 1, 0,var.name)
+        worksheet.add_cell(index + 1, 1, params[:MYonglet] == "WorkElementType" || params[:MYonglet] == "OrganizationTechnology" ? var.alias : var.description)
+        params[:MYonglet] == "OrganizationProfile" ? worksheet.add_cell(index + 1, 2, var.cost_per_hour) : toto = 42
+        params[:MYonglet] == "WorkElementType" || params[:MYonglet] == "OrganizationTechnology" ? worksheet.add_cell(index + 1, 2, var.description) : toto = 42
+        params[:MYonglet] == "OrganizationTechnology" ? worksheet.add_cell(index + 1, 3, var.productivity_ratio) : toto = 42
+      end
     end
+
     send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}_#{params[:MYonglet]}-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
 
