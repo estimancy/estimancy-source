@@ -29,8 +29,28 @@
             <div id="module_execution" class="collapse navbar-collapse">
               <ul class="nav nav-pills flex-column">
                 <% sorted_module_projects.each do |pmod| %>
-                  <%# title = "#{pmod.to_s} : \n \n #{pmod.pemodule.description.to_s}" %>
-                  <li class="nav-item" title="<%= pmod.to_s %>">
+                  <% title = "#{pmod.to_s} : \n\n" ; description = "" %>
+                  <% case pmod.pemodule.alias%>
+                      <% when  "guw"
+                           description = pmod.guw_model.description
+                         when "kb"
+                           description = pmod.kb_model.description
+                         when "skb"
+                           description = pmod.skb_model.description
+                         when "ge"
+                           description = pmod.ge_model.description
+                         when "operation"
+                           description = pmod.operation_model.description
+                         when "expert_judgement"
+                           description = pmod.expert_judgement_instance.description
+                         when "effort_breakdown"
+                           description = pmod.wbs_activity.description
+                         when "staffing"
+                           description = pmod.staffing_model.description
+                      %>
+                  <% end %>
+                  <% description = description.empty? ? "" : " : #{description}"  %>
+                  <li class="nav-item" title='<%= "#{pmod.to_s} #{description}" %>'>
                     <!--<a class="nav-link <%#= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%#= activate_module_project_path(pmod) %>">-->
                     <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">
                       <span style="text-transform: none;"><%= pmod.to_s.truncate(22) %></span>
