@@ -212,7 +212,7 @@ class ModuleProject < ActiveRecord::Base
     elsif self.pemodule.alias == "operation"
       self.operation_model.nil? ? 'Undefined model': self.operation_model.to_s(self)
     elsif self.pemodule.alias == "ge"
-      self.ge_model.nil? ? 'Undefined model': self.ge_model.to_s(self)
+      self.ge_model.nil? ? 'Undefined model': self.ge_model.to_s
     elsif self.pemodule.alias == "kb"
       self.kb_model.nil? ? 'Undefined model': self.kb_model.to_s(self)
     elsif self.pemodule.alias == "skb"
