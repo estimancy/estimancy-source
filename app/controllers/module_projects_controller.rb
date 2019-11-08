@@ -118,11 +118,12 @@ class ModuleProjectsController < ApplicationController
     @module_projects = @project.module_projects
 
     #Get the initialization module_project
-    @initialization_module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first  unless @initialization_module.nil?
+    @initialization_module_project = ModuleProject.where(organization_id: @organization.id, pemodule_id: @initialization_module.id, project_id: @project.id).first  unless @initialization_module.nil?
 
     # Get the max X and Y positions of modules
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
+    project_module_projects = ModuleProject.where(organization_id: @organization.id, :project_id => @project.id)
+    @module_positions = project_module_projects.order(:position_y).all.map(&:position_y).compact.uniq.max || 1
+    @module_positions_x = project_module_projects.order(:position_x).all.map(&:position_x).compact.max
 
     set_page_title I18n.t(:editing, parameter: @module_project.pemodule.title)
   end
@@ -146,9 +147,10 @@ class ModuleProjectsController < ApplicationController
     end
 
     # Get the project's max X and Y positions of modules
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
-    @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
+    project_module_projects = ModuleProject.where(organization_id: @organization.id, :project_id => @project.id)
+    @module_positions = project_module_projects.order(:position_y).all.map(&:position_y).uniq.max || 1
+    @module_positions_x = project_module_projects.order(:position_x).all.map(&:position_x).max
+    @initialization_module_project = @initialization_module.nil? ? nil : project_module_projects.find_by_pemodule_id(@initialization_module.id)
 
     redirect_to redirect(dashboard_path(@project)), notice: "#{I18n.t (:notice_module_project_successful_updated)}"
   end
@@ -158,9 +160,9 @@ class ModuleProjectsController < ApplicationController
     @project = Project.find(params[:project_id])
     authorize! :alter_estimation_plan, @project
 
-    @module_projects = @project.module_projects
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+    @module_projects = @project.module_projects.where(organization_id: @project.organization_id)
+    @module_positions = @module_projects.order(:position_y).all.map(&:position_y).uniq.max || 1
+    @module_positions_x = @module_projects.order(:position_x).all.map(&:position_x).max
     @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
   end
 
@@ -230,8 +232,9 @@ class ModuleProjectsController < ApplicationController
     authorize! :alter_estimation_plan, @project
 
     #re-set positions
-    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.compact.max || 1
-    @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
+    project_module_projects = ModuleProject.where(organization_id: @organization.id, :project_id => @project.id)
+    @module_positions = project_module_projects.order(:position_y).all.map(&:position_y).uniq.compact.max || 1
+    @initialization_module_project = @initialization_module.nil? ? nil : project_module_projects.find_by_pemodule_id(@initialization_module.id)
     position_x = @module_project.position_x
 
     #...finally, destroy object module_project and its associations

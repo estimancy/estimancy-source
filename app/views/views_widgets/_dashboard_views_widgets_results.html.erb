@@ -15,27 +15,24 @@
         <span><%= I18n.t(:dashboard) %></span>
       </div>
 
+      <% @widgets = {} %>
+      <% @project_module_projects = @project.module_projects.where(organization_id: @project.organization_id) %>
+      <% @label_widget_ids = [] %>
+      <% module_project = @project_module_projects.where(pemodule_id: @initialization_module.id).first unless @initialization_module.nil? %>
+
       <div class="col-2 tools float-right" style="margin-top: 1rem;">
         <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
-            <% mp = @project.module_projects.where(pemodule_id: @initialization_module.id).first %>
-            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
-            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
-            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>  <!-- add_box -->
-            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: mp.id, view_id: mp.view_id, is_project_data_widget: true) %>" title="<%= I18n.t :label_add_new_project_data_widget %>"><i class="material-icons">list</i></a>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>  <!-- add_box -->
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_project_data_widget: true) %>" title="<%= I18n.t :label_add_new_project_data_widget %>"><i class="material-icons">list</i></a>
             <a href="#" onclick="save_position(); return false;"><i class="material-icons">save</i></a>  <!-- add_box -->
         <% end %>
       </div>
     </div>
 
-
     <div class="mb-4">
       <div class="widgets-list">
-
-
-        <% @widgets = {} %>
-        <% @project_module_projects = @project.module_projects %>
-        <% @label_widget_ids = [] %>
-
 
         <!-- Les Vignettes de type Tableau -->
         <% vw_table_types = ["table_effort_and_cost_per_phase", "effort_per_phases_profiles_table", "cost_per_phases_profiles_table",
@@ -50,7 +47,7 @@
                              "stacked_grouped_bar_chart_cost_per_phases_profiles"] %>
 
         <%# @project_module_projects.each do |module_project| %>
-        <% module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
+        <%# module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
         <% module_project_view = module_project.view %>
         <% unless module_project_view.nil? %>
           <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
