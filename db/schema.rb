@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191021131010) do
+ActiveRecord::Schema.define(version: 20191113101316) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -895,6 +895,7 @@ ActiveRecord::Schema.define(version: 20191021131010) do
     t.boolean  "deported",                               default: false
     t.text     "description",              limit: 65535
     t.boolean  "allow_comments"
+    t.string   "math_set",                 limit: 255,   default: "R"
   end
 
   add_index "guw_guw_coefficients", ["organization_id", "guw_model_id", "name"], name: "by_organization_guw_model_name", using: :btree

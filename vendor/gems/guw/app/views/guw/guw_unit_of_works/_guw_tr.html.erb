@@ -331,6 +331,13 @@
                        color = "background-color: ##{default.color_code}"
                      end
                    end
+
+                   if @guw_coefficient.math_set == "N" || @guw_coefficient.math_set == "Z"
+                     step = 1
+                   else
+                     step = 0.001
+                   end
+
                 %>
                 <% ddv = results.first.default_display_value %>
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
@@ -338,7 +345,7 @@
                                      style: "width: 60%; #{color}; text-align: right;",
                                      class: "complexity_weight-#{uowg.id} guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
-                                     step: 0.001,
+                                     step: step,
                                      guw: guow.id,
                                      coeff_id: @guw_coefficient.nil? ? nil : @guw_coefficient.id,
                                      coeff_element_id: results.first.id,
@@ -349,7 +356,7 @@
                                        ceuw.nil? ? (ddv.nil? ? nil : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
                                        style: "width: 60%; text-align: right;",
                                        class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
-                                       step: 0.001,
+                                       step: step,
                                        title: ceuw.nil? ? "" : ceuw.comments %>
                 <% end %>
               </td>
