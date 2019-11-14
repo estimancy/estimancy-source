@@ -55,11 +55,7 @@ class Guw::GuwComplexitiesController < ApplicationController
     @guw_complexity.save
 
     @guw_model = @guw_type.guw_model
-    if @guw_model.default_display == "list"
-      redirect_to guw.guw_type_path(@guw_type)
-    else
-      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_complexity.guw_type.name.gsub(" ", "-")}")
-    end
+    redirect_to guw.guw_type_path(@guw_type)
   end
 
   def update
@@ -68,11 +64,7 @@ class Guw::GuwComplexitiesController < ApplicationController
     @guw_complexity.update_attributes(params[:guw_complexity])
 
     @guw_model = @guw_type.guw_model
-    if @guw_model.default_display == "list"
-      redirect_to guw.guw_type_path(@guw_type)
-    else
-      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
-    end
+    redirect_to guw.guw_type_path(@guw_type)
   end
 
   def destroy

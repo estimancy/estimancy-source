@@ -3005,7 +3005,7 @@ class OrganizationsController < ApplicationController
   # Create New organization from selected image organization
   # Or duplicate current selected organization
   def create_organization_from_image
-    # authorize! :manage, Organization
+    authorize! :manage, Organization
 
     # begin
       case params[:action_name]
