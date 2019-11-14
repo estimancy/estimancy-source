@@ -3005,9 +3005,9 @@ class OrganizationsController < ApplicationController
   # Create New organization from selected image organization
   # Or duplicate current selected organization
   def create_organization_from_image
-    authorize! :manage, Organization
+    # authorize! :manage, Organization
 
-    begin
+    # begin
       case params[:action_name]
       #Duplicate organization
       when "copy_organization"
@@ -3047,7 +3047,7 @@ class OrganizationsController < ApplicationController
         organization_image.save
 
         #new_organization.transaction do
-        ActiveRecord::Base.transaction do
+        # ActiveRecord::Base.transaction do
 
           new_organization = organization_image.amoeba_dup
 
@@ -3368,7 +3368,7 @@ class OrganizationsController < ApplicationController
             flash[:error] = I18n.t('errors.messages.not_saved.one', :resource => I18n.t(:organization))
           end
         end
-      end
+      # end
 
       respond_to do |format|
         flash[:notice] = "Fin de copie: la nouvelle organisation a été créée avec succès. Veuiller recharger la page pour voir apparaître votre nouvelle organisation."
@@ -3382,7 +3382,7 @@ class OrganizationsController < ApplicationController
         ##format.js { render 'layouts/flashes' }
       end
 
-    rescue
+    # rescue
       organization_image.update_attribute(:copy_in_progress, false)
 
       flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
@@ -3390,7 +3390,7 @@ class OrganizationsController < ApplicationController
         format.html { redirect_to organizationals_params_path and return }
         format.js { render :js => "window.location.replace('/organizationals_params');"}
       end
-    end
+    # end
 
   end
 
