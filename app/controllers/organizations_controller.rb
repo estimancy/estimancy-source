@@ -2507,7 +2507,7 @@ class OrganizationsController < ApplicationController
       #if params[:action_name] == "create_project_from_template"
       if old_prj.is_model
         unless old_prj.creator.nil?
-          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id, organization_id: new_organization.id)
+          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id, new_organization.id)
           unless creator_securities.nil?
             creator_securities.update_attribute(:user_id, user.id)
           end
