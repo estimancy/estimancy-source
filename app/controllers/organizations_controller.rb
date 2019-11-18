@@ -2458,7 +2458,8 @@ class OrganizationsController < ApplicationController
     user = current_user
 
     #begin
-    old_prj = Project.where(organization_id: new_organization_id, id: project_id).first #.find(project_id)
+    #old_prj = Project.where(organization_id: new_organization_id, id: project_id).first #.find(project_id)
+    old_prj = Project.where(id: project_id).first #.find(project_id)
     new_organization = Organization.find(new_organization_id)
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
