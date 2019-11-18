@@ -1,61 +1,101 @@
 <br xmlns="http://www.w3.org/1999/html"><br>
 
 <section class="card card-content-bloc estimancy-form">
-  <div class="well well-rounded">
-    <h4><b><%= I18n.t(:label_request_create_organization) %></b></h4>
+  <div class="edition-bloc-left">
+    <div class="edition-bloc-title">
+      <h4><b><%= I18n.t(:label_request_create_organization) %></b></h4>
+    </div>
 
     <%= form_tag '/create_organization_from_image', :method => 'POST', :class => 'simple_form' do %>
       <%= hidden_field_tag "action_name", "new_organization_from_image" %>
-      <div style="margin: 30px; width: 50%">
-        <div class="row">
-            <div class="span2"><%= I18n.t(:label_organization_name) %> : </div>
-            <div class="span4"> <%= text_field_tag "organization_name", nil, class: 'simple_form' %> </div>
+
+
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= text_field_tag "organization_name", nil, class: 'mdl-textfield__input' %>
+                  <label class="mdl-textfield__label" for="organization_name"><%= I18n.t(:label_organization_name) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <div style="margin-left:13rem; margin-top:0.2rem;">
+                    <%= select_tag "organization_image", options_from_collection_for_select(Organization.all, "id", "name") %>
+                  </div>
+                  <label class="mdl-textfield__label" for="organization_image" ><%= I18n.t(:label_organization_image) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= text_field_tag "identifiant", nil, class: 'mdl-textfield__input' %>
+                  <label class="mdl-textfield__label" for="identifiant"><%= I18n.t(:label_login) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= text_field_tag "password", nil, class: 'mdl-textfield__input' %>
+                  <label class="mdl-textfield__label" for="password"><%= I18n.t(:password) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= text_field_tag "last_name", nil, class: 'mdl-textfield__input' %>
+                  <label class="mdl-textfield__label" for="last_name"><%= I18n.t(:last_name) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= text_field_tag "first_name", nil, class: 'mdl-textfield__input' %>
+                  <label class="mdl-textfield__label" for="first_name"><%= I18n.t(:first_name) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= text_field_tag "email", nil, class: 'mdl-textfield__input' %>
+                  <label class="mdl-textfield__label" for="email"><%= I18n.t(:email) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-5">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= check_box_tag "change_password_required" %>
+                  <label class="mdl-textfield__label" for="change_password_required"  style="margin-left:1.5rem; margin-top:-0.75rem;"><%= I18n.t(:label_change_password_required) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-12">
+               <%= submit_tag I18n.t('apply'), :id => 'create_organization_from_image', :class => 'btn btn-primary' %>
+               <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
+              </div>
+            </div>
+
         </div>
-
-       <div class="row">
-         <div class="span2"><%= I18n.t(:label_organization_image) %>  : </div>
-         <div class="span4"><%= select_tag "organization_image", options_from_collection_for_select(Organization.all, "id", "name") %> </div>
        </div>
-
-       <br>
-       <div class="row">
-         <div class="span2"><%= I18n.t(:label_login) %> : </div>
-         <div class="span4"><%= text_field_tag "identifiant", nil, class: 'simple_form' %> </div>
-       </div>
-
-       <div class="row">
-         <div class="span2"><%= I18n.t(:password) %> : </div>
-         <div class="span4"><%= password_field_tag "password", nil, class: 'simple_form' %> </div>
-       </div>
-
-       <br>
-       <div class="row">
-         <div class="span2"><%= I18n.t(:last_name) %> : </div>
-         <div class="span4"><%= text_field_tag "lastname", nil, class: 'simple_form' %> </div>
-       </div>
-
-       <div class="row">
-         <div class="span2"><%= I18n.t(:first_name) %> : </div>
-         <div class="span4"><%= text_field_tag "firstname", nil, class: 'simple_form' %> </div>
-       </div>
-
-       <div class="row">
-         <div class="span2"><%= I18n.t(:email) %>  : </div>
-         <div class="span4"><%= text_field_tag "email", nil, class: 'simple_form' %> </div>
-       </div>
-
-       <br>
-       <div class="row">
-         <div class="span4"><%= I18n.t(:label_change_password_required) %> : </div>
-         <div class="span4"><%= check_box_tag "change_password_required" %> </div>
-       </div>
-
-       <br>
-       <div class="row">
-         <%= submit_tag I18n.t('apply'), :id => 'create_organization_from_image', :class => 'btn btn-primary' %>
-         <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
-       </div>
-     </div>
     <% end %>
   </div>
 </section>
