@@ -3040,7 +3040,7 @@ class OrganizationsController < ApplicationController
         organization_image.save
 
         #new_organization.transaction do
-        ActiveRecord::Base.transaction do
+        ###ActiveRecord::Base.transaction do
 
           new_organization = organization_image.amoeba_dup
 
@@ -3360,7 +3360,7 @@ class OrganizationsController < ApplicationController
           else
             flash[:error] = I18n.t('errors.messages.not_saved.one', :resource => I18n.t(:organization))
           end
-        end
+        ###end
       end
 
       respond_to do |format|
