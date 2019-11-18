@@ -106,6 +106,8 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+
+          # .joins(:user).where(:user => { :is_super_admin => false })
         else
           @organization_projects = @organization.projects
                                        .where(is_model: false)
@@ -113,6 +115,8 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+
+          # .joins(:user).where(:user => { :is_super_admin => false })
         end
 
         # @organization_projects = [Project.where(id: 3307).first]

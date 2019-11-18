@@ -53,14 +53,14 @@
             <td class="center">
               <% if can? :show_organizations, Organization %>
                 <% if i.copy_in_progress != true %>
-                    <%= link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
-                    <% if can? :manage, Organization && !(!current_user.super_admin? && current_user.subscription_end_date <= Time.now) %>
-                      <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy copy_an_organization", method: "POST" %>
-                      <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :titles => I18n.t('delete'))  %>
-                    <% end %>
+                  <%= link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
+                  <% if can? :manage, Organization && !(!current_user.super_admin? && current_user.subscription_end_date <= Time.now) %>
+                    <%= link_to '', create_organization_from_image_path(organization_id: i.id, action_name: "copy_organization"), class: "icon icon-copy copy_an_organization", method: "POST" %>
+                    <%= link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :titles => I18n.t('delete'))  %>
+                  <% end %>
 
                 <% else %>
-                    <%= I18n.t(:copy_in_progress) %>
+                  <%= I18n.t(:copy_in_progress) %>
                 <% end %>
               <% end %>
             </td>
