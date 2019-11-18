@@ -2460,6 +2460,7 @@ class OrganizationsController < ApplicationController
     #begin
     #old_prj = Project.where(organization_id: new_organization_id, id: project_id).first #.find(project_id)
     old_prj = Project.where(id: project_id).first #.find(project_id)
+    old_organization_id = old_prj.organization_id
     new_organization = Organization.find(new_organization_id)
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
@@ -2503,6 +2504,11 @@ class OrganizationsController < ApplicationController
         new_c.save
       end
 
+      ###======= Ajout apres gestion Temps reponse
+      #update Projects ModulesProjects
+      new_prj.module_projects.update_all(organization_id: new_organization_id)
+      ###======= Fin Ajout apres gestion Temps reponse
+
       #Update the project securities for the current user who create the estimation from model
       #if params[:action_name] == "create_project_from_template"
       if old_prj.is_model
@@ -2535,8 +2541,8 @@ class OrganizationsController < ApplicationController
       end
 
       # For ModuleProject associations
-      old_prj.module_projects.where(organization_id: new_organization.id).group(:id).each do |old_mp|
-        new_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: old_mp.id).first #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+      old_prj.module_projects.where(organization_id: old_organization_id).group(:id).each do |old_mp|
+        new_mp = ModuleProject.where(organization_id: new_organization_id, project_id: new_prj.id, copy_id: old_mp.id).first #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
 
         # ModuleProject Associations for the new project
         old_mp.associated_module_projects.each do |associated_mp|
