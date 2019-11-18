@@ -1,15 +1,32 @@
 
-  <div class="d-flex align-items-center mt-4">
-    <div style="flex: 1">
+  <!--<div class="d-flex align-items-center mt-4">-->
+  <div class="row mt-4">
+    <div class="span" style="flex: 1">
       <h1><%= I18n.t :select_an_organization %></h1>
     </div>
-    <% if can?(:manage, Organization) && !(!current_user.super_admin? && current_user.subscription_end_date <= Time.now) %>
-      <a href="<%= new_organization_path %>">
-        <button type="button" class="btn btn-primary">
-          <%= I18n.t :create_new_organization %>
-        </button>
-      </a>
-    <% end %>
+    <%# if can?(:manage, Organization) && !(!current_user.super_admin? && current_user.subscription_end_date <= Time.now) %>
+      <!--<a href="<%#= new_organization_path %>">-->
+        <!--<button type="button" class="btn btn-primary">-->
+          <!--<%#= I18n.t :create_new_organization %>-->
+        <!--</button>-->
+      <!--</a>-->
+    <%# end %>
+
+    <div class="span">
+        <% if can? :create_organizations, Organization %>
+            <div class="group_button">
+              <%# link_to "Exporter l'ensemble des champs", export_organization_reference_path, class: 'btn' %>
+              <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn btn-primary mr-5' %>
+              <%= link_to I18n.t('create_new_organization'), new_organization_path, :class => 'btn btn-primary mr-3' %>
+            </div>
+
+            <div id="display_copy_message" style="display: none; text-align: center">
+              <p id="syncStarted" style="display:none">
+                <strong><h4 style="color: green">La copie de l'organisation a démaré, merci de patienter...</h4></strong>
+              </p>
+            </div>
+        <% end %>
+    </div>
   </div>
 
   <p>
@@ -48,6 +65,8 @@
                         edit
                       </i>
                     </a>
+
+                    <%= link_to raw("<i class='material-icons'>file_copy</i>"), create_organization_from_image_path(organization_id: organization.id, action_name: "copy_organization"), class: "icon-copy copy_an_organization", method: "POST" %>
                   <% end %>
                 </div>
 

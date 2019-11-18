@@ -2458,7 +2458,8 @@ class OrganizationsController < ApplicationController
     user = current_user
 
     #begin
-    old_prj = Project.where(organization_id: new_organization_id, id: project_id).first #.find(project_id)
+    #old_prj = Project.where(organization_id: new_organization_id, id: project_id).first #.find(project_id)
+    old_prj = Project.where(id: project_id).first #.find(project_id)
     new_organization = Organization.find(new_organization_id)
 
     new_prj = old_prj.amoeba_dup #amoeba gem is configured in Project class model
@@ -2506,7 +2507,7 @@ class OrganizationsController < ApplicationController
       #if params[:action_name] == "create_project_from_template"
       if old_prj.is_model
         unless old_prj.creator.nil?
-          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id, organization_id: new_organization.id)
+          creator_securities = old_prj.creator.project_securities_for_select(new_prj.id, new_organization.id)
           unless creator_securities.nil?
             creator_securities.update_attribute(:user_id, user.id)
           end
@@ -2999,7 +3000,7 @@ class OrganizationsController < ApplicationController
   def create_organization_from_image
     authorize! :manage, Organization
 
-    begin
+    #begin
       case params[:action_name]
       #Duplicate organization
       when "copy_organization"
@@ -3374,7 +3375,7 @@ class OrganizationsController < ApplicationController
         ##format.js { render 'layouts/flashes' }
       end
 
-    rescue
+    #rescue
       organization_image.update_attribute(:copy_in_progress, false)
 
       flash[:error] = "Une erreur est survenue lors de la création de la nouvelle organisation"
@@ -3382,7 +3383,7 @@ class OrganizationsController < ApplicationController
         format.html { redirect_to all_organizations_path and return }
         format.js { render :js => "window.location.replace('/all_organizations');"}
       end
-    end
+    #end
 
   end
 
