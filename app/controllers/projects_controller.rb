@@ -1901,8 +1901,8 @@ class ProjectsController < ApplicationController
           if ((can? :delete_project, @project) || (can? :manage, @project)) && @project.is_childless?
             @project.destroy
             ###current_user.delete_recent_project(@project.id)
-            session[:project_id] = current_user.projects.first
-            flash[:notice] = I18n.t(:notice_project_successful_deleted, :value => 'Project')
+            # session[:project_id] = current_user.projects.first
+            # flash[:notice] = I18n.t(:notice_project_successful_deleted, :value => 'Project')
             redirect_to organization_estimations_path(@current_organization)
           else
             flash[:warning] = I18n.t(:error_access_denied)
