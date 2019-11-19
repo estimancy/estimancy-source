@@ -65,13 +65,11 @@
                         edit
                       </i>
                     </a>
-
                     <%= link_to raw("<i class='material-icons'>file_copy</i>"), create_organization_from_image_path(organization_id: organization.id, action_name: "copy_organization"), class: "icon-copy copy_an_organization", method: "POST" %>
+                    <%= link_to raw("<i class='material-icons'>delete</i>"), confirm_organization_deletion_path(organization.id), :class => 'icon icon-trash', :title => I18n.t('delete'), method: "POST" %>
                   <% end %>
                 </div>
-
             <% end %>
-
           </div>
         </div>
       </li>
@@ -81,6 +79,3 @@
 
 <%# link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
 
-<%# if can? :manage, Organization %>
-  <%# link_to('', confirm_organization_deletion_path(i.id), :class => 'icon icon-trash', :title => I18n.t('delete'), method: "POST") %>
-<%# end %>
