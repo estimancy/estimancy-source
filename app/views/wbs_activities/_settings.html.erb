@@ -176,8 +176,8 @@
       <span class="no_uppercase"><%= @wbs_activity.name %></span>
       <div class="edition-bloc-tools">
         <% if can?(:execute_estimation_plan, @project) %>
-            <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "btn btn-primary", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
-            <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "btn btn-secondary", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
+          <%= submit_tag I18n.t(:initialize_calculation), name: "initialize_calculation", class: "btn btn-secondary", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
+          <%= submit_tag I18n.t(:calculate_button), name: "update_calculation", id: "wbs_calculate_button", class: "btn btn-secondary", data: { :"disable-with" => "#{ I18n.t :please_wait }" } %>
       <% end %>
       </div>
     </div>
