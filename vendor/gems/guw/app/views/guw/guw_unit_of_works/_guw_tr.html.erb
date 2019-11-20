@@ -288,8 +288,14 @@
 
       <% unless @guw_coefficient.nil? %>
 
-        <%# @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements.select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
-        <% @guw_coefficient_guw_coefficient_elements = @guw_coefficient_guw_coefficient_elements[@guw_coefficient.id].select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
+        <% @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements.select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
+
+        <%# @all_guw_coefficient_guw_coefficient_elements = @guw_coefficient_guw_coefficient_elements[@guw_coefficient.id] %>
+        <%# if @all_guw_coefficient_guw_coefficient_elements.nil? %>
+          <%# @guw_coefficient_guw_coefficient_elements = [] %>
+        <%# else %>
+          <%# @guw_coefficient_guw_coefficient_elements = @all_guw_coefficient_guw_coefficient_elements.select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
+        <%# end %>
 
         <% unless @guw_type.nil? %>
           <% results = @guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
