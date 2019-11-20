@@ -9,6 +9,8 @@
     </div>
   </div>
 
+  <% @current_mp = current_module_project %>
+
   <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
   <% current_mp = @module_project %>
   <% current_psb =  current_component %>
@@ -220,6 +222,13 @@
                   <% color = "#d3d3d34d;" %>
                 <% end %>
                 <tr style="background-color: <%= color %>" id="<%= guow.id %>" data-guw-id="<%= guow.id %>">
+
+                  <%
+                    @guw_coefficient_guw_coefficient_elements = Hash.new {|h,k| h[k] = [] }
+                    @guw_model.guw_coefficient_elements.each do |guw_coefficient_element|
+                      @guw_coefficient_guw_coefficient_elements[guw_coefficient_element.guw_coefficient_id] << guw_coefficient_element
+                    end
+                  %>
                   <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
                 </tr>
               <% end %>
@@ -377,13 +386,6 @@
 
     //$(document).ready(function () {
     $(document).ready(function() {
-
-<!--        $('.selected').change(function(){-->
-<!--            $.ajax({-->
-<!--                url: "<%# guw.change_selected_state_path %>",-->
-<!--                data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()-->
-<!--            });-->
-<!--        });-->
 
         $('.guw_type').change(function(){
             reset($(this).attr("guw"));

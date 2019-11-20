@@ -30,23 +30,23 @@
               <ul class="nav nav-pills flex-column">
                 <% sorted_module_projects.each do |pmod| %>
                   <% title = "#{pmod.to_s} : \n\n" ; description = "" %>
-                  <% case pmod.pemodule.alias%>
+                  <% case pmod.pemodule.alias %>
                       <% when  "guw"
-                           description = pmod.guw_model.description
+                           description = pmod.guw_model.description rescue ""
                          when "kb"
-                           description = pmod.kb_model.description
+                           description = pmod.kb_model.description rescue ""
                          when "skb"
-                           description = pmod.skb_model.description
+                           description = pmod.skb_model.description rescue ""
                          when "ge"
-                           description = pmod.ge_model.description
+                           description = pmod.ge_model.description rescue ""
                          when "operation"
-                           description = pmod.operation_model.description
+                           description = pmod.operation_model.description rescue ""
                          when "expert_judgement"
-                           description = pmod.expert_judgement_instance.description
+                           description = pmod.expert_judgement_instance.description rescue ""
                          when "effort_breakdown"
-                           description = pmod.wbs_activity.description
+                           description = pmod.wbs_activity.description rescue ""
                          when "staffing"
-                           description = pmod.staffing_model.description
+                           description = pmod.staffing_model.description rescue ""
                       %>
                   <% end %>
                   <% description = description.empty? ? "" : " : #{description}"  %>
