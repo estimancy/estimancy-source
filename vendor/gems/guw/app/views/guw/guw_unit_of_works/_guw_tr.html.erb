@@ -1,7 +1,15 @@
 <%
+  organization_id = @guw_model.organization_id
+  guw_model_id = @guw_model.id
+
+  guow = local_assigns['guow']
+  uowg = local_assigns['uowg']
+%>
+<%#
    organization_id = @guw_model.organization_id
    guw_model_id = @guw_model.id
-   current_mp = current_module_project
+
+   # @current_mp = current_module_project
 
    hash_color_priorities = {}
    guow = local_assigns['guow']
@@ -66,16 +74,6 @@
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}_group" %>
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
 </td>
-
-<!--<td class="guw-cell-ajustment">-->
-<!--  <b>-->
-    <%# if guow.guw_unit_of_work.nil? %>
-<!--      #<%#= guow.id %>-->
-    <%# else %>
-<!--      --->
-    <%# end %>
-<!--  </b>-->
-<!--</td>-->
 
 <td class="text_field_text_overflow span3 guw-cell-ajustment">
   <span class="pull-left">
@@ -290,7 +288,8 @@
 
       <% unless @guw_coefficient.nil? %>
 
-        <% @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements.select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
+        <%# @guw_coefficient_guw_coefficient_elements = @guw_coefficient.guw_coefficient_elements.select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
+        <% @guw_coefficient_guw_coefficient_elements = @guw_coefficient_guw_coefficient_elements[@guw_coefficient.id].select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id } %>
 
         <% unless @guw_type.nil? %>
           <% results = @guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
