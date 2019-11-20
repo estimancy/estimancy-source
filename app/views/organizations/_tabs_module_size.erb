@@ -15,6 +15,7 @@
   <table class="table table-list">
     <tr>
       <th><%= I18n.t(:name) %></th>
+      <th><%= I18n.t(:description) %></th>
       <th><%= I18n.t(:created_date) %></th>
       <th class="action"><%= I18n.t(:actions) %></th>
     </tr>
@@ -32,6 +33,11 @@
             <% end %>
           <% end %>
         </td>
+
+        <td class="span2">
+          <%= i.description rescue nil %>
+        </td>
+
         <td class="span2 align-center">
           <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
         </td>
@@ -64,6 +70,7 @@
     <table class="table table-list">
       <tr>
         <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:description) %></th>
         <th><%= I18n.t(:created_date) %></th>
         <th class="action"><%= I18n.t(:actions) %></th>
       </tr>
@@ -72,6 +79,9 @@
         <tr>
           <td class="span7">
             <%= link_to i.name, skb.edit_skb_model_path(i, organization_id: @organization.id), data: {confirm: I18n.t(:warning_edit_instance_module)} %>
+          </td>
+          <td class="span3">
+            <%= i.description rescue nil %>
           </td>
           <td class="span2 align-center">
             <%= i.created_at.nil? ? '-' : I18n.l(i.created_at) %>
