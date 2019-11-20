@@ -23,9 +23,9 @@
               <% view_widget_data = get_label_widget_data(view_widget.id) %>
               <% @label_widget_hash[view_widget.name] = [view_widget, view_widget_data[:string_data_probable]] %>
           <% elsif view_widget.is_kpi_widget? %>
-              <% view_widget_data = get_kpi_value_without_unit(view_widget) %>
-              <%# view_widget_data = get_kpi_value(view_widget) %>
-              <% @kpi_widget_hash[view_widget.name] = [view_widget, "#{view_widget_data} #{view_widget.kpi_unit.to_s}"] %>
+              <% view_widget_data_temp = get_kpi_value_without_unit(view_widget) %>
+              <% view_widget_data = "#{convert_with_precision(view_widget_data_temp.to_f, user_number_precision, true)} #{view_widget.kpi_unit}" %>
+              <% @kpi_widget_hash[view_widget.name] = [view_widget, view_widget_data] %>
           <% else %>
               <%# view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
               <% view_widget_data = get_view_widget_data(module_project.id, view_widget.id) %>
