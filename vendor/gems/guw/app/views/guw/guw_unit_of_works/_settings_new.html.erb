@@ -9,8 +9,12 @@
     </div>
   </div>
 
-  <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
-  <% current_mp = @module_project %>
+  <%# current_mp = @module_project %>
+  <% @pemodule = Pemodule.where(alias: "guw").first %>
+  <% current_mp = @project.module_projects.where(pemodule_id: @pemodule.id).first %>
+
+  <% @guw_model = @module_project.guw_model %>
+
   <% current_psb =  current_component %>
   <% organization_id = @guw_model.organization_id %>
   <% project_id = @project.id %>
@@ -20,10 +24,6 @@
                                                                                        project_id: project_id,
                                                                                        module_project_id: current_mp.id) %>
 
-  <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
-                                                                  project_id: project_id,
-                                                                  module_project_id: current_module_project.id,
-                                                                  pbs_project_element_id: current_psb.id) %>
   <% @guw_coefficients = Guw::GuwCoefficient.includes(:guw_coefficient_elements).where(organization_id: organization_id, guw_model_id: @guw_model.id) %>
 
   <div class="row-fluid">

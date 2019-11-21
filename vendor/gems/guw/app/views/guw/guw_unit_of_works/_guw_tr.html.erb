@@ -1,11 +1,11 @@
 <%
    organization_id = @guw_model.organization_id
    guw_model_id = @guw_model.id
-   current_mp = @module_project
 
    hash_color_priorities = {}
    guow = local_assigns['guow']
    uowg = local_assigns['uowg']
+   current_mp = local_assigns['current_mp']
 
    gceuws = @guow_guw_coefficient_element_unit_of_works[guow.id]
    gceuws.each do |gceuw|

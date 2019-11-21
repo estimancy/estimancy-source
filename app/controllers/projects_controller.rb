@@ -607,7 +607,11 @@ class ProjectsController < ApplicationController
 
     @user = current_user
     @pemodules ||= Pemodule.all
-    @module_project = current_module_project
+
+    @pemodule = Pemodule.where(alias: "guw").first
+    @module_project = @project.module_projects.where(pemodule_id: @pemodule.id).first
+    # @module_project = @module_project
+
     @show_hidden = 'true'
 
     status_comment_link = ""
