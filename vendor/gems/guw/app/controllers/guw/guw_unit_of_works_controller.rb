@@ -759,23 +759,23 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
   end
 
-  def change_work_unit
-    authorize! :execute_estimation_plan, @project
+  # def change_work_unit
+  #   authorize! :execute_estimation_plan, @project
+  #
+  #   @guw_model = current_module_project.guw_model
+  #   @guw_work_unit = Guw::GuwWorkUnit.find(params[:guw_work_unit_id])
+  #   @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+  #   @guw_unit_of_work.guw_work_unit_id = @guw_work_unit.id
+  #   @guw_unit_of_work.save
+  # end
 
-    @guw_model = current_module_project.guw_model
-    @guw_work_unit = Guw::GuwWorkUnit.find(params[:guw_work_unit_id])
-    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-    @guw_unit_of_work.guw_work_unit_id = @guw_work_unit.id
-    @guw_unit_of_work.save
-  end
-
-  def change_technology_form
-    authorize! :execute_estimation_plan, @project
-
-    @guw_model = current_module_project.guw_model
-    @guw_type = Guw::GuwType.find(params[:guw_type_id])
-    @technologies = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq
-  end
+  # def change_technology_form
+  #   authorize! :execute_estimation_plan, @project
+  #
+  #   @guw_model = current_module_project.guw_model
+  #   @guw_type = Guw::GuwType.find(params[:guw_type_id])
+  #   @technologies = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq
+  # end
 
   # Voir utlisation de la Vue
   def change_selected_state_save
