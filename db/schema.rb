@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191031100003) do
+ActiveRecord::Schema.define(version: 20191119170311) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -179,12 +179,12 @@ ActiveRecord::Schema.define(version: 20191031100003) do
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
     t.boolean  "is_ignored"
+    t.integer  "criticality",       limit: 4
     t.float    "forfait_mco",       limit: 24
     t.integer  "month_number",      limit: 4
     t.datetime "start_date"
     t.datetime "end_date"
     t.float    "coefficient",       limit: 24
-    t.string   "criticality",       limit: 255
     t.string   "coefficient_label", limit: 255
   end
 
@@ -1175,7 +1175,6 @@ ActiveRecord::Schema.define(version: 20191031100003) do
     t.integer  "service_id",                    limit: 4
     t.boolean  "allow_to_suggest_a_correction"
     t.boolean  "allow_to_add_to_knowledge_db"
-    t.integer  "minimum",                       limit: 4
     t.integer  "maximum",                       limit: 4
   end
 
@@ -1597,6 +1596,7 @@ ActiveRecord::Schema.define(version: 20191031100003) do
     t.datetime "created_at",                                                                             null: false
     t.datetime "updated_at",                                                                             null: false
     t.boolean  "is_used_in_ratio_calculation"
+    t.integer  "copy_id",                        limit: 4
   end
 
   add_index "module_project_ratio_variables", ["organization_id", "pbs_project_element_id", "module_project_id", "wbs_activity_id", "wbs_activity_ratio_id", "wbs_activity_ratio_variable_id"], name: "organization_module_project_ratio_variables", using: :btree
@@ -1830,9 +1830,9 @@ ActiveRecord::Schema.define(version: 20191031100003) do
     t.boolean  "allow_demand"
     t.string   "default_estimations_sort_column", limit: 255
     t.string   "default_estimations_sort_order",  limit: 255
-    t.string   "support_contact",                 limit: 255
     t.string   "show_reports",                    limit: 255
     t.string   "show_kpi",                        limit: 255
+    t.string   "support_contact",                 limit: 255
   end
 
   create_table "organizations_users", force: :cascade do |t|
@@ -2786,6 +2786,7 @@ ActiveRecord::Schema.define(version: 20191031100003) do
     t.datetime "created_at",                                                 null: false
     t.datetime "updated_at",                                                 null: false
     t.boolean  "is_used_in_ratio_calculation"
+    t.integer  "copy_id",                      limit: 4
   end
 
   add_index "wbs_activity_ratio_variables", ["organization_id", "wbs_activity_ratio_id"], name: "organization_wbs_activity_ratio_variables", using: :btree
