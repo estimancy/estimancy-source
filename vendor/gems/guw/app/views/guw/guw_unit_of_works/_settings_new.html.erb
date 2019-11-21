@@ -315,6 +315,12 @@
         my_array.push(new_line);
         $("#modified_guw_line_ids").val(my_array);
       });
+
+      $("table#guw guw_type").on("change", function(e) {
+        var new_line = $(this).closest("tr").data("guw-id");
+        my_array.push(new_line);
+        $("#modified_guw_line_ids").val(my_array);
+      });
     });
   </script>
 
