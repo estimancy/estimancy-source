@@ -1,4 +1,5 @@
 <% organization_id = @organization.id %>
+<% @module_project = @project.module_projects.first %>
 <% @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: organization_id,
                                                         guw_model_id: @guw_model.id,
                                                         project_id: @project.id,
@@ -63,7 +64,7 @@
         <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.where(organization_id: organization_id,
                                                           guw_model_id: @guw_model.id,
                                                           project_id: guw_unit_of_work.project_id,
-                                                          module_project_id: current_module_project.id).order("display_order ASC") %>
+                                                          module_project_id: @module_project.id).order("display_order ASC") %>
 
         <% @selected_uowg_guw_unit_of_works = @uowg_guw_unit_of_works.where(selected: true) %>
 
