@@ -10,7 +10,8 @@
         <%= I18n.t(:technical_informations) %>
       </a>
     </li>
-    <% if @organization.name == "CDS DISTRIBUTION TRANSPORTEUR" || @organization.name == "06_DSI Voyage_CdS Distribution Transporteur" %>
+    <%# if @organization.name == "CDS DISTRIBUTION TRANSPORTEUR" || @organization.name == "06_DSI Voyage_CdS Distribution Transporteur" %>
+    <% if @organization.name.downcase.include?("distribution transporteur") %>
       <li>
         <a href="#tabs-dt">
           MaJ des prix (CDS DT)
@@ -138,54 +139,65 @@
 
   <% end %>
 
-  <div id="tabs-dt">
-    <div class="row-fluid">
-      <div class="span12">
+  <% if @organization.name.downcase.include?("distribution transporteur") %>
+      <div id="tabs-dt">
+        <div class="row-fluid">
+          <div class="span12">
 
-        <div>
-          <h5>
-            <strong>#1</strong> Prise en compte de la contribution espagnole dans les profils :
-          </h5>
-            <% if @current_user.super_admin? %>
-                <div class="well component_tree" style="background-color: transparent">
-                  <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
-                      <%= hidden_field_tag :organization_id, @organization.id %>
-                      <%#= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
-                      R :  <%= text_field_tag :r_value, "0.25" %>
-                      TM : <%= text_field_tag :tm_value %>
+            <div>
+              <h5>
+                <strong>#1</strong> Prise en compte de la contribution espagnole dans les profils :
+              </h5>
+                <% if @current_user.super_admin? %>
+                    <div class="well component_tree" style="background-color: transparent">
+                      <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
+                          <%= hidden_field_tag :organization_id, @organization.id %>
+                          <%#= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
+                          R :  <%= text_field_tag :r_value, "0.25" %>
+                          TM : <%= text_field_tag :tm_value %>
 
-                      <%= submit_tag I18n.t('calculate'), :class => 'btn btn-primary' %>
-                  <% end %>
-                </div>
-            <% end %>
+                          <%= submit_tag I18n.t('calculate'), :class => 'btn btn-primary' %>
+                      <% end %>
+                    </div>
+                <% end %>
+            </div>
+
+            <h5>
+              <% project = Project.where(title: "EBE001 (Calcul Mix Profil)").first %>
+              <% unless project.nil? %>
+                <strong>#2</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
+              <% end %>
+            </h5>
+
+            <h5>
+              <strong>#3</strong>
+              <%= link_to "Mettre à jour des TJM Dire d'Expert, MCO & Services Abaques", maj_mix_profil_path %>
+            </h5>
+
+            <h5>
+              <% project = Project.where(title: "EBE0001 TJM Petites Evol.").first %>
+              <% unless project.nil? %>
+                <strong>#4</strong> <%= link_to "Calculer les TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
+              <% end %>
+            </h5>
+
+            <h5>
+              <strong>#5</strong>
+              <%= link_to "Mettre à jour les TJM Petites Evolutions", maj_pe_path %>
+            </h5>
+
+            <h5>
+              <strong>#6</strong>
+              <%= link_to "Mettre à jour la valeur du taux au niveau du paramétrage de l'organisation (platform_category)", organization_setting_path(@organization, anchor: "tabs-platform-categories"), target: "_blank" %>
+            </h5>
+
+            <h5>
+              <strong>#7</strong>
+              <%= "Mettre à jour les modèles pour sélectionner le bon taux dans le champ TM (Taux moyen de délocalisation)" %>
+            </h5>
+
+          </div>
         </div>
-
-        <h5>
-          <% project = Project.where(title: "EBE001 (Calcul Mix Profil)").first %>
-          <% unless project.nil? %>
-            <strong>#2</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
-          <% end %>
-        </h5>
-
-        <h5>
-          <strong>#3</strong>
-          <%= link_to "Mettre à jour des TJM Dire d'Expert, MCO & Services Abaques", maj_mix_profil_path %>
-        </h5>
-
-        <h5>
-          <% project = Project.where(title: "EBE0001 TJM Petites Evol.").first %>
-          <% unless project.nil? %>
-            <strong>#4</strong> <%= link_to "Calculer les TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
-          <% end %>
-        </h5>
-
-        <h5>
-          <strong>#5</strong>
-          <%= link_to "Mettre à jour les TJM Petites Evolutions", maj_pe_path %>
-        </h5>
-
       </div>
-    </div>
-  </div>
-
+  <% end %>  
 </div>
