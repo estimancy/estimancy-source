@@ -80,13 +80,13 @@
       });
     });
 
-//    $('.guw_type').change(function(){
-//      reset($(this).attr("guw"));
-//      $.ajax({
-//        url: "<%# guw.change_cotation_path %>",
-//        data: "guw_type_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
-//      });
-//    });
+    $('.guw_type').change(function(){
+      reset($(this).attr("guw"));
+      $.ajax({
+        url: "<%= guw.change_cotation_path %>",
+        data: "guw_type_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
+      });
+    });
   });
 
   var gridster = [];
