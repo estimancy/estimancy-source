@@ -1,196 +1,51 @@
-<% unless @guw_model.nil? %>
-<%
-  organization_id = @project.organization_id
+$("#guw_type_<%= @guw_unit_of_work.id %>").prop('title', '<%= @new_popup_title %>');
 
-  @guw_model = @module_project.guw_model
+<% unless @guw_type.nil? %>
+    $("#guw_type_<%= @guw_unit_of_work.id %>").html("<%= j (select_tag "guw_type[#{@guw_unit_of_work.id}]", options_for_select(@guw_types.map do |i|
+                                                            [i.name, i.id]
+                                                          end,
+                                                      selected: @guw_type.id),
+               class: "guw_type",
+               style: "width: 90%",
+               prompt: "",
+               guw: @guw_unit_of_work.id,
+               title: @new_popup_title) %>");
 
-  @module_positions = ModuleProject.where(organization_id: organization_id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
-  @module_positions_x = @project.module_projects.where(organization_id: organization_id).order(:position_x).all.map(&:position_x).max
-  @guw_types = @guw_model.guw_types.where(organization_id: organization_id)
-  @guw_type = @guw_unit_of_work.guw_type
-  unless @guw_type.nil?
-    @guw_complexities = @guw_type.guw_complexities.where(organization_id: organization_id, guw_model_id: @guw_model.id).order("display_order ASC")
-  end
-%>
+<% else %>
+    $("#guw_type_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_type[#{@guw_unit_of_work.id}]", options_for_select(@guw_types.map{|i| [i.name, i.id]}),
+               class: "guw_type",
+               style: "width: 90%;",
+               prompt: "",
+               guw: @guw_unit_of_work.id,
+               title: '' ) %>");
 
-<% @hash_guw_outputs = {} %>
-<% Guw::GuwOutput.where(organization_id: organization_id,
-                        guw_model_id: @guw_model.id,
-                        name: @guw_model.orders.map(&:first)).each do |guw_output| %>
-<% @hash_guw_outputs[guw_output.name] = guw_output %>
 <% end %>
 
-<% @hash_guw_coefficients = {} %>
-<% Guw::GuwCoefficient.where(organization_id: organization_id,
-                             guw_model_id: @guw_model.id,
-                             name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
-<% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
+<% if @guw_unit_of_work.guw_type.display_threshold == true %>
+  $(".cotation_label_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_complexity_#{@guw_unit_of_work.id}", options_for_select(@guw_unit_of_work.guw_type.guw_complexities.map{|i| [i.name, i.id] }, selected: nil), class: "input-small", style: "width: 70px;", prompt: "", disabled: !@guw_unit_of_work.guw_type.allow_complexity) %>")
+<% else %>
+  $(".cotation_label_<%= @guw_unit_of_work.id %>").html("-");
 <% end %>
 
-<% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
-<% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                              guw_model_id: @guw_model.id,
-                                              project_id: @project.id,
-                                              module_project_id: @module_project.id).each do |gceuw| %>
-<% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
+<% if @guw_unit_of_work.guw_type.allow_criteria == true %>
+  <% counting = @guw_unit_of_work.guw_unit_of_work_attributes.where(guw_type_id: @guw_unit_of_work.guw_type_id).map(&:most_likely).compact %>
+  <% if counting.empty? %>
+    $(".criteria_label_<%= @guw_unit_of_work.id %>").html("<%= j(link_to("", guw.guw_unit_of_work_load_cotations_path(@guw_unit_of_work), method: "post", remote: true, class: "fa fa-gears", style: "color: black;")) %>")
+  <% else %>
+    $(".criteria_label_<%= @guw_unit_of_work.id %>").html("<%= j(link_to("", guw.guw_unit_of_work_load_cotations_path(@guw_unit_of_work), method: "post", remote: true, class: "fa fa-gears", style: "color: #0088cc;")) %>")
+  <% end %>
+<% else %>
+  $(".criteria_label_<%= @guw_unit_of_work.id %>").html("")
 <% end %>
 
-<% @hash_guw_output_types = {} %>
-<%Guw::GuwOutputType.where(organization_id: organization_id, guw_model_id: @guw_model.id).each do |guw_output_type| %>
-<% @hash_guw_output_types["#{guw_output_type.guw_type_id}_#{guw_output_type.guw_output_id}"] = guw_output_type %>
+<% @guw_model.guw_coefficients.where(organization_id: @guw_model.organization_id).each do |guw_coefficient| %>
+  <% if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient" %>
+    <% unless @guw_type.nil? %>
+      <% results = guw_coefficient.guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.includes(:guw_coefficient_element).where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id, guw_type_id: @guw_unit_of_work.guw_type.id).select{|ct| ct.value != nil }.map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+    <% else %>
+      <% results = [] %>
+    <% end %>
+    $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(<%= results.first.nil? ? '' : results.first.default_display_value %>);
+  <% end %>
 <% end %>
 
-<% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
-<% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                              guw_model_id: @guw_model.id,
-                                              project_id: @project.id,
-                                              module_project_id: @module_project.id).order("updated_at ASC").each do |gceuw| %>
-<% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
-<% end %>
-
-$("#modal_cotation").modal('toggle');
-$('.modal_comments').modal('hide');
-
-$("tr#<%= @guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %>");
-
-$("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
-
-var my_array = [];
-$(document).ready(function () {
-
-    $("input#name").val("");
-    $("textarea#comments").val("");
-
-    $("table#guw input").keyup(function(e) {
-        var new_line = $(this).closest("tr").data("guw-id");
-        my_array.push(new_line);
-        $("#modified_guw_line_ids").val(my_array);
-    });
-
-    $("table#guw select").on("change", function(e) {
-        var new_line = $(this).closest("tr").data("guw-id");
-        my_array.push(new_line);
-        $("#modified_guw_line_ids").val(my_array);
-    });
-
-    $('.selected').change(function(){
-        $.ajax({
-            url: "<%= guw.change_selected_state_path %>",
-            data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
-        });
-    });
-
-//    $('.guw_type').change(function(){
-//      reset($(this).attr("guw"));
-//      $.ajax({
-//        url: "<%# guw.change_cotation_path %>",
-//        data: "guw_type_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
-//      });
-//    });
-});
-
-var gridster = [];
-var iteration = -1;
-$(function () { //DOM Ready
-
-    $('[id^="view_widgets_container_"]').each(function () {
-        var container_id = $(this).attr('id');
-        var $widgets_container = $('#' + container_id);
-
-        //$("#"+container_id+ " > ul").gridster({
-        gridster[++iteration] = $("#" + container_id + " ul").gridster({
-            namespace: '#' + container_id,
-            widget_margins: [5, 5],
-            widget_base_dimensions: [60, 60], //widget_base_dimensions: [60, 60],
-            widget_selector: "li",
-            extra_rows: 0,
-            extra_cols: 0,
-            shift_widgets_up: false,
-            shift_larger_widgets_down: false,
-            collision: {
-                wait_for_mouseup: true
-            },
-
-            //autogenerate_stylesheet: true,
-            min_cols: 1,
-            max_cols: 100,
-
-            serialize_params: function ($w, wgd) {
-                return {
-                    /* add element (ID, view_widget_id and container_id) to data*/
-                    id: $w.attr('id'),
-                    view_widget_id: $w.data('view_widget_id'),
-                    container_id: $w.data('container_id'),
-                    /* defaults */
-                    col: wgd.col, row: wgd.row, size_x: wgd.size_x, size_y: wgd.size_y
-                }
-            },
-
-            draggable: {
-                // Update all widgets positions
-                stop: function (event, ui) {
-                    //var gridster = $(".gridster ul").gridster().data('gridster');
-                    var gridster = $('#' + container_id + ".gridster ul").gridster().data('gridster');
-                    var gridster_elements = gridster.serialize();
-
-                    //alert(JSON.stringify(gridster_elements));
-                    //alert(gridster_elements);
-                    //alert(JSON.parse(gridster_elements);
-
-                    $.ajax({
-                        type: 'POST',
-                        url: "/update_view_widget_positions",
-                        data: {
-                            view_id: this.id,
-                            views_widgets: gridster_elements
-                        }
-                    });
-                }
-            },
-
-
-            // Qui marchait avec l'ancienne version
-            resize: {
-                enabled: true,
-                axes: ['both'],
-
-                //handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
-                //max_size: [20, 20],
-                //min_size: [1, 1],
-
-                stop: function (event, ui, $widget) {
-
-                    // Get final width and height of widget
-                    var newHeight = this.resize_coords.data.height;
-                    var newWidth = this.resize_coords.data.width;
-                    var text_size = ((newHeight + newWidth) / 2) * 0.015;
-
-                    //Update the font-size according to the widget sizes
-                    var widget_id = $widget.data('id');
-                    $('li#' + widget_id + '.widget_text').css("fontSize", text_size + "em");
-
-                    // Update font-size : $('.changeMe').css("font-size", $(this).val() + "px");
-                    $('#widget_text_' + widget_id + '.widget_text.without_min_max').fitText(0.6);
-                    $('#widget_text_' + widget_id + '.widget_text.with_min_max').fitText(0.7);
-                    $("li.no_estimation_value").fitText(2);
-                    $('#widget_name_' + widget_id + '.widget_name').fitText(0.8);
-                    $('span#min_max_' + widget_id + '.min_max').fitText(1);
-
-                    //Update the widget size (width, height) in database
-                    var newDimensions = this.serialize($widget)[0]; //get final sizex and sizey
-                    $.ajax({
-                        method: 'GET',
-                        url: "/update_view_widget_sizes",
-                        data: {
-                            view_widget_id: $widget.data('view_widget_id'),
-                            sizex: newDimensions.size_x,
-                            sizey: newDimensions.size_y
-                        }
-                    });
-                }
-            }
-
-        }).data('gridster');
-    })
-});
-<% end %>
