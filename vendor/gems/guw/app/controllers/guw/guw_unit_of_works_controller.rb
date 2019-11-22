@@ -748,7 +748,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       # technology = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq.first
       # @guw_unit_of_work.organization_technology_id = technology.nil? ? nil : technology.id
 
-      # @guw_unit_of_work.guw_type_id = @guw_type.id
+      @guw_unit_of_work.guw_type_id = @guw_type.id
       # @guw_unit_of_work.effort = nil
       # @guw_unit_of_work.guw_complexity_id = nil
       @guw_unit_of_work.save
@@ -757,11 +757,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       # @guw_types = @guw_model.guw_types.includes(:guw_complexities)
       # @new_popup_title = (@guw_type.description.blank? ? @guw_type.name : @guw_type.description)
     # end
-
-    respond_to do |format|
-      format.html { redirect_to main_app.dashboard_path(@project, mgli: @guw_unit_of_work.id, anchor: "guw_type_#{@guw_unit_of_work.id}") and return }
-      format.js { render :js => "window.location.replace('/all_organizations');"}
-    end
+    #
+    # respond_to do |format|
+    #   format.html { redirect_to main_app.dashboard_path(@project,
+    #                                                     mgli: @guw_unit_of_work.id,
+    #                                                     anchor: "guw_type_#{@guw_unit_of_work.id}") and return }
+    #
+    #   format.js { render :js => "window.location.replace(main_app.dashboard_path(#{@project}, mgli: #{@guw_unit_of_work.id},
+    #                                                     anchor: guw_type_#{@guw_unit_of_work.id}\"));"}
+    # end
   end
 
   # def change_work_unit
