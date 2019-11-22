@@ -285,7 +285,11 @@
   <% if params[:recalculate] == "true" %>
     <%= hidden_field_tag "modified_guw_line_ids", @current_module_project_guw_unit_of_works.map(&:id).flatten.join(",") %>
   <% else %>
-    <%= hidden_field_tag "modified_guw_line_ids", nil %>
+    <% if params[:mgli].present? %>
+      <%= hidden_field_tag "modified_guw_line_ids", params[:mgli] %>
+    <% else %>
+      <%= hidden_field_tag "modified_guw_line_ids", nil %>
+    <% end %>
   <% end %>
 
   <script>
