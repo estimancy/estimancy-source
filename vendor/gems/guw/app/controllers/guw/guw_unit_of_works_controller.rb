@@ -1105,7 +1105,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   #/!\ NEW METHODS WITH MULTIPLES ATTRIBUTES /!\
   def save_guw_unit_of_works_with_multiple_outputs
 
-    @module_project = ModuleProject.find_by_id(params[:module_project_id])
+    # @module_project = ModuleProject.find_by_id(params[:module_project_id])
+    @module_project = current_module_project
 
     @guw_model = @module_project.guw_model
     @project = @module_project.project
@@ -1716,7 +1717,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
 
     @organization = @guw_unit_of_work.organization
-    @module_project = ModuleProject.find_by_id(params[:module_project_id])
+    # @module_project = ModuleProject.find_by_id(params[:module_project_id])
+    @module_project = @guw_unit_of_work.module_project
 
     @guw_model = @guw_unit_of_work.guw_model
     @project = @module_project.project
