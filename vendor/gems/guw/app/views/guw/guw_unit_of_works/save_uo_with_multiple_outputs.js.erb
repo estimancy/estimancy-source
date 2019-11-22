@@ -2,8 +2,6 @@
   <%
     organization_id = @project.organization_id
 
-    @pemodule = Pemodule.where(alias: "guw").first
-    current_mp = @project.module_projects.where(pemodule_id: @pemodule.id).first
     @guw_model = @module_project.guw_model
 
     @module_positions = ModuleProject.where(organization_id: organization_id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
@@ -33,7 +31,7 @@
   <% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
                                                 guw_model_id: @guw_model.id,
                                                 project_id: @project.id,
-                                                module_project_id: current_mp.id).each do |gceuw| %>
+                                                module_project_id: @module_project.id).each do |gceuw| %>
     <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
   <% end %>
 
@@ -46,7 +44,7 @@
   <% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
                                                 guw_model_id: @guw_model.id,
                                                 project_id: @project.id,
-                                                module_project_id: current_mp.id).order("updated_at ASC").each do |gceuw| %>
+                                                module_project_id: @module_project.id).order("updated_at ASC").each do |gceuw| %>
     <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
   <% end %>
 

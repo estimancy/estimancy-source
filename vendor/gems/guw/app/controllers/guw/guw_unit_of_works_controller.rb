@@ -1716,7 +1716,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
 
     @organization = @guw_unit_of_work.organization
-    @module_project = @guw_unit_of_work.module_project
+    @module_project = ModuleProject.find_by_id(params[:module_project_id])
+
     @guw_model = @guw_unit_of_work.guw_model
     @project = @module_project.project
 
