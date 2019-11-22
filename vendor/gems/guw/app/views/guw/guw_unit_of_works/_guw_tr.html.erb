@@ -196,7 +196,7 @@
           <% unless @guw_type.nil? %>
             <% if @guw_type.display_threshold == true %>
               <% if guow.off_line == true %>
-                <% @default_complexity = @guw_complexities.where(default_value: true).first %>
+                <% @default_complexity = @guw_type.guw_complexities.where(default_value: true).first %>
                 <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: nil),
                                guw: guow.id,
                                class: "guw_complexity",
