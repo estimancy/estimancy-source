@@ -331,6 +331,8 @@ class ViewsWidgetsController < ApplicationController
         else
           #pf = ProjectField.where(views_widget_id: @views_widget.id).last
           pf = ProjectField.where(project_id: project.id, field_id: params["field"].to_i).last
+          pfs_to_destroy = @views_widget.project_fields.where.not(field_id: params["field"].to_i)
+          pfs_to_destroy.destroy_all
 
           if params[:views_widget][:is_kpi_widget].present?
             @value = get_kpi_value_without_unit(@views_widget)    #@value = get_kpi_value(@views_widget)
