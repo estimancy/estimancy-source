@@ -3,7 +3,7 @@
     organization_id = @project.organization_id
 
     @pemodule = Pemodule.where(alias: "guw").first
-    @module_project = @project.module_projects.where(pemodule_id: @pemodule.id).first
+    current_mp = @project.module_projects.where(pemodule_id: @pemodule.id).first
     @guw_model = @module_project.guw_model
 
     @module_positions = ModuleProject.where(organization_id: organization_id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
