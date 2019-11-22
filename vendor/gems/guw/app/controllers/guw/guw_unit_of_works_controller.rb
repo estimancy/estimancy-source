@@ -757,7 +757,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       # @guw_types = @guw_model.guw_types.includes(:guw_complexities)
       # @new_popup_title = (@guw_type.description.blank? ? @guw_type.name : @guw_type.description)
     # end
-    redirect_to main_app.dashboard_path(@project, mgli: @guw_unit_of_work.id, anchor: "guw_type_#{@guw_unit_of_work.id}")
+
+    respond_to do |format|
+      format.html { redirect_to main_app.dashboard_path(@project, mgli: @guw_unit_of_work.id, anchor: "guw_type_#{@guw_unit_of_work.id}") and return }
+      format.js { render :js => "window.location.replace('/all_organizations');"}
+    end
   end
 
   # def change_work_unit
