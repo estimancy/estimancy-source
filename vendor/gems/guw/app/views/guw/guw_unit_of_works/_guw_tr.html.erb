@@ -4,69 +4,8 @@
 
   guow = local_assigns['guow']
   uowg = local_assigns['uowg']
-
-  guw_coefficient_guw_coefficient_elements = guow.guw_coefficient_guw_coefficient_elements
-  #prendre tous les oefff eclement de tous les elements
 %>
-<%#
-   organization_id = @guw_model.organization_id
-   guw_model_id = @guw_model.id
 
-   # @current_mp = current_module_project
-
-   hash_color_priorities = {}
-   guow = local_assigns['guow']
-   uowg = local_assigns['uowg']
-
-   gceuws = @guow_guw_coefficient_element_unit_of_works[guow.id]
-   gceuws.each do |gceuw|
-     # gce = gceuw.guw_coefficient_element
-     # gce = gceuw.guw_coefficient_element
-     # unless gce.nil?
-     gce_guw_coefficient = gceuw.guw_coefficient
-     unless gce_guw_coefficient.nil?
-       unless gce_guw_coefficient.coefficient_type == "Liste" || gce_guw_coefficient.coefficient_type == ""
-         gce = gceuw.guw_coefficient_element
-         if gce.nil?
-           gce = gce_guw_coefficient.guw_coefficient_elements.first
-         end
-
-         unless gce.nil?
-           if (gceuw.percent.to_f != gce.value.to_f)
-             hash_color_priorities[gce.color_priority.to_i] = gce.color_code
-           end
-         end
-       end
-     end
-     # end
-   end
-
-
-   @guw_outputs.each do |o|
-     if !guow.size.nil? && !guow.ajusted_size.nil?
-       if guow.size["#{o.id}"].to_f != guow.ajusted_size["#{o.id}"].to_f
-         hash_color_priorities[o.color_priority.to_i] = o.color_code
-       end
-     end
-     if guow.intermediate_percent != guow.intermediate_weight
-       hash_color_priorities[@guw_type.color_priority.to_i] = @guw_type.color_code
-     end
-   end
-
-   h = Hash[hash_color_priorities.sort.reverse].first
-   unless @guw_type.nil?
-     if @guw_type.allow_line_color == true
-       unless h.nil?
-         c = h.last
-         border_color = "6px solid ##{c};"
-       else
-         border_color = "6px solid aeaeae;"
-       end
-     else
-       border_color = "6px solid aeaeae;"
-     end
-   end
-%>
 
 <td style="border-left: <%= "#{ display_alert(guow) ? '6px solid red' : '' };" %>" class="guw-cell-ajustment" title="Gap detected with Automatic Cotation">
   <% if guow.guw_unit_of_work.nil? %>

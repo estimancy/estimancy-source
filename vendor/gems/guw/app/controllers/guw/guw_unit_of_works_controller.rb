@@ -435,30 +435,27 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       #Estimation 3 points
       if params["low"]["#{guw_unit_of_work.id}"].nil?
         low = guowa.low
-        # guw_unit_of_work.flagged = true
       else
         low = params["low"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["low"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
       end
 
       if params["most_likely"]["#{guw_unit_of_work.id}"].nil?
         most_likely = guowa.most_likely
-        # guw_unit_of_work.flagged = true
       else
         most_likely = params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
       end
 
       if params["high"]["#{guw_unit_of_work.id}"].nil?
         high = guowa.high
-        # guw_unit_of_work.flagged = true
       else
         high = params["high"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i unless params["high"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
       end
     else
-      begin
+      # begin
         #Estimation 1 point
+      unless params["most_likely"].nil?
         if params["most_likely"]["#{guw_unit_of_work.id}"].nil? or params["most_likely"]["#{guw_unit_of_work.id}"].values.map(&:to_f).flatten.sum.blank?
           low = most_likely = high = guowa.most_likely
-          # guw_unit_of_work.flagged = true
         else
           if params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].blank?
             low = most_likely = high = nil
@@ -466,9 +463,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             low = most_likely = high = params["most_likely"]["#{guw_unit_of_work.id}"]["#{guowa.id}"].to_i
           end
         end
-      rescue
-        low = most_likely = high = guowa.most_likely
       end
+      # rescue
+      #   low = most_likely = high = guowa.most_likely
+      # end
     end
 
     if guw_type_attributes_complexities.nil?
@@ -504,7 +502,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
             else
               guw_unit_of_work.off_line = true
-              # guw_unit_of_work.flagged = true
             end
           end
           # guw_unit_of_work.missing_value = false
@@ -513,7 +510,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         unless most_likely.nil?
-          if (most_likely >= attr_complexities_bottom_range_min) and (most_likely < attr_complexities_top_range_max)
+          if (most_likely >= attr_complexities_bottom_range_min) && (most_likely < attr_complexities_top_range_max)
             unless guw_ac.bottom_range.nil? || guw_ac.top_range.nil?
               if (most_likely >= guw_ac.bottom_range) and (most_likely < guw_ac.top_range)
                 if guw_ac.enable_value == true
@@ -525,7 +522,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           else
             guw_unit_of_work.off_line = true
-            # guw_unit_of_work.flagged = true
           end
           # guw_unit_of_work.missing_value = false
         else
@@ -545,7 +541,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           else
             guw_unit_of_work.off_line = true
-            # guw_unit_of_work.flagged = true
           end
           # guw_unit_of_work.missing_value = false
         else
@@ -559,7 +554,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guowa.comments = comments
     end
 
-    gat = Guw::GuwAttributeType.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_attribute_id: guowa.guw_attribute_id, guw_type_id: guw_type.id).first
+    gat = Guw::GuwAttributeType.where(organization_id: organization_id,
+                                      guw_model_id: @guw_model.id,
+                                      guw_attribute_id: guowa.guw_attribute_id,
+                                      guw_type_id: guw_type.id).first
     unless gat.nil?
       if gat.default_value != most_likely && comments.blank?
         # ignored, on en sauvegarde pas les valeurs
@@ -641,6 +639,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   #/!\ NEW METHODS WITH MULTIPLES ATTRIBUTES /!\
   def save_guw_unit_of_works_with_multiple_outputs
 
+    @modified_guows = []
+
     @module_project = ModuleProject.find_by_id(params[:module_project_id])
 
     @guw_model = @module_project.guw_model
@@ -692,8 +692,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         # else
         #   guw_unit_of_work.selected = false
         # end
-
-        guw_unit_of_work.save
+        #
+        # guw_unit_of_work.save
 
         guw_unit_of_work.ajusted_size = nil
         guw_unit_of_work.size = nil
@@ -1277,6 +1277,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         reorder guw_unit_of_work.guw_unit_of_work_group
 
         if guw_unit_of_work.changed?
+          @modified_guows << guw_unit_of_work
           guw_unit_of_work.save
         end
       end
@@ -1286,14 +1287,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     end
 
-    # update_estimation_values
-    # update_view_widgets_and_project_fields
-
-    # if @guw_unit_of_works.last.nil?
-    #   redirect_to main_app.dashboard_path(@project)
-    # else
-    #   redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_works.last.guw_unit_of_work_group.id}")
-    # end
   end
 
   def save_uo_with_multiple_outputs
