@@ -222,7 +222,7 @@ class WbsActivitiesController < ApplicationController
     end
 
     if @wbs_activity.save
-      @wbs_activity_element = WbsActivityElement.new(:name => @wbs_activity.name, :wbs_activity_id => @wbs_activity.id, :description => 'Root Element', :is_root => true)
+      @wbs_activity_element = WbsActivityElement.new(:name => @wbs_activity.name, :wbs_activity_id => @wbs_activity.id, :organization_id => @organization_id, :description => 'Root Element', :is_root => true)
       @wbs_activity_element.save
       redirect_to main_app.organization_module_estimation_path(@organization_id, anchor: "activite")
     else

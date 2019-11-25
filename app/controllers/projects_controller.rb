@@ -2329,10 +2329,13 @@ class ProjectsController < ApplicationController
       #======
       #Select the default view for module_project
       default_view = View.where("organization_id = ? AND pemodule_id = ? AND is_default_view = ?",  @project.organization_id, @pemodule.id, true).first
+      new_copied_view = View.new(name: "#{@project} - #{my_module_project} view", description: "", pemodule_id: my_module_project.pemodule_id, organization_id: @organization.id)
+
       #Then copy the default view widgets in the new created view
-      unless default_view.nil?
-        new_copied_view = View.new(name: "#{@project} - #{my_module_project} view", description: "", pemodule_id: my_module_project.pemodule_id, organization_id: @organization.id, initial_view_id: default_view.id)
-        if new_copied_view.save
+      if new_copied_view.save
+        unless default_view.nil?
+          #new_copied_view = View.new(name: "#{@project} - #{my_module_project} view", description: "", pemodule_id: my_module_project.pemodule_id, organization_id: @organization.id, initial_view_id: default_view.id)
+          new_copied_view.update_attributes(initial_view_id: default_view.id)
           #Then copy the widgets of the dafult view
           default_view.views_widgets.each do |view_widget|
             widget_est_val = view_widget.estimation_value
@@ -2381,10 +2384,10 @@ class ProjectsController < ApplicationController
               end
             end
           end
-
-          my_module_project.view_id = new_copied_view.id
-          my_module_project.save
         end
+
+        my_module_project.view_id = new_copied_view.id
+        my_module_project.save
       end
       #======
     end

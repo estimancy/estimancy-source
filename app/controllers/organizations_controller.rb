@@ -2506,7 +2506,12 @@ class OrganizationsController < ApplicationController
 
       ###======= Ajout apres gestion Temps reponse
       #update Projects ModulesProjects
+
       new_prj.module_projects.update_all(organization_id: new_organization_id)
+      new_prj.module_projects.each do |module_project|
+        module_project.estimation_values.update_all(organization_id: new_organization_id)
+      end
+
       ###======= Fin Ajout apres gestion Temps reponse
 
       #Update the project securities for the current user who create the estimation from model
@@ -2552,19 +2557,22 @@ class OrganizationsController < ApplicationController
 
         ##========================== NEW =======
         # Wbs activity create module_project ratio elements
-        old_mp.module_project_ratio_elements.where(organization_id: new_organization.id).each do |old_mp_ratio_elt|
+        old_mp.module_project_ratio_elements.where(organization_id: old_organization_id).each do |old_mp_ratio_elt|
+          #wbs_activity
+          old_wbs_activity_id = old_mp_ratio_elt.wbs_activity_ratio.wbs_activity_id
+          new_wbs_activity = new_organization.wbs_activities.where(copy_id: old_wbs_activity_id).first
+
           mp_ratio_element = old_mp_ratio_elt.dup
           mp_ratio_element.module_project_id = new_mp.id
           mp_ratio_element.copy_id = old_mp_ratio_elt.id
+          mp_ratio_element.organization_id = new_organization_id
+          mp_ratio_element.wbs_activity_id = new_wbs_activity.id
 
           # pbs
           pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
           pbs_id = pbs.nil? ? nil : pbs.id
           mp_ratio_element.pbs_project_element_id = pbs_id
 
-          #wbs_activity
-          old_wbs_activity_id = old_mp_ratio_elt.wbs_activity_ratio.wbs_activity_id
-          new_wbs_activity = new_organization.wbs_activities.where(copy_id: old_wbs_activity_id).first
 
           if new_wbs_activity.nil?
             mp_ratio_element.wbs_activity_element_id = nil
@@ -2613,6 +2621,47 @@ class OrganizationsController < ApplicationController
           #end
           mp_ratio_element.save
         end
+
+        #module_project_ratio_variables
+        old_mp.module_project_ratio_variables.each do |old_mp_ratio_variable|
+          #wbs_activity
+          old_wbs_activity_id = old_mp_ratio_variable.wbs_activity_ratio.wbs_activity_id
+          new_wbs_activity = new_organization.wbs_activities.where(copy_id: old_wbs_activity_id).first
+
+          mp_ratio_variable = old_mp_ratio_variable.dup
+          mp_ratio_variable.module_project_id = new_mp.id
+          mp_ratio_variable.copy_id = old_mp_ratio_variable.id
+          mp_ratio_variable.organization_id = new_organization_id
+          mp_ratio_variable.wbs_activity_id = new_wbs_activity.id
+
+          # pbs
+          pbs = new_prj_components.where(copy_id: old_mp_ratio_variable.pbs_project_element_id).first
+          pbs_id = pbs.nil? ? nil : pbs.id
+          mp_ratio_variable.pbs_project_element_id = pbs_id
+
+          if new_wbs_activity.nil?
+            mp_ratio_variable.wbs_activity_ratio_id = nil
+            mp_ratio_variable.wbs_activity_ratio_variable_id = nil
+          else
+            # wbs_activity_ratio
+            new_wbs_activity_ratio = new_wbs_activity.wbs_activity_ratios.where(organization_id: new_organization.id, copy_id: old_mp_ratio_variable.wbs_activity_ratio_id).first
+
+            if new_wbs_activity_ratio.nil?
+              mp_ratio_variable.wbs_activity_ratio_id = nil
+              mp_ratio_variable.wbs_activity_ratio_variable_id = nil
+            else
+              mp_ratio_variable.wbs_activity_ratio_id = new_wbs_activity_ratio.id
+
+              # wbs_activity_ratio_variable
+              new_wbs_activity_ratio_variable = new_wbs_activity_ratio.wbs_activity_ratio_variables.where(organization_id: new_organization.id, copy_id: old_mp_ratio_variable.wbs_activity_ratio_variable_id).first
+              wbs_activity_ratio_variable_id = new_wbs_activity_ratio_variable.nil? ? nil : new_wbs_activity_ratio_variable.id
+              mp_ratio_variable.wbs_activity_ratio_variable_id = wbs_activity_ratio_variable_id
+            end
+          end
+
+          mp_ratio_variable.save
+        end
+
         ### End wbs_activity
 
 
@@ -2692,10 +2741,15 @@ class OrganizationsController < ApplicationController
           end
         end
 
-        new_view = View.create(organization_id: new_organization_id, pemodule_id: new_mp.pemodule_id, name: "#{new_prj.to_s} : view for #{new_mp.to_s}", description: "")
+        new_view = View.create(organization_id: new_organization_id, pemodule_id: new_mp.pemodule_id, name: "#{new_prj.to_s} : view for #{new_mp.to_s}", description: "", initial_view_id: old_mp.view_id)
         # We have to copy all the selected view's widgets in a new view for the current module_project
         if old_mp.view
           old_mp_view_widgets = old_mp.view.views_widgets.all
+        else
+          old_mp_view_widgets = old_mp.views_widgets.all
+        end
+
+        unless old_mp_view_widgets.blank?
           old_mp_view_widgets.each do |view_widget|
             new_view_widget_mp = ModuleProject.where(organization_id: new_organization.id, project_id: new_prj.id, copy_id: view_widget.module_project_id).first  #.find_by_project_id_and_copy_id(new_prj.id, view_widget.module_project_id)
             new_view_widget_mp_id = new_view_widget_mp.nil? ? nil : new_view_widget_mp.id
@@ -2725,7 +2779,6 @@ class OrganizationsController < ApplicationController
                                                  validation_text: view_widget.validation_text
                 )
                 #===
-
                 # #Update KPI Widget aquation
                 unless view_widget.equation.empty?
                   ["A", "B", "C", "D", "E"].each do |letter|
@@ -2774,6 +2827,9 @@ class OrganizationsController < ApplicationController
         ###end
 
         #Update the Unit of works's groups
+        ###======= Ajout ligne suivante apres gestion Temps reponse  #puts "\nGuwUnitOfWorkGroup"
+        new_mp.guw_unit_of_work_groups.update_all(organization_id: new_organization_id, guw_model_id: new_mp.guw_model_id, project_id: new_prj.id)
+
         new_mp.guw_unit_of_work_groups.where(organization_id: new_organization_id, project_id: new_prj.id).each do |guw_group|
           new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
           new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
@@ -2782,12 +2838,11 @@ class OrganizationsController < ApplicationController
           # new_technology = new_organization.organization_technologies.where(copy_id: guw_group.organization_technology_id).first
           # new_technology_id = new_technology.nil? ? nil : new_technology.id
 
-          guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id,
-                                      # organization_technology_id: new_technology_id,
-                                      project_id: new_prj.id, organization_id: new_organization_id)
+          guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id, project_id: new_prj.id, organization_id: new_organization_id)
 
           # Update the group unit of works and attributes
-          guw_group.guw_unit_of_works.where(organization_id: new_organization_id, project_id: new_prj.id).each do |guw_uow|
+          #guw_group.guw_unit_of_works.where(organization_id: new_organization_id, project_id: new_prj.id).each do |guw_uow|
+          guw_group.guw_unit_of_works.each do |guw_uow|
             #new_uow_mp = ModuleProject.find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
             new_uow_mp = ModuleProject.where(organization_id: new_organization_id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first
             new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
@@ -2830,6 +2885,10 @@ class OrganizationsController < ApplicationController
             guw_uow.update_attributes(module_project_id: new_uow_mp_id, pbs_project_element_id: new_pbs_id, guw_model_id: new_guw_model_id,
                                       guw_type_id: new_guw_type_id, guw_work_unit_id: new_guw_work_unit_id, guw_complexity_id: new_complexity_id,
                                       project_id: new_prj.id, organization_id: new_organization_id)
+
+            # MAJ apres Temps reponse
+            guw_uow.guw_coefficient_element_unit_of_works.update_all(organization_id: new_organization_id, guw_model_id: new_guw_model_id, project_id: new_prj.id, module_project_id: new_uow_mp_id)
+            guw_uow.guw_unit_of_work_attributes.update_all(organization_id: new_organization_id, guw_model_id: new_guw_model_id, project_id: new_prj.id, module_project_id: new_uow_mp_id)
           end
         end
 
@@ -2899,7 +2958,8 @@ class OrganizationsController < ApplicationController
                       # old_pbs_level_value = old_level_value.delete(old_component.id.to_i)
                       # new_level_value[new_component.id.to_i] = old_pbs_level_value
 
-                      if level == "probable" && new_mp.pemodule.alias == "effort_breakdown"
+                      #if level == "probable" && new_mp.pemodule.alias == "effort_breakdown"
+                      if new_mp.pemodule.alias == "effort_breakdown"
 
                         old_pbs_level_value = old_level_value[old_component.id.to_i]
                         new_level_value[new_component.id.to_i] = old_pbs_level_value
@@ -2927,37 +2987,42 @@ class OrganizationsController < ApplicationController
                                 new_element = new_mp.wbs_activity_elements.where(organization_id: new_organization_id, wbs_activity_id: wbs_activity.id, copy_id: element_id).first
 
                                 if new_element
-                                  temp_values[new_component.id][new_element.id] = values_hash
-                                  profiles_hash = values_hash['profiles']
-                                  temp_values[new_component.id][new_element.id]['profiles'] = Hash.new
 
-                                  unless profiles_hash.blank? #profiles_hash.nil? && profiles_hash.empty?
+                                  if level != "probable"
+                                    temp_values[new_component.id][new_element.id] = new_pbs_level_value[element_id]
+                                  else
+                                    temp_values[new_component.id][new_element.id] = values_hash
+                                    profiles_hash = values_hash['profiles']
+                                    temp_values[new_component.id][new_element.id]['profiles'] = Hash.new
 
-                                    profiles_hash.each do |key, profile_values|
-                                      old_profile_id = key.gsub('profile_id_', '')
-                                      new_wbs_profiles = wbs_activity.organization_profiles
+                                    unless profiles_hash.blank? #profiles_hash.nil? && profiles_hash.empty?
 
-                                      unless new_wbs_profiles.nil?
-                                        new_profile = new_wbs_profiles.where(copy_id: old_profile_id).first
-                                        if new_profile
-                                          temp_values[new_component.id][new_element.id]['profiles']["profile_id_#{new_profile.id}"] = Hash.new
+                                      profiles_hash.each do |key, profile_values|
+                                        old_profile_id = key.gsub('profile_id_', '')
+                                        new_wbs_profiles = wbs_activity.organization_profiles
 
-                                          #wbs_activity.wbs_activity_ratios.each do |new_ratio|
-                                            old_ratio_id = new_mp_ratio.copy_id #new_ratio.copy_id
-                                            begin
-                                              ratio_value = profile_values["ratio_id_#{old_ratio_id}"][:value]
-                                            rescue
-                                              ratio_value = nil
-                                            end
-                                            temp_values[new_component.id][new_element.id]['profiles']["profile_id_#{new_profile.id}"]["ratio_id_#{new_mp_ratio.id}"] = { value: ratio_value }
-                                          #end
-                                        else
-                                          #puts "Profile nul"
+                                        unless new_wbs_profiles.nil?
+                                          new_profile = new_wbs_profiles.where(copy_id: old_profile_id).first
+                                          if new_profile
+                                            temp_values[new_component.id][new_element.id]['profiles']["profile_id_#{new_profile.id}"] = Hash.new
+
+                                            #wbs_activity.wbs_activity_ratios.each do |new_ratio|
+                                              old_ratio_id = new_mp_ratio.copy_id #new_ratio.copy_id
+                                              begin
+                                                ratio_value = profile_values["ratio_id_#{old_ratio_id}"][:value]
+                                              rescue
+                                                ratio_value = nil
+                                              end
+                                              temp_values[new_component.id][new_element.id]['profiles']["profile_id_#{new_profile.id}"]["ratio_id_#{new_mp_ratio.id}"] = { value: ratio_value }
+                                            #end
+                                          else
+                                            #puts "Profile nul"
+                                          end
                                         end
                                       end
                                     end
                                   end
-                                end
+                                end  #end if new_element
                               end
                             end
 
@@ -3152,9 +3217,16 @@ class OrganizationsController < ApplicationController
                   new_wbs_activity.organization_profile_ids = new_wbs_profiles
                   new_wbs_activity.save
 
+                  ##======  Apres msj Temps Reponse  ======#
+                  #new_wbs_activity.wbs_activity_elements.update_all(organization_id: new_organization.id)
+                  new_wbs_activity.wbs_activity_ratios.update_all(organization_id: new_organization.id)
+
                   #get new WBS Ratio elements
                   new_wbs_activity_ratio_elts = []
                   new_wbs_activity.wbs_activity_ratios.each do |ratio|
+
+                    ratio.wbs_activity_ratio_elements.update_all(organization_id: new_organization.id, wbs_activity_id: new_wbs_activity.id)
+
                     ratio.wbs_activity_ratio_elements.each do |ratio_elt|
                       new_wbs_activity_ratio_elts << ratio_elt
 
@@ -3173,10 +3245,12 @@ class OrganizationsController < ApplicationController
                       old_ratio.wbs_activity_ratio_variables.each do |old_ratio_variable|
                         new_ratio_variable = old_ratio_variable.dup
                         new_ratio_variable.wbs_activity_ratio_id = ratio.id
+                        new_ratio_variable.copy_id = old_ratio_variable.id
+                        new_ratio_variable.organization_id = new_organization.id
+                        new_ratio_variable.wbs_activity_id = new_wbs_activity.id
                         new_ratio_variable.save
                       end
                     end
-
                   end
 
                   #Managing the component tree
@@ -3184,6 +3258,7 @@ class OrganizationsController < ApplicationController
                   old_wbs_activity_elements.each do |old_elt|
                     new_elt = old_elt.amoeba_dup
                     new_elt.wbs_activity_id = new_wbs_activity.id
+                    new_elt.organization_id = new_organization.id
                     new_elt.save#(:validate => false)
 
                     unless new_elt.is_root?
@@ -3294,6 +3369,11 @@ class OrganizationsController < ApplicationController
 
             # Update the modules's GE Models instances
             new_organization.ge_models.each do |ge_model|
+
+              # Update all the new organization module_project's ge_model with the current ge_model
+              ge_copy_id = ge_model.copy_id
+              new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
+
               #Terminate the model duplication with the copie of the factors values
               ge_model.transaction do
                 #Then copy the factor values
@@ -3304,18 +3384,24 @@ class OrganizationsController < ApplicationController
                   parent_factor = Ge::GeFactor.find(factor.copy_id)
                   if parent_factor
                     parent_factor.ge_factor_values.each do |parent_factor_value|
-                      new_factor_value =  parent_factor_value.dup
+                      new_factor_value = parent_factor_value.dup
                       new_factor_value.ge_model_id = ge_model.id
                       new_factor_value.ge_factor_id = factor.id
                       new_factor_value.save
                     end
                   end
                 end
+
+                # GeInputs
+                ge_model.ge_inputs.each do |ge_input|
+                  ge_input.organization_id = new_organization.id
+                  new_mp = new_organization.module_projects.where(ge_model_id: ge_model.id, copy_id: ge_input.module_project_id).first
+                  ge_input.module_project_id = (new_mp.nil? ? nil : new_mp.id)
+                  ge_input.save
+                end
               end
 
-              # Update all the new organization module_project's ge_model with the current ge_model
-              ge_copy_id = ge_model.copy_id
-              new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
+
             end
 
             # Update the modules's KB Models instances
@@ -3399,6 +3485,10 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
     @groups = @organization.groups
+    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "budget_report", "raw_data_extract", "budget_excel_report"]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi"]
+    @organization_show_reports_keys = []
+    @organization_show_kpi_keys = []
   end
 
   def edit
@@ -3694,20 +3784,24 @@ class OrganizationsController < ApplicationController
       set_breadcrumbs I18n.t(:organizations) => "/all_organizations", "#{I18n.t(:organizations)}" => ""
     end
 
-    if current_user.super_admin?
-      @organizations = Organization.all
-    elsif can?(:manage, :all)
-      @organizations = Organization.all.reject{|org| org.is_image_organization}
-    else
-      @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
-    end
-
-    if !current_user.super_admin? && (current_user.subscription_end_date && current_user.subscription_end_date < Time.now)
-      flash[:warning] = I18n.t(:subscription_end_date_has_expired, :resource_name => current_user.name, :subscription_end_date => current_user.subscription_end_date.strftime("%-d %b %Y"))
-    else
-      if @organizations.size == 1 && !current_user.super_admin?
-        redirect_to organization_estimations_path(@organizations.first) and return
+    if current_user
+      if current_user.super_admin?
+        @organizations = Organization.all
+      elsif can?(:manage, :all)
+        @organizations = Organization.all.reject{|org| org.is_image_organization}
+      else
+        @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
       end
+
+      if !current_user.super_admin? && (current_user.subscription_end_date && current_user.subscription_end_date < Time.now)
+        flash[:warning] = I18n.t(:subscription_end_date_has_expired, :resource_name => current_user.name, :subscription_end_date => current_user.subscription_end_date.strftime("%-d %b %Y"))
+      else
+        if @organizations.size == 1 && !current_user.super_admin?
+          redirect_to organization_estimations_path(@organizations.first) and return
+        end
+      end
+    else
+      redirect_to sign_in_path
     end
   end
 
