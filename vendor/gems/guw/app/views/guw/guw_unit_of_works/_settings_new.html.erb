@@ -1,7 +1,5 @@
 <%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path, id: "guw_form", remote: true do %>
 
-  <%= @module_project.to_s %>
-  <%= @module_project.id %>
   <%= hidden_field_tag 'module_project_id', @module_project.id %>
 
   <div class="modal fade" id="modal_deported" tabindex="-1" role="dialog" aria-labelledby="modal_deported_label" aria-hidden="true" backdrop="static">
