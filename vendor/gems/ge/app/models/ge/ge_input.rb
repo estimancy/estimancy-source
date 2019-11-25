@@ -21,7 +21,7 @@
 
 module Ge
   class GeInput < ActiveRecord::Base
-    attr_accessible :formula, :ge_model_id, :module_project_id, :organization_id, :values
+    attr_accessible :formula, :s_factors_value, :p_factors_value, :c_factors_value, :values, :ge_model_id, :module_project_id, :organization_id
 
     serialize :values, Hash  # Hash of Hash  ==> { { :ge_factor_value_id => id, :scale_prod => val, :factor_name =>, :value => val }, {...}, ... }
 

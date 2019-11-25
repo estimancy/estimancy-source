@@ -83,6 +83,7 @@ module Guw
       #new_organization.guw_models.each do |guw_model|
       guw_model = self
       guw_model_organization = guw_model.organization
+      guw_model_organization_id = guw_model_organization.id
 
       # Copy PeAttributes for  the new model outputs
       pm = Pemodule.where(alias: "guw").first
@@ -120,7 +121,50 @@ module Guw
       end
 
 
+      #Update GUW organization_id apres gestion Temps de Reponse
+      #====== debut ======
+      #puts "\nGuwType"
+      guw_model.guw_types.update_all(organization_id: guw_model_organization_id)
+
+      #puts "\nGuwOutput"
+      guw_model.guw_outputs.update_all(organization_id: guw_model_organization_id)
+
+      #puts "\nGuwCoefficient"
+      guw_model.guw_coefficients.update_all(organization_id: guw_model_organization_id)
+
+      #puts "\nGuwCoefficientElement"
+      guw_model.guw_coefficients.where(organization_id: guw_model_organization_id).each do |guw_coefficient|
+        guw_coefficient.guw_coefficient_elements.update_all(organization_id: guw_model_organization_id, guw_model_id: guw_model.id)
+      end
+
+      #puts "\nGuwAttribute
+      guw_model.guw_attributes.update_all(organization_id: guw_model_organization_id)
+
+      #puts "\nGuwOutputType"
+      guw_model.guw_output_types.update_all(organization_id: guw_model_organization_id)
+
+      #puts "\nGuwWorkUnit"
+      guw_model.guw_work_units.update_all(organization_id: guw_model_organization_id)
+
+      #puts "\nEstimationValue : voir dans execute_duplication"
+      #puts "\nGuwCoefficientElementUnitOfWork : voir dans execute_duplication"
+      #puts "\nModuleProject : voir dans execute_duplication"
+      #puts "\nGuwUnitOfWorkAttribute : voir dans execute_duplication"
+
+      #puts "\nGuwComplexityTechnology : n'est plus utilisé"
+      #puts "\nGuwComplexityWorkUnit : n'est plus utilisé"
+      #====== fin ========
+
+
       guw_model.guw_types.each do |guw_type|
+
+        #puts "\nGuwTypeComplexity"
+        guw_type.guw_type_complexities.update_all(organization_id: guw_model_organization_id, guw_model_id: guw_model.id)
+
+        #puts "\nGuwAttributeType : #{Guw::GuwAttributeType.where(organization_id: nil).size} elements"
+        GuwAttributeType.where(guw_type_id: guw_type.id).each do |guw_attribute_type|
+          guw_attribute_type.update_attributes(organization_id: guw_model_organization.id, guw_model_id: guw_model.id)
+        end
 
         # Copy the complexities technologies
         guw_type.guw_complexities.each do |guw_complexity|
@@ -157,9 +201,12 @@ module Guw
           #   end
           # end
 
+          #puts "\nGuwComplexity"
           guw_complexity.guw_model_id = guw_model.id
+          guw_complexity.organization_id = guw_model_organization_id
           guw_complexity.save
 
+          #puts "\nGuwOutputAssociation"
           guw_complexity.guw_output_associations.each do |new_goa|
 
             go = GuwOutput.where(copy_id: new_goa.guw_output_id).first
@@ -170,10 +217,10 @@ module Guw
 
             new_goa.guw_model_id = guw_model.id
             new_goa.organization_id = guw_model_organization.id
-
             new_goa.save(validate: false)
           end
 
+          #puts "\nGuwOutputComplexity"
           guw_complexity.guw_output_complexities.each do |new_goc|
 
             go = GuwOutput.where(copy_id: new_goc.guw_output_id).first
@@ -182,10 +229,10 @@ module Guw
 
             new_goc.guw_model_id = guw_model.id
             new_goc.organization_id = guw_model_organization.id
-
             new_goc.save(validate: false)
           end
 
+          #puts "\nGuwOutputComplexityInitialization"
           guw_complexity.guw_output_complexity_initializations.each do |new_goci|
 
             go = GuwOutput.where(copy_id: new_goci.guw_output_id).first
@@ -263,6 +310,7 @@ module Guw
 
             new_guw_type_complexity = new_guw_type.guw_type_complexities.where(copy_id: guw_attr_complexity.guw_type_complexity_id).first
 
+            #puts "\nGuwAttributeComplexity"
             guw_attr_complexity.organization_id = guw_model_organization.id
             guw_attr_complexity.guw_model_id = guw_model.id
             guw_attr_complexity.guw_type_id = new_guw_type_id
@@ -282,6 +330,7 @@ module Guw
           guw_coefficient_element.organization_id = guw_model_organization.id
           guw_coefficient_element.save
 
+          #puts "\nGuwComplexityCoefficientElement"
           guw_coefficient_element.guw_complexity_coefficient_elements.each do |gcce|
 
             new_guw_type = guw_model.guw_types.where(copy_id: gcce.guw_type_id).last
@@ -299,9 +348,7 @@ module Guw
 
             gcce.guw_model_id = guw_model.id
             gcce.organization_id = guw_model_organization.id
-
             gcce.save(validate: false)
-
           end
         end
       end

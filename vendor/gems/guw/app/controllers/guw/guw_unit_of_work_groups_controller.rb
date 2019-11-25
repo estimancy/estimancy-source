@@ -102,10 +102,22 @@ class Guw::GuwUnitOfWorkGroupsController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @guw_unit_of_work_group = Guw::GuwUnitOfWorkGroup.find(params[:id])
+
+    @module_project = @guw_unit_of_work_group.module_project
+    @project = @module_project.project
+    @guw_model = @module_project.guw_model
+    @organization = @module_project.organization
+    #component = @guw_unit_of_work_group.pbs_project_element
+    component = current_component
+
     @guw_unit_of_work_group.destroy
+
+    Guw::GuwUnitOfWork.update_estimation_values(@module_project, component)
+    Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, component)
 
     redirect_to main_app.dashboard_path(@project)
   end
+
 
   # ModuleProject.all.each do |mp|
   #   mp.guw_unit_of_work_groups.each do |group|
