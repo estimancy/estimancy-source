@@ -49,7 +49,7 @@
                            description = pmod.staffing_model.description rescue ""
                       %>
                   <% end %>
-                  <% description = description.empty? ? "" : " : #{description}"  %>
+                  <% description = " : #{description}" rescue ""  %>
                   <li class="nav-item" title='<%= "#{pmod.to_s} #{description}" %>'>
                     <!--<a class="nav-link <%#= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%#= activate_module_project_path(pmod) %>">-->
                     <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">

@@ -1,56 +1,101 @@
 <section class="card card-content-bloc estimancy-form">
-  <%#= simple_form_for @new_project, :url => duplicate_path(params[:template_id]), :method => :post do |f| %>
-  <%= simple_form_for @new_project, :url => duplicate_path(params[:template_id]) do |f| %>
+<div class="card-body">
+  <div class="edition-bloc-content">
+    <div class="edition-bloc-form">
+    <%#= simple_form_for @new_project, :url => duplicate_path(params[:template_id]), :method => :post do |f| %>
+      <%= simple_form_for @new_project, :url => duplicate_path(params[:template_id]) do |f| %>
 
-      <%= f.error_notification %>
+        <%= f.error_notification %>
 
-      <%= hidden_field_tag(:organization_id, params[:organization_id]) %>
-      <%= hidden_field_tag(:project_id, params[:template_id]) %>
-      <%= hidden_field_tag(:demand_id, params[:demand_id]) %>
+        <%= hidden_field_tag(:organization_id, params[:organization_id]) %>
+        <%= hidden_field_tag(:project_id, params[:template_id]) %>
+        <%= hidden_field_tag(:demand_id, params[:demand_id]) %>
 
-      <% if @project_template.use_automatic_quotation_number %>
-        <%#= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :value => @organization.automatic_quotation_number.next}, readonly: true %>
-        <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'col-8 form-control'}, readonly: true %>
-      <% else %>
-          <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'col-8 form-control', :autofocus => (controller.action_name == 'new')} %>
+            <div class="form-row">
+              <div class="col-8">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <% if @project_template.use_automatic_quotation_number %>
+                    <%#= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :value => @organization.automatic_quotation_number.next}, readonly: true %>
+                    <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'mdl-textfield__input form-control'}, readonly: true %>
+                  <% else %>
+                      <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>
+                  <% end %>
+  <!--                <label class="mdl-textfield__label" for="title"><%#= "#{I18n.t 'label_project_name'}" %></label>-->
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-8">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                   <%= f.input :version_number, label: "#{I18n.t 'version_number'}", :input_html => { :class => 'mdl-textfield__input form-control' } %>
+  <!--                <label class="mdl-textfield__label" for="version_number"><%#= I18n.t 'version_number' %></label>-->
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-8">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <% apps = @project_template.applications %>
+                  <% if @current_organization.applications.empty? and apps.empty? %>
+  <!--                  <label class="mdl-textfield__label" for="application_name"><%#= I18n.t('label_product_name') %></label>-->
+                    <%= f.input :application_name, :input_html => {:class => 'form-control', value: @project_template.application_name}, :label => I18n.t('label_product_name') %>
+                  <% else %>
+  <!--                  <label class="mdl-textfield__label" for="application_id"><%#= I18n.t('label_product_name') %></label>-->
+                    <%= f.input :application_id, as: :select,
+                                collection: apps.empty? ? @current_organization.applications.active : apps.map{|i| [i.name, i.id]},
+                                label: I18n.t('label_product_name'),
+                                input_html: {:class => 'form-control'},
+                                selected: @project_template.application_id %>
+                  <% end %>
+
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-8">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'mdl-textfield__input', :rows => 5} %>
+  <!--                <label class="mdl-textfield__label" for="description"><%#= "#{I18n.t 'description'}" %></label>-->
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-8">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :start_date, :as => :string, label: I18n.t('start_date'), :input_html => {:class => 'date-picker form-control col-8', :value => I18n.l(Time.now.to_date) } %>
+  <!--                <label class="mdl-textfield__label" for="start_date"><%#= "#{I18n.t 'start_date'}" %></label>-->
+                </div>
+              </div>
+            </div>
+
+            <div class="modal-footer">
+          <% if can? :create_project_from_template, Project %>
+            <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary submit_project', :"data-disable-with" => "#{I18n.t :please_wait}" %>
+            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+          <% end %>
+        </div>
+
+        <script>
+            $(document).ready(function () {
+                $(".date-picker").datepicker({
+                    language: '<%= set_user_language %>',
+                    autoclose: true,
+                    todayHighlight: true,
+                    todayBtn: true,
+                    icons: {
+                        rightIcon: '<i class="material-icons">event</i>'
+                    }
+                });
+            });
+        </script>
+
       <% end %>
 
-      <%= f.input :version_number, :input_html => { :class => 'col-8 form-control' } %>
-
-      <% apps = @project_template.applications %>
-      <% if @current_organization.applications.empty? and apps.empty? %>
-        <%= f.input :application_name, :input_html => {:class => 'col-8 form-control', value: @project_template.application_name}, :label => I18n.t(:label_product_name) %>
-      <% else %>
-        <%= f.input :application_id, as: :select,
-                    collection: apps.empty? ? @current_organization.applications.active : apps.map{|i| [i.name, i.id]},
-                    label: I18n.t(:label_product_name),
-                    input_html: {:class => 'col-8 form-control'},
-                    selected: @project_template.application_id %>
-      <% end %>
-
-      <%= f.input :description, :label => "#{I18n.t 'description'}", :input_html => {:class => 'col-8 from_model_text_area form-control', :rows => 5} %>
-      <%= f.input :start_date, :as => :string, label: I18n.t(:start_date), :input_html => {:class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
-
-      <div class="modal-footer">
-        <% if can? :create_project_from_template, Project %>
-          <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary submit_project', :"data-disable-with" => "#{I18n.t :please_wait}" %>
-          <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
-        <% end %>
-      </div>
-
-      <script>
-          $(document).ready(function () {
-              $(".date-picker").datepicker({
-                  language: '<%= set_user_language %>',
-                  autoclose: true,
-                  todayHighlight: true,
-                  todayBtn: true,
-                  icons: {
-                      rightIcon: '<i class="material-icons">event</i>'
-                  }
-              });
-          });
-      </script>
-
-    <% end %>
+    </div>
+  </div>
+</div>
 </section>
