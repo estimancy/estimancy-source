@@ -3759,11 +3759,14 @@ class OrganizationsController < ApplicationController
           end
 
           if session[:organization_id] == params[:id]
-            session[:organization_id] = current_user.organizations.first  #session[:organization_id] = nil
+            if current_user.organizations.all.size == 1
+              session[:organization_id] = current_user.organizations.first
+            else
+              session[:organization_id] = nil
+            end
           end
           flash[:notice] = I18n.t(:notice_organization_successful_deleted)
           redirect_to '/all_organizations' and return
-
         else
           flash[:warning] = I18n.t('warning_need_organization_check_box_confirmation')
           render :template => 'organizations/confirm_organization_deletion', :locals => {:organization_id => @organization_id}
