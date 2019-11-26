@@ -2519,6 +2519,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                               guw_model_id: @guw_model.id,
                                                               guw_type_id: @guw_type.id,
                                                               default_value: true).first
+                    if guw_complexity.nil?
+                      guw_complexity = Guw::GuwComplexity.where(organization_id: @organization.id,
+                                                                guw_model_id: @guw_model.id,
+                                                                guw_type_id: @guw_type.id).first
+                    end
                   end
                 else
                   unless @guw_type.nil?
