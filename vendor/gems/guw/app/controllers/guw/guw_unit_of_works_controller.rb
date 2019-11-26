@@ -1787,7 +1787,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    redirect_to main_app.dashboard_path(@project, recalculate: true)
+    redirect_to main_app.dashboard_path(@project)
   end
 
   def extract_trt_from_excel(default_group)
