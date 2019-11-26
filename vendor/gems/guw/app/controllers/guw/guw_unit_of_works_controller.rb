@@ -1787,6 +1787,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
+    Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
+    Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
+
     redirect_to main_app.dashboard_path(@project)
   end
 
@@ -2619,15 +2622,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 end
 
                 # if guw_uow.changed?
-                  guw_uow.save
+                #   guw_uow.save
                 # end
 
                   unless @guw_type.nil?
                     if (guw_uow.result_low.nil? || guw_uow.result_most_likely.nil? || guw_uow.result_high.nil?) || (@guw_type.allow_complexity == true && (@guw_type.allow_criteria == false || @guw_type.allow_criteria == nil))
-                      if guw_uow.guw_complexity.nil?
+                      guw_uow_guw_complexity = guw_uow.guw_complexity
+                      if guw_uow_guw_complexity.nil?
                         array_pert << 0
                       else
-                        array_pert << (guw_uow.guw_complexity.weight.nil? ? 1 : guw_uow.guw_complexity.weight.to_f)
+                        array_pert << (guw_uow_guw_complexity.weight.nil? ? 1 : guw_uow_guw_complexity.weight.to_f)
                       end
                     else
                       if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
