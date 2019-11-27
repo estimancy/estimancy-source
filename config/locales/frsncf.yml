@@ -2534,3 +2534,4 @@ frsncf:
   coefficient_value: "Valeur du coefficient"
   coefficient_label: "Libellé du coefficient"
   criticality: "Criticité"
+  past_projects_effort: "Effort des projets passés"
