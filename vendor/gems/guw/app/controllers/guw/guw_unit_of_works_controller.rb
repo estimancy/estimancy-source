@@ -2597,71 +2597,61 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
 
                   if @lows.empty?
-                    # guw_uow.guw_complexity_id = nil
-                    # guw_uow.guw_original_complexity_id = nil
                     guw_uow.result_low = nil
                   else
                     guw_uow.result_low = @lows.sum
                   end
 
                   if @mls.empty?
-                    # guw_uow.guw_complexity_id = nil
-                    # guw_uow.guw_original_complexity_id = nil
                     guw_uow.result_most_likely = nil
                   else
                     guw_uow.result_most_likely = @mls.sum
                   end
 
                   if @highs.empty?
-                    # guw_uow.guw_complexity_id = nil
-                    # guw_uow.guw_original_complexity_id = nil
                     guw_uow.result_high = nil
                   else
                     guw_uow.result_high = @highs.sum
                   end
                 end
 
-                # if guw_uow.changed?
-                #   guw_uow.save
-                # end
-
-                  unless @guw_type.nil?
-                    if (guw_uow.result_low.nil? || guw_uow.result_most_likely.nil? || guw_uow.result_high.nil?) || (@guw_type.allow_complexity == true && (@guw_type.allow_criteria == false || @guw_type.allow_criteria == nil))
-                      guw_uow_guw_complexity = guw_uow.guw_complexity
-                      if guw_uow_guw_complexity.nil?
-                        array_pert << 0
-                      else
-                        array_pert << (guw_uow_guw_complexity.weight.nil? ? 1 : guw_uow_guw_complexity.weight.to_f)
-                      end
+                unless @guw_type.nil?
+                  if (guw_uow.result_low.nil? || guw_uow.result_most_likely.nil? || guw_uow.result_high.nil?) || (@guw_type.allow_complexity == true && (@guw_type.allow_criteria == false || @guw_type.allow_criteria == nil))
+                    guw_uow_guw_complexity = guw_uow.guw_complexity
+                    if guw_uow_guw_complexity.nil?
+                      array_pert << 0
                     else
-                      if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
-                        guw_uow.off_line_uo = nil
-                      else
-                        guw_type_guw_complexities = @guw_type.guw_complexities
-                        value_pert = compute_probable_value(guw_uow.result_low, guw_uow.result_most_likely, guw_uow.result_high)[:value]
-                        if (value_pert < guw_type_guw_complexities.map(&:bottom_range).min.to_f)
-                          guw_uow.off_line_uo = true
-                        elsif (value_pert >= guw_type_guw_complexities.map(&:top_range).max.to_f)
-                          guw_uow.off_line_uo = true
-                          cplx = guw_type_guw_complexities.last
-                          if cplx.nil?
-                            guw_uow.guw_complexity_id = nil
-                            guw_uow.guw_original_complexity_id = nil
-                          else
-                            guw_uow.guw_complexity_id = cplx.id
-                            guw_uow.guw_original_complexity_id = cplx.id
-                            if @guw_type.allow_complexity == false
-                              array_pert << calculate_seuil(guw_uow, guw_type_guw_complexities.last, value_pert)
-                            end
-                          end
+                      array_pert << (guw_uow_guw_complexity.weight.nil? ? 1 : guw_uow_guw_complexity.weight.to_f)
+                    end
+                  else
+                    if guw_uow.result_low.nil? or guw_uow.result_most_likely.nil? or guw_uow.result_high.nil?
+                      guw_uow.off_line_uo = nil
+                    else
+                      guw_type_guw_complexities = @guw_type.guw_complexities
+                      value_pert = compute_probable_value(guw_uow.result_low, guw_uow.result_most_likely, guw_uow.result_high)[:value]
+                      if (value_pert < guw_type_guw_complexities.map(&:bottom_range).min.to_f)
+                        guw_uow.off_line_uo = true
+                      elsif (value_pert >= guw_type_guw_complexities.map(&:top_range).max.to_f)
+                        guw_uow.off_line_uo = true
+                        cplx = guw_type_guw_complexities.last
+                        if cplx.nil?
+                          guw_uow.guw_complexity_id = nil
+                          guw_uow.guw_original_complexity_id = nil
                         else
-                          guw_type_guw_complexities.each do |guw_c|
-                            array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
+                          guw_uow.guw_complexity_id = cplx.id
+                          guw_uow.guw_original_complexity_id = cplx.id
+                          if @guw_type.allow_complexity == false
+                            array_pert << calculate_seuil(guw_uow, guw_type_guw_complexities.last, value_pert)
                           end
+                        end
+                      else
+                        guw_type_guw_complexities.each do |guw_c|
+                          array_pert << calculate_seuil(guw_uow, guw_c, value_pert)
                         end
                       end
                     end
                   end
+                end
 
                 # gestion des valeurs intermédiaires
                 @final_value = (guw_uow.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)

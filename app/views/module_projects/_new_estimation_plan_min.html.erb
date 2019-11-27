@@ -51,7 +51,6 @@
                   <% end %>
                   <% description = description.empty? ? "" : " : #{description}"  %>
                   <li class="nav-item" title='<%= "#{pmod.to_s} #{description}" %>'>
-                    <!--<a class="nav-link <%#= (current_module_project.id == pmod.id) ? 'active' : '' %>" href="<%#= activate_module_project_path(pmod) %>">-->
                     <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">
                       <span style="text-transform: none;"><%= pmod.to_s.truncate(22) %></span>
                       <i class="material-icons">arrow_left</i></a>
