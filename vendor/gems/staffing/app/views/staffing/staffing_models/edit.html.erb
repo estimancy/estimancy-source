@@ -1,6 +1,15 @@
+<!--<h4>-->
+<!--  <b>-->
+    <%#= "#{I18n.t(:edit)} #{@staffing_model.name}" %>
+<!--  </b>-->
+<!--</h4>-->
+<%#= render 'form' %>
+
 <h4>
-  <b>
-    <%= "#{I18n.t(:edit)} #{@staffing_model.name}" %>
-  </b>
+  <%= I18n.t('team') %>
+  <%= ": " + " #{@staffing_model.name}" %>
 </h4>
+<h6>
+  <%= @staffing_model.description %>
+</h6>
 <%= render 'form' %>

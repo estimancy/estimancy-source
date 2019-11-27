@@ -1,6 +1,6 @@
 <div>
   <!--<h5 class="blue"><%#= I18n.t(:estimations_statuses) %></h5>-->
-  <table id="table_list_15" class="table table-list">
+  <table id="table_list_15" class="table table-sm table-list">
     <thead>
       <tr>
         <th><%= I18n.t(:status_number) %></th>
@@ -12,8 +12,8 @@
         <th><%= I18n.t(:status_color) %></th>
         <th><%= I18n.t(:description) %></th>
         <th>Change if correction</th>
-        <th>Email Notifications</th>
-        <th class="action"><%= I18n.t(:actions) %></th>
+        <th>Email Notif.</th>
+        <th class="actions"><%= I18n.t(:actions) %></th>
       </tr>
     </thead>
     <tbody>
@@ -33,11 +33,11 @@
               <%= check_box_tag("create_new_version_when_changing_status_[#{estimation_status.id}]", estimation_status.id, estimation_status.create_new_version_when_changing_status, :disabled => true ) %>
             </td>
 
-            <td style='width: 10%; background-color: <%= "##{estimation_status.status_color}" %>'></td>
+            <td style='width: 9%; background-color: <%= "##{estimation_status.status_color}" %>'></td>
             <td><%= estimation_status.description %></td>
             <td><%= estimation_status.allow_correction_before_change %></td>
             <td><%= estimation_status.notification_emails %></td>
-            <td class="center">
+            <td class="center ">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_estimation_status_path(estimation_status), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage, EstimationStatus %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), estimation_status, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
@@ -47,9 +47,9 @@
       <% end %>
     </tbody>
   </table>
-</div><br>
+</div><br><br>
 
-
+<hr>
 <% if  @organization.estimation_statuses.length > 0 %>
     <div class="well well-rounded">
       <h5 class="blue"><%= I18n.t(:manage_estimations_statuses_workflow) %></h5>
@@ -58,7 +58,7 @@
       <%= form_tag '/set_estimation_status_workflow', :method => 'POST', :class => 'simple_form' do %>
 
           <%= hidden_field_tag "organization_id", @organization.id %>
-          <table class="table table-list permissions">
+          <table class="table table-sm table-list permissions">
             <tr>
               <th><%= I18n.t(:estimations_statuses) %></th>
               <% @organization.estimation_statuses.each do |status| %>
@@ -85,19 +85,20 @@
           </table>
           <% if can? :manage, EstimationStatus %>
             <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary btn-estimancy' %>
-            <%= submit_tag I18n.t('cancel'),  :class => 'btn btn-primary btn-estimancy' %>
+            <%= submit_tag I18n.t('cancel'),  :class => 'btn btn-secondary btn-estimancy' %>
           <% end %>
       <% end %>
-    </div><br>
+    </div><br><br>
 
-    <div class="well well-rounded">
+    <hr>
+    <div class="well well-rounded" style="overflow-x: scroll">
       <h5 class="blue"><%= I18n.t(:manage_estimations_statuses_roles) %></h5>
       <h5><%= I18n.t(:text_explain_estimation_status_group_roles) %></h5>
 
       <%= form_tag '/set_estimation_status_group_roles', :method => 'POST', :class => 'simple_form' do %>
 
           <%= hidden_field_tag "organization_id", @organization.id %>
-          <table class="table table-list permissions">
+          <table class="table table-sm table-list permissions">
             <tr>
               <th></th>
               <th colspan="<%= Group.all.length %>"> <%= I18n.t(:groups_and_roles) %> </th>
@@ -148,8 +149,10 @@
             <% end %>
           </table>
           <% if can? :manage, EstimationStatus %>
-              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-              <%= submit_tag I18n.t('cancel'),  :class => 'btn btn-secondary' %>
+          <div class="actions">
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('cancel'),  :class => 'btn btn-secondary' %>
+          </div>
           <% end %>
       <% end %>
     </div>

@@ -1,14 +1,12 @@
-<div id="tabs-budgets" class="edition-page-group py-4" style="color: #0099C9"><span style="background-color: #0099C9; color: white"><%= I18n.t('budget') %></span></div>
-<div>
-  <!--<div class="edition-bloc-left">-->
-    <!--<div class="edition-bloc-title row" style="flex: 1">-->
-      <!--<div class="col-6">-->
-        <!--<h1>-->
-          <!--<%#= I18n.t(:budget) %>-->
-        <!--</h1>-->
-      <!--</div>-->
-  <!--</div>-->
+<div class="d-flex">
+  <div style="flex: 1">
+    <h5><%= I18n.t(:budget) %></h5>
+  </div>
+</div>
 
+<br>
+
+<div>
   <% if can? :manage, Application %>
       <%= link_to I18n.t('create_button'), new_organization_budget_path(@organization), :class => 'btn btn-primary' %>
   <% end %>
@@ -49,15 +47,18 @@
 </div>
 
 <br><br><br>
+<hr>
 
-<div><h3><%= I18n.t('budget_type_management') %></h3></div>
-<!--<div id="tabs-budget-types" class="edition-page-group py-4" style="color: #0099C9"><span style="background-color: #0099C9; color: white"><%#= I18n.t('budget_types') %></span></div>-->
+<div class="d-flex">
+  <div style="flex: 1">
+    <h5><%= I18n.t(:budget_types) %></h5>
+  </div>
+</div>
 
+<br>
 
 <div>
-  <!--<div class="group_button">-->
-    <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn btn-primary' %>
-  <!--</div>-->
+  <%= link_to I18n.t('create_button'), new_organization_budget_type_path(@organization), :class => 'btn btn-primary' %>
 
   <hr>
   <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
