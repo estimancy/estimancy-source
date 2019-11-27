@@ -19,8 +19,6 @@
         <% end %>
       </ul>
 
-
-
       <div class="tab-content" id="pills-tabContent">
 
         <div class="tab-pane fade show active" id="tabs-1" role="tabpanel" aria-labelledby="tabs-1">
@@ -159,28 +157,22 @@
 
         <% if action_name.in?(%w(edit update)) %>
           <div class="tab-pane fade show" id="tabs-2" role="tabpanel" aria-labelledby="tabs-2">
-            <div class="row-fluid">
-              <div class="span3">
-
-                <%= form_tag kb.kb_model_import_path(@kb_model.id), :multipart => true, method: "post", :class => 'simple_form' do %>
-
-                  <div class="form-inputs">
-                    <label><%= I18n.t(:import) %></label>
+            <div class="row">
+              <div class="col-12">
+                <%= form_tag kb.kb_model_import_path(@kb_model.id), :multipart => true, method: "post", :class => 'simple_form float-right' do %>
                     <%= file_field_tag :file %>
-
                     <%= hidden_field_tag :kb_model_id, @kb_model.id %>
                     <%= hidden_field_tag :organization_id, @organization.id %>
-                  </div>
                   <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :style => 'margin-top:1rem;' %>
                 <% end %>
-              </div>
-              <div class="span1">
                 <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn btn-primary' %>
               </div>
-              <div class="span8">
+            </div>
+            <div class="row">
+              <div class="col-8">
                 <%= form_tag kb.kb_model_save_filters_path(@kb_model) do %>
                   <% unless @kb_model.kb_datas.empty? %>
-                    <table class="table table-bordered tablesorterPager">
+                    <table class="table table-bordered">
                       <thead>
                       <tr>
                         <th><%= I18n.t(:size) %></th>
