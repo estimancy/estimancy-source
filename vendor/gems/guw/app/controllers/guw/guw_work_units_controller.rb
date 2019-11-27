@@ -65,10 +65,6 @@ class Guw::GuwWorkUnitsController < ApplicationController
     @guw_work_unit = Guw::GuwWorkUnit.find(params[:id])
     @guw_model = @guw_work_unit.guw_model
     @guw_work_unit.delete
-    if @guw_model.default_display == "list"
-      redirect_to guw.guw_model_all_guw_types_path(@guw_model)
-    else
-      redirect_to guw.guw_model_path(@guw_model)
-    end
+    redirect_to guw.guw_type_path(@guw_type)
   end
 end

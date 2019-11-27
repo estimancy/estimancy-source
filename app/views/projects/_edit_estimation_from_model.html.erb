@@ -1,5 +1,3 @@
-<section class="card card-content-bloc estimancy-form">
-  <%#= simple_form_for @new_project, :url => duplicate_path(params[:template_id]), :method => :post do |f| %>
   <%= simple_form_for @new_project, :url => duplicate_path(params[:template_id]) do |f| %>
 
       <%= f.error_notification %>
@@ -9,10 +7,9 @@
       <%= hidden_field_tag(:demand_id, params[:demand_id]) %>
 
       <% if @project_template.use_automatic_quotation_number %>
-        <%#= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'input-large', :value => @organization.automatic_quotation_number.next}, readonly: true %>
         <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'col-8 form-control'}, readonly: true %>
       <% else %>
-          <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'col-8 form-control', :autofocus => (controller.action_name == 'new')} %>
+        <%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => { :class => 'col-8 form-control', :autofocus => (controller.action_name == 'new')} %>
       <% end %>
 
       <%= f.input :version_number, :input_html => { :class => 'col-8 form-control' } %>
@@ -29,14 +26,15 @@
       <% end %>
 
       <%= f.input :description, :label => "#{I18n.t 'description'}", :input_html => {:class => 'col-8 from_model_text_area form-control', :rows => 5} %>
-      <%= f.input :start_date, :as => :string, label: I18n.t(:start_date), :input_html => {:class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
+      <%= f.input :start_date, :as => :string, label: I18n.t(:start_date), :input_html => {:class => 'col-8 date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
 
-      <div class="modal-footer">
-        <% if can? :create_project_from_template, Project %>
-          <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary submit_project', :"data-disable-with" => "#{I18n.t :please_wait}" %>
-          <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
-        <% end %>
-      </div>
+      <hr>
+
+      <% if can? :create_project_from_template, Project %>
+        <button class="btn btn-primary btn-sm float-right" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+        <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary btn-sm', :"data-disable-with" => "#{I18n.t :please_wait}" %>
+      <% end %>
+
 
       <script>
           $(document).ready(function () {
@@ -53,4 +51,3 @@
       </script>
 
     <% end %>
-</section>
