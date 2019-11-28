@@ -1,0 +1,55 @@
+<% unless @guw_model.new_record? %>
+  <div id="tabs-coefficients">
+
+    <div class="card-body">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-content">
+
+          <h4><%= I18n.t(:general) %> >> <span style="color:initial"> <%= I18n.t(:coefficients) %> </span></h4>
+
+          <div class="row pb-5" style="margin-top:2rem">
+
+            <div class="col-9">
+
+              <%# if can? :manage_modules_instances, ModuleProject %>
+              <%#= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", data: {confirm: I18n.t(:are_you_sure)} %>
+              <%# end %>
+              <%#= link_to "", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
+
+              <div id="guw_coefficients_tab">
+                <% if @guw_coefficient %>
+                  <%= render :partial => "guw/guw_coefficients/show", object: [@guw_coefficient] %>
+                <% end %>
+              </div>
+
+              <% if can? :manage_modules_instances, ModuleProject %>
+                <%= link_to "Nouveau coefficient", guw.new_guw_model_guw_coefficient_path(@guw_model), class: "btn btn-primary" %>
+              <% end %>
+
+              <%= link_to I18n.t(:back), guw.guw_model_path(@guw_model) , class: "btn btn-secondary" %>
+            </div>
+
+            <div class="col-3">
+              <div id="edition-sidebar" style="overflow-x: scroll">
+                <h4 class="mb-0"><%= I18n.t(:coefficients_list) %></h4>
+                <ul class="nav" style="display: block;">
+                  <% @guw_coefficients.each do |guw_coefficient| %>
+                    <li class="nav-item">
+                      <a class="nav-link group" href="<%= guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient) %>"  data-remote="true">
+                        <span>
+                          <%= guw_coefficient.name %> (<%= guw_coefficient.coefficient_type %>)
+                        </span>
+                      </a>
+                    </li>
+                  <% end %>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+  </div>
+<% end %>

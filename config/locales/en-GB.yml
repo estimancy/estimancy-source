@@ -416,6 +416,7 @@ en-gb:
   project_global_parameters: "Project global parameters"
   pemodule_global_parameters: "Module global parameters"
   pe_attributes: "Attributes"
+  attributes: "Attributes"
   attribute_categories: "Attributes categories"
   labor_categories: "Labour categories"
   projestimate_module: "Modules"
@@ -1521,6 +1522,7 @@ en-gb:
   is_image_organization: "Image organization"
   new_organization_from_image: "Create organization from image"
   coefficient: "Coefficient"
+  coefficients: "Coefficients"
   label_organization_name: "Organization name"
   label_organization_image: "Image organization"
   label_change_password_required: "change password required"
@@ -1967,3 +1969,5 @@ en-gb:
   coefficient_value: "Coefficient value"
   coefficient_label: "Coefficient label"
   criticality: "Criticality"
+
+  unit_of_work_types: "Unit of Work Types"

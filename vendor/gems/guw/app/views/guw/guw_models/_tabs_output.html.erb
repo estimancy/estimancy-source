@@ -1,0 +1,61 @@
+<% unless @guw_model.new_record? %>
+  <div id="tabs-output" role="tabpanel">
+    <div class="card-body">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-content">
+
+          <h4><%= I18n.t(:general) %> >> <span style="color:initial"> <%= I18n.t(:outputs) %> </span></h4>
+
+          <br><br>
+
+          <div class="span9">
+            <table class="table table-list">
+              <tr>
+                <th><%= I18n.t(:name) %></th>
+                <th class="span2">Type de sortie</th>
+                <th class="span2">Unité de sortie</th>
+                <th class="span2">Sous-total</th>
+                <th class="span2">Couleur</th>
+                <th class="span2">Priorité de la couleur</th>
+                <th class="span2">Coefficient Standard</th>
+                <th class="span2">Ordre de calcul</th>
+                <th class="actions">Actions</th>
+              </tr>
+
+              <% unless @guw_outputs.empty? %>
+                <% @guw_outputs.each do |guw_output| %>
+                  <tr>
+                    <td class="align-center">
+                      <%= link_to guw_output.name, guw.edit_guw_model_guw_output_path(@guw_model, guw_output) %>
+                    </td>
+                    <td class="align-center"><%= guw_output.output_type %></td>
+                    <td class="align-center"><%= guw_output.unit %></td>
+                    <td class="align-center"><%= guw_output.allow_subtotal %></td>
+                    <td class="align-center" style='width: 10%; background-color: <%= "##{guw_output.color_code}" %>'>
+                      <%= guw_output.color_code %>
+                    </td>
+                    <td class="align-center"><%= guw_output.color_priority %></td>
+                    <td class="align-center"><%= guw_output.standard_coefficient %></td>
+                    <td class="align-center"><%= guw_output.display_order %></td>
+                    <td class="center">
+                      <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_output_path(@guw_model, guw_output), :class => 'material-icons', :title => I18n.t('edit') %>
+                      <% if can? :manage_modules_instances, ModuleProject %>
+                        <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_output_path(@guw_model, guw_output), data: {confirm: I18n.t(:are_you_sure)}, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+              <% end %>
+            </table>
+          </div>
+          <br>
+
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_output_path(@guw_model), class: "btn btn-primary" %>
+          <% end %>
+          <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn btn-secondary" %>
+        </div>
+      </div>
+    </div>
+  </div>
+<% end %>

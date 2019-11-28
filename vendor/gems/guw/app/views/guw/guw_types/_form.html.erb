@@ -1,10 +1,23 @@
-<section class="card card-content-bloc estimancy-form">
+<div class="row pb-5">
+  <div class="col-10">
+    <h4>
+      <%= I18n.t('size') %>
+      <%= ": " + " #{@guw_model.name}" %>
+    </h4>
+    <h4>
+      <b>
+        <h6><span style="color: initial"><%= I18n.t(:unit_of_work) %> : </span> <%= @guw_type %> </h6>
+      </b>
+    </h4>
+    <section class="card card-content-bloc estimancy-form">
   <div class="mb-5">
     <div class="effort-bloc">
 
-      <div class="edition-bloc-title">
-          <h4><a href="#tabs-1"><%= I18n.t(:unit_of_work) %> </a></h4>
-      </div>
+<!--      <div class="edition-bloc-title">-->
+<!--          <h4><a href="#tabs-1"><%#= I18n.t(:unit_of_work) %> </a></h4>-->
+<!--      </div>-->
+
+      <br>
 
       <div id="tabs-1">
         <div class="edition-bloc-content">
@@ -172,3 +185,8 @@
     </div>
   </div>
 </section>
+  </div>
+  <div class="col-2">
+    <%= render partial: "guw/guw_types/general_guw_types_menu", locals: {guw_model: @guw_model} %>
+  </div>
+</div>

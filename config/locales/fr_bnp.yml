@@ -417,6 +417,7 @@ fr_bnp:
   project_global_parameters: "Paramètres projets"
   pemodule_global_parameters: "Paramètres modules"
   pe_attributes: "Attributs"
+  attributes: "Attributs"
   attribute_categories: "Catégories des attributs"
   labor_categories: "Travailleurs"
   projestimate_module: "Modules"
@@ -1580,6 +1581,7 @@ fr_bnp:
   is_image_organization: "Organisation image"
   new_organization_from_image: "Créer à partir d'une image"
   coefficient: "Coefficient"
+  coefficients: "Coefficients"
   label_organization_name: "Nom de l'organisation"
   label_organization_image: "Organisation image"
   label_change_password_required: "Changement de mot de passe obligatoire ?"
@@ -2492,3 +2494,5 @@ fr_bnp:
   coefficient_value: "Valeur du coefficient"
   coefficient_label: "Libellé du coefficient"
   criticality: "Criticité"
+
+  unit_of_work_types: "Types d'Unité Oeuvre"

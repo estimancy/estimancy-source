@@ -23,31 +23,31 @@
         </div>
       </div>
 
-      <br>
+      <div class="group_button">
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), class: "btn btn-secondary" %>
+        <% end %>
+      </div>
+
+      <br><br>
 
       <div class="card card-content-bloc estimation-edition">
         <div class="card-body">
           <div class="edition-bloc-title">
             <%#= link_to "< Back", guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
-            <h5><%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type), style: "color:initial" %></h5>
-
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), class: "btn btn-secondary" %>
-            <% end %>
-
-
+            <h4><%= I18n.t(:unit_of_work_types) %> >> <span style="color:initial"> <%= I18n.t(:coefficients) %> </span>
+            <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type), style: "color:initial", title: I18n.t(:edit) + " #{guw_type}" %></h4>
+            <div>
+              <% if can? :manage_modules_instances, ModuleProject %>
+                <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
+              <% end %>
+            </div>
           </div>
 
           <h6><%= guw_type.description %></h6>
 
           <%# guw_type_guw_complexities = guw_type.guw_complexities %>
           <%# guw_type_guw_type_complexities = guw_type.guw_type_complexities %>
-
-          <div class="group_button">
-            <% if can? :manage_modules_instances, ModuleProject %>
-              <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
-            <% end %>
-          </div>
 
           <br>
           <br>
@@ -366,6 +366,6 @@
     </div>
 
     <div class="col-2">
-      <%= render partial: "guw_types_list", locals: {guw_model: @guw_model} %>
+      <%= render partial: "guw/guw_types/general_guw_types_menu", locals: {guw_model: @guw_model} %>
     </div>
 </div>

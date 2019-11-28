@@ -1,0 +1,44 @@
+<% unless @guw_model.new_record? %>
+  <div id="tabs-attributs">
+
+    <div class="card-body">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-content">
+
+          <h4><%= I18n.t(:general) %> >> <span style="color:initial"> <%= I18n.t(:attributes) %> </span></h4>
+
+          <br><br>
+
+          <table class="table table-bordered">
+            <tr>
+              <th><%= I18n.t(:name) %></th>
+              <th><%= I18n.t(:description) %></th>
+              <th><%= I18n.t(:audit_action) %></th>
+            </tr>
+
+            <% @guw_attributes.each do |guw_attribute| %>
+              <tr>
+                <td><%= guw_attribute.name %></td>
+                <td><%= guw_attribute.description %></td>
+                <td class="center">
+                  <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_attribute_path(@guw_model, guw_attribute), :class => 'material-icons', :title => I18n.t('edit') %>
+                  <% if can? :manage_modules_instances, ModuleProject %>
+                    <%= link_to raw("<i class='material-icons'>delete</i>"), guw_attribute, data: {confirm: I18n.t(:are_you_sure)}, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+
+          <div class="actions-tabs">
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to I18n.t(:create_button), guw.new_guw_model_guw_attribute_path(@guw_model), class: "btn btn-primary" %>
+            <% end %>
+            <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn btn-secondary" %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+<% end %>
