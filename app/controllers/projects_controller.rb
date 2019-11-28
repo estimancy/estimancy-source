@@ -418,15 +418,14 @@ class ProjectsController < ApplicationController
           mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
         end
 
+        iii = 0
         mpres.each do |mpre|
 
           mpre_project = mpre.module_project.project
           module_project = mpre.module_project
 
-          iii = 0
           if module_project.wbs_activity_ratio_id == mpre.wbs_activity_ratio_id
             iii = iii+1
-
             project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
             project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
             project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
