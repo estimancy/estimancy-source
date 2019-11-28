@@ -135,10 +135,10 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(0, 6, "Localisation WBS")
 
         #unless @organization.name == "CDS VOYAGEURS"
-        unless "cds voyageurs".in?(@organization.name.to_s.downcase)
-          worksheet_cf.add_cell(0, 7, "Localisation Modèle")
-        else
+        if "cds voyageurs".in?(@organization.name.to_s.downcase)
           worksheet_cf.add_cell(0, 7, "Urgence Devis")
+        else
+          worksheet_cf.add_cell(0, 7, "Localisation Modèle")
         end
 
         worksheet_cf.add_cell(0, 8, "Catégorie")
@@ -386,10 +386,10 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 6, "Localisation WBS")
 
         #unless @organization.name == "CDS VOYAGEURS"
-        unless "cds voyageurs".in?(@organization.name.to_s.downcase)
-          worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
-        else
+        if "cds voyageurs".in?(@organization.name.to_s.downcase)
           worksheet_wbs.add_cell(0, 7, "Urgence Devis")
+        else
+          worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
         end
 
         worksheet_wbs.add_cell(0, 8, "Catégorie")
@@ -418,14 +418,14 @@ class ProjectsController < ApplicationController
           mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
         end
 
-        iii = 0
+        wbs_iii = 0
         mpres.each do |mpre|
 
           mpre_project = mpre.module_project.project
           module_project = mpre.module_project
 
           if module_project.wbs_activity_ratio_id == mpre.wbs_activity_ratio_id
-            iii = iii+1
+
             project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
             project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
             project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
@@ -436,33 +436,34 @@ class ProjectsController < ApplicationController
 
             unless mpre_project.is_model == true
 
-              worksheet_wbs.add_cell(iii, 0, mpre_project.title)
-              worksheet_wbs.add_cell(iii, 1, project_application.nil? ? mpre_project.application_name : project_application)
-              worksheet_wbs.add_cell(iii, 2, mpre_project.business_need)
-              worksheet_wbs.add_cell(iii, 3, mpre_project.request_number)
-              worksheet_wbs.add_cell(iii, 4, project_project_area.nil? ? '' : project_project_area)
-              worksheet_wbs.add_cell(iii, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
+              wbs_iii = wbs_iii+1
+              worksheet_wbs.add_cell(wbs_iii, 0, mpre_project.title)
+              worksheet_wbs.add_cell(wbs_iii, 1, project_application.nil? ? mpre_project.application_name : project_application)
+              worksheet_wbs.add_cell(wbs_iii, 2, mpre_project.business_need)
+              worksheet_wbs.add_cell(wbs_iii, 3, mpre_project.request_number)
+              worksheet_wbs.add_cell(wbs_iii, 4, project_project_area.nil? ? '' : project_project_area)
+              worksheet_wbs.add_cell(wbs_iii, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
               pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
 
               unless field.nil?
                 value = pf.nil? ? nil : pf.value
-                worksheet_wbs.add_cell(iii, 6, value)
+                worksheet_wbs.add_cell(wbs_iii, 6, value)
               end
 
-              worksheet_wbs.add_cell(iii, 7, project_platform_category.nil? ? '' : project_platform_category)
+              worksheet_wbs.add_cell(wbs_iii, 7, project_platform_category.nil? ? '' : project_platform_category)
 
-              worksheet_wbs.add_cell(iii, 8, project_project_category.to_s)
-              worksheet_wbs.add_cell(iii, 9, project_provider.nil? ? '' : project_provider)
-              worksheet_wbs.add_cell(iii, 10, mpre_project.start_date.to_s)
-              worksheet_wbs.add_cell(iii, 11, project_estimation_status.to_s)
-              worksheet_wbs.add_cell(iii, 12, mpre.wbs_activity_ratio.nil? ? nil : mpre.wbs_activity_ratio.name)
-              worksheet_wbs.add_cell(iii, 13, mpre.name)
-              worksheet_wbs.add_cell(iii, 14, mpre.tjm)
-              worksheet_wbs.add_cell(iii, 15, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
-              worksheet_wbs.add_cell(iii, 16, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
-              worksheet_wbs.add_cell(iii, 17, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
-              worksheet_wbs.add_cell(iii, 18, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
+              worksheet_wbs.add_cell(wbs_iii, 8, project_project_category.to_s)
+              worksheet_wbs.add_cell(wbs_iii, 9, project_provider.nil? ? '' : project_provider)
+              worksheet_wbs.add_cell(wbs_iii, 10, mpre_project.start_date.to_s)
+              worksheet_wbs.add_cell(wbs_iii, 11, project_estimation_status.to_s)
+              worksheet_wbs.add_cell(wbs_iii, 12, mpre.wbs_activity_ratio.nil? ? nil : mpre.wbs_activity_ratio.name)
+              worksheet_wbs.add_cell(wbs_iii, 13, mpre.name)
+              worksheet_wbs.add_cell(wbs_iii, 14, mpre.tjm)
+              worksheet_wbs.add_cell(wbs_iii, 15, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
+              worksheet_wbs.add_cell(wbs_iii, 16, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
+              worksheet_wbs.add_cell(wbs_iii, 17, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
+              worksheet_wbs.add_cell(wbs_iii, 18, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
             end
           end
         end
