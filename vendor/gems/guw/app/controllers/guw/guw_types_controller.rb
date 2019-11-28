@@ -69,12 +69,7 @@ class Guw::GuwTypesController < ApplicationController
 
     set_page_title I18n.t(:new_complexity)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
-    if @guw_model.default_display == "list"
-      redirect_to guw.guw_type_path(@guw_type)
-    else
-      #redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
-      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(/[^0-9A-Za-z]/, '')}")
-    end
+    redirect_to guw.guw_type_path(@guw_type)
   end
 
   def update
@@ -86,12 +81,7 @@ class Guw::GuwTypesController < ApplicationController
 
     @guw_type.save
 
-    # if @guw_model.default_display == "list"
-      redirect_to guw.guw_type_path(@guw_type)
-    # else
-    #   #redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(" ", "-")}")
-    #   redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(/[^0-9A-Za-z]/, '')}")
-    # end
+    redirect_to guw.guw_type_path(@guw_type)
   end
 
   def destroy
@@ -99,10 +89,6 @@ class Guw::GuwTypesController < ApplicationController
     guw_model_id = @guw_type.guw_model.id
     @guw_model = @guw_type.guw_model
     @guw_type.delete
-    if @guw_model.default_display == "list"
-      redirect_to guw.guw_type_path(@guw_type)
-    else
-      redirect_to guw.guw_model_path(@guw_model, anchor: "tabs-#{@guw_type.name.gsub(/[^0-9A-Za-z]/, '')}")
-    end
+    redirect_to guw.guw_type_path(@guw_type)
   end
 end

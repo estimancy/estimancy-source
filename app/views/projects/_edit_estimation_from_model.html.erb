@@ -57,7 +57,7 @@
             <div class="form-row">
               <div class="col-8">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'mdl-textfield__input', :rows => 5} %>
+                  <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'mdl-textfield__input from_model_text_area form-control', :rows => 5} %>
   <!--                <label class="mdl-textfield__label" for="description"><%#= "#{I18n.t 'description'}" %></label>-->
                 </div>
               </div>
@@ -75,7 +75,9 @@
             <div class="modal-footer">
           <% if can? :create_project_from_template, Project %>
             <%= f.submit I18n.t('save'), action_name: "test", name: "create_project_from_template", :id =>'change_new_estimation_data', :class => 'btn btn-primary submit_project', :"data-disable-with" => "#{I18n.t :please_wait}" %>
-            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+                <button class="btn btn-primary btn-sm float-right" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+
+                <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
           <% end %>
         </div>
 

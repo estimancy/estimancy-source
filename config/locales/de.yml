@@ -1740,5 +1740,6 @@ de:
   coefficient_value: "Coefficient value"
   coefficient_label: "Coefficient label"
   criticality: "Criticality"
+  past_projects_effort: "Effort of past projects"
 
   unit_of_work_types: "Unit of Work Types"

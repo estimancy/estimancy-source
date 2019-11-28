@@ -57,7 +57,7 @@ class SessionsController < Devise::SessionsController
         else
           if d.to_i <= 0
             flash[:error] = I18n.t(:subscription_end_date_has_expired, :resource_name => resource.name, :subscription_end_date => resource.subscription_end_date.strftime("%-d %b %Y") )
-            redirect_to organizationals_params_path and return
+            redirect_to all_organizations_path and return
           end
       end
     end

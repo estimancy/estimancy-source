@@ -27,8 +27,8 @@
                                                                   pbs_project_element_id: current_psb.id) %>
   <% @guw_coefficients = Guw::GuwCoefficient.includes(:guw_coefficient_elements).where(organization_id: organization_id, guw_model_id: @guw_model.id) %>
 
-  <% @current_module_project_guw_unit_of_works = current_module_project.guw_unit_of_works %>
-  <% @current_module_project_guw_unit_of_work_groups = current_module_project.guw_unit_of_work_groups %>
+  <% @current_module_project_guw_unit_of_works = @current_mp.guw_unit_of_works %>
+  <% @current_module_project_guw_unit_of_work_groups = @current_mp.guw_unit_of_work_groups %>
   <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
   <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
   <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
@@ -78,7 +78,7 @@
   <div class="row">
     <div class="col-12 tools">
 
-      <% if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+      <% if @current_mp.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
         <%= link_to raw("<i class='material-icons'>unarchive</i>"), guw.guw_model_export_with_wbs_path(@guw_model), method: "post", class: "float-right", title: "Export with WBS" %>
       <% end %>
 
@@ -99,7 +99,7 @@
         &nbsp;
       </span>
 
-      <%# if current_module_project.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
+      <%# if @current_mp.nexts.map{|i| i.pemodule.alias }.include?("effort_breakdown") %>
         <%# link_to image_tag("/assets/baseline-save2_alt-24px.svg", size: "24x24"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
       <%# else %>
         <%= link_to image_tag("/assets/baseline-save2_alt-24px.svg", size: "24x24"), guw.guw_model_export_path(@guw_model), method: "post", class: "float-right", title: I18n.t(:export) %>
@@ -212,6 +212,7 @@
                 <% end %>
               <% end %>
 
+              <%# @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity, :guw_unit_of_work_attributes).each_with_index do |guow, i| %>
               <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
                 <% @guw_type = guow.guw_type %>
                 <% unless @guw_type.nil? %>
@@ -222,7 +223,6 @@
                   <% color = "#d3d3d34d;" %>
                 <% end %>
                 <tr style="background-color: <%= color %>" id="<%= guow.id %>" data-guw-id="<%= guow.id %>">
-
                   <%
                     @guw_coefficient_guw_coefficient_elements = Hash.new {|h,k| h[k] = [] }
                     @guw_model.guw_coefficient_elements.each do |guw_coefficient_element|
@@ -522,7 +522,7 @@
 
                 <%= hidden_field_tag :organization_id, @current_organization.id %>
                 <%= hidden_field_tag :project_id, @project.id %>
-                <%= hidden_field_tag :module_project_id, current_module_project.id %>
+                <%= hidden_field_tag :module_project_id, @current_mp.id %>
                 <%= hidden_field_tag :hidden_position, nil, class: "hidden_position" %>
 
                 <%= I18n.t(:uw_name) %>
@@ -745,7 +745,6 @@
       <script>
           //$(document).ready(function(){
           $(document).ready(function() {
-
               $(".up,.down").click(function() {
                   var row = $(this).parents("tr.movable:first");
 
@@ -850,7 +849,7 @@
 <!--<script>-->
 <!--  //$(document).ready(function(){-->
 <!--  $(document).ready(function() {-->
-    <%# current_module_project.guw_unit_of_work_groups.each do |uowg| %>
+    <%# @current_mp.guw_unit_of_work_groups.each do |uowg| %>
       <%# @guw_model.guw_outputs.each do |go| %>
 <!--        var sum = 0;-->
 <!--        $(".total_<%# uowg.id %>_<%# go.id %>").each(function() {-->

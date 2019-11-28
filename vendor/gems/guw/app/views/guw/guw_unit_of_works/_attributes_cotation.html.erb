@@ -3,9 +3,6 @@
   <% organization_id = @project.organization_id %>
   <% guw_type = @guw_type.nil? ? guow.guw_type : @guw_type %>
   <%= hidden_field_tag "guw_unit_of_work_id", guow.id %>
-  <%# hidden_field_tag "guw_work_unit_id", guow.guw_work_unit_id %>
-  <%# hidden_field_tag "guw_weighting_id", guow.guw_weighting_id %>
-  <%# hidden_field_tag "guw_factor_id", guow.guw_factor_id %>
   <%= hidden_field_tag "hidden_ajusted_size[#{guow.id}]", "" %>
   <%= hidden_field_tag "hidden_quantity[#{guow.id}]", guow.quantity %>
   <%= hidden_field_tag "hidden_technology[#{guow.id}]", guow.organization_technology %>
@@ -58,7 +55,8 @@
         <th></th>
       </tr>
 
-      <% guow.guw_unit_of_work_attributes.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
+      <% guow.guw_unit_of_work_attributes.where(organization_id: organization_id,
+                                                guw_model_id: @guw_model.id, guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
         <% gat = Guw::GuwAttributeType.where(organization_id: organization_id, guw_model_id: @guw_model.id,
                                              guw_attribute_id: uowa.guw_attribute_id, guw_type_id: guw_type.id).first_or_create %>
           <tr>
@@ -69,11 +67,6 @@
               <td class="span3">
                 <%= link_to "#{uowa.guw_attribute.name} #{gat.nil? ? nil : "(#{gat.default_value.to_i})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value.to_i  %>
               </td>
-              <%# if @guw_model.three_points_estimation == true %>
-                <!--<td class="span1">-->
-                  <%# text_field_tag "low[#{guow.id}][#{uowa.id}]", uowa.low, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
-                <!--</td>-->
-              <%# end %>
 
             <td class="span1">
               <% if guw_type.mandatory_comments == true %>

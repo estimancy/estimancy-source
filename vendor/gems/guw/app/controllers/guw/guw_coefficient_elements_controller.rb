@@ -51,24 +51,21 @@ class Guw::GuwCoefficientElementsController < ApplicationController
   def create
     @guw_coefficient_element = Guw::GuwCoefficientElement.new(params[:guw_coefficient_element])
     @guw_coefficient_element.save
-    redirect_to guw.edit_guw_model_path(@guw_coefficient_element.guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_coefficient_element.guw_model, organization_id: @current_organization.id)
   end
 
   def update
     @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:id])
     @guw_coefficient_element.update_attributes(params[:guw_coefficient_element])
     set_page_title I18n.t(:Edit_Units_Of_Work)
-    redirect_to guw.edit_guw_model_path(@guw_coefficient_element.guw_model, organization_id: @current_organization.id, anchor: "tabs-factors")
+    redirect_to guw.edit_guw_model_path(@guw_coefficient_element.guw_model, organization_id: @current_organization.id)
   end
 
   def destroy
     @guw_coefficient_element = Guw::GuwCoefficientElement.find(params[:id])
     @guw_model = @guw_coefficient_element.guw_model
+    
     @guw_coefficient_element.delete
-    if @guw_model.default_display == "list"
-      redirect_to guw.guw_model_all_guw_types_path(@guw_model)
-    else
-      redirect_to guw.guw_model_path(@guw_model)
-    end
+    redirect_to guw.edit_guw_model_path(@guw_coefficient_element.guw_model, organization_id: @current_organization.id)
   end
 end

@@ -1,4 +1,4 @@
-fr:
+fr_acoss:
   direction: ltr
   date:
     abbr_day_names:
@@ -2552,5 +2552,6 @@ fr:
 
   replace: "Remplacer"
   maximum: "Maximum"
+  past_projects_effort: "Effort des projets passés"
 
   unit_of_work_types: "Types d'Unité Oeuvre"
