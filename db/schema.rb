@@ -1299,7 +1299,6 @@ ActiveRecord::Schema.define(version: 20191119170311) do
     t.integer  "guw_uow_group_id",              limit: 4
     t.string   "guw_uow_group_name",            limit: 255
     t.boolean  "uow_selected"
-    t.integer  "guw_unit_of_work_id",           limit: 4,     default: 0,     null: false
     t.integer  "id",                            limit: 4,     default: 0,     null: false
     t.integer  "organization_id",               limit: 4
     t.integer  "project_id",                    limit: 4
@@ -1343,6 +1342,7 @@ ActiveRecord::Schema.define(version: 20191119170311) do
     t.float    "intermediate_percent",          limit: 24
     t.string   "url",                           limit: 255
     t.text     "cplx_comments",                 limit: 65535
+    t.integer  "guw_unit_of_work_id",           limit: 4
     t.integer  "guw_coefficient_element_id",    limit: 4
     t.integer  "guw_coefficient_id",            limit: 4
     t.float    "percent",                       limit: 24

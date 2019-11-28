@@ -1359,3 +1359,8 @@ table.table_effort_per_phase th{
 /*.trente_pour_cent{ width: 30%; }*/
 /*.quarante_pour_cent{ width: 40%; }*/
 /*.vertical_align_top{ vertical-align: top; }*/
+
+
+.guw_line {
+    opacity: 0;
+}

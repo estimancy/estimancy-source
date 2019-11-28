@@ -23,6 +23,7 @@ class GuwUnitOfWorkLine < ActiveRecord::Base
 
   self.primary_key = 'guw_unit_of_work_id'
 
+  belongs_to :organization
   belongs_to :guw_type, class_name: "Guw::GuwType"
   belongs_to :guw_model, class_name: "Guw::GuwModel"
   belongs_to :guw_complexity, class_name: "Guw::GuwComplexity"
@@ -32,6 +33,9 @@ class GuwUnitOfWorkLine < ActiveRecord::Base
   belongs_to :guw_weighting, class_name: "Guw::GuwWeighting"
   belongs_to :guw_factor, class_name: "Guw::GuwFactor"
   belongs_to :module_project
+  belongs_to :project
+
+  belongs_to :guw_unit_of_work, class_name: "GuwUnitOfWorkLine", foreign_key: 'guw_unit_of_work_id'
 
   has_many :guw_unit_of_work_attributes, class_name: "Guw::GuwUnitOfWorkAttribute", foreign_key: 'guw_unit_of_work_id'
   has_many :guw_coefficient_element_unit_of_works, class_name: "Guw::GuwCoefficientElementUnitOfWork", foreign_key: 'guw_unit_of_work_id'
