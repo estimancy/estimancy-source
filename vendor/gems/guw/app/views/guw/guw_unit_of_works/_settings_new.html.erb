@@ -293,6 +293,9 @@
   <script>
     var my_array = [];
     $(document).ready( function() {
+
+        window.history.pushState("", "", "<%= main_app.dashboard_path(@project) %>");
+
       $(".new_guw_button").on('click', function(e){
         $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
         $("#hidden_position").val($(this).data("display-order"));
