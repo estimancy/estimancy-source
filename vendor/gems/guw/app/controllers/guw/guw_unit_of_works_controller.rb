@@ -729,9 +729,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @guw_unit_of_work.guw_model
     @guw_type = Guw::GuwType.find(params[:guw_type_id])
 
-    # if @guw_unit_of_work.module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
-      # render js: "alert('Vous ne pouvez pas créer plus de #{@guw_type.maximum.to_s} composants pour #{@guw_type.to_s}.')";
-    # else
+    if @guw_unit_of_work.module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
+      render js: "alert('Vous ne pouvez pas créer plus de #{@guw_type.maximum.to_s} composants pour #{@guw_type.to_s}.')";
+    else
 
       # @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id).all.each do |gac|
       #   finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
@@ -742,15 +742,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       #                                              module_project_id: @guw_unit_of_work.module_project_id,
       #                                              guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
       #   finder.save
-      # end
+      end
 
 
       # technology = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq.first
       # @guw_unit_of_work.organization_technology_id = technology.nil? ? nil : technology.id
 
       @guw_unit_of_work.guw_type_id = @guw_type.id
-      # @guw_unit_of_work.effort = nil
-      # @guw_unit_of_work.guw_complexity_id = nil
+      @guw_unit_of_work.effort = nil
+      @guw_unit_of_work.guw_complexity_id = nil
       @guw_unit_of_work.save
 
       #Changer le libelle du popup avec la description du nouveau type d'UO sélectionne
