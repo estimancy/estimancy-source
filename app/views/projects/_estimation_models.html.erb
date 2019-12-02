@@ -60,6 +60,7 @@
               <% end %>
 
               <% if can? :create_project_from_template, Project %>
+                <%= link_to '', organization_export_estimation_model_path(organization_id: @organization.id, project_id: project.id), :method => 'get', class: 'icon-download', title: I18n.t(:export) %>
                 <%= link_to('', change_new_estimation_data_path(template_id: project.id, organization_id: project.organization_id, action_name: "create_project_from_template"), :class => 'icon-repeat pull-left', :title => I18n.t('button_duplicate_model'), remote: true) %>
               <% end %>
 

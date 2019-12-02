@@ -1285,6 +1285,7 @@ class WbsActivitiesController < ApplicationController
             model_worksheet[index][1].change_border(symbole.to_sym, 'thin')
           end
         end
+
         model_worksheet.change_column_bold(0,true)
         model_worksheet.change_column_width(0, 60)
         model_worksheet.change_column_width(1, 100)

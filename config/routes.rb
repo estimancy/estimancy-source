@@ -289,6 +289,9 @@ Projestimate::Application.routes.draw do
     post "import_acquisition_categories" => 'organizations#import_acquisition_categories'
     post "import_providers" => 'organizations#import_providers'
     get "polyval_export" => 'organizations#polyval_export'
+
+    get "export_estimation_model" => 'organizations#export_estimation_model'
+    post "import_estimation_model" => 'organizations#import_estimation_model'
   end
 
   get "export_permissions" => 'permissions#export_permissions'

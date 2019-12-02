@@ -30,6 +30,95 @@ class OrganizationsController < ApplicationController
   include OrganizationsHelper
   include ActionView::Helpers::NumberHelper
 
+
+  #Pour Exporter un modèle d'estimation
+  def export_estimation_model
+
+    organization_id = params[:organization_id]
+    project_id = params[:project_id]
+
+    # Thread.new do
+    #   ActiveRecord::Base.connection_pool.with_connection do
+
+    ActiveRecord::Base.transaction do
+
+        workbook = RubyXL::Workbook.new
+
+        @project = Project.where(organization_id: organization_id, id: project_id).first
+        @organization = Organization.find(organization_id)
+        
+        worksheet_properties = workbook.worksheets[0]
+        worksheet_properties.sheet_name = I18n.t(:global_properties)
+        worksheet_estimation_plan = workbook.add_worksheet(I18n.t(:estimation_plan))
+        worksheet_security = workbook.add_worksheet(I18n.t(:securities))
+        worksheet_view_widgets = workbook.add_worksheet(I18n.t(:views_widgets))
+
+        label_platform_category =  I18n.t('platform_category')
+        if @organization.name.downcase.include?("distribution transporteur")
+          label_platform_category =  "TM"
+        elsif @organization.name.downcase.include?("cds voyageurs")
+          label_platform_category =  "Urgence Devis"
+        end
+
+        # Proprietes globales
+        global_properties = [[I18n.t(:organizations), @project.organization.name],
+                            [I18n.t(:label_project_name),  @project.title],
+                            [I18n.t(:business_need), @project.business_need],
+                            [I18n.t(:request_number), @project.request_number],
+                            [I18n.t(:is_model), @project.is_model ? 1 : 0 ],
+                            [I18n.t(:use_automatic_quotation_number), @project.use_automatic_quotation_number ? 1 : 0 ],
+                            [I18n.t(:allow_export_pdf), @project.allow_export_pdf ? 1 : 0],
+                            [I18n.t(:version_number), @project.version_number],
+                            [I18n.t(:private_estimation), @project.private ? 1 : 0 ],
+                            [I18n.t(:label_product_name), @project.application_name],
+                            [I18n.t(:label_product_name), @project.applications.map(&:name)],
+                            [I18n.t(:application_id), @project.application.name],
+                            [I18n.t(:original_model), @project.original_model],
+                            [I18n.t(:original_model_version), (@project.original_model.version_number rescue nil)],
+                            [I18n.t(:description), @project.description],
+                            [I18n.t(:start_date), I18n.l(@project.start_date)],
+                            [I18n.t(:creator), @project.creator],
+                            [I18n.t(:estimation_status), @project.estimation_status],
+                            [I18n.t(:status_comment), @project.status_comment],
+                            [I18n.t(:project_area), @project.project_area],
+                            [I18n.t(:acquisition_category), @project.acquisition_category],
+                            ["#{label_platform_category}", @project.platform_category],
+                             [I18n.t(:project_category), @project.project_category],
+                             [I18n.t(:provider), @project.provider]]
+
+
+        global_properties.each_with_index do |row, index|
+          worksheet_properties.add_cell(index, 0, row[0])
+          worksheet_properties.add_cell(index, 1, row[1])#.change_horizontal_alignment('center')
+          ["bottom", "right"].each do |symbole|
+            worksheet_properties[index][0].change_border(symbole.to_sym, 'thin')
+            worksheet_properties[index][1].change_border(symbole.to_sym, 'thin')
+          end
+        end
+
+        worksheet_properties.change_column_bold(0,true)
+        worksheet_properties.change_column_width(0, 60)
+        worksheet_properties.change_column_width(1, 100)
+        worksheet_properties.sheet_data[1][1].change_horizontal_alignment('left') rescue nil
+
+        #Plan d'estimation
+
+        # Send the file
+        send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-#{@project.title.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+
+      #end
+    end
+    #redirect_to projects_from_path(organization_id: organization_id)
+  end
+
+  # Pour Importer un modèle d'estimation
+  def import_estimation_model(organization_id, project_id)
+
+  end
+
+
+  #====================
+
   #Pour gestion des rapports personnalisés
   def report_management
   end
