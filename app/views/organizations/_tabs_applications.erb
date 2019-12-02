@@ -22,10 +22,9 @@
           <th><%= I18n.t :release_date %></th> <%# date de sortie %>
           <th><%= I18n.t('coefficient_value') %></th>
           <th><%= I18n.t('coefficient_label') %></th>
-          <th class="action"><%= I18n.t(:actions) %></th>
+          <th class="actions"><%= I18n.t(:actions) %></th>
         </tr>
       </thead>
-
       <tbody>
 
       <% @organization.applications.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |app| %>
@@ -51,7 +50,7 @@
             </td>
             <td><%= app.coefficient %></td>
             <td><%= app.coefficient_label %></td>
-            <td class="center">
+            <td>
               <% if can? :manage, Application %>
                   <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_application_path(@organization, app), :class => 'icon-pencil', :title => I18n.t('edit') %>
                   <%= link_to raw("<i class='material-icons'>delete</i>"), organization_application_path(@organization, app), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>

@@ -23,15 +23,7 @@
     <% @guw_models.each do |i| %>
       <tr>
         <td class="span7">
-          <% if i.default_display == "list" %>
-            <%= link_to i.name, guw.guw_model_all_guw_types_path(i, organization_id: @organization.id), data: {confirm: I18n.t(:warning_edit_instance_module)} %>
-          <% else %>
-            <% if i.guw_types.empty? %>
-              <%= link_to i.name, guw.guw_model_all_guw_types_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
-            <% else %>
-              <%= link_to i.name, guw.guw_type_path(i.guw_types.first), data: {confirm: I18n.t(:warning_edit_instance_module)} %>
-            <% end %>
-          <% end %>
+          <%= link_to i.name, guw.edit_guw_model_path(i, organization_id: @organization.id), data: {confirm: I18n.t(:warning_edit_instance_module)} %>
         </td>
 
         <td class="span2">

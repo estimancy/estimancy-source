@@ -29,11 +29,11 @@
       <ul class="nav flex-column">
 
         <li class="nav-item">
-          <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_applications', item_title: I18n.t('applications'), anchor: 'tabs-applications') %>"><span><%= I18n.t("applications") %></span></a>
+          <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_applications', item_title: I18n.t('applications')) %>"><span><%= I18n.t("applications") %></span></a>
         </li>
 
         <li class="nav-item">
-          <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_budgets_and_budget_types', item_title: I18n.t('budget_management'), anchor: 'tabs-budgets') %>"><span><%= I18n.t("budget") %> / <%= I18n.t("budget_types") %></span></a>
+          <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_budgets_and_budget_types', item_title: I18n.t('budget') + " / " + I18n.t("budget_types"), anchor: 'tabs-budgets') %>"><span><%= I18n.t("budget") %> / <%= I18n.t("budget_types") %></span></a>
         </li>
 
         <li class="nav-item">

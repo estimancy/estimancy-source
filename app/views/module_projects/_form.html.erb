@@ -4,15 +4,13 @@
 
       <div class="mb-5">
         <div class="effort-bloc">
-
-          <div id="tab-2">
             <div class="card-body">
 
                 <div class="edition-bloc-content">
                   <div class="edition-bloc-form">
                     <%= form_tag(associate_module_projects_inputs_outputs_path) do |f| %>
 
-                        <div class="col-5">
+                        <div class="col-3">
                           <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                             <label class="mdl-textfield__label" for="user_subs_end_date" style="margin-top: -30px;"><%= "Ordre d'affichage" %></label>
                             <%= text_field_tag "display_order", @module_project.display_order, :class => 'form-control' %>
@@ -54,15 +52,18 @@
                            end
                         %>
 
-                      <div class="col-12">
-                        <h5><%= I18n.t(:associate_inputs_with_outputs, current_mp: @module_project) %> </h5>
+                      <div class="col-6">
+                        <h4><%= I18n.t(:associate_inputs_with_outputs, current_mp: @module_project) %></h4>
                       </div>
                       <br>
                       <% guw_preceding_module_project = @module_project.preceding.select{ |i| i.pemodule.alias == "guw" }.last %>
                       <% guw_outputs_estimation_values = guw_preceding_module_project.nil? ? [] : guw_preceding_module_project.estimation_values.where(organization_id: @organization.id, in_out: "output") %>
 
                       <% unless current_evs.all.empty? %>
-                        <% current_evs.each do |cev| %>
+                        <%# current_evs.each do |cev| %>
+                        <% effort_ids.each do |effort_id| %>
+
+                          <% cev = current_evs.where(pe_attribute_id: effort_id).first  %>
 
                           <%# cev_attribute = cev.pe_attribute %>
                           <%# cev_attr_possible_module_projects = @module_project.possible_previous_mp_for_attribute(cev_attribute) %>
@@ -82,27 +83,35 @@
                              end
                           %>
 
-                          <div class="row-fluid">
-                            <div class="col-5">
-                              <p>
-                                <%= "Modules" %> <br>
-                                <% selected_module_project = cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil? %>
-                                <%= select_tag "preceding_module_project[#{cev.id}]",
-                                               options_for_select(cev_attr_possible_module_projects.map{|mp| [mp.to_s, mp.id]},
-                                               selected: (cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil?)),
-                                               :include_blank => true, :class => 'form-control' %>
-                              </p>
+                          <div class="row-fluid" style="margin-bottom: 2rem;">
+                            <div class="col-6">
+                              <div class="row">
+                                <div class="col-2"><%= "Modules : " %></div>
+                                <div class="col-4">
+                                  <% selected_module_project = cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil? %>
+                                  <%= select_tag "preceding_module_project[#{cev.id}]",
+                                                 options_for_select(cev_attr_possible_module_projects.map{|mp| [mp.to_s, mp.id]},
+                                                                    selected: (cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil?)),
+                                                 :include_blank => true, :class => 'form-control' %>
+                                </div>
+                              </div>
                             </div>
 
-                            <div class="col-5">
-                              <p>
-                                <%= cev %><br>
-                                <%#= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id), :include_blank => true %>
-                                <%= select_tag "preceding[#{cev.id}]",
-                                               options_for_select(preceding_outputs_estimation_values.map{|i| [i.pe_attribute.name, i.id] unless i.pe_attribute.nil? },
-                                               selected: cev.estimation_value_id), :include_blank => true, :class => 'form-control'%>
-                              </p>
+                            <div class="col-6">
+                              <div class="row">
+                                <div class="col-2"><%= cev %> :</div>
+                                <div class="col-4">
+                                  <%#= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id), :include_blank => true %>
+                                  <%= select_tag "preceding[#{cev.id}]",
+                                                 options_for_select(preceding_outputs_estimation_values.map{|i| [i.pe_attribute.name, i.id] unless i.pe_attribute.nil? },
+                                                                    selected: cev.estimation_value_id), :include_blank => true, :class => 'form-control'%>
+                                </div>
+                              </div>
                             </div>
+
+
+
+
                           </div>
 
                           <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -136,7 +145,7 @@
                 </div>
 
             </div>
-          </div>
+
         </div>
       </div>
 

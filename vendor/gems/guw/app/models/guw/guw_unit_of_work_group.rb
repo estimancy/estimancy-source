@@ -27,7 +27,8 @@ module Guw
     has_many :guw_unit_of_works, dependent: :destroy
     # la Vue
     has_many :module_project_guw_unit_of_works, class_name: 'ModuleProjectGuwUnitOfWork'
-    has_many :guw_unit_of_work_lines, class_name: 'GuwUnitOfWorkLine'
+    has_many :guw_unit_of_work_lines, class_name: "GuwUnitOfWorkLine"#, foreign_key: :guw_uow_group_id
+
 
     belongs_to :module_project
     belongs_to :pbs_project_element

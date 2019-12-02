@@ -19,7 +19,7 @@
       <table class="table table-sm table-bordered table-list" %>
         <tr>
           <th class="span2">Nom</th>
-          <th class="span2">Description</th>
+          <th class="span2">Desc.</th>
           <th class="span2">Min</th>
           <th class="span2">Max</th>
           <th class="span2">Valeur</th>
@@ -27,7 +27,7 @@
           <th class="span2">Priorité de la couleur</th>
           <th class="span2">Valeur par défaut</th>
           <th class="span2">Ordre d'affichage</th>
-          <th>Actions</th>
+          <th class="actions">Actions</th>
         </tr>
         <% guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
           <tr>
@@ -58,7 +58,7 @@
             <td class="align-center">
               <%= guw_coefficient_element.display_order %>
             </td>
-            <td class="align-center">
+            <td>
               <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient, guw_coefficient_element), data: {confirm: I18n.t(:are_you_sure)}, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>

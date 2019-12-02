@@ -1,0 +1,317 @@
+<div id="tabs-model">
+
+  <div class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-content pb-5">
+
+        <h4><%= I18n.t(:general) %> >> <span style="color:initial"> <%= I18n.t(:properties) %> </span></h4>
+
+        <br>
+
+        <div class="edition-bloc-form">
+
+          <% unless @guw_model.new_record? %>
+            <div class="group_button">
+              <% if @guw_model.config_type == "new" %>
+                <%= link_to I18n.t(:export), guw.guw_model_export_new_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary btn-estimancy' %>
+              <% else %>
+                <%= link_to I18n.t(:export), guw.guw_model_export_old_config_path(@guw_model), :method => 'post', :class => 'btn btn-secondary btn-estimancy' %>
+              <% end %>
+
+              <% if @guw_model.default_display == "tab" %>
+                <%#= link_to I18n.t(:see_model), guw.guw_model_path(@guw_model), :class => 'btn btn-secondary btn-estimancy' %>
+                <% unless @guw_model.guw_types.empty? %>
+                  <%= link_to I18n.t(:see_model), guw.guw_type_path(@guw_model.guw_types.first), :class => 'btn btn-secondary btn-estimancy', data: {confirm: I18n.t(:warning_edit_instance_module)} %>
+                <% end %>
+              <% else %>
+                <%= link_to I18n.t(:see_model), guw.guw_model_all_guw_types_path(@guw_model, organization_id: @current_organization.id), :class => 'btn btn-secondary btn-estimancy' %>
+              <% end %>
+            </div>
+          <% else %>
+            <div class="float-right">
+              <%= form_tag guw.import_new_config_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                <%= file_field_tag :file %>
+                <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+              <% end %>
+            </div>
+          <% end %>
+
+          <%= simple_form_for(@guw_model) do |f| %>
+            <%= f.error_notification %>
+            <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
+
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :config_type, as: :select, collection: [["#{I18n.t :old_configuration}", "old"], ["#{I18n.t :new_configuration}", "new"]], label: "#{I18n.t :type_of_configuration}", input_html: { class: "form-control", rows: "5" } %>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-5" style="margin-left:1rem;">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :view_data, as: :boolean, label: false, :input_html => {:class => 'mdl-checkbox__inputs'}  %> <%# Activer la visualiation des données %>
+                  <label class="mdl-textfield__label" for="view_data" style="padding-left: 20px; margin-top: -7px;"><%= "#{I18n.t :enable_data_visualization}" %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :default_display, as: :select, collection: [["Liste", "list"], ["Onglet", "tab"]], label: I18n.t(:display_default), input_html: { class: "form-control", rows: "5" } %>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :three_points_estimation, label: false, :input_html => {:class => 'mdl-checkbox__inputs'}   %>
+                <label class="mdl-textfield__label" for="three_points_estimation" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:three_points_estimation) %></label>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :retained_size_unit, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="retained_size_unit"><%= I18n.t(:retained_size_unit) %></label>
+              </div>
+            </div>
+
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :hour_coefficient_conversion, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="hour_coefficient_conversion"><%= I18n.t(:hour_coefficient_conversion) %></label>
+              </div>
+            </div>
+
+            <%# Configuration du type d'import %>
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <h5><%= I18n.t :configuration_of_the_import_type %></h5>
+            </div>
+
+            <br>
+
+            <div style="display: flex;">
+              <table class="table table-list">
+                <thead>
+                <tr>
+                  <th><%= I18n.t :enable_import %></th>   <%# Activer Import %>
+                  <th><%= I18n.t :IA_server %></th>       <%# Seveur IA %>
+                  <th><%= I18n.t :IA_optional %></th>     <%# IA facultatif %>
+                </tr>
+                </thead>
+
+                <tbody>
+                <tr>
+                  <td><%= f.input :allow_excel, label: "#{I18n.t :enable_import_via_excel}" %></td> <%# Activer l'import par Excel %>
+                  <td><%= f.input :excel_ml_server, label: false, placeholder: "#{I18n.t :server_address}", disabled: !@guw_model.allow_excel %></td> <%# Adresse du serveur %>
+                  <td><%= f.input :allow_ml_excel, label: "IA Optionnelle" %></td>
+                </tr>
+                <tr>
+                  <td><%= f.input :allow_jira, label: "#{I18n.t :enable_import_via_jira}" %></td>
+                  <td><%= f.input :jira_ml_server, label: false , placeholder: "#{I18n.t :server_address}", disabled: !@guw_model.allow_jira  %></td>
+                  <td><%= f.input :allow_ml_jira, label: "IA Optionnelle" %></td>
+                </tr>
+                <tr>
+                  <td><%= f.input :allow_redmine, label: "#{I18n.t :enable_import_via_Redmine}" %></td>
+                  <td><%= f.input :redmine_ml_server, label: false, placeholder: "#{I18n.t :server_address}", disabled: !@guw_model.allow_redmine %></td>
+                  <td><%= f.input :allow_ml_redmine, label: "IA Optionnelle" %></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <hr />
+
+            <script>
+
+                //       # Si activer import cochée => On dégrise colonne milieu et droite
+                //       # Sinon colonnes 2 et 3 grisées.
+                //       # ou inverse
+
+                //$(document).ready(function() {
+                $(document).ready(function() {
+
+                    $('#guw_model_allow_excel').change(function() {
+                        if($(this).is(":checked")) {
+                            $('#guw_model_excel_ml_server').removeAttr("disabled", "true");
+                            $('#guw_model_allow_ml_excel').removeAttr("disabled", "true");
+
+                        } else {
+                            $('#guw_model_excel_ml_server').attr("disabled","false");
+                            $('#guw_model_allow_ml_excel').attr("disabled","false");
+                        }
+
+                    });
+                });
+
+
+                $('#guw_model_allow_jira').change(function() {
+                    if($(this).is(":checked")) {
+                        $('#guw_model_jira_ml_server').removeAttr("disabled", "true");
+                        $('#guw_model_allow_ml_jira').removeAttr("disabled", "true");
+
+                    } else {
+                        $('#guw_model_jira_ml_server').attr("disabled","false");
+                        $('#guw_model_allow_ml_jira').attr("disabled","false");
+                    }
+
+                });
+
+
+                $('#guw_model_allow_redmine').change(function() {
+                    if($(this).is(":checked")) {
+                        $('#guw_model_redmine_ml_server').removeAttr("disabled", "true");
+                        $('#guw_model_allow_ml_redmine').removeAttr("disabled", "true");
+
+                    } else {
+                        $('#guw_model_redmine_ml_server').attr("disabled","false");
+                        $('#guw_model_allow_ml_redmine').attr("disabled","false");
+                    }
+
+                });
+
+
+
+                // function grise(element) {
+                //         var text = document.getElementById(element);
+                //         if(text.disabled == true)
+                //                 text.disabled = false;
+                //         else
+                //                 text.disabled = true;
+                // }
+
+                // $('#guw_model_allow_excel').click(function(){
+                //   $('guw_model_excel_ml_server').attr('disabled', $(this).attr('checked'));
+                // });
+
+
+
+                // $("#guw_model_allow_excel").onClick(function() {
+                //   if ($("#guw_model_allow_excel").val() == true)
+                //      $("#guw_model_excel_ml_server").disabled();
+
+                //   else
+                // alert('bb');
+                // });
+
+
+
+                $("#guw_model_excel_ml_server").keyup(function() {
+                    if($("#guw_model_excel_ml_server").val() != "")
+                        $(".allow_ml_excel").show();
+                    else
+                        $(".allow_ml_excel").hide();
+                });
+
+                $("#guw_model_jira_ml_server").keyup(function() {
+                    if($("#guw_model_jira_ml_server").val() != "")
+                        $(".allow_ml_jira").show();
+                    else
+                        $(".allow_ml_jira").hide();
+                });
+
+                $("#guw_model_redmine_ml_server").keyup(function() {
+                    if($("#guw_model_redmine_ml_server").val() != "")
+                        $(".allow_ml_redmine").show();
+                    else
+                        $(".allow_ml_redmine").hide();
+                });
+            </script>
+
+            <!--                </div>-->
+
+            <table class="table table-list">
+              <thead>
+              <tr>
+                <th>
+                  Position
+                </th>
+                <th>
+                  <%= I18n.t :column %>
+                </th>
+              </tr>
+              </thead>
+
+              <% @initial_guw_model_orders = @guw_model.orders %>
+              <% @guw_model_orders = @initial_guw_model_orders.delete_if { |k, v| v.blank? } %>
+              <% @guw_model_orders = @guw_model_orders.sort_by{ |k,v| v.to_f }.to_h %>
+
+              <% all_coeff_and_outputs = (@guw_model.guw_coefficients.map(&:name) + @guw_model.guw_outputs.map(&:name) + ["#{I18n.t :criteria}", "#{I18n.t :cplx_coeff}", "#{I18n.t(:coefficient)}"]).flatten %>
+              <% all_coeff_and_outputs.each do |key|
+                unless @guw_model_orders.key?("#{key}")
+                @guw_model_orders["#{key}"] = nil
+              end
+              end
+              %>
+
+              <% @guw_model_orders.each do |item, value| %>
+                <tbody>
+                <tr>
+                  <% begin %>
+
+                    <td>
+                      <%= text_field_tag "items[#{item}]", value, class: "order_size" %>
+                    </td>
+
+                    <% if item == "#{I18n.t :coefficient}" || item == "#{I18n.t :coeff_complexity}"  || item == "#{I18n.t :criteria}" %>
+                      <td class="orders_padding">
+                        <b>
+                          <%= item %>
+                        </b>
+                      </td>
+                    <% else %>
+                      <td class="orders_padding">
+                        <%= item %>
+                      </td>
+                    <% end %>
+
+                  <% rescue %>
+                    <td>
+                      <%#= text_field_tag "items[#{item}]", YAML::load(@guw_model.orders.value)[item], class: "order_size" %>
+                      <%= text_field_tag "items[#{item}]", YAML::load(@guw_model_orders.value)[item], class: "order_size" %>
+                    </td>
+
+                    <% if item == "#{I18n.t :coefficient}" || item == "#{I18n.t :coeff_complexity}"  || item == "#{I18n.t :criteria}" %>
+                      <td class="orders_padding">
+                        <b>
+                          <%= item %>
+                        </b>
+                      </td>
+                    <% else %>
+                      <td class="orders_padding">
+                        <%= item %>
+                      </td>
+                    <% end %>
+
+                  <% end %>
+                </tr>
+              <% end %>
+              </tbody>
+            </table>
+
+            <div class="actions-tabs">
+              <% if can? :manage_modules_instances, ModuleProject %>
+                <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+                <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
+              <% end %>
+              <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn btn-secondary" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

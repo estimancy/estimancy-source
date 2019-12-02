@@ -1513,6 +1513,8 @@ class Guw::GuwModelsController < ApplicationController
     @organization = @guw_model.organization
     session[:organization_id] = @organization.id
     @current_organization = @organization
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
 
     set_page_title @guw_model.name
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @guw_model.name => ""
@@ -1548,6 +1550,8 @@ class Guw::GuwModelsController < ApplicationController
     @guw_outputs = @guw_model.guw_outputs.order("display_order ASC")
     @guw_coefficients = @guw_model.guw_coefficients
     @guw_coefficient = @guw_coefficients.first
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
 
     set_page_title I18n.t(:edit_project_element_name, parameter: @guw_model.name)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => main_app.organization_estimations_path(@organization), I18n.t(:uo_modules) => main_app.organization_module_estimation_path(@organization, anchor: "taille"), @guw_model.name => ""
@@ -1609,8 +1613,9 @@ class Guw::GuwModelsController < ApplicationController
     @guw_factors = @guw_model.guw_factors
     @guw_outputs = @guw_model.guw_outputs
     @guw_coefficients = @guw_model.guw_coefficients
-
     @organization = @guw_model.organization
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
 
     if @guw_model.update_attributes(params[:guw_model])
 

@@ -44,6 +44,7 @@ class ModuleProject < ActiveRecord::Base
 
   has_many :guw_unit_of_work_groups, class_name: "Guw::GuwUnitOfWorkGroup", dependent: :destroy
   has_many :guw_unit_of_works, :through => :guw_unit_of_work_groups, class_name: "Guw::GuwUnitOfWork", dependent: :destroy
+  has_many :guw_unit_of_work_lines, :through => :guw_unit_of_work_groups, class_name: "GuwUnitOfWorkLine", dependent: :destroy #foreign_key: :uow_module_project_id
   has_many :staffing_custom_data, class_name: "Staffing::StaffingCustomDatum", dependent: :destroy
 
   has_many :estimation_values, :dependent => :destroy

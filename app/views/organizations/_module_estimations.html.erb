@@ -3,7 +3,7 @@
     <% if @item_title.blank? %>
       <div id="tabs_size" class="edition-page-group py-4"><span id="item_title"><%= I18n.t('size') %></span></div>
     <% else %>
-      <div id="tabs" class="edition-page-group py-4"><span id="item_title"><%= @item_title %></span></div>
+      <div id='<%= "#{@item_title}" %>' class="edition-page-group py-4"><span id="item_title"><%= @item_title %></span></div>
     <% end %>
 
     <section class="card card-content-bloc estimancy-form">
@@ -24,6 +24,7 @@
 
   <div class="col-2">
     <div id="edition-sidebar">
+      <h4 class="mb-0">Navigation</h4>
       <ul class="nav flex-column">
         <li class="nav-item">
 <!--          <a class="nav-link group" href="#taille"><span><%#= I18n.t(:size) %></span></a>-->
@@ -31,7 +32,7 @@
         </li>
         <li class="nav-item">
 <!--          <a class="nav-link group" href="#effort"><span><%#= I18n.t(:effort) %></span></a>-->
-          <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort'), anchor: 'effort') %>"><span><%= I18n.t("effort") %></span></a>
+          <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort')) %>"><span><%= I18n.t("effort") %></span></a>
         </li>
         <li class="nav-item">
 <!--          <a class="nav-link group" href="#activite"><span><%#= I18n.t(:activity) %></span></a>-->

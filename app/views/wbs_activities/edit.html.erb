@@ -1,4 +1,13 @@
-<h4 class="ui-widget"><b><%= I18n.t(:edit_wbs_activity, :value => @wbs_activity.name) %> </b></h4>
-<div>
-  <%= render 'form' %>
-</div>
+<!--<h4 class="ui-widget"><b><%#= I18n.t(:edit_wbs_activity, :value => @wbs_activity.name) %> </b></h4>-->
+<!--<div>-->
+  <%#= render 'form' %>
+<!--</div>-->
+
+<h4>
+  <%= I18n.t('activity') %>
+  <%= ": " + " #{@wbs_activity.name}" %>
+</h4>
+<h6>
+  <%= @wbs_activity.description %>
+</h6>
+<%= render 'form' %>
