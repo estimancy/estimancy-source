@@ -35,7 +35,7 @@
         <div class="card-body">
           <div class="edition-bloc-title">
             <%#= link_to "< Back", guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
-            <h4><%= I18n.t(:unit_of_work_types) %> >> <span style="color:initial"> <%= I18n.t(:coefficients) %> </span>
+            <h4><%= I18n.t(:unit_of_work_types) %> >> <span style="color:initial"></span>
             <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type), style: "color:initial", title: I18n.t(:edit) + " #{guw_type}" %></h4>
             <div>
               <% if can? :manage_modules_instances, ModuleProject %>
