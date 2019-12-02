@@ -56,15 +56,11 @@
 
 </td>
 
-
-<%# guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(organization_id: organization_id,
+<%# guow.guw_unit_of_work_attributes %>
+<% guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(organization_id: organization_id,
                                                                         guw_model_id: guw_model_id,
                                                                         guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
                                                                         guw_unit_of_work_id: guow.id) %>
-
-<% guow_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes.where(organization_id: organization_id,
-                                                                        guw_model_id: guw_model_id,
-                                                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id) %>
 
 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
   <% if i[1].blank? %>
