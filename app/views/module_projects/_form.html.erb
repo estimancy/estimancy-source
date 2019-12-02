@@ -64,7 +64,7 @@
                       <% unless current_evs.all.empty? %>
                         <% current_evs.each do |cev| %>
 
-                          <% cev_attribute = cev.pe_attribute %>
+                          <%# cev_attribute = cev.pe_attribute %>
                           <%# cev_attr_possible_module_projects = @module_project.possible_previous_mp_for_attribute(cev_attribute) %>
                           <% cev_attr_possible_module_projects = @module_project.preceding.reject { |i| i.pemodule.alias == "initialization" } %>
 
