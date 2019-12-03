@@ -51,8 +51,10 @@
         <% else %>
             <% mp_profiles_length = 2 %>
             <th><%= I18n.t(:no_profiles_for_wbs_activity_organization) %></th>
+            <th></th>
         <% end %>
       </tr>
+
 
       <%# unless estimation_pbs_probable_results.nil? || ratio_reference.nil? %>
       <% if estimation_pbs_probable_results.nil? || ratio_reference.nil? %>
@@ -71,7 +73,7 @@
               <% font_weight =  wbs_activity_elt.is_childless? ? "normal" : "inherit" %>
               <% mp_ratio_element = module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_elt.id }.first %>
               <% if mp_ratio_element %>
-                  <% unless view_widget_type.to_s=="effort_per_phases_profiles_table_without_zero" && mp_ratio_element.nil? %>
+                  <% unless view_widget_type.to_s=="cost_per_phases_profiles_table_without_zero" && mp_ratio_element.nil? %>
                       <tr>
                         <td>
                           <span style="float: left; font-weight:<%=font_weight%>; margin-left:<%=wbs_activity_elt.depth%>em">
