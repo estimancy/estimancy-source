@@ -46,10 +46,11 @@
 
                         <% current_evs = @module_project.estimation_values.where(organization_id: @organization.id, pe_attribute_id: effort_ids, in_out: "input") %>
 
-                        <% if current_evs.all.empty? || effort_ids.length != current_evs.length
-                             all_current_evs = @module_project.get_mp_inputs_outputs_estimation_values(effort_ids, output_attribute_ids)
-                             current_evs = all_current_evs.where(pe_attribute_id: effort_ids, in_out: "input")
-                           end
+                        <%
+                          if current_evs.all.empty? || effort_ids.length != current_evs.length
+                            all_current_evs = @module_project.get_mp_inputs_outputs_estimation_values(effort_ids, output_attribute_ids)
+                            current_evs = all_current_evs.where(pe_attribute_id: effort_ids, in_out: "input")
+                          end
                         %>
 
                       <div class="col-6">
