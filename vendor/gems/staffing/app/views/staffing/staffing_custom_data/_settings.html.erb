@@ -258,16 +258,16 @@
                 <div class="indicator-title">Date de fin </div>
                 <div class="indicator-value">
                   <span class="end_date">
-                    <% unless @md_duration.nil? %>
-                      <%= I18n.l((@project.start_date + @md_duration.weeks), format: "%d/%m/%Y") %>
+                    <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
+                      <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: "%d/%m/%Y") %>
                     <% end %>
                   </span>
                 </div>
                 <div class="indicator-optimal">Date initiale</div>
                 <div class="indicator-optimal-value">
                   <span>
-                    <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
-                      <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: "%d/%m/%Y") %>
+                    <% unless @md_duration.nil? %>
+                      <%= I18n.l((@project.start_date + @md_duration.weeks), format: "%d/%m/%Y") %>
                     <% end %>
                   </span>
                 </div>
