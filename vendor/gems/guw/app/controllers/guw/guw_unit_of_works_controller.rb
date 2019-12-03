@@ -733,15 +733,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       render js: "alert('Vous ne pouvez pas créer plus de #{@guw_type.maximum.to_s} composants pour #{@guw_type.to_s}.')";
     else
 
-      # @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id).all.each do |gac|
-      #   finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
-      #                                              guw_model_id: @guw_model.id,
-      #                                              guw_attribute_id: gac.id,
-      #                                              guw_type_id: @guw_type.id,
-      #                                              project_id: @guw_unit_of_work.project_id,
-      #                                              module_project_id: @guw_unit_of_work.module_project_id,
-      #                                              guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
-      #   finder.save
+      @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id).all.each do |gac|
+        finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+                                                   guw_model_id: @guw_model.id,
+                                                   guw_attribute_id: gac.id,
+                                                   guw_type_id: @guw_type.id,
+                                                   project_id: @guw_unit_of_work.project_id,
+                                                   module_project_id: @guw_unit_of_work.module_project_id,
+                                                   guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
+        finder.save
       end
 
 
@@ -760,7 +760,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       #Changer le libelle du popup avec la description du nouveau type d'UO sélectionne
       # @guw_types = @guw_model.guw_types.includes(:guw_complexities)
       # @new_popup_title = (@guw_type.description.blank? ? @guw_type.name : @guw_type.description)
-    # end
+    end
     #
     # respond_to do |format|
     #   format.html { redirect_to main_app.dashboard_path(@project,
