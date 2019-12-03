@@ -40,7 +40,7 @@ class ModuleProjectsController < ApplicationController
       end
     end
 
-    redirect_to :back
+    redirect_to edit_project_path(@project.id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan')
   end
 
   #Update the module_project corresponding data of view
@@ -64,7 +64,6 @@ class ModuleProjectsController < ApplicationController
     end
 
   end
-
 
 
   # Reassing the current mp instance module
