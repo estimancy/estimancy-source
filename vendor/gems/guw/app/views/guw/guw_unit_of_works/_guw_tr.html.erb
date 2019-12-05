@@ -218,15 +218,22 @@
                                disabled: !@guw_type.allow_complexity,
                                style: "width: 80%;" %>
               <% else %>
-                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
-                               guw: guow.id,
-                               class: "guw_complexity",
-                               include_blank: false,
-                               disabled: !@guw_type.allow_complexity,
-                               style: "width: 80%;" %>
-
-                <%= hidden_field_tag "guw_complexity_#{guow.id}", guow.guw_complexity_id %>
-
+                <% if !@guw_type.allow_complexity %>
+                  <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
+                                 guw: guow.id,
+                                 class: "guw_complexity",
+                                 include_blank: false,
+                                 disabled: !@guw_type.allow_complexity,
+                                 style: "width: 80%;" %>
+                  <%= hidden_field_tag "guw_complexity_#{guow.id}", guow.guw_complexity_id %>
+                <% else %>
+                  <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
+                                 guw: guow.id,
+                                 class: "guw_complexity",
+                                 include_blank: false,
+                                 disabled: !@guw_type.allow_complexity,
+                                 style: "width: 80%;" %>
+                <% end %>
               <% end %>
             <% else %>
               <% if guow.off_line == true %>
