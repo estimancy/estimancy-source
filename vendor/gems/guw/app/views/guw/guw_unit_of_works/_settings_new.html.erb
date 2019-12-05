@@ -223,7 +223,11 @@
                     <% else %>
                       <th>
                         <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                          Coeff. de complexité
+                          <% if @guw_types.map{|i| i.display_threshold }.flatten.include?(true) %>
+                            Complexité
+                          <% else %>
+                            Coeff. de complexité
+                          <% end %>
                         <% else %>
                           Complexité
                         <% end %>

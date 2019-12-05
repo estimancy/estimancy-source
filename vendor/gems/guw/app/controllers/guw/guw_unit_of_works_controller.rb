@@ -952,7 +952,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @guw_attribute_complexities = Guw::GuwAttributeComplexity.where(organization_id: organization_id,
                                                                       guw_model_id: @guw_model.id,
                                                                       guw_attribute_id: guowa.guw_attribute_id,
-                                                                      guw_type_id: (guw_type.nil? ? nil : guw_type.id)).all
+                                                                      guw_type_id: guw_type.id).all
     else
       @guw_attribute_complexities = guw_type_attributes_complexities[guowa.guw_attribute_id]
     end
@@ -960,7 +960,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     attr_complexities_bottom_range_min = @guw_attribute_complexities.map(&:bottom_range).compact.min.to_i
     attr_complexities_top_range_max = @guw_attribute_complexities.map(&:top_range).compact.max.to_i
 
-    sum_range = guowa.guw_attribute.guw_attribute_complexities.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_type_id: (guw_type.nil? ? nil : guw_type.id)).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
+    sum_range = guowa.guw_attribute.guw_attribute_complexities.where(organization_id: organization_id,
+                                                                     guw_model_id: @guw_model.id,
+                                                                     guw_type_id: (guw_type.nil? ? nil : guw_type.id)).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
 
     unless sum_range.blank? || sum_range == 0
       @guw_attribute_complexities.each do |guw_ac|
