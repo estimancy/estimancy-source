@@ -1432,7 +1432,7 @@ class OrganizationsController < ApplicationController
           if app.nil?
 
             new_app = Application.new(organization_id: @organization.id,
-                                      name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].value),
+                                      name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : (row[0].nil? ? nil : row[0].value)),
                                       is_ignored: row[1].nil? ? nil : row[1].value,
                                       criticality: row[2].nil? ? nil : row[2].value,
                                       coefficient: row[3].nil? ? nil : row[3].value,
@@ -1444,7 +1444,7 @@ class OrganizationsController < ApplicationController
 
           else
             app.organization_id = @organization.id
-            app.is_ignored = row[1].nil? ? nil : row[1].value
+            app.is_ignored = row[1].nilimport_appli? ? nil : row[1].value
             app.criticality = row[2].nil? ? nil : row[2].value
             app.coefficient = row[3].nil? ? nil : row[3].value
             app.coefficient_label = row[4].nil? ? nil : row[4].value
