@@ -1444,7 +1444,7 @@ class OrganizationsController < ApplicationController
 
           else
             app.organization_id = @organization.id
-            app.is_ignored = row[1].nilimport_appli? ? nil : row[1].value
+            app.is_ignored = row[1].nil? ? nil : row[1].value
             app.criticality = row[2].nil? ? nil : row[2].value
             app.coefficient = row[3].nil? ? nil : row[3].value
             app.coefficient_label = row[4].nil? ? nil : row[4].value
