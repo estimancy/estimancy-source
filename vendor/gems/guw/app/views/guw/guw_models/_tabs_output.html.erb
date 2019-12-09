@@ -12,14 +12,14 @@
             <table class="table table-list">
               <tr>
                 <th><%= I18n.t(:name) %></th>
-                <th class="span2">Type de sortie</th>
-                <th class="span2">Unité de sortie</th>
-                <th class="span2">Sous-total</th>
-                <th class="span2">Couleur</th>
-                <th class="span2">Priorité de la couleur</th>
-                <th class="span2">Coefficient Standard</th>
-                <th class="span2">Ordre de calcul</th>
-                <th class="actions">Actions</th>
+                <th class="span2"><%= I18n.t('output_type') %></th>
+                <th class="span2"><%= I18n.t('output_unit') %></th>
+                <th class="span2"><%= I18n.t('subtotal') %></th>
+                <th class="span2"><%= I18n.t('color') %></th>
+                <th class="span2"><%= I18n.t('color_priority') %></th>
+                <th class="span2"><%= I18n.t('standard_coeff') %></th>
+                <th class="span2"><%= I18n.t('calculation_order') %></th>
+                <th class="actions"><%= I18n.t('actions') %></th>
               </tr>
 
               <% unless @guw_outputs.empty? %>
@@ -53,7 +53,7 @@
           <% if can? :manage_modules_instances, ModuleProject %>
             <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_output_path(@guw_model), class: "btn btn-primary" %>
           <% end %>
-          <%= link_to I18n.t(:back) , guw.guw_model_path(@guw_model), class: "btn btn-secondary" %>
+          <%= link_to I18n.t(:back), guw.edit_guw_model_path(@guw_model, organization_id: @organization.id, partial_name: 'tabs_model'), class: "btn btn-secondary" %>
         </div>
       </div>
     </div>

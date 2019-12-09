@@ -531,96 +531,97 @@
               </div>
               <hr>
             <% end %>
-          </div>
 
-          <% unless @ge_model.ge_factors.empty? %>
-            <div class="row-fluid">
-              <div class="span8">
-                <h3 style="color: #808080"><%= I18n.t(:factor_list) %> <i class="fa fa-info-circle" title="<%= I18n.t(:scale_prod_help) %>"></i></h3>
-                <table class="table table-bordered table-condensed tablesorterPager">
-                  <thead>
-                  <tr>
-                    <th>Scale Prod</th>
-                    <th>Type</th>
-                    <th>Short Name Factor</th>
-                    <th>Long name Factor</th>
-                    <th>Description</th>
-                  </tr>
-                  </thead>
-
-                  <tbody>
-                  <% @ge_model.ge_factors.order('scale_prod asc').each do |ge_factor| %>
-                    <% case ge_factor.scale_prod.downcase %>
-                  <% when "p" %>
-                      <% td_class = "product_factor" %>
-                    <% when "s" %>
-                      <% td_class = "scale_factor" %>
-                    <% when "c" %>
-                      <% td_class = "conversion_factor" %>
-                    <% else
-                         # type code here
-                       end %>
-                    <tr>
-                      <td class="<%= td_class %>"><%= ge_factor.scale_prod %></td>
-                      <td><%= ge_factor.factor_type %></td>
-                      <td><%= ge_factor.short_name %></td>
-                      <td><%= ge_factor.long_name %></td>
-                      <td><%= ge_factor.description %></td>
-                    </tr>
-                  <% end %>
-                  </tbody>
-                </table>
-              </div>
-
-              <div class="span4">
-                <h3 style="color: #808080"><%= I18n.t(:factor_values) %> <i class="fa fa-info-circle" title="<%= I18n.t(:scale_prod_help) %>"></i></h3>
-                <% if @ge_model.ge_factor_values.nil? %>
-                  <h4><%= I18n.t(:there_is_no_factor_values) %></h4>
-
-                <% else %>
+            <% unless @ge_model.ge_factors.empty? %>
+              <div class="row-fluid">
+                <div class="span8">
+                  <h3 style="color: #808080"><%= I18n.t(:factor_list) %> <i class="fa fa-info-circle" title="<%= I18n.t(:scale_prod_help) %>"></i></h3>
                   <table class="table table-bordered table-condensed tablesorterPager">
                     <thead>
                     <tr>
                       <th>Scale Prod</th>
-                      <th><%= I18n.t(:factors) %></th>
-                      <th><%= I18n.t(:value_text) %></th>
-                      <th><%= I18n.t(:value_number) %></th>
-                      <th><%= I18n.t(:default_value) %></th>
+                      <th>Type</th>
+                      <th>Short Name Factor</th>
+                      <th>Long name Factor</th>
+                      <th>Description</th>
                     </tr>
                     </thead>
 
                     <tbody>
-                    <% @ge_model.ge_factor_values.each do |ge_factor_value| %>
-                      <% case ge_factor_value.factor_scale_prod.downcase %>
+                    <% @ge_model.ge_factors.order('scale_prod asc').each do |ge_factor| %>
+                      <% case ge_factor.scale_prod.downcase %>
                     <% when "p" %>
-                        <% tr_class = "product_factor" %>
+                        <% td_class = "product_factor" %>
                       <% when "s" %>
-                        <% tr_class = "scale_factor" %>
+                        <% td_class = "scale_factor" %>
                       <% when "c" %>
-                        <% tr_class = "conversion_factor" %>
+                        <% td_class = "conversion_factor" %>
                       <% else
                            # type code here
                          end %>
                       <tr>
-                        <td class='<%= tr_class %>'><%= ge_factor_value.factor_scale_prod %></td>
-                        <td class='<%= tr_class %>'><%= ge_factor_value.factor_name %></td>
-                        <td><%= ge_factor_value.value_text %></td>
-                        <td><%= ge_factor_value.value_number %></td>
-                        <td class="align-center">
-                          <%= check_box_tag("default_value[#{ge_factor_value.id}]", ge_factor_value.id, ge_factor_value.default?, :disabled => true) %>
-                        </td>
+                        <td class="<%= td_class %>"><%= ge_factor.scale_prod %></td>
+                        <td><%= ge_factor.factor_type %></td>
+                        <td><%= ge_factor.short_name %></td>
+                        <td><%= ge_factor.long_name %></td>
+                        <td><%= ge_factor.description %></td>
                       </tr>
                     <% end %>
                     </tbody>
-
-                    <%= render :partial => 'layouts/footer_table' %>
                   </table>
-                <% end %>
+                </div>
+
+                <div class="span4">
+                  <h3 style="color: #808080"><%= I18n.t(:factor_values) %> <i class="fa fa-info-circle" title="<%= I18n.t(:scale_prod_help) %>"></i></h3>
+                  <% if @ge_model.ge_factor_values.nil? %>
+                    <h4><%= I18n.t(:there_is_no_factor_values) %></h4>
+
+                  <% else %>
+                    <table class="table table-bordered table-condensed tablesorterPager">
+                      <thead>
+                      <tr>
+                        <th>Scale Prod</th>
+                        <th><%= I18n.t(:factors) %></th>
+                        <th><%= I18n.t(:value_text) %></th>
+                        <th><%= I18n.t(:value_number) %></th>
+                        <th><%= I18n.t(:default_value) %></th>
+                      </tr>
+                      </thead>
+
+                      <tbody>
+                      <% @ge_model.ge_factor_values.each do |ge_factor_value| %>
+                        <% case ge_factor_value.factor_scale_prod.downcase %>
+                      <% when "p" %>
+                          <% tr_class = "product_factor" %>
+                        <% when "s" %>
+                          <% tr_class = "scale_factor" %>
+                        <% when "c" %>
+                          <% tr_class = "conversion_factor" %>
+                        <% else
+                             # type code here
+                           end %>
+                        <tr>
+                          <td class='<%= tr_class %>'><%= ge_factor_value.factor_scale_prod %></td>
+                          <td class='<%= tr_class %>'><%= ge_factor_value.factor_name %></td>
+                          <td><%= ge_factor_value.value_text %></td>
+                          <td><%= ge_factor_value.value_number %></td>
+                          <td class="align-center">
+                            <%= check_box_tag("default_value[#{ge_factor_value.id}]", ge_factor_value.id, ge_factor_value.default?, :disabled => true) %>
+                          </td>
+                        </tr>
+                      <% end %>
+                      </tbody>
+
+                      <%= render :partial => 'layouts/footer_table' %>
+                    </table>
+                  <% end %>
+                </div>
               </div>
-            </div>
-          <% end %>
+            <% end %>
 
           </div>
+
+        </div>
 
       </div>
     </div>

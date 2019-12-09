@@ -2555,3 +2555,7 @@ fr:
   past_projects_effort: "Effort des projets passés"
 
   unit_of_work_types: "Types d'Unité Oeuvre"
+  output_unit: "Unité de sortie"
+  subtotal: "Sous-total"
+  standard_coeff: "Coefficient Standard"
+  calculation_order: "Ordre de calcul"

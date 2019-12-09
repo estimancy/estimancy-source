@@ -2093,3 +2093,8 @@ es:
   please_return_check_report_type: "Please return check a report type"
   please_return_check_kpi_type: "Please return check a kpi type"
   past_projects_effort: "Effort of past projects"
+  output_type: "Output type"
+  output_unit: "Output unit"
+  subtotal: "Subtotal"
+  standard_coeff: "Standard Coefficient"
+  calculation_order: "Order of calculation"

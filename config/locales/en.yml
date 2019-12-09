@@ -2497,3 +2497,8 @@ en:
   criticality: "Criticality"
 
   unit_of_work_types: "Unit of Work Types"
+  output_type: "Output type"
+  output_unit: "Output unit"
+  subtotal: "Subtotal"
+  standard_coeff: "Standard Coefficient"
+  calculation_order: "Order of calculation"

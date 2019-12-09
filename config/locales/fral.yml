@@ -2442,3 +2442,8 @@ fral:
 
   unit_of_work_types: "Types d'Unité Oeuvre"
   past_projects_effort: "Effort des projets passés"
+  output_type: "Type de sortie"
+  output_unit: "Unité de sortie"
+  subtotal: "Sous-total"
+  standard_coeff: "Coefficient Standard"
+  calculation_order: "Ordre de calcul"
