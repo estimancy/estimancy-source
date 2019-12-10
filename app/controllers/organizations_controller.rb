@@ -71,20 +71,22 @@ class OrganizationsController < ApplicationController
                             [I18n.t(:version_number), @project.version_number],
                             [I18n.t(:private_estimation), @project.private ? 1 : 0 ],
                             [I18n.t(:label_product_name), @project.application_name],
-                            [I18n.t(:label_product_name), @project.applications.map(&:name)],
-                            [I18n.t(:application_id), @project.application.name],
+                            [I18n.t(:applications), @project.applications.map(&:name)],
+                            [I18n.t(:selected_application), (@project.application.name rescue nil)],
                             [I18n.t(:original_model), @project.original_model],
                             [I18n.t(:original_model_version), (@project.original_model.version_number rescue nil)],
                             [I18n.t(:description), @project.description],
                             [I18n.t(:start_date), I18n.l(@project.start_date)],
                             [I18n.t(:creator), @project.creator],
-                            [I18n.t(:estimation_status), @project.estimation_status],
+                            #[I18n.t(:status_al), @project.creator],
+                            [I18n.t(:estimation_status), (@project.estimation_status.name rescue nil)],
                             [I18n.t(:status_comment), @project.status_comment],
                             [I18n.t(:project_area), @project.project_area],
                             [I18n.t(:acquisition_category), @project.acquisition_category],
                             ["#{label_platform_category}", @project.platform_category],
-                             [I18n.t(:project_category), @project.project_category],
-                             [I18n.t(:provider), @project.provider]]
+                            [I18n.t(:project_category), @project.project_category],
+                            [I18n.t(:provider), @project.provider],
+                            [I18n.t(:nb_module_projects), @project.module_projects.all.size]]
 
 
         global_properties.each_with_index do |row, index|
@@ -101,7 +103,143 @@ class OrganizationsController < ApplicationController
         worksheet_properties.change_column_width(1, 100)
         worksheet_properties.sheet_data[1][1].change_horizontal_alignment('left') rescue nil
 
-        #Plan d'estimation
+        i = 0
+        #Plan d'estimation : worksheet_estimation_plan
+        worksheet_estimation_plan.add_cell(0, i, I18n.t(:pe_module))
+        worksheet_estimation_plan.add_cell(0, i += 1, "ID ModuleProject")
+        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:module_name))
+        worksheet_estimation_plan.add_cell(0, i += 1, "Position_x")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Position_y")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Top_position")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Left_position")
+        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:creation_order))
+        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:show_results_view))
+        worksheet_estimation_plan.add_cell(0, i += 1, "Guw_model")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Ge_model")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Wbs_activity")
+        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:ratio))
+        worksheet_estimation_plan.add_cell(0, i += 1, "Expert_judgement_instance")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Staffing_model")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Kb_model")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Skb_model")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Operation_model")
+        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:associated_module_projects))
+        worksheet_estimation_plan.add_cell(0, i += 1, "ID Vue")
+        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:view_name))
+        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:view_description))
+
+        worksheet_estimation_plan.change_column_width(0, 40)
+
+        nb_mp = 0
+        module_projects = @project.module_projects
+        module_projects.each_with_index do |module_project, index|
+          j = 0
+          worksheet_estimation_plan.add_cell(index+1, j, module_project.pemodule.title)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.id)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.module_project_name)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.position_x)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.position_y)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.top_position)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.left_position)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.creation_order)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.show_results_view ? 1 : 0)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.guw_model.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.ge_model.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.wbs_activity.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.wbs_activity_ratio.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.expert_judgement_instance.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.staffing_model.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.kb_model.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.skb_model.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.operation_model.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.associated_module_projects)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.view_id)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.view.name rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.view.description rescue nil))
+        end
+
+        ##===================   Les Vues et Vignettes : worksheet_view_widgets   =========================
+        vw = 0
+        worksheet_view_widgets.add_cell(0, vw, I18n.t(:name))
+        worksheet_view_widgets.add_cell(0, vw += 1, "ID Vue")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:view_name))
+        worksheet_view_widgets.add_cell(0, vw += 1, "ID ModuleProject")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:pe_attribute_name))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:in_out))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:show_name))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:show_tjm))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:equation))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:comments))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:is_label_widget))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:is_kpi_widget))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:kpi_unit))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:use_organization_effort_unit))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:is_project_data_widget))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:project_attribute_name))
+        worksheet_view_widgets.add_cell(0, vw += 1, "Icon")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:color_code))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:show_min_max))
+        worksheet_view_widgets.add_cell(0, vw += 1, "Width")
+        worksheet_view_widgets.add_cell(0, vw += 1, "Height")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:widget_type))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:position))
+        worksheet_view_widgets.add_cell(0, vw += 1, "Position_x")
+        worksheet_view_widgets.add_cell(0, vw += 1, "Position_y")
+        worksheet_view_widgets.add_cell(0, vw += 1, "Min.")
+        worksheet_view_widgets.add_cell(0, vw += 1, "Max.")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:validation_options)) #validation_text
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:fields))  #project_fields
+
+        #=====
+          #Then copy the widgets of the dafult view
+        module_projects.each do |module_project|
+          mp_view = module_project.view
+          if mp_view
+            mp_view.views_widgets.each_with_index do |view_widget, index|
+              k = 0
+
+              widget_est_val = view_widget.estimation_value
+              in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
+              #estimation_value = module_project.estimation_values.where(:organization_id => @organization.id, pe_attribute_id: view_widget.estimation_value.pe_attribute_id, in_out: in_out).last
+
+              worksheet_view_widgets.add_cell(index+1, k, view_widget.name)
+              worksheet_view_widgets.add_cell(index+1, k += 1, mp_view.id)
+              worksheet_view_widgets.add_cell(index+1, k += 1, mp_view.name)
+              worksheet_view_widgets.add_cell(index+1, k += 1, module_project.id)
+              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.estimation_value.pe_attribute.name rescue nil))   # EstimationValue
+              worksheet_view_widgets.add_cell(index+1, k += 1, in_out)   # EstimationValue
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.show_name)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.show_tjm)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.equation)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.comment)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.is_label_widget)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.is_kpi_widget)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.kpi_unit)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.use_organization_effort_unit)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.is_project_data_widget)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.project_attribute_name)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.icon_class)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.color)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.show_min_max)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.width)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.height)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.widget_type)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.position)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.position_x)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.position_y)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.min_value)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.max_value)
+              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.validation_text)
+              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.project_fields.last rescue nil))
+
+              #create the new project_field
+              #ProjectField.create(project_id: @project.id, field_id: project_field.field_id, views_widget_id: widget_copy.id, value: @value)
+            end
+
+          end
+        end
+
+        #=====
 
         # Send the file
         send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-#{@project.title.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
@@ -112,8 +250,106 @@ class OrganizationsController < ApplicationController
   end
 
   # Pour Importer un modèle d'estimation
-  def import_estimation_model(organization_id, project_id)
+  def import_estimation_model(organization_id)
+    ActiveRecord::Base.transaction do
 
+      organization_id = params[:organization_id]
+      @organization = Organization.find(organization_id)
+      is_model = params[:is_model]
+      #project_id = params[:project_id]
+      #@project = Project.where(organization_id: organization_id, id: project_id).first
+
+      if params[:file]
+        if !params[:file].nil? && (File.extname(params[:file].original_filename).to_s.downcase == ".xlsx")
+
+          #get the file data
+          workbook = RubyXL::Parser.parse(params[:file].path)
+
+          #if a organization exists
+          if !params[:organization_id].nil? && !params[:organization_id].empty?
+            @organization = Organization.find(organization_id)
+
+            worksheet_properties = workbook[I18n.t(:global_properties)]
+            worksheet_estimation_plan = workbook[I18n.t(:estimation_plan)]
+            worksheet_security = workbook[I18n.t(:securities)]
+            worksheet_view_widgets = workbook[I18n.t(:views_widgets)]
+
+
+            worksheet_properties_order_attributes = ["organization", "title", "business_need", "request_number", "is_model", "use_automatic_quotation_number",
+                                                     "allow_export_pdf", "version_number", "private", "application_name", "application_id", "original_model", "original_model_version",
+                                                      "description", "start_date", "creator", "estimation_status", "status_comment", "project_area", "acquisition_category",
+                                                     "platform_category", "project_category", "provider"]
+
+
+            worksheet_properties_order = Hash.new
+            worksheet_properties_order_attributes.each_with_index do |attr_name, index|
+              worksheet_properties_order["#{index}".to_sym] = attr_name
+            end
+
+            if !worksheet_properties.nil?
+              @project = Project.new
+              @project.organization = @organization
+
+              worksheet_properties.each_with_index do | row, index |
+                # row && row.cells.each do |cell|
+                #   if !cell.nil?
+                #     if cell.column == 1
+                #       val = cell && cell.value
+                #       #row.cells[0].value.include?("Profil")
+                #     end
+                #   end
+                # end
+                @project.title = row.cells[1].value rescue nil
+                @project.business_need = row.cells[2].value rescue nil
+                @project.request_number = row.cells[3].value rescue nil
+                @project.is_model = row.cells[4].value rescue nil
+                @project.use_automatic_quotation_number = row.cells[5].value rescue nil
+                @project.allow_export_pdf = row.cells[6].value rescue nil
+                @project.version_number = row.cells[7].value rescue nil
+                @project.private = row.cells[8].value rescue nil
+                @project.application_name = row.cells[9].value rescue nil
+
+                # Application
+                selected_application_name = row.cells[10].value rescue nil
+                unless selected_application_name.blank?
+                  selected_application = Application.where(organization_id: organization_id, name: selected_application_name).first_or_create
+                  @project.application_id = selected_application.id rescue nil
+                end
+
+                # Applications
+                applications = row.cells[11].value rescue nil
+                unless applications.blank?
+                  #split
+                end
+
+                #"original_model", "original_model_version" row.cells[12] et row.cells[13]
+
+                @project.allow_export_pdf = row.cells[14].value rescue nil
+                @project.description = row.cells[15].value rescue nil
+                @project.start_date = row.cells[16].value rescue nil
+                #creator  : row.cells[17].value
+                @project.creator_id = @current_user.id
+
+                # EstimationStatus
+                estimation_status_name = row.cells[18].value rescue nil
+                unless estimation_status_name.blank?
+                  selected_status = EstimationStatus.where(organization_id: organization_id, name: selected_application_name).first_or_create()
+                  @project.application_id = selected_application.id rescue nil
+                end
+
+                #ProjectArea
+
+
+                if @project && @project.save
+                end
+              end
+            end
+
+          else
+          end
+        end
+      end
+    end
   end
 
 
