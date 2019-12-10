@@ -223,7 +223,11 @@
                     <% else %>
                       <th>
                         <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
-                          Coeff. de complexité
+                          <% if @guw_types.map{|i| i.display_threshold }.flatten.include?(true) %>
+                            Complexité
+                          <% else %>
+                            Coeff. de complexité
+                          <% end %>
                         <% else %>
                           Complexité
                         <% end %>
@@ -293,6 +297,9 @@
   <script>
     var my_array = [];
     $(document).ready( function() {
+
+        window.history.pushState("", "", "<%= main_app.dashboard_path(@project) %>");
+
       $(".new_guw_button").on('click', function(e){
         $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
         $("#hidden_position").val($(this).data("display-order"));
