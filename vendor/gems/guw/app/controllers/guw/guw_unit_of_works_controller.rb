@@ -1160,6 +1160,32 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id)
       @guw_outputs = @guw_model.guw_outputs.where(organization_id: @organization.id, guw_model_id: @guw_model.id).order("display_order ASC")
 
+
+      # Recuperation de la criticité de l'application
+      project_application = @project.application
+      guw_coefficient_for_application = @guw_coefficients.where(coefficient_type: "Application").first
+      unless guw_coefficient_for_application.nil?
+        application_coefficient_elements = guw_coefficient_for_application.guw_coefficient_elements
+
+        if project_application
+          @project_application_criticality = project_application.criticality
+          @coeff_elt_with_application_criticality = application_coefficient_elements.where(name: @project_application_criticality).first
+        else
+          #get default criticality
+          if guw_coefficient_for_application
+            coeff_element_with_default_criticality = application_coefficient_elements.where(default: true).first
+            if coeff_element_with_default_criticality.nil?
+              coeff_element_with_default_criticality = application_coefficient_elements.first
+            end
+
+            @project_application_criticality = coeff_element_with_default_criticality.name rescue nil
+            @coeff_elt_with_application_criticality = coeff_element_with_default_criticality
+          end
+        end
+      end
+
+      # Fin Recuperation de la criticité de l'application
+
       @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
         guw_unit_of_work.ajusted_size = nil
@@ -1511,7 +1537,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             elsif guw_coefficient.coefficient_type == "Application"
 
-              ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"])
+              ce = @coeff_elt_with_application_criticality
+
+              # if ce.nil?
+              #   ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"])
+              # end
 
               if ce.nil?
                 selected_coefficient_values["#{guw_output.id}"] << 0
