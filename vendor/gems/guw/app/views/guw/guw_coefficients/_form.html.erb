@@ -19,7 +19,7 @@
         <%= f.input :name, label: I18n.t(:name) %>
         <%= f.input :description, label: I18n.t(:description), input_html: { class: "input-xxlarge", rows: "5" } %>
         <%= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient", "Application"], label: "Type de Coefficient", include_blank: false %>
-        <%= f.input :show_coefficient_label, label: I18n.t(:show_coefficient_label) %>
+        <%= f.input :show_coefficient_label, label: I18n.t(:show_coefficient_application_label) %>
         <%= f.input :math_set, as: :select, label: "Ensemble autorisé", collection: [["N (entier de 0 à ∞)", "N"], ["Z (entier de -∞ à +∞)", "Z"], ["R (réel)", "R"]] %>
         <%= f.input :allow_comments, label: "Autoriser les commentaires" %>
         <%= f.input :allow_intermediate_value, label: "Autoriser la modification" %>

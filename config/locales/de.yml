@@ -1741,6 +1741,7 @@ de:
   nb_module_projects: "Number of instanciated modules"
   selected_application: "Selected application"
   show_coefficient_label: "Show coefficient label"
+  show_coefficient_application_label: "Show application label"
 
 
 

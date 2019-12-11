@@ -1174,10 +1174,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           if guw_coefficient_for_application
             coeff_element_with_default_criticality = application_coefficient_elements.where(default: true).first
             if coeff_element_with_default_criticality.nil?
-              coeff_element_with_default_criticality = application_coefficient_elements.first
+              #coeff_element_with_default_criticality = application_coefficient_elements.first
+              @coeff_elt_with_application_criticality = nil
+            else
+              project_application_criticality = coeff_element_with_default_criticality.name rescue nil
+              @coeff_elt_with_application_criticality = coeff_element_with_default_criticality
             end
-            project_application_criticality = coeff_element_with_default_criticality.name rescue nil
-            @coeff_elt_with_application_criticality = coeff_element_with_default_criticality
           end
         end
       end
