@@ -7,7 +7,7 @@ module Guw
 
     attr_accessible :name, :coefficient_type, :guw_model_id, :organization_id,
                     :coefficient_calc, :allow_intermediate_value, :deported,
-                    :description, :allow_comments, :math_set
+                    :description, :allow_comments, :math_set, :show_coefficient_label
 
     amoeba do
       include_association [:guw_coefficient_elements]

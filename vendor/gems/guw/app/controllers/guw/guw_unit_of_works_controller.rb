@@ -1553,7 +1553,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
 
                 unless cce.nil?
-                  selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 1 : cce.value) * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
+                  selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 0 : cce.value) * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
                 end
               end
 

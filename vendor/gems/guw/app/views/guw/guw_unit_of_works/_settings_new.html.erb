@@ -57,11 +57,18 @@
     <hr>
 
     <% begin %>
-      <% unless @project.application.coefficient_label.nil? %>
-        <div class="pull-left label label-warning">
-          <%= @project.application.coefficient_label %>
-        </div>
+      <% coefficients_with_applications = @guw_model.guw_coefficients.where(organization_id: organization_id, coefficient_type: "Application") %>
+      <% unless coefficients_with_applications.nil? %>
+        <% show_coefficient_labels = coefficients_with_applications.all.map(&:show_coefficient_label) %>
+        <% if show_coefficient_labels.include?(true) || show_coefficient_labels.include?(1) %>
+          <% unless @project.application.coefficient_label.nil? %>
+            <div class="pull-left label label-warning">
+              <%= @project.application.coefficient_label %>
+            </div>
+          <% end %>
+        <% end %>
       <% end %>
+
     <% rescue %>
     <% end %>
 

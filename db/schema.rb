@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191113101316) do
+ActiveRecord::Schema.define(version: 20191210134529) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -68,10 +68,6 @@ ActiveRecord::Schema.define(version: 20191113101316) do
     t.float    "coefficient",       limit: 24
     t.string   "criticality",       limit: 255
     t.string   "coefficient_label", limit: 255
-    t.float    "forfait_mco",       limit: 24
-    t.integer  "month_number",      limit: 4
-    t.datetime "start_date"
-    t.datetime "end_date"
   end
 
   add_index "applications", ["organization_id", "name"], name: "by_organization_name", using: :btree
@@ -211,23 +207,6 @@ ActiveRecord::Schema.define(version: 20191113101316) do
     t.boolean  "from_direct_trigger"
   end
 
-  create_table "budget_type_statuses", force: :cascade do |t|
-    t.integer  "organization_id",      limit: 4
-    t.integer  "budget_type_id",       limit: 4
-    t.integer  "estimation_status_id", limit: 4
-    t.integer  "application_id",       limit: 4
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
-  end
-
-  create_table "budget_types", force: :cascade do |t|
-    t.string   "name",            limit: 255
-    t.integer  "organization_id", limit: 4
-    t.integer  "application_id",  limit: 4
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
-  end
-
   create_table "currencies", force: :cascade do |t|
     t.string   "name",            limit: 255
     t.string   "alias",           limit: 255
@@ -242,29 +221,6 @@ ActiveRecord::Schema.define(version: 20191113101316) do
     t.string   "reference_uuid",  limit: 255
     t.datetime "created_at"
     t.datetime "updated_at"
-  end
-
-  create_table "demand_types", force: :cascade do |t|
-    t.string   "name",              limit: 255
-    t.text     "description",       limit: 65535
-    t.boolean  "fixed_billing"
-    t.boolean  "deadlined_billing"
-    t.integer  "organization_id",   limit: 4
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-  end
-
-  create_table "demands", force: :cascade do |t|
-    t.string   "name",             limit: 255
-    t.text     "description",      limit: 65535
-    t.string   "business_need",    limit: 255
-    t.integer  "demand_type_id",   limit: 4
-    t.integer  "application_id",   limit: 4
-    t.integer  "demand_status_id", limit: 4
-    t.integer  "organization_id",  limit: 4
-    t.float    "cost",             limit: 24
-    t.datetime "created_at",                     null: false
-    t.datetime "updated_at",                     null: false
   end
 
   create_table "estimation_status_group_roles", force: :cascade do |t|
@@ -664,6 +620,7 @@ ActiveRecord::Schema.define(version: 20191113101316) do
     t.text     "description",              limit: 65535
     t.boolean  "allow_comments"
     t.string   "math_set",                 limit: 255,   default: "R"
+    t.boolean  "show_coefficient_label"
   end
 
   add_index "guw_guw_coefficients", ["organization_id", "guw_model_id", "name"], name: "by_organization_guw_model_name", using: :btree
@@ -932,7 +889,6 @@ ActiveRecord::Schema.define(version: 20191113101316) do
     t.boolean  "mandatory_comments",                       default: true
     t.integer  "minimum",                    limit: 4
     t.integer  "maximum",                    limit: 4
-    t.integer  "service_id",                 limit: 4
   end
 
   add_index "guw_guw_types", ["organization_id", "guw_model_id", "is_default"], name: "by_organization_guw_model_default", using: :btree
@@ -1505,7 +1461,6 @@ ActiveRecord::Schema.define(version: 20191113101316) do
     t.boolean  "copy_in_progress"
     t.string   "automatic_quotation_number",  limit: 255,   default: "0"
     t.string   "support_contact",             limit: 255
-    t.boolean  "allow_demand"
   end
 
   create_table "organizations_users", force: :cascade do |t|
@@ -1778,8 +1733,6 @@ ActiveRecord::Schema.define(version: 20191113101316) do
     t.boolean  "allow_export_pdf"
     t.date     "change_date"
     t.integer  "time_count",                     limit: 4
-    t.integer  "demand_id",                      limit: 4
-    t.boolean  "urgent_project"
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
@@ -1966,20 +1919,19 @@ ActiveRecord::Schema.define(version: 20191113101316) do
   add_index "staffing_staffing_models", ["organization_id", "name"], name: "index_staffing_staffing_models_on_organization_id_and_name", unique: true, using: :btree
 
   create_table "status_histories", force: :cascade do |t|
-    t.string   "organization",       limit: 255
-    t.integer  "project_id",         limit: 4
-    t.string   "project",            limit: 255
-    t.string   "old_version_number", limit: 255
-    t.string   "new_version_number", limit: 255
+    t.string   "organization",   limit: 255
+    t.integer  "project_id",     limit: 4
+    t.string   "project",        limit: 255
+    t.string   "version_number", limit: 255
     t.date     "change_date"
-    t.string   "action",             limit: 255
-    t.text     "comments",           limit: 65535
-    t.string   "origin",             limit: 255
-    t.string   "target",             limit: 255
-    t.string   "user",               limit: 255
-    t.datetime "created_at",                       null: false
-    t.datetime "updated_at",                       null: false
-    t.integer  "gap",                limit: 4
+    t.string   "action",         limit: 255
+    t.text     "comments",       limit: 65535
+    t.string   "origin",         limit: 255
+    t.string   "target",         limit: 255
+    t.string   "user",           limit: 255
+    t.datetime "created_at",                   null: false
+    t.datetime "updated_at",                   null: false
+    t.integer  "gap",            limit: 4
   end
 
   create_table "status_transitions", force: :cascade do |t|
@@ -2207,7 +2159,6 @@ ActiveRecord::Schema.define(version: 20191113101316) do
     t.string   "phase_short_name",   limit: 255
     t.boolean  "allow_modif_effort"
     t.boolean  "allow_modif_cost"
-    t.integer  "service_id",         limit: 4
   end
 
   add_index "wbs_activity_elements", ["ancestry"], name: "index_wbs_activity_elements_on_ancestry", using: :btree
