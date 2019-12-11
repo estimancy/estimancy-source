@@ -1126,7 +1126,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model = @module_project.guw_model
     @project = @module_project.project
 
-    authorize! :execute_estimation_plan, @project
+    ###authorize! :execute_estimation_plan, @project
 
     @organization = @guw_model.organization
     @component = current_component
@@ -1539,9 +1539,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               ce = @coeff_elt_with_application_criticality
 
-              # if ce.nil?
-              #   ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"])
-              # end
+              # ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"])
 
               if ce.nil?
                 selected_coefficient_values["#{guw_output.id}"] << 0
@@ -1551,9 +1549,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                  guw_output_id: guw_output.id,
                                                                  guw_coefficient_element_id: ce.id,
                                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
-
+                # unless cce.nil?
+                #   selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 0 : cce.value) * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
+                # end
                 unless cce.nil?
-                  selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 0 : cce.value) * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
+                  unless cce.value.blank?
+                  #else
+                    selected_coefficient_values["#{guw_output.id}"] <<  cce.value * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
+                  end
                 end
               end
 
