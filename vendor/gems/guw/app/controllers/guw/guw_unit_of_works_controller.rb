@@ -1162,28 +1162,35 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       # Recuperation de la criticité de l'application
       project_application = @project.application
-      guw_coefficient_for_application = @guw_coefficients.where(coefficient_type: "Application").first
-      unless guw_coefficient_for_application.nil?
-        application_coefficient_elements = guw_coefficient_for_application.guw_coefficient_elements
+      @coeff_elt_with_application_criticality = Hash.new
+      @coeff_elts_with_application = Hash.new
+      #guw_coefficient_for_application = @guw_coefficients.where(coefficient_type: "Application").first
 
-        if project_application && !project_application.criticality.blank?
-          project_application_criticality = project_application.criticality
-          @coeff_elt_with_application_criticality = application_coefficient_elements.where(name: project_application_criticality).first
-        else
-          #get default criticality
-          if guw_coefficient_for_application
-            coeff_element_with_default_criticality = application_coefficient_elements.where(default: true).first
-            if coeff_element_with_default_criticality.nil?
-              #coeff_element_with_default_criticality = application_coefficient_elements.first
-              @coeff_elt_with_application_criticality = nil
-            else
-              project_application_criticality = coeff_element_with_default_criticality.name rescue nil
-              @coeff_elt_with_application_criticality = coeff_element_with_default_criticality
+      @guw_coefficients.where(coefficient_type: "Application").each do |guw_coefficient_for_application|
+        @coeff_elt_with_application_criticality["#{guw_coefficient_for_application.id}"] = nil
+
+        #unless guw_coefficient_for_application.nil?
+          application_coefficient_elements = guw_coefficient_for_application.guw_coefficient_elements
+          @coeff_elts_with_application["#{guw_coefficient_for_application.id}"] = application_coefficient_elements.map(&:id)
+
+          if project_application && !project_application.criticality.blank?
+            project_application_criticality = project_application.criticality
+            @coeff_elt_with_application_criticality["#{guw_coefficient_for_application.id}"] = application_coefficient_elements.where(name: project_application_criticality).first
+          else
+            #get default criticality
+            if guw_coefficient_for_application
+              coeff_element_with_default_criticality = application_coefficient_elements.where(default: true).first
+              if coeff_element_with_default_criticality.nil?
+                #coeff_element_with_default_criticality = application_coefficient_elements.first
+                @coeff_elt_with_application_criticality["#{guw_coefficient_for_application.id}"] = nil
+              else
+                project_application_criticality = coeff_element_with_default_criticality.name rescue nil
+                @coeff_elt_with_application_criticality["#{guw_coefficient_for_application.id}"] = coeff_element_with_default_criticality
+              end
             end
           end
-        end
+        #end
       end
-
       # Fin Recuperation de la criticité de l'application
 
       @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
@@ -1537,12 +1544,22 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
             elsif guw_coefficient.coefficient_type == "Application"
 
-              ce = @coeff_elt_with_application_criticality
-
+              ce = @coeff_elt_with_application_criticality["#{guw_coefficient.id}"]
               # ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"])
 
               if ce.nil?
-                selected_coefficient_values["#{guw_output.id}"] << 0
+                #selected_coefficient_values["#{guw_output.id}"] << 0
+
+                # savoir si l'uo utilise l'application ou non
+                guw_type = guw_unit_of_work.guw_type
+                cplx_coeff_elements = guw_type.guw_complexity_coefficient_elements.where(organization_id: @organization.id,
+                                                                                         guw_model_id: @guw_model.id,
+                                                                                         guw_output_id: guw_output.id,
+                                                                                         guw_complexity_id: guw_unit_of_work.guw_complexity_id,
+                                                                                         guw_coefficient_element_id: @coeff_elts_with_application["#{guw_coefficient.id}"])
+                if cplx_coeff_elements.size >= 1
+                  selected_coefficient_values["#{guw_output.id}"] << 0
+                end
               else
                 cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
                                                                  guw_model_id: @guw_model.id,
@@ -1554,11 +1571,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 # end
                 unless cce.nil?
                   unless cce.value.blank?
-                  #else
                     selected_coefficient_values["#{guw_output.id}"] <<  cce.value * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
                   end
                 end
               end
+
 
               ceuw = ceuws_without_nil[guw_coefficient.id]
               if ceuw.nil?
