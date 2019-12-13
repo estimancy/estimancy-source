@@ -1,5 +1,5 @@
 <div id="livrables">
-  <%= link_to "#{I18n.t :create_a_livrable}", new_organization_livrable_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <%= link_to "#{I18n.t :create_a_livrable}", new_organization_livrable_path(@organization), class: "btn btn-primary" %>
   <hr>
   <table id="table_list_1" class="table table-list">
     <thead>
@@ -16,6 +16,9 @@
       <th>
         <%= I18n.t :associated_service %>
       </th>
+      <th>
+        <%= I18n.t(:actions) %>
+      </th>
     </tr>
     </thead>
 
@@ -27,8 +30,8 @@
           <td><%= livrable.state %></td>
           <td><%= livrable.service %></td>
           <td>
-            <%= link_to '', edit_organization_livrable_path(@organization, livrable), class: 'fa fa-pencil' %>
-            <%= link_to '', organization_livrable_path(@organization, livrable), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_livrable_path(@organization, livrable) , :class => 'material-icons', :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"),  organization_livrable_path(@organization, livrable), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
           </td>
         </tr>
     <% end %>

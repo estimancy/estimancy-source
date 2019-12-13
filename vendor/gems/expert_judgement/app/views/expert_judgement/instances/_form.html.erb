@@ -45,13 +45,13 @@
 
                   <hr>
 
-                  <h3>Cout</h3>
+                  <h3><%= I18n.t(:cost) %></h3>
 
                   <div class="form-row">
                     <div class="col-7">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :enabled_cost, label: false %>
-                        <label class="mdl-textfield__label" for="enabled_cost" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:eneable_cost) %></label>
+                        <label class="mdl-textfield__label" for="enabled_cost" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:enable_cost) %></label>
                       </div>
                     </div>
                   </div>
@@ -82,7 +82,7 @@
                     <div class="col-7">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :enabled_effort, label: false %>
-                        <label class="mdl-textfield__label" for="enabled_effort" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:eneable_effort) %></label>
+                        <label class="mdl-textfield__label" for="enabled_effort" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:enable_effort) %></label>
                       </div>
                     </div>
                   </div>
@@ -107,7 +107,7 @@
 
                   <hr>
 
-                  <h3>Taille</h3>
+                  <h3><%= I18n.t(:Size) %></h3>
 
                   <div class="form-row">
                     <div class="col-7">
@@ -131,7 +131,7 @@
                   <% if can? :manage_modules_instances, ModuleProject %>
                      <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
                   <% end %>
-                  <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn btn-secondary" %>
+                  <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort')), class: "btn btn-secondary" %>
                 </div>
 
               <% end %>

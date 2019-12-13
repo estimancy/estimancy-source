@@ -59,7 +59,7 @@
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :default_value, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'} %>
-                      <label class="mdl-textfield__label" for="default_value" style="padding-left: 20px; margin-top: -7px;"><%= "Valeur par défaut" %></label>
+                      <label class="mdl-textfield__label" for="default_value" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t ('default_value')%></label>
                     </div>
                   </div>
                 </div>
@@ -75,7 +75,7 @@
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :weight_b, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
-                      <label class="mdl-textfield__label" for="weight_b"><%= "Ordonnée à l'origine" %></label>
+                      <label class="mdl-textfield__label" for="weight_b"><%= I18n.t(:weight_b) %></label>
                     </div>
                   </div>
                 </div>

@@ -4,12 +4,12 @@ class Livrable < ActiveRecord::Base
   belongs_to :organization
   belongs_to :service
 
-  validates_presence_of :state
-  validates_presence_of :service_id
-  validates_presence_of :name
+  # validates_presence_of :state
+  # validates_presence_of :service_id
+  # validates_presence_of :name
 
   def to_s
-    name
+    name.nil? ? '' : name
   end
 
 end

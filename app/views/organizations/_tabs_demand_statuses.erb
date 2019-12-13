@@ -21,16 +21,23 @@
           <th>
             <%= I18n.t :color  %>
           </th>
+          <th>
+            <%= I18n.t(:actions) %>
+          </th>
         </tr>
         </thead>
         <tbody>
         <% @demand_statuses.each do |demand_status| %>
             <tr>
-              <td><%= link_to demand_status.name, edit_organization_demand_status_path(@organization, demand_status) %></td>
+              <td><%= demand_status.name %></td>
               <td><%= demand_status.demand_type %></td>
               <td><%= demand_status.status_number %></td>
               <td><%= demand_status.status_alias %></td>
               <td><%= demand_status.status_color %></td>
+              <td>
+                <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_demand_status_path(@organization, demand_status) , :class => 'material-icons', :title => I18n.t('edit') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"),  organization_demand_status_path(@organization, demand_status), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+              </td>
             </tr>
         <% end %>
         </tbody>

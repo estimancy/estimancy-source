@@ -43,7 +43,7 @@
             <% end %>
 
             <% params[:activity_id].nil? ? @activity_id=@wbs_activity_ratio.wbs_activity_id : @activity_id=params[:activity_id] %>
-            <%= link_to I18n.t('back'), edit_wbs_activity_path(@activity_id , :anchor => 'tabs-3'), :class => 'btn btn-secondary' %>
+            <%= link_to I18n.t('back'), edit_wbs_activity_path(@activity_id), :class => 'btn btn-secondary' %>
           </div>
 
         <% end %>

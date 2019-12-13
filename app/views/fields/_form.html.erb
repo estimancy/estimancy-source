@@ -34,12 +34,12 @@
         </div>
       </div>
 
-        <div class="actions-tabs">
-          <% if can? :manage, Field %>
-            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
-          <% end %>
-          <%= link_to I18n.t('back'), organization_setting_path(@current_organization, anchor: 'tabs-fields'), :class => 'btn btn-secondary btn-estimancy' %>
-        </div>
+      <div class="actions-tabs">
+        <% if can? :manage, Field %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_path(@current_organization, anchor: 'tabs-fields'), :class => 'btn btn-secondary' %>
+      </div>
       <% end %>
     </div>
 </section>

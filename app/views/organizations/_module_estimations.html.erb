@@ -27,19 +27,15 @@
       <h4 class="mb-0">Navigation</h4>
       <ul class="nav flex-column">
         <li class="nav-item">
-<!--          <a class="nav-link group" href="#taille"><span><%#= I18n.t(:size) %></span></a>-->
           <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_size', item_title: I18n.t('size'), anchor: 'size') %>"><span><%= I18n.t("size") %></span></a>
         </li>
         <li class="nav-item">
-<!--          <a class="nav-link group" href="#effort"><span><%#= I18n.t(:effort) %></span></a>-->
-          <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort')) %>"><span><%= I18n.t("effort") %></span></a>
+          <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort'), anchor: 'effort') %>"><span><%= I18n.t("effort") %></span></a>
         </li>
         <li class="nav-item">
-<!--          <a class="nav-link group" href="#activite"><span><%#= I18n.t(:activity) %></span></a>-->
           <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_activity', item_title: I18n.t('activity'), anchor: 'activity') %>"><span><%= I18n.t("activity") %></span></a>
         </li>
         <li class="nav-item">
-<!--          <a class="nav-link group" href="#team"><span><%#= I18n.t(:team) %></span></a>-->
           <a class="nav-link group" href="<%= organization_module_estimation_path(@organization, partial_name: 'tabs_module_team', item_title: I18n.t('team'), anchor: 'team') %>"><span><%= I18n.t("team") %></span></a>
         </li>
       </ul>

@@ -473,8 +473,6 @@
                               </div>
                             </div>
 
-
-
                           </div>
 
                         </div>
@@ -489,7 +487,7 @@
                             <%= f.button :submit, I18n.t('apply'), class: "btn btn-primary" %>
                           <% end %>
                         <% end %>
-                        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn btn-secondary" %>
+                        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort')), class: "btn btn-secondary" %>
                       </div>
 
                     </div>
