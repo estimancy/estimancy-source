@@ -1040,7 +1040,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     gat = Guw::GuwAttributeType.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_attribute_id: guowa.guw_attribute_id, guw_type_id: guw_type.id).first
     unless gat.nil?
-      if gat.default_value != most_likely && comments.blank?
+      if gat.default_value != most_likely && (comments.blank? && guw_type.mandatory_comments==true)
         # ignored, on en sauvegarde pas les valeurs
       else
         guowa.low = low
