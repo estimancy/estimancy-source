@@ -24,7 +24,7 @@ class ModuleProject < ActiveRecord::Base
 
   attr_accessible :project_id, :pemodule_id, :pemodule, :position_x, :position_y,
                   :top_position, :left_position, :creation_order, :nb_input_attr,
-                  :nb_output_attr, :view_id, :color, :organization_id
+                  :nb_output_attr, :view_id, :color, :organization_id, :show_results_view, :wbs_activity_ratio_id
 
   belongs_to :pemodule
   belongs_to :project, :touch => true
@@ -229,6 +229,32 @@ class ModuleProject < ActiveRecord::Base
       "#{self.pemodule.title.humanize} (#{Projestimate::Application::ALPHABETICAL[self.position_x.to_i-1]};#{self.position_y.to_i})"
     end
   end
+
+
+  def module_project_name
+    if self.pemodule.alias == Projestimate::Application::INITIALIZATION
+      self.project.title
+    elsif self.pemodule.alias == "operation"
+      self.operation_model.nil? ? 'Undefined model': self.operation_model.name
+    elsif self.pemodule.alias == "ge"
+      self.ge_model.nil? ? 'Undefined model': self.ge_model.name
+    elsif self.pemodule.alias == "kb"
+      self.kb_model.nil? ? 'Undefined model': self.kb_model.name
+    elsif self.pemodule.alias == "skb"
+      self.skb_model.nil? ? 'Undefined model': self.skb_model.name
+    elsif self.pemodule.alias == "guw"
+      self.guw_model.nil? ? 'Undefined model': self.guw_model.name
+    elsif self.pemodule.alias == "staffing"
+      self.staffing_model.nil? ? 'Undefined model': self.staffing_model.name
+    elsif self.pemodule.alias == "effort_breakdown"
+      self.wbs_activity.nil? ? 'Undefined model': self.wbs_activity.name
+    elsif self.pemodule.alias == "expert_judgement"
+      self.expert_judgement_instance.nil? ? 'Undefined model' : self.expert_judgement_instance.name
+    else
+      "#{self.pemodule.title.humanize} (#{Projestimate::Application::ALPHABETICAL[self.position_x.to_i-1]};#{self.position_y.to_i})"
+    end
+  end
+
 
   def size
     module_alias = self.pemodule.alias

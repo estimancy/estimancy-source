@@ -1,6 +1,28 @@
 <% if can? :manage_estimation_models, Project %>
   <div class="group_button">
     <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, is_model: true), :class => 'btn' %>
+    <%= link_to I18n.t(:import_estimation_model), "#import_estimation_model", class: "btn", title: I18n.t(:import_estimation_model), "data-toggle" => "modal" %>
+
+    <div id="import_estimation_model" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <%= form_tag organization_import_estimation_model_path(organization_id: @organization.id), :method => 'post', :multipart => true, :class => 'simple_form' do %>
+          <div class="modal-header modal-drag">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel"> <%= I18n.t(:import_estimation_model) %></h3>
+          </div>
+          <div class="modal-body">
+            <%= hidden_field_tag "organization_id", @organization.id %>
+            <%= hidden_field_tag "is_model", true %>
+            <%= file_field_tag :file %>
+          </div>
+          <div class="modal-footer">
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+          </div>
+          <div class="loading span11 hide">
+            <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
+          </div>
+      <% end %>
+    </div>
   </div>
 <% end %>
 
