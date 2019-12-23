@@ -189,7 +189,7 @@
 
       <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},
                               selected: ( selected_ratio.nil? ? nil : selected_ratio.id)),
-                              readonly: cannot?(:execute_estimation_plan, @project) %>
+                              readonly: cannot?(:execute_estimation_plan, @project), :input_html => {:class => 'input-xxlarge'}%>
     </div> <br>
   <% end %>
 

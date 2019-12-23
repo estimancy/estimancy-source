@@ -36,6 +36,7 @@ class OrganizationsController < ApplicationController
 
     organization_id = params[:organization_id]
     project_id = params[:project_id]
+    tab_errors = []
 
     # Thread.new do
     #   ActiveRecord::Base.connection_pool.with_connection do
@@ -88,7 +89,6 @@ class OrganizationsController < ApplicationController
                             [I18n.t(:provider), (@project.provider.name rescue nil)],
                             [I18n.t(:nb_module_projects), @project.module_projects.all.size]]
 
-
         global_properties.each_with_index do |row, index|
           worksheet_properties.add_cell(index, 0, row[0])
           worksheet_properties.add_cell(index, 1, row[1])#.change_horizontal_alignment('center')
@@ -125,9 +125,8 @@ class OrganizationsController < ApplicationController
         worksheet_estimation_plan.add_cell(0, i += 1, "Skb_model")
         worksheet_estimation_plan.add_cell(0, i += 1, "Operation_model")
         worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:associated_module_projects))
-        worksheet_estimation_plan.add_cell(0, i += 1, "ID Vue")
-        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:view_name))
-        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:view_description))
+        worksheet_estimation_plan.add_cell(0, i += 1, "Configuration Entrées/Sorties du module")
+        worksheet_estimation_plan.add_cell(0, i += 1, "Groupe par défaut")
 
         worksheet_estimation_plan.change_column_width(0, 40)
         worksheet_estimation_plan.change_column_width(2, 30)
@@ -143,7 +142,6 @@ class OrganizationsController < ApplicationController
 
           worksheet_estimation_plan.add_cell(index+1, j, module_project.pemodule.title)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.pemodule.alias)
-          #worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.id)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project_name)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.position_x)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.position_y)
@@ -160,11 +158,41 @@ class OrganizationsController < ApplicationController
           worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.kb_model.name rescue nil))
           worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.skb_model.name rescue nil))
           worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.operation_model.name rescue nil))
-          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.associated_module_projects)
-          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.view_id)
-          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.view.name rescue nil))
-          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.view.description rescue nil))
+          worksheet_estimation_plan.add_cell(index+1, j += 1, (module_project.associated_module_projects_table.inspect rescue nil))
+
+          #===== Liaisons entre les atributs du plan d'estimation
+          associated_estimation_values = Hash.new
+          module_project.estimation_values.where(organization_id: @organization.id).each do |est_val|
+            estimation_value_id = est_val.estimation_value_id
+            unless est_val.estimation_value_id.nil?
+              association_hash = Hash.new
+              estimation_value = est_val.associated_estimation_value
+              unless estimation_value.nil?
+                association_hash[:pe_attribute_name] = estimation_value.pe_attribute.name
+                association_hash[:module_project_name] = estimation_value.module_project.module_project_name
+                association_hash[:in_out] = estimation_value.in_out
+                associated_estimation_values[est_val.pe_attribute.name] = association_hash
+              end
+            end
+          end
+
+          associated_estimation_values_str = (associated_estimation_values.blank? ? "" : associated_estimation_values.inspect) rescue nil
+          # Associated_estimation_values_between attributes
+          worksheet_estimation_plan.add_cell(index+1, j += 1, associated_estimation_values_str)
+
+          # Groupe par défaut - module de taille
+          default_groups_array = nil
+          if module_project.pemodule.alias == "guw"
+            default_groups = module_project.guw_unit_of_work_groups.all.map(&:name)
+            if default_groups.blank?
+              default_groups_array = nil
+            else
+              default_groups_array = default_groups.inspect
+            end
+          end
+          worksheet_estimation_plan.add_cell(index+1, j += 1, default_groups_array) #for GuwGroup
         end
+
 
         ##===================   Les Vues et Vignettes : worksheet_view_widgets   =========================
         vw = 0
@@ -199,8 +227,7 @@ class OrganizationsController < ApplicationController
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:show_wbs_activity_ratio))
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:fields))  #project_fields
 
-        #=====
-          #Then copy the widgets of the dafult view
+        #Then copy the widgets of the dafult view
         module_projects.each do |module_project|
           mp_view = module_project.view
           if mp_view
@@ -213,20 +240,52 @@ class OrganizationsController < ApplicationController
                 mp_view_module_project_name = module_projects.where(view_id: mp_view.id).first.module_project_name rescue nil
               end
 
-
               widget_est_val = view_widget.estimation_value
               in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
               #estimation_value = module_project.estimation_values.where(:organization_id => @organization.id, pe_attribute_id: view_widget.estimation_value.pe_attribute_id, in_out: in_out).last
 
+              if view_widget.is_kpi_widget?
+                equation = view_widget.equation
+                unless equation.blank?
+                  formula = equation["formula"]
+
+                  ["A", "B", "C", "D", "E"].each do |letter|
+                    equation_letter = Hash.new
+                    begin
+                      unless equation[letter].blank?
+                        #equation[letter] = [params[letter.to_sym].upcase, params["module_project"][letter]]
+                        letter_array = equation[letter]
+                        unless letter_array.nil?
+                          mp_id = letter_array.last
+                          est_val_id = letter_array.first
+
+                          mp = module_projects.where(id: mp_id).first
+                          est_val = mp.estimation_values.where(id: est_val_id).first
+
+                          equation_letter[:pe_attribute_name] = est_val.pe_attribute.name
+                          equation_letter[:module_project_name] = mp.module_project_name
+                          equation_letter[:in_out] = est_val.in_out
+                          equation_letter[:pemodule_alias] = mp.pemodule.alias
+                          #equation[letter] = [est_val.pe_attribute.name, est_val.in_out, mp.module_project_name]
+                          equation[letter] = equation_letter
+                        end
+                      end
+                    rescue
+                      # ignored
+                    end
+                  end
+                end
+              end
+
               worksheet_view_widgets.add_cell(index+1, k, view_widget.name)
               #worksheet_view_widgets.add_cell(index+1, k += 1, mp_view.id)
               worksheet_view_widgets.add_cell(index+1, k += 1, mp_view_module_project_name)
-              worksheet_view_widgets.add_cell(index+1, k += 1, module_project.module_project_name)
+              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.module_project.module_project_name rescue nil))  #module_project.module_project_name
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.estimation_value.pe_attribute.name rescue nil))   # EstimationValue
               worksheet_view_widgets.add_cell(index+1, k += 1, in_out)   # EstimationValue
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.show_name ? 1 : 0))
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.show_tjm ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.equation)
+              worksheet_view_widgets.add_cell(index+1, k += 1, (equation.blank? ? "" : equation.inspect))
               worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.comment)
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.is_label_widget ? 1 : 0))
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.is_kpi_widget ? 1 : 0))
@@ -248,23 +307,19 @@ class OrganizationsController < ApplicationController
               worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.validation_text)
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.show_wbs_activity_ratio ? 1 : 0))
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.project_fields.last.field.name rescue nil))
-
-              #create the new project_field
-              #ProjectField.create(project_id: @project.id, field_id: project_field.field_id, views_widget_id: widget_copy.id, value: @value)
             end
 
           end
         end
 
         #=====
-
         # Send the file
         send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-#{@project.title.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
-
       #end
     end
     #redirect_to projects_from_path(organization_id: organization_id)
   end
+
 
   # Pour Importer un modèle d'estimation
   def import_estimation_model
@@ -274,8 +329,11 @@ class OrganizationsController < ApplicationController
       organization_id = params[:organization_id]
       is_model = params[:is_model]
       #project_id = params[:project_id]
-      @widgets_module_project_ids = Hash.new
+      @module_project_ids = Hash.new
       @widgets_view_ids = Hash.new
+      @associated_module_projects = Hash.new
+      @associated_estimation_values = Hash.new
+      @initialization_name = "Initialization"
 
       #if a organization exists
       if !organization_id.blank?
@@ -440,7 +498,7 @@ class OrganizationsController < ApplicationController
                         end
 
                         module_project_name = cap_module_project.module_project_name
-                        @widgets_module_project_ids["#{module_project_name}"] = cap_module_project.id
+                        @module_project_ids["Initialization"] = cap_module_project.id
                         @widgets_view_ids["Initialization"] = cap_module_project.view_id
                       end
                     end
@@ -453,6 +511,11 @@ class OrganizationsController < ApplicationController
                       worksheet_estimation_plan.each_with_index do | row, index |
                         if index >= 1
                           pemodule_alias = row.cells[1].value rescue nil
+                          module_project_name = row.cells[2].value rescue nil
+                          @associated_module_projects["#{module_project_name}"] = eval(row.cells[18].value) rescue nil
+                          @associated_estimation_values["#{module_project_name}"] = eval(row.cells[19].value) rescue nil
+                          guw_unit_of_work_groups = eval(row.cells[20].value) rescue nil
+
                           unless pemodule_alias.nil?
                             if pemodule_alias == "initialization"
                               @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
@@ -461,7 +524,6 @@ class OrganizationsController < ApplicationController
                               end
                             else
                               # Append_pemodule
-                              module_project_name = row.cells[2].value rescue nil
                               instance_model = nil
 
                               case pemodule_alias.to_s
@@ -508,11 +570,15 @@ class OrganizationsController < ApplicationController
                                     end
                                   elsif pemodule_alias.to_s == "guw"
                                     #On crée les groupes par défaut
-                                    group = Guw::GuwUnitOfWorkGroup.create(name: "-", organization_id: @organization.id,
+                                    unless guw_unit_of_work_groups.blank?
+                                      guw_unit_of_work_groups.each do |group_name|
+                                        Guw::GuwUnitOfWorkGroup.create(name: group_name, organization_id: @organization.id,
                                                                             project_id: @project.id,
                                                                             module_project_id: module_project.id,
                                                                             guw_model_id: module_project.guw_model_id,
                                                                             pbs_project_element_id: pbs_project_element_id)
+                                      end
+                                    end
                                   end
                                   # Update the Module-Project positions (left = position_x, top = position_y)
                                   module_project.update_attributes(position_x: (row.cells[3].value.to_f rescue nil),
@@ -523,13 +589,128 @@ class OrganizationsController < ApplicationController
                                                                    show_results_view: (row.cells[8].value.to_f rescue nil),
                                                                    wbs_activity_ratio_id: wbs_activity_ratio_id)
 
-                                  @widgets_module_project_ids["#{module_project_name}"] = module_project.id
+                                  @module_project_ids["#{module_project_name}"] = module_project.id
                                   @widgets_view_ids["#{module_project_name}"] = module_project.view_id
                                 end
+                              end
+                            end
+                          end
+                        end
+                      end
 
+                      #============= Apres avoir créé tous les module_projects, on ajoute les relations/liens entre les modules
+                      project_module_projects = @project.module_projects
+                      @associated_module_projects.each do |module_project_name, associated_module_projects_array|
+                        module_project = project_module_projects.all.select { |i| i.module_project_name ==  module_project_name }.first
+                        associated_module_project_ids = []
+                        if module_project
+                          unless associated_module_projects_array.blank?
+                            associated_module_projects_array.each do |amp_name|
+                              if amp_name == "Initialization"
+                                associated_module_project_ids << @initialization_module_project.id rescue nil
+                              else
+                                #associated_module_project_ids << project_module_projects.all.select { |i| i.module_project_name ==  amp_name }.first.id rescue nil
+                                associated_module_project_ids << @module_project_ids["#{amp_name}"]
                               end
                             end
 
+                            module_project.associated_module_project_ids = associated_module_project_ids.flatten.uniq.compact rescue nil
+                            module_project.save
+                          end
+                        end
+                      end
+
+                      #======= Apres on ajoute les relations entre les entrée/sortie des modules
+                      @associated_estimation_values.each do |module_project_name, associated_estimation_value_hash|
+                        associated_module_project_ids = []
+                        unless associated_estimation_value_hash.blank?
+                          #module_project = project_module_projects.all.select { |i| i.module_project_name ==  module_project_name }.first
+                          module_project = ModuleProject.find(@module_project_ids["#{module_project_name}"]) rescue nil
+                          unless module_project.nil?
+                            associated_estimation_value_hash.each do |mp_pe_attribute_name, ass_estimation_hash|
+                              #======
+                              effort_ids = []
+                              output_attribute_ids = []
+                              module_project_attributes = module_project.pemodule.pe_attributes
+
+                              case module_project.pemodule.alias
+                                when "effort_breakdown"
+                                effort_ids = module_project_attributes.where(alias: WbsActivity::INPUT_EFFORTS_ALIAS).map(&:id).flatten
+                              when "ge"
+                                effort_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
+                                output_attribute_ids = module_project_attributes.where(alias: Ge::GeModel::INPUT_EFFORTS_ALIAS).map(&:id).flatten
+                              when "staffing"
+                                staffing_input_pe_attributes = module_project_attributes.includes(:attribute_modules).where(:attribute_modules => { in_out: ['input', 'output', 'both'] }).all
+                                effort_ids = staffing_input_pe_attributes.map(&:id).flatten
+                              when "kb"
+                                effort_ids = module_project_attributes.where(alias: Kb::KbModel::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
+                              when "skb"
+                                effort_ids = module_project_attributes.where(alias: Skb::SkbModel::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
+                              when "expert_judgement"
+                                effort_ids = module_project_attributes.where(alias: ExpertJudgement::Instance::INPUT_ATTRIBUTES_ALIAS).map(&:id).flatten
+                              when "operation"
+                                effort_ids = module_project_attributes.where(operation_model_id: @module_project.operation_model_id).map(&:id).flatten
+                              else
+                                effort_ids = module_project_attributes.where(alias: Projestimate::Application::EFFORT_ATTRIBUTES_ALIAS).map(&:id).flatten
+                              end
+
+                              current_evs = module_project.estimation_values.where(organization_id: @organization.id, pe_attribute_id: effort_ids, in_out: "input")
+                              estimation_value = current_evs.all.select{ |ev| ev.pe_attribute.name == mp_pe_attribute_name }.first
+
+                              # Liaison
+                              ass_pe_attribute_name = ass_estimation_hash[:pe_attribute_name]
+                              ass_in_out = ass_estimation_hash[:in_out]
+                              ass_module_project_name = ass_estimation_hash[:module_project_name]
+                              ass_module_project = project_module_projects.all.select { |i| i.module_project_name ==  ass_module_project_name }.first
+
+                              unless ass_module_project.nil?
+                                ass_estimation_values = ass_module_project.estimation_values.where(organization_id: @organization.id, in_out: ass_in_out)
+                                ass_estimation_values_pe_attributes = ass_estimation_values.all.map(&:pe_attribute)
+                                ass_matched_pe_attribute = ass_estimation_values_pe_attributes.select {|attr| attr.name == ass_pe_attribute_name }.first
+                                if ass_matched_pe_attribute
+                                  ass_estimation_value = ass_estimation_values.where(:organization_id => @organization.id,
+                                                                                     :pe_attribute_id => ass_matched_pe_attribute.id,
+                                                                                     :in_out => ass_in_out).first
+                                  estimation_value.estimation_value_id =  ass_estimation_value.id
+                                  estimation_value.save
+                                end
+                              end
+
+                              # #=====
+                              # # Recuperation de l'attribut
+                              # if ass_pemodule_alias.in?(["guw", "operation"])
+                              #   all_attribute_modules = ass_module_project.pemodule.attribute_modules
+                              #   case ass_pemodule_alias
+                              #     when "guw"
+                              #       ass_attribute_modules = all_attribute_modules.where(guw_model_id: module_project.guw_model_id)
+                              #     when "operation"
+                              #       ass_attribute_modules = all_attribute_modules.where(operation_model_id: module_project.operation_model_id)
+                              #     else
+                              #       ass_attribute_modules = all_attribute_modules
+                              #   end
+                              # else
+                              #   ass_attribute_modules = ass_module_project.pemodule.attribute_modules
+                              # end
+                              #
+                              # ass_pe_attributes = []
+                              # ass_attribute_modules.each do |am|
+                              #   pe_attribute = am.pe_attribute
+                              #   unless pe_attribute.nil?
+                              #     ass_pe_attributes << pe_attribute
+                              #   end
+                              # end
+                              #
+                              # ass_matched_pe_attributes = ass_pe_attributes.select { |attr| attr.name == ass_pe_attribute_name }
+                              # ass_pe_attribute_id = ass_matched_pe_attributes.first.id rescue nil
+                              # ass_estimation_value = module_project.estimation_values.where(:organization_id => @organization.id,
+                              #                                                               :pe_attribute_id => ass_pe_attribute_id,
+                              #                                                               :in_out => ass_in_out).first
+                              # ass_estimation_value_id = ass_estimation_value.id rescue nil
+                              #
+                              # estimation_value.estimation_value_id =  ass_estimation_value_id
+                              # estimation_value.save
+                            end
+                            #====
                           end
                         end
                       end
@@ -549,7 +730,7 @@ class OrganizationsController < ApplicationController
                           in_out = row.cells[4].value rescue nil
                           show_name = row.cells[5].value rescue nil
                           show_tjm = row.cells[6].value rescue nil
-                          equation = row.cells[7].value rescue nil
+                          equation = eval(row.cells[7].value) rescue nil
                           comment = row.cells[8].value rescue nil
                           is_label_widget = row.cells[9].value rescue nil
                           is_kpi_widget = row.cells[10].value rescue nil
@@ -573,10 +754,11 @@ class OrganizationsController < ApplicationController
                           project_field = row.cells[28].value rescue nil
 
                           field_id = @organization. fields.where(name: project_field).first.id rescue nil
+                          estimation_value_id = nil
 
                           begin
-                            module_project_id = @widgets_module_project_ids["#{row.cells[2].value}"]
-                            module_project = @project.module_projects.where(id: module_project_id).first
+                            module_project_id = @module_project_ids["#{row.cells[2].value}"]
+                            module_project = project_module_projects.where(id: module_project_id).first
                             mp_pemodule = module_project.pemodule rescue nil
                             pemodule_alias = mp_pemodule.alias rescue nil
                           rescue
@@ -584,42 +766,121 @@ class OrganizationsController < ApplicationController
                             pemodule_alias = nil
                           end
 
-                          if is_label_widget==1 || is_kpi_widget==1 || is_project_data_widget==1 || module_project_id.nil?
+                          pe_attributes = []
+                          if is_label_widget==1 || is_kpi_widget == 1 || is_project_data_widget==1 || module_project_id.nil?
                             estimation_value_id = nil
                           else
                             # Recuperation de l'attribut
-                            if pemodule_alias.in?(["guw", "operation"])
-                              all_attribute_modules = mp_pemodule.attribute_modules
-                              case pemodule_alias
-                                when "guw"
-                                  attribute_modules = all_attribute_modules.where(guw_model_id: module_project.guw_model_id)
-                                when "operation"
-                                  attribute_modules = all_attribute_modules.where(operation_model_id: module_project.operation_model_id)
-                                else
-                                  attribute_modules = all_attribute_modules
-                              end
-                            else
-                              attribute_modules = mp_pemodule.attribute_modules
-                            end
+                            # if pemodule_alias.in?(["guw", "operation"])
+                            #   all_attribute_modules = mp_pemodule.attribute_modules
+                            #   case pemodule_alias
+                            #     when "guw"
+                            #       attribute_modules = all_attribute_modules.where(guw_model_id: module_project.guw_model_id)
+                            #     when "operation"
+                            #       attribute_modules = all_attribute_modules.where(operation_model_id: module_project.operation_model_id)
+                            #     else
+                            #       attribute_modules = all_attribute_modules
+                            #   end
+                            # else
+                            #   attribute_modules = mp_pemodule.attribute_modules
+                            # end
+                            #
+                            # attribute_modules.each do |am|
+                            #   pe_attribute = am.pe_attribute
+                            #   unless pe_attribute.nil?
+                            #     pe_attributes << pe_attribute
+                            #   end
+                            # end
+                            #
+                            # matched_pe_attributes = pe_attributes.select { |attr| attr.name == attribute_name }
+                            # pe_attribute_id = matched_pe_attributes.first.id rescue nil
+                            # estimation_value = module_project.estimation_values.where(:organization_id => @organization.id,
+                            #                                                           :pe_attribute_id => pe_attribute_id,
+                            #                                                           :in_out => in_out).first
+                            # estimation_value_id = estimation_value.id rescue nil
 
-                            pe_attributes = []
-                            attribute_modules.each do |am|
-                              pe_attribute = am.pe_attribute
-                              unless pe_attribute.nil?
-                                pe_attributes << pe_attribute
+
+                            ####======= TEST ESTIMATION VALUE
+                            unless module_project.nil?
+                              estimation_values = module_project.estimation_values.where(organization_id: @organization.id, in_out: in_out)
+                              estimation_values_pe_attributes = estimation_values.all.map(&:pe_attribute)
+                              matched_pe_attribute = estimation_values_pe_attributes.select {|attr| attr.name == attribute_name}.first
+                              if matched_pe_attribute
+                                estimation_value = estimation_values.where(:organization_id => @organization.id,
+                                                                           :pe_attribute_id => matched_pe_attribute.id).first
+                                estimation_value_id = estimation_value.id rescue nil
                               end
                             end
-
-                            matched_pe_attributes = pe_attributes.select { |attr| attr.name == attribute_name }
-                            pe_attribute_id = matched_pe_attributes.first.id rescue nil
-                            estimation_value = module_project.estimation_values.where(:organization_id => @organization.id,
-                                                                                      :pe_attribute_id => pe_attribute_id,
-                                                                                      :in_out => in_out).first
-                            estimation_value_id = estimation_value.id rescue nil
                           end
 
                           if is_kpi_widget == 1
-                            # Vignette Commentaires et Vignette KPI
+                            # Vignette Commentaires et Vignette KPI  : #Update KPI Widget aquation
+                            unless equation.blank?
+                              ["A", "B", "C", "D", "E"].each do |letter|
+                                equation_letter = equation[letter]
+                                letter_pe_attributes = []
+                                unless equation_letter.nil?
+                                  begin
+                                    #===========
+                                    mp_name = equation_letter[:module_project_name]
+                                    mp_id = @module_project_ids["#{mp_name}"]
+                                    mp = project_module_projects.where(id: mp_id).first   #mp = project_module_projects.all.select { |i| i.module_project_name ==  mp_name }.first
+                                    ev_in_out = equation_letter[:in_out]
+
+                                    letter_pemodule_alias = equation_letter[:pemodule_alias]
+                                    letter_pemodule = mp.pemodule rescue nil
+
+                                    # if letter_pemodule_alias.in?(["guw", "operation"])
+                                    #   letter_all_attribute_modules = letter_pemodule.attribute_modules
+                                    #   case letter_pemodule_alias
+                                    #     when "guw"
+                                    #       letter_attribute_modules = letter_all_attribute_modules.where(guw_model_id: mp.guw_model_id)
+                                    #     when "operation"
+                                    #       letter_attribute_modules = letter_all_attribute_modules.where(operation_model_id: mp.operation_model_id)
+                                    #     else
+                                    #       letter_attribute_modules = letter_all_attribute_modules
+                                    #   end
+                                    # else
+                                    #   letter_attribute_modules = letter_pemodule.attribute_modules
+                                    # end
+                                    #
+                                    # letter_attribute_modules.each do |am|
+                                    #   letter_pe_attribute = am.pe_attribute
+                                    #   unless letter_pe_attribute.nil?
+                                    #     letter_pe_attributes << letter_pe_attribute
+                                    #   end
+                                    # end
+                                    #
+                                    # new_array = []
+                                    #ev_pe_attribute_name = equation[letter][:pe_attribute_name]
+                                    # ev_pe_attribute = letter_pe_attributes.select { |attr| attr.name == ev_pe_attribute_name }.first
+                                    # est_val = mp.estimation_values.where(:organization_id => @organization.id,
+                                    #                                      :pe_attribute_id => ev_pe_attribute.id,
+                                    #                                      :in_out => ev_in_out).first
+                                    # equation[letter] = [est_val.id, mp.id]
+                                    #
+
+                                    #==== TEST ESTIMATION VALUE
+                                    ev_pe_attribute_name = equation[letter][:pe_attribute_name]
+                                    unless mp.nil?
+                                      estimation_values = mp.estimation_values.where(organization_id: @organization.id, in_out: ev_in_out)
+                                      estimation_values_pe_attributes = estimation_values.all.map(&:pe_attribute)
+                                      matched_pe_attribute = estimation_values_pe_attributes.select{ |attr| attr.name == ev_pe_attribute_name}.first
+                                      if matched_pe_attribute
+                                        estimation_value = estimation_values.where(:organization_id => @organization.id,
+                                                                                   :pe_attribute_id => matched_pe_attribute.id).first
+                                        estimation_value_id = estimation_value.id rescue nil
+                                        equation[letter] = [estimation_value_id, mp.id]
+                                      end
+                                    end
+                                    #==== TEST ESTIMATION VALUE
+                                  rescue
+                                    equation[letter] = nil
+                                  end
+                                end
+                              end
+                            end
+
                             new_view_widget = ViewsWidget.new(view_id: view_id,
                                                               module_project_id: module_project_id,
                                                               name: view_widget_name,
@@ -645,36 +906,16 @@ class OrganizationsController < ApplicationController
                                                               validation_text: validation_text,
                                                               position_y: position_y)
 
-                            #Update KPI Widget aquation
-                            ["A", "B", "C", "D", "E"].each do |letter|
-                              unless equation[letter].nil?
-                                new_array = []
-                                est_val_id = equation[letter].first
-                                mp_id = equation[letter].last
-                                begin
-                                  estimation_value_id = estimation_value_id
-                                rescue
-                                  estimation_value_id = nil
-                                end
-
-                                new_array << estimation_value_id
-                                new_array << module_project_id
-                                new_view_widget.equation[letter] = new_array
-                              end
-                            end
-
                             #new_view_widget.save
                             if new_view_widget.save
                               #Update the copied project_fields
                               unless project_field.blank?
                                 unless field_id.nil?
-                                  pf = ProjectField.create(project_id: @project.id, views_widget_id: new_view_widget.id, field_id: field_id)
+                                  ProjectField.create(project_id: @project.id, views_widget_id: new_view_widget.id, field_id: field_id)
                                 end
                               end
                             end
                           else
-                            widget_pe_attribute_id = pe_attribute_id
-                            #unless module_project_id.nil?
                             new_view_widget = ViewsWidget.new(view_id: view_id,
                                                               module_project_id: module_project_id,
                                                               estimation_value_id: estimation_value_id,
@@ -702,42 +943,56 @@ class OrganizationsController < ApplicationController
                                                               min_value: min_value,
                                                               max_value: max_value,
                                                               validation_text: validation_text)
-                              if new_view_widget.save
-                                #Update the copied project_fields
-                                unless project_field.blank?
-                                  unless field_id.nil?
-                                    pf = ProjectField.create(project_id: @project.id, views_widget_id: new_view_widget.id, field_id: field_id)
-                                  end
+                            if new_view_widget.save
+                              #Update the copied project_fields
+                              unless project_field.blank?
+                                unless field_id.nil?
+                                  ProjectField.create(project_id: @project.id, views_widget_id: new_view_widget.id, field_id: field_id)
                                 end
                               end
-                            #end
+                            end
                           end
                         end
                       end
                     end
                     #puts "Fin Vues et Vignettes"
-
+                    flash[:notice] = "Le modèle d'estimation a été importé avec succès"
+                    redirect_to edit_project_path(@project, organization_id: @organization.id) and return
                   else
                     flash[:error] = "#{I18n.t(:error_project_creation_failed)}" #Une erreur est survenue lors de la création du devis
-                    redirect_to (@project.is_model ? projects_from_path(organization_id: @organization.id) : organization_estimations_path(@organization))
+                    redirect_to new_project_path(is_model: params[:is_model], organization_id: @organization.id) and return
                   end
                 rescue ActiveRecord::UnknownAttributeError, ActiveRecord::StatementInvalid, ActiveRecord::RecordInvalid => error
-                  p error
+                  #p error
                   flash[:error] = "#{I18n.t (:error_project_creation_failed)} #{@project.errors.full_messages.to_sentence}"
-                  redirect_to (@project.is_model ? projects_from_path(organization_id: @organization.id) : organization_estimations_path(@organization))
+                  redirect_to new_project_path(is_model: params[:is_model], organization_id: @organization.id) and return
                 end
               end
-              ##====
-
+            else
+              flash[:error] = "L'onglet propriétés globales n'existe pas"
             end
-
+          else
+            flash[:error] =  I18n.t(:route_flag_error_4)
           end
+        else
+          flash[:error] = I18n.t(:route_flag_error_17)
+          redirect_to new_project_path(is_model: params[:is_model], organization_id: @organization.id) and return
         end
       else
         #Aucune organisation sélectionnée
+        flash[:error] = "Aucun organisation sélectionnée"
+        redirect_to new_project_path(is_model: params[:is_model], organization_id: @organization.id) and return
       end
     end
-    redirect projects_from_path(organization_id: @organization.id)
+    #redirect_to request.referer
+    redirect_to new_project_path(is_model: params[:is_model], organization_id: @organization.id) and return
+  end
+
+
+  #====================
+  # Exporter les statuts des estimations et la matrice
+  def export_estimation_statuses
+
   end
 
 
@@ -3389,7 +3644,6 @@ class OrganizationsController < ApplicationController
               new_staffing_custom_data.pbs_project_element_id = nil
             end
             new_staffing_custom_data.save
-
           end
         end
 
@@ -3463,13 +3717,11 @@ class OrganizationsController < ApplicationController
 
                       new_array << new_est_val_id
                       new_array << new_mpr_id
-
                       widget_copy.equation[letter] = new_array
                     end
                   end
                   widget_copy.save
                 end
-
                 #===
 
                 pf = ProjectField.where(project_id: new_prj.id, views_widget_id: view_widget.id).first
@@ -3529,7 +3781,6 @@ class OrganizationsController < ApplicationController
               else
                 new_complexity_id = nil
               end
-
             else
               new_guw_work_unit_id = nil
               new_guw_type_id = nil

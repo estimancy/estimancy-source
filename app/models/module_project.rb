@@ -180,6 +180,20 @@ class ModuleProject < ActiveRecord::Base
     results.uniq
   end
 
+  # Get the associated_module_projects as table for import/export
+  def associated_module_projects_table
+    associated_mps_table = []
+    self.associated_module_projects.each do |amp|
+      if amp.pemodule.alias == "initialization"
+        associated_mps_table << "Initialization"
+      else
+        associated_mps_table << amp.module_project_name
+      end
+    end
+    associated_mps_table
+  end
+
+
   #Return the previous module_project where their output attributes can be the input of the current module_project
   def possible_previous_mp_for_attribute(pe_attribute)
     possible_module_projects = []
@@ -233,7 +247,7 @@ class ModuleProject < ActiveRecord::Base
 
   def module_project_name
     if self.pemodule.alias == Projestimate::Application::INITIALIZATION
-      self.project.title
+      "Initialization" #self.project.title
     elsif self.pemodule.alias == "operation"
       self.operation_model.nil? ? 'Undefined model': self.operation_model.name
     elsif self.pemodule.alias == "ge"
