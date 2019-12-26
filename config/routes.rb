@@ -292,6 +292,10 @@ Projestimate::Application.routes.draw do
 
     get "export_estimation_model" => 'organizations#export_estimation_model'
     post "import_estimation_model" => 'organizations#import_estimation_model'
+
+    get "export_estimation_statuses_workflow" => 'organizations#export_estimation_statuses_workflow'
+    post "import_estimation_statuses_workflow" => 'organizations#import_estimation_statuses_workflow'
+
   end
 
   get "export_permissions" => 'permissions#export_permissions'

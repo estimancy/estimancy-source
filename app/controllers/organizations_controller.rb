@@ -31,6 +31,7 @@ class OrganizationsController < ApplicationController
   include ActionView::Helpers::NumberHelper
 
 
+  #====================  IMPORT/EXPORT  MODELE D'ESTIMATION  =======================#
   #Pour Exporter un modèle d'estimation
   def export_estimation_model
 
@@ -308,7 +309,6 @@ class OrganizationsController < ApplicationController
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.show_wbs_activity_ratio ? 1 : 0))
               worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.project_fields.last.field.name rescue nil))
             end
-
           end
         end
 
@@ -319,7 +319,6 @@ class OrganizationsController < ApplicationController
     end
     #redirect_to projects_from_path(organization_id: organization_id)
   end
-
 
   # Pour Importer un modèle d'estimation
   def import_estimation_model
@@ -969,7 +968,7 @@ class OrganizationsController < ApplicationController
                 end
               end
             else
-              flash[:error] = "L'onglet propriétés globales n'existe pas"
+              flash[:error] = "La feuille propriétés globales n'existe pas"
             end
           else
             flash[:error] =  I18n.t(:route_flag_error_4)
@@ -980,7 +979,7 @@ class OrganizationsController < ApplicationController
         end
       else
         #Aucune organisation sélectionnée
-        flash[:error] = "Aucun organisation sélectionnée"
+        flash[:error] = "Aucune organisation sélectionnée"
         redirect_to new_project_path(is_model: params[:is_model], organization_id: @organization.id) and return
       end
     end
@@ -989,12 +988,148 @@ class OrganizationsController < ApplicationController
   end
 
 
-  #====================
-  # Exporter les statuts des estimations et la matrice
-  def export_estimation_statuses
+  #====================  IMPORT / EXPORT WORKFLOW STATUTS DES ESTIMATION  ====================#
+  # Exporter les statuts des estimations et le Workflow
+  def export_estimation_statuses_workflow
+    organization_id = params[:organization_id]
+    tab_errors = []
+    ActiveRecord::Base.transaction do
 
+      workbook = RubyXL::Workbook.new
+      @organization = Organization.find(organization_id)
+
+      if @organization
+        worksheet_status_list = workbook.worksheets[0]
+        worksheet_status_list.sheet_name = "#{I18n.t(:estimation_status)} Workflow"
+        worksheet_workflow = workbook.add_worksheet("Rôles")
+
+        i = 0
+        #Plan d'estimation : worksheet_estimation_plan
+        worksheet_status_list.add_cell(0, i, I18n.t(:status_number))
+        worksheet_status_list.add_cell(0, i += 1, "Alias")
+        worksheet_status_list.add_cell(0, i += 1, I18n.t(:name))
+        worksheet_status_list.add_cell(0, i += 1, I18n.t(:archive_status))
+        worksheet_status_list.add_cell(0, i += 1, I18n.t(:new_status))
+        worksheet_status_list.add_cell(0, i += 1, I18n.t(:create_new_version_when_status_changed))
+        worksheet_status_list.add_cell(0, i += 1, I18n.t(:status_color))
+        worksheet_status_list.add_cell(0, i += 1, I18n.t(:description))
+        worksheet_status_list.add_cell(0, i += 1, I18n.t(:manage_estimations_statuses_workflow))
+
+        @organization.estimation_statuses.each_with_index do |estimation_status, index|
+          j = 0
+          worksheet_status_list.add_cell(index+1, j, estimation_status.status_number)
+          worksheet_status_list.add_cell(index+1, j += 1, estimation_status.status_alias)
+          worksheet_status_list.add_cell(index+1, j += 1, estimation_status.name)
+          worksheet_status_list.add_cell(index+1, j += 1, (estimation_status.is_archive_status ? 1 : 0))
+          worksheet_status_list.add_cell(index+1, j += 1, (estimation_status.is_new_status ? 1 : 0))
+          worksheet_status_list.add_cell(index+1, j += 1, (estimation_status.create_new_version_when_changing_status ? 1 : 0))
+          worksheet_status_list.add_cell(index+1, j += 1, estimation_status.status_color)
+          worksheet_status_list.add_cell(index+1, j += 1, estimation_status.description)
+          worksheet_status_list.add_cell(index+1, j += 1, (estimation_status.to_transition_statuses.map(&:status_alias).uniq.inspect rescue nil))
+        end
+
+        worksheet_status_list.change_column_width(1, 20)
+        worksheet_status_list.change_column_width(2, 30)
+        worksheet_status_list.change_column_width(7, 90)
+        worksheet_status_list.change_column_width(8, 50)
+      else
+        flash[:error] = "Aucune organisation sélectionnée"
+        redirect_to organization_setting_path(@organization, anchor: "tabs-estimations-statuses") and return
+      end
+
+      send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-EstimationStatusWorkflow-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+    end
   end
 
+
+
+  # Importer les statuts des estimations et le Workflow
+  def import_estimation_statuses_workflow
+    ActiveRecord::Base.transaction do
+
+      organization_id = params[:organization_id]
+      if !organization_id.blank?
+        @organization = Organization.find(organization_id)
+
+        if params[:file]
+          if !params[:file].nil? && (File.extname(params[:file].original_filename).to_s.downcase == ".xlsx")
+            #get the file data
+            workbook = RubyXL::Parser.parse(params[:file].path)
+            worksheet_status_list = workbook.worksheets[0]
+            add_or_replace_status = params[:add_or_replace_status]
+            @status_transtions = Hash.new
+            @new_status_alias = Array.new
+
+            if !worksheet_status_list.nil?
+
+              worksheet_status_list.each_with_index do | row, index |
+                if index >= 1
+                  status_number = row.cells[0].value rescue nil
+                  status_alias = row.cells[1].value rescue nil
+                  name = row.cells[2].value rescue nil
+                  is_archive_status = row.cells[3].value rescue nil
+                  is_new_status = row.cells[4].value rescue nil
+                  create_new_version_when_changing_status = row.cells[5].value rescue nil
+                  status_color = row.cells[6].value rescue nil
+                  description = row.cells[7].value rescue nil
+                  to_transition_statuses = eval(row.cells[8].value) rescue nil
+                  @status_transtions["#{status_alias}"] = to_transition_statuses
+
+                  estimation_status = @organization.estimation_statuses.where(status_alias: status_alias).first
+                  if estimation_status.nil?
+                    estimation_status = EstimationStatus.create(organization_id: @organization.id, name: name,
+                                                                 status_number: status_number,
+                                                                 status_alias: status_alias,
+                                                                 is_archive_status: is_archive_status,
+                                                                 is_new_status: is_new_status,
+                                                                 create_new_version_when_changing_status: create_new_version_when_changing_status,
+                                                                 status_color: status_color,
+                                                                 description: description)
+                    @new_status_alias << status_alias
+                  end
+                end
+              end
+
+              # On met à jour le Workflow
+              @status_transtions.each do |status_alias, to_transition_statuses|
+                estimation_status = @organization.estimation_statuses.where(status_alias: status_alias).first
+                if estimation_status
+                  new_to_transition_status_ids = []
+                  to_transition_statuses.each do |to_status_alias|
+                    to_status = @organization.estimation_statuses.where(status_alias: to_status_alias).first
+
+                    if to_status && (@new_status_alias.include?(status_alias) || @new_status_alias.include?(to_status_alias))
+                      new_to_transition_status_ids << to_status.id
+                    end
+                  end
+
+                  unless new_to_transition_status_ids.blank?
+                    old_to_transition_status_ids = estimation_status.to_transition_status_ids
+                    all_to_transition_status_ids = old_to_transition_status_ids + new_to_transition_status_ids
+                    estimation_status.update_attribute('to_transition_status_ids', all_to_transition_status_ids.uniq)
+                  end
+                end
+              end
+
+              flash[:notice] = "Les statuts des estimations et le workflow ont été importés avec succès"
+              redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-estimations-statuses") and return
+            else
+              flash[:error] = "La feuille de la liste des statuts des estimations n'existe pas"
+            end
+          else
+            flash[:error] =  I18n.t(:route_flag_error_4)
+          end
+        else
+          flash[:error] = I18n.t(:route_flag_error_17)
+          redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-estimations-statuses") and return
+        end
+      else
+        #Aucune organisation sélectionnée
+        flash[:error] = "Aucune organisation sélectionnée"
+        redirect_to organization_setting_path(organization_id: @organization.id, anchor: "tabs-estimations-statuses") and return
+      end
+    end
+  end
 
   #====================
 
