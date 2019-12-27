@@ -1000,8 +1000,9 @@ class OrganizationsController < ApplicationController
 
       if @organization
         worksheet_status_list = workbook.worksheets[0]
-        worksheet_status_list.sheet_name = "#{I18n.t(:estimation_status)} Workflow"
-        worksheet_workflow = workbook.add_worksheet("Rôles")
+        worksheet_status_list.sheet_name = "#{I18n.t(:estimation_status)}-Workflow"
+        #worksheet_workflow = workbook.add_worksheet("Rôles")
+        @organization_groups = @organization.groups
 
         i = 0
         #Plan d'estimation : worksheet_estimation_plan
@@ -1014,6 +1015,7 @@ class OrganizationsController < ApplicationController
         worksheet_status_list.add_cell(0, i += 1, I18n.t(:status_color))
         worksheet_status_list.add_cell(0, i += 1, I18n.t(:description))
         worksheet_status_list.add_cell(0, i += 1, I18n.t(:manage_estimations_statuses_workflow))
+        worksheet_status_list.add_cell(0, i += 1, I18n.t(:label_role))
 
         @organization.estimation_statuses.each_with_index do |estimation_status, index|
           j = 0
@@ -1026,6 +1028,22 @@ class OrganizationsController < ApplicationController
           worksheet_status_list.add_cell(index+1, j += 1, estimation_status.status_color)
           worksheet_status_list.add_cell(index+1, j += 1, estimation_status.description)
           worksheet_status_list.add_cell(index+1, j += 1, (estimation_status.to_transition_statuses.map(&:status_alias).uniq.inspect rescue nil))
+
+          status_group_roles = Hash.new
+
+          @organization_groups.each do |group|
+            esgr = EstimationStatusGroupRole.where(group_id: group.id,
+                                                   estimation_status_id: estimation_status.id,
+                                                   organization_id: @organization.id).first
+
+            if esgr
+              psl = @organization.project_security_levels.where(id: esgr.project_security_level_id).first
+              if psl
+                status_group_roles["#{group.name}"] = psl.name
+              end
+            end
+          end
+          worksheet_status_list.add_cell(index+1, j += 1, (status_group_roles.inspect rescue nil))
         end
 
         worksheet_status_list.change_column_width(1, 20)
@@ -1050,6 +1068,8 @@ class OrganizationsController < ApplicationController
       organization_id = params[:organization_id]
       if !organization_id.blank?
         @organization = Organization.find(organization_id)
+        @organization_groups = @organization.groups
+        @organization_project_security_levels = @organization.project_security_levels
 
         if params[:file]
           if !params[:file].nil? && (File.extname(params[:file].original_filename).to_s.downcase == ".xlsx")
@@ -1073,11 +1093,12 @@ class OrganizationsController < ApplicationController
                   status_color = row.cells[6].value rescue nil
                   description = row.cells[7].value rescue nil
                   to_transition_statuses = eval(row.cells[8].value) rescue nil
+                  status_group_roles = eval(row.cells[9].value) rescue nil
                   @status_transtions["#{status_alias}"] = to_transition_statuses
 
                   estimation_status = @organization.estimation_statuses.where(status_alias: status_alias).first
                   if estimation_status.nil?
-                    estimation_status = EstimationStatus.create(organization_id: @organization.id, name: name,
+                    estimation_status = EstimationStatus.new(organization_id: @organization.id, name: name,
                                                                  status_number: status_number,
                                                                  status_alias: status_alias,
                                                                  is_archive_status: is_archive_status,
@@ -1085,7 +1106,23 @@ class OrganizationsController < ApplicationController
                                                                  create_new_version_when_changing_status: create_new_version_when_changing_status,
                                                                  status_color: status_color,
                                                                  description: description)
-                    @new_status_alias << status_alias
+                    if estimation_status.save
+                      @new_status_alias << status_alias
+
+                      #Add Group/Roles
+                      unless status_group_roles.blank?
+                        status_group_roles.each do |group_name, psl_name|
+                          group = @organization_groups.where(name: group_name).first_or_create(organization_id: @organization.id, name: group_name)
+                          psl = @organization_project_security_levels.where(name: psl_name).first_or_create(organization_id: @organization.id, name: psl_name)
+                          unless psl.nil? || group.nil?
+                            estimation_status.estimation_status_group_roles.create(organization_id: @organization.id,
+                                                                                   group_id: group.id,
+                                                                                   project_security_level_id: psl.id,
+                                                                                   originator_id: @current_user.id, event_organization_id: @organization.id)
+                          end
+                        end
+                      end
+                    end
                   end
                 end
               end
