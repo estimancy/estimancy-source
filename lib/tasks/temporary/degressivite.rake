@@ -7,7 +7,7 @@ namespace :change do
 
     # Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: nil).delete_all
 
-    organizations = Organization.where(name: ["CDS AURORE", "CDS BOREALE", "CDS CASSIOPEE", "CDS GP", "CDS PROD TRAIN", "CDS VOYAGEURS", "CDS RH", "CDS MATERIEL"]).all
+    organizations = Organization.where(name: ["CDS DISTRIBUTION TRANSPORTEUR", "CDS AURORE", "CDS BOREALE", "CDS CASSIOPEE", "CDS GP", "CDS PROD TRAIN", "CDS VOYAGEURS", "CDS RH", "CDS MATERIEL"]).all
 
     organizations.each do |o|
 
@@ -47,7 +47,7 @@ namespace :change do
                      guw_type.name == "WEBSERVICES REST" || guw_type.name == "REP. DON. DEMI INTERFACES"
                      guw_type.name == "WEBSERVICES SOAP" || guw_type.name == "CUSTOMISATION JAVA"
 
-                    if guw_coefficient.name == "Dégressivité Abaque"
+                    if guw_coefficient.name == "Dégressivité Abaque" || guw_coefficient.name == "Dégréssivité Abaque"
                       rtu_ris_outputs.each do |guw_output|
                         Guw::GuwComplexityCoefficientElement.where(organization_id: o.id,
                                                                    guw_model_id: guw_model.id,
@@ -59,7 +59,7 @@ namespace :change do
                       end
                     end
                   elsif guw_type.name.include?("MCO")
-                    if guw_coefficient.name == "Dégressivité MCO"
+                    if guw_coefficient.name == "Dégressivité MCO" || guw_coefficient.name == "Dégréssivité MCO"
                       t_outputs.each do |guw_output|
                         Guw::GuwComplexityCoefficientElement.where(organization_id: o.id,
                                                                    guw_model_id: guw_model.id,
@@ -72,7 +72,7 @@ namespace :change do
                       end
                     end
                   else
-                    if guw_coefficient.name == "Dégressivité Services"
+                    if guw_coefficient.name == "Dégressivité Services" || guw_coefficient.name == "Dégréssivité Services"
                       t_outputs.each do |guw_output|
                         Guw::GuwComplexityCoefficientElement.where(organization_id: o.id,
                                                                    guw_model_id: guw_model.id,
