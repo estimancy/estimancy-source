@@ -1055,7 +1055,7 @@ class OrganizationsController < ApplicationController
         redirect_to organization_setting_path(@organization, anchor: "tabs-estimations-statuses") and return
       end
 
-      send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-EstimationStatusWorkflow-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+      send_data(workbook.stream.string, filename: "#{@organization.name}-EstimationStatusWorkflow-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
     end
   end
 
