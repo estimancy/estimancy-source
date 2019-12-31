@@ -285,7 +285,8 @@
                 <div class="indicator-value">
                   <span class="staffing_trapeze">
                     <% unless @staffing_custom_data.max_staffing.nil? %>
-                      <%= @staffing_custom_data.max_staffing.to_f.round(user_number_precision) %>
+                      <% trapeze_staffing_max = @staffing_custom_data.max_staffing.to_f.round(user_number_precision) %>
+                      <%= trapeze_staffing_max.round_up_by_step(0.1).round(1) %>
                     <% end %>
                   </span> pers.
                   <span class="indicator-value-gain percent_trapeze">
@@ -309,7 +310,8 @@
                 <div class="indicator-value">
                   <span class="staffing_rayleigh">
                     <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
-                      <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %>
+                      <% rayleigh_staffing_max = @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %>
+                      <%= rayleigh_staffing_max.round_up_by_step(0.1).round(1) %>
                     <% end %>
                   </span> pers.
                   <span class="indicator-value-gain percent_rayleigh">
