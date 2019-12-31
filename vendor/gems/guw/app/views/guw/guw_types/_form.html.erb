@@ -67,7 +67,7 @@
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :attribute_type, as: :select, label: false, collection: ["Coefficient", "Pourcentage"], input_html: { class: 'mdl-textfield__input form-control'} %>
-                      <label class="mdl-textfield__label" for="attribute_type"><%= "Type de calcul pour les attributs" %></label>
+                      <label class="mdl-textfield__label" for="attribute_type"><%= I18n.t(:calculate_type_for_attributes) %></label>
                     </div>
                   </div>
                 </div>
@@ -82,7 +82,7 @@
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :display_threshold, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
-                      <label class="mdl-textfield__label" for="allow_retained" style="padding-left: 20px; margin-top: -7px;"><%= "Afficher le seuil" %></label>
+                      <label class="mdl-textfield__label" for="allow_retained" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:show_threshold) %></label>
                     </div>
                   </div>
                 </div>
@@ -108,7 +108,7 @@
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :mandatory_comments, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
-                      <label class="mdl-textfield__label" for="mandatory_comments" style="padding-left: 20px; margin-top: -7px;"><%= "Commentaire sur critères obligatoire" %></label>
+                      <label class="mdl-textfield__label" for="mandatory_comments" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:commentary_on_mandatory_criteria) %></label>
                     </div>
                   </div>
                 </div>
@@ -117,7 +117,7 @@
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <div style="margin-left: 130px; margin-top: 5px;"><%= f.input :color_code, label: false , input_html: {class: 'color form-control'} %></div>
-                      <label class="mdl-textfield__label" for="color_code" ><%= "Code couleur" %></label>
+                      <label class="mdl-textfield__label" for="color_code" ><%= I18n.t(:color_code) %></label>
                     </div>
                   </div>
                 </div>
@@ -126,7 +126,7 @@
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :color_priority, label: false, input_html: { class: 'mdl-textfield__input form-control'} %>
-                      <label class="mdl-textfield__label" for="color_priority"><%= "Priorité de la couleur" %></label>
+                      <label class="mdl-textfield__label" for="color_priority"><%= I18n.t(:color_priority) %></label>
                     </div>
                   </div>
                 </div>
@@ -135,13 +135,13 @@
                   <div class="col-6">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :allow_line_color, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
-                      <label class="mdl-textfield__label" for="allow_line_color" style="padding-left: 20px; margin-top: -7px;"><%= "Activez la couleur sur une ligne"  %></label>
+                      <label class="mdl-textfield__label" for="allow_line_color" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:enable_color_on_a_line)  %></label>
                     </div>
                   </div>
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :is_default, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
-                      <label class="mdl-textfield__label" for="is_default" style="padding-left: 20px; margin-top: -7px;"><%= "Type d'UO par défaut"  %></label>
+                      <label class="mdl-textfield__label" for="is_default" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:default_type_of_UO)  %></label>
                     </div>
                   </div>
                 </div>
@@ -150,13 +150,13 @@
                   <div class="col-6">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :allow_to_suggest_a_correction, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
-                      <label class="mdl-textfield__label" for="allow_to_suggest_a_correction" style="padding-left: 20px; margin-top: -7px;"><%= "Proposer une correction"  %></label>
+                      <label class="mdl-textfield__label" for="allow_to_suggest_a_correction" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:suggest_a_correction)  %></label>
                     </div>
                   </div>
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :allow_to_add_to_knowledge_db, label: false, as: :boolean, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
-                      <label class="mdl-textfield__label" for="allow_to_add_to_knowledge_db" style="padding-left: 20px; margin-top: -7px;"><%= "Ajouter à la base de Connaissance"  %></label>
+                      <label class="mdl-textfield__label" for="allow_to_add_to_knowledge_db" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:add_to_the_knowledge_base)  %></label>
                     </div>
                   </div>
                 </div>

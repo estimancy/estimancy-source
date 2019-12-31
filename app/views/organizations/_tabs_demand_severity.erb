@@ -1,18 +1,26 @@
 
 <div id="severity">
   <%= link_to "#{I18n.t :create_a_severity}", new_organization_severity_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <hr>
   <table id="table_list_1" class="table table-list">
     <thead>
     <tr>
       <th>
         <%= I18n.t :name %>
       </th>
+      <th>
+        <%= I18n.t :actions %>
+      </th>
     </tr>
     </thead>
     <tbody>
     <% @organization.severities.each do |severity| %>
         <tr>
-          <td><%= link_to severity.name, "#" %></td>
+          <td><%= severity.name %></td>
+          <td>
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_severity_path(@organization, severity) , :class => 'material-icons', :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"),  organization_severity_path(@organization, severity), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+          </td>
         </tr>
     <% end %>
     </tbody>

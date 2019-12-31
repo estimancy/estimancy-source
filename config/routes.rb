@@ -262,7 +262,7 @@ Projestimate::Application.routes.draw do
     get 'budget_dashboard' => "organizations#budget_dashboard"
 
     resources :severities
-    resources :criticabilities
+    resources :criticalities
 
     resources :livrables
     resources :demand_statuses

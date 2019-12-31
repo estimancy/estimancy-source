@@ -1,13 +1,20 @@
 <section class="card card-content-bloc estimancy-form">
   <div class="card-body">
+
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h2>
+          <%= I18n.t(:new) + " " + I18n.t(:demand_type) %>
+        </h2>
+      </div>
+    </div>
+
+    <br>
+
     <%= simple_form_for([@organization, @demand_type]) do |f| %>
 
       <div id="tabs-1">
         <%= f.error_notification %>
-
-        <div class="edition-page-group py-4">
-          <span><%= I18n.t(:demand_type) %></span>
-        </div>
 
         <div class="edition-bloc-content">
           <div class="edition-bloc-form">

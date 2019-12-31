@@ -71,5 +71,5 @@
         <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
     <% end %>
-    <%= link_to I18n.t('back'), organization_module_estimation_path(@current_organization, anchor: "activite"), :class => 'btn btn-secondary' %>
+    <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, partial_name: 'tabs_module_activity', item_title: I18n.t('activity')), class: "btn btn-secondary" %>
 </div>

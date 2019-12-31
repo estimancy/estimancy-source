@@ -1,7 +1,8 @@
 class LivrablesController < ApplicationController
 
   def index
-    @livrables = Livrable.where(organization_id: params[:organization_id]).all
+     @livrables = Livrable.where(organization_id: params[:organization_id]).all
+    #@livrables = Livrable.all
     @organization = Organization.find(params[:organization_id])
   end
 
@@ -23,14 +24,15 @@ class LivrablesController < ApplicationController
   def create
     set_page_title (I18n.t('create_livrable'))
     @livrable = Livrable.new(params[:livrable])
+    @organization = Organization.find(params[:organization_id])
 
     if @livrable.save
       flash[:notice] = "Livrable créé avec succès"
       #redirect_to organization_livrables_path(@organization)
-      redirect_to :back
-    else
-      render action: 'new'
+      #redirect_to :back
     end
+      #render action: 'new'
+      redirect_to :back
 
   end
 

@@ -3,7 +3,7 @@
   <div class="card-body">
     <div class="edition-bloc-left">
       <div class="edition-bloc-title">
-        <h1>Configuration du coefficient</h1>
+        <h1><%= I18n.t('coefficient_configuration') %></h1>
       </div>
     </div>
 
@@ -44,7 +44,7 @@
                           :input_html => {:class => 'mdl-textfield__input'},
                           :include_blank => false %>
                 <label class="mdl-textfield__label" for="coefficient_type">
-                  <%= "Type de Coefficient" %>
+                  <%= I18n.('coefficient_type') %>
                 </label>
               </div>
             </div>
@@ -56,7 +56,7 @@
                 <%= f.input :allow_comments, label: false,
                             as: :boolean,
                     :input_html => {:class => 'mdl-checkbox__inputs'} %>
-                <label class="mdl-textfield__label" for="allow_comments" style="padding-left: 20px; margin-top: -7px;"><%=  "Autoriser les commentaires" %></label>
+                <label class="mdl-textfield__label" for="allow_comments" style="padding-left: 20px; margin-top: -7px;"><%=  I18n.t('allow_comments') %></label>
               </div>
             </div>
           </div>
@@ -67,7 +67,7 @@
                 <%= f.input :allow_intermediate_value, label: false,
                             as: :boolean,
                             :input_html => {:class => 'mdl-checkbox__inputs'} %>
-                <label class="mdl-textfield__label" for="allow_intermediate_value" style="padding-left: 20px; margin-top: -7px;"><%= "Autoriser la modification" %></label>
+                <label class="mdl-textfield__label" for="allow_intermediate_value" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('allow_change') %></label>
               </div>
             </div>
           </div>
@@ -78,7 +78,7 @@
                 <%= f.input :deported, label: false,
                             as: :boolean,
                             :input_html => {:class => 'mdl-checkbox__inputs'} %>
-                <label class="mdl-textfield__label" for="deported" style="padding-left: 20px; margin-top: -7px;"><%= "Coefficient déporté" %></label>
+                <label class="mdl-textfield__label" for="deported" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('deported_coefficient') %></label>
               </div>
             </div>
           </div>

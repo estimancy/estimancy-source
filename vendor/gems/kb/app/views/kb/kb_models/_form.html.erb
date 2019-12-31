@@ -107,7 +107,7 @@
                     <div class="col-6">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :n_max, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
-                        <label class="mdl-textfield__label" for="n_max"><%= "N derniers projets" %></label>
+                        <label class="mdl-textfield__label" for="n_max"><%= I18n.t(:N_last_projects) %></label>
                       </div>
                     </div>
                   </div>
@@ -146,8 +146,7 @@
                   <% if can? :manage_modules_instances, ModuleProject %>
                     <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
                   <% end %>
-                    <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn btn-secondary" %>
-
+                    <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort')), class: "btn btn-secondary" %>
                 </div>
               </div>
 
@@ -157,12 +156,14 @@
 
         <% if action_name.in?(%w(edit update)) %>
           <div class="tab-pane fade show" id="tabs-2" role="tabpanel" aria-labelledby="tabs-2">
+            <br>
             <div class="row">
               <div class="col-12">
                 <%= form_tag kb.kb_model_import_path(@kb_model.id), :multipart => true, method: "post", :class => 'simple_form float-right' do %>
                     <%= file_field_tag :file %>
                     <%= hidden_field_tag :kb_model_id, @kb_model.id %>
                     <%= hidden_field_tag :organization_id, @organization.id %>
+                  <br>
                   <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :style => 'margin-top:1rem;' %>
                 <% end %>
                 <%= link_to I18n.t(:export), kb.kb_model_data_export_path(@kb_model), :class => 'btn btn-primary' %>
@@ -223,12 +224,10 @@
                         </tr>
                       <% end %>
                       </tbody>
-
                       <%= render :partial => 'layouts/footer_table' %>
-
                     </table>
+                    <%= submit_tag "Save Filters", class: "btn btn-primary" %>
                   <% end %>
-                  <%= submit_tag "Save Filters", class: "btn btn-info pull-right" %>
                 <% end %>
               </div>
             </div>

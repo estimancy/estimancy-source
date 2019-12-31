@@ -355,7 +355,7 @@
                 <% if can? :manage_modules_instances, ModuleProject %>
                   <%= submit_tag I18n.t(:save), class: "btn btn-primary" %>
                 <% end %>
-                <%= link_to I18n.t(:back), main_app.edit_organization_path(@guw_model.organization), :class => 'btn btn-secondary' %>
+                <%= link_to I18n.t(:back), guw.edit_guw_model_path(@guw_model, organization_id: @organization.id, partial_name: 'tabs_model'), class: "btn btn-secondary" %>
               <% end %>
 
               <br>

@@ -31,14 +31,14 @@
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <%#= f.input :start_date,  label: false, :input_html => {:class => 'date-picker mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
 <!--            <label class="mdl-textfield__label" for="start_date"><%#= I18n.t('start_date') %></label>-->
-                <%= f.input :start_date, :as => :string, label: 'Date de début',
+                <%= f.input :start_date, :as => :string, label: I18n.t(:begin_date),
                             :input_html => {:class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <%#= f.input :end_date,  label: false, :input_html => {:class => 'date-picker mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
 <!--            <label class="mdl-textfield__label" for="end_date"><%#= I18n.t('end_date') %></label>-->
-                <%= f.input :end_date, :as => :string, label: 'Date de fin',
+                <%= f.input :end_date, :as => :string, label: I18n.t(:close_date),
                             :input_html => {:class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
               </div>
 
