@@ -314,7 +314,7 @@ class OrganizationsController < ApplicationController
 
         #=====
         # Send the file
-        send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-#{@project.title.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+        send_data(workbook.stream.string, filename: "#{@organization.name}-#{@project.title.gsub(" ", "_")}-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
       #end
     end
     #redirect_to projects_from_path(organization_id: organization_id)
@@ -1055,7 +1055,7 @@ class OrganizationsController < ApplicationController
         redirect_to organization_setting_path(@organization, anchor: "tabs-estimations-statuses") and return
       end
 
-      send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-EstimationStatusWorkflow-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
+      send_data(workbook.stream.string, filename: "#{@organization.name}-EstimationStatusWorkflow-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
     end
   end
 
