@@ -24,11 +24,11 @@
 <% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
                                               guw_model_id: @guw_model.id,
                                               project_id: @project.id,
-                                              module_project_id: @module_project.id).each do |gceuw| %>
+                                              module_project_id: current_module_project.id).each do |gceuw| %>
 <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
 <% end %>
 
-$('table.group_<%= @guw_unit_of_work.guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group, "current_mp" => @module_project.id })) %></tr>");
+$('table.group_<%= @guw_unit_of_work.guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group, "current_mp" => current_module_project.id })) %></tr>");
 
 var my_array = [];
 $(document).ready(function() {
