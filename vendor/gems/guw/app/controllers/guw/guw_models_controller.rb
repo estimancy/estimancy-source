@@ -1463,7 +1463,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(aln1, 0, "Attributs").change_font_bold(true)
 
       guw_type.guw_type_complexities.where(organization_id: @guw_organisation.id,
-                                           guw_model_id: @guw_model.id).each do |type_attribute_complexity|
+                                           guw_model_id: @guw_model.id).order("display_order asc").each do |type_attribute_complexity|
 
         worksheet.add_cell(sln, scn + 1, type_attribute_complexity.name).change_font_bold(true)
         worksheet.add_cell(sln, scn + 2, type_attribute_complexity.value)
