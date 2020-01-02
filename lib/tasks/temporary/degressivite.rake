@@ -7,7 +7,7 @@ namespace :change do
 
     # Guw::GuwComplexityCoefficientElement.where(guw_complexity_id: nil).delete_all
 
-    organizations = Organization.where(name: ["CDS DISTRIBUTION TRANSPORTEUR", "CDS AURORE", "CDS BOREALE", "CDS CASSIOPEE", "CDS GP", "CDS PROD TRAIN", "CDS VOYAGEURS", "CDS RH", "CDS MATERIEL"]).all
+    organizations = Organization.where(name: ["CDS DISTRIBUTION TRANSPORTEUR", "CDS AURORE", "CDS BOREALE", "CDS CASSIOPEE", "CDS GP", "CDS PROD TRAIN", "CDS VOYAGEURS", "CDS RH", "CDS MATERIEL", "01_DSI FS_CdS Gestion Pluriel", "02_DSI FS_CdS RH", "04_DSI PF_CdS Production Train", "05_DSI PF_CdS Voyageurs", "06_DSI Voyage_CdS Distribution Transporteur", "07_DSI Matériel_CdS Matériel", "08_DSI Réseau_CdS Aurore", "09_DSI Réseau_CdS Boréale", "10_DSI Réseau_CdS Cassiopée", "11_DSI CdS ERP"]).all
 
     organizations.each do |o|
 
