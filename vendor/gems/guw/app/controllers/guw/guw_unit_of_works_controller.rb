@@ -491,6 +491,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_type = @old_guw_unit_of_work.guw_type
 
     uo_guw_type = current_module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).first
+    @module_project = ModuleProject.find(params[:module_project_id])
 
     # if uo_guw_type.nil?
       @guw_unit_of_work = @old_guw_unit_of_work.amoeba_dup
