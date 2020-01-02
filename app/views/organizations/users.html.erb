@@ -90,7 +90,7 @@
               <%= link_to "", edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
               <% if can? :manage, User, :organization_id => @organization.id %>
                 <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-                <%= link_to '', destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                <%= link_to '', destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), data: { confirm: I18n.t('are_you_sure') }, method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
               <% end %>
             </td>
           </tr>
