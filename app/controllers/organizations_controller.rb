@@ -2362,7 +2362,7 @@ class OrganizationsController < ApplicationController
             if pf.project_id == pf.views_widget.module_project.project_id
 
               if pf.field.name.to_s.in?(["Max. Staff.", "Staff. max."])
-                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value.to_f.round_up_by_step(0.1).round(1)
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = (pf.value.blank? ? nil : pf.value.to_f.round_up_by_step(0.1).round(1))
               else
                 @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
               end

@@ -70,7 +70,7 @@
 
                   <% if view_widget.module_project.pemodule.alias == "staffing" %>
                     <% if view_widget.estimation_value.pe_attribute.alias == "staffing" %>
-                        <% value_to_show = view_widget_data[:data_probable].round_up_by_step(0.1).round(1) %>
+                        <% value_to_show = view_widget_data[:data_probable].round_up_by_step(0.1).round(1) rescue nil %>
                     <% end %>
                   <% end %>
 
