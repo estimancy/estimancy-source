@@ -1758,7 +1758,7 @@ class WbsActivitiesController < ApplicationController
 
                 @wbs_activity_ratios.each do |ratio|
 
-                  ratio_elements_worksheet = workbook["#{ratio.name[0..30]}"]
+                  ratio_elements_worksheet = workbook["#{ratio.name[0..30]}"] ## Taille max d'une feuille excel est de 31 caractères
                   begin
                     ratio_elements_worksheet_tab = ratio_elements_worksheet
 
