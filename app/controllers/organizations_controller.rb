@@ -2545,7 +2545,6 @@ class OrganizationsController < ApplicationController
 
           app = Application.where(organization_id: @organization.id,
                                   name: row[0].nil? ? nil : row[0].value).first
-                                  name: row[0].nil? ? "" : row[0].value).first
 
           if app.nil?
 
@@ -2555,11 +2554,6 @@ class OrganizationsController < ApplicationController
                                       criticality: row[2].nil? ? nil : row[2].value,
                                       coefficient: row[3].nil? ? nil : row[3].value,
                                       coefficient_label: row[4].nil? ? nil : row[4].value)
-                                      name: (row.nil? ? flash[:error] = I18n.t(:route_flag_error_3) : row[0].nil? ? nil : row[0].value),
-                                      is_ignored: row[1].nil? ? nil : row[1].value,
-                                      coefficient: row[2].nil? ? nil : row[2].value,
-                                      coefficient_label: row[3].nil? ? nil : row[3].value)
-
             unless new_app.save
               tab_error << index + 1
             end
@@ -2571,7 +2565,6 @@ class OrganizationsController < ApplicationController
             app.coefficient_label = row[3].nil? ? nil : row[3].value
             app.save
           end
-
         end
       end
     else

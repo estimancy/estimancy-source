@@ -386,7 +386,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                    guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
         finder.save
       end
-
+    end
 
     @guw_unit_of_work.guw_type_id = @guw_type.id
     @guw_unit_of_work.effort = nil
