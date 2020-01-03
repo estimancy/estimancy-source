@@ -1970,3 +1970,4 @@ it:
   coefficient_label: "Libellé du coefficient"
   criticality: "Criticité"
   past_projects_effort: "Effort des projets passés"
+  choose_kpis_to_show: "Choisissez les indicateurs à afficher"

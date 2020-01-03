@@ -10,7 +10,7 @@ class Budget < ActiveRecord::Base
   has_many :applications, through: :application_budgets  #all applications
 
   has_many :application_budget_types, :foreign_key => 'application_id', :class_name => 'Application'
-  has_many :used_applications, through: :application_budget_types, dependent: :destroy   #used applications
+  ###has_many :used_applications, through: :application_budget_types, dependent: :destroy   #used applications
 
 
   def self.fetch_project_field_data(organization, budget, application)

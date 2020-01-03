@@ -26,6 +26,7 @@ class OrganizationsController < ApplicationController
   require 'will_paginate/array'
   require 'securerandom'
   require 'rubyXL'
+  require 'rounding'
   include ProjectsHelper
   include OrganizationsHelper
   include ActionView::Helpers::NumberHelper
@@ -2359,7 +2360,12 @@ class OrganizationsController < ApplicationController
         if pf.field_id.in?(fields.map(&:id))
           if pf.project && pf.views_widget
             if pf.project_id == pf.views_widget.module_project.project_id
-              @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+
+              if pf.field.name.to_s.in?(["Max. Staff.", "Staff. max."])
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = (pf.value.blank? ? nil : pf.value.to_f.round_up_by_step(0.1).round(1))
+              else
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+              end
             else
               pf.delete
             end

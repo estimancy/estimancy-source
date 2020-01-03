@@ -18,16 +18,16 @@
 
       <table class="table table-sm table-bordered table-list" %>
         <tr>
-          <th class="span2">Nom</th>
-          <th class="span2">Desc.</th>
+          <th class="span2"><%= I18n.t('name') %></th>
+          <th class="span2"><%= I18n.t('description') %></th>
           <th class="span2">Min</th>
           <th class="span2">Max</th>
-          <th class="span2">Valeur</th>
-          <th class="span2">Code Couleur</th>
-          <th class="span2">Priorité de la couleur</th>
-          <th class="span2">Valeur par défaut</th>
-          <th class="span2">Ordre d'affichage</th>
-          <th class="actions">Actions</th>
+          <th class="span2"><%= I18n.t('value') %></th>
+          <th class="span2"><%= I18n.t('color_code') %></th>
+          <th class="span2"><%= I18n.t('color_priority') %></th>
+          <th class="span2"><%= I18n.t('default_value') %></th>
+          <th class="span2"><%= I18n.t('display_order') %></th>
+          <th class="actions"><%= I18n.t('actions') %></th>
         </tr>
         <% guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element| %>
           <tr>

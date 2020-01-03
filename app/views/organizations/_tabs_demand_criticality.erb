@@ -1,18 +1,25 @@
 <div id="criticality">
-  <%= link_to "#{I18n.t(:create_a_criticality)}", new_organization_criticability_path(@organization), class: "btn btn-primary btn-estimancy" %>
-
+  <%= link_to "#{I18n.t(:create_a_criticality)}", new_organization_criticality_path(@organization), class: "btn btn-primary btn-estimancy" %>
+  <hr>
   <table id="table_list_1" class="table table-list">
     <thead>
     <tr>
       <th>
         <%= I18n.t :name %>
       </th>
+      <th>
+        <%= I18n.t :actions %>
+      </th>
     </tr>
     </thead>
     <tbody>
     <% @organization.criticalities.each do |criticality| %>
         <tr>
-          <td><%= link_to criticality.name, "#" %></td>
+          <td><%= criticality.name %></td>
+          <td>
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_criticality_path(@organization, criticality) , :class => 'material-icons', :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"),  organization_criticality_path(@organization, criticality), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+          </td>
         </tr>
     <% end %>
     </tbody>

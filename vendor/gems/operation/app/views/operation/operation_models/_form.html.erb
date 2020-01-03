@@ -69,7 +69,7 @@
                 <% if can? :manage_modules_instances, ModuleProject %>
                   <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
                 <% end %>
-                <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "effort"), class: "btn btn-secondary" %>
+                <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort')), class: "btn btn-secondary" %>
               </div>
 
             <% end %>
@@ -114,8 +114,7 @@
           <% if can? :manage_modules_instances, ModuleProject %>
             <%= link_to "#{I18n.t(:create_button)}", operation.new_operation_model_operation_input_path(@operation_model, organization_id: params[:organization_id]), class: "btn btn-primary" %>
           <% end %>
-          <%= link_to I18n.t(:back) , operation.edit_operation_model_path(@operation_model), class: "btn btn-secondary" %>
-
+          <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort')), class: "btn btn-secondary" %>
           <% end %>
         </div>
 

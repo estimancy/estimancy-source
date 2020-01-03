@@ -3,7 +3,7 @@
   <div class="card-body">
     <div class="edition-bloc-left">
       <div class="edition-bloc-title">
-        <h4>Sorties</h4>
+        <h4><%= I18n.t(:outputs) %></h4>
       </div>
     </div>
 
@@ -23,17 +23,17 @@
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :output_type, as: :select, label: false , collection: ["Effort", "Taille", "Cout"], :input_html => {:class => 'mdl-textfield__input'} %>
-                  <label class="mdl-textfield__label" for="output_type"> Type de Sortie </label>
+                  <label class="mdl-textfield__label" for="output_type"><%= I18n.t(:output_type) %> </label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :unit, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
-                  <label class="mdl-textfield__label" for="unit"> Unité de sortie </label>
+                  <label class="mdl-textfield__label" for="unit"><%= I18n.t(:output_unit) %></label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :allow_subtotal, label: false, as: :boolean, :input_html => { :class => 'mdl-checkbox__inputs' } %>
-                  <label class="mdl-textfield__label" for="allow_subtotal" style="padding-left: 20px; margin-top: -7px;"><%=  "Calculer les sous-totaux " %></label>
+                  <label class="mdl-textfield__label" for="allow_subtotal" style="padding-left: 20px; margin-top: -7px;"><%=  I18n.t(:allow_subtotal) %></label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
@@ -42,17 +42,17 @@
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :color_priority, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
-                  <label class="mdl-textfield__label" for="color_priority"> Color Priority </label>
+                  <label class="mdl-textfield__label" for="color_priority"><%= I18n.t(:color_priority) %> </label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :standard_coefficient, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
-                  <label class="mdl-textfield__label" for="standard_coefficient"> Coefficient Standard de Conversion (Effort uniquement) </label>
+                  <label class="mdl-textfield__label" for="standard_coefficient"> <%= I18n.t(:standard_conversion_coefficient_only_effort) %> </label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                   <%= f.input :display_order, label: false, :input_html => {:class => 'mdl-textfield__input'}  %>
-                  <label class="mdl-textfield__label" for="display_order"> Ordre de calcul </label>
+                  <label class="mdl-textfield__label" for="display_order"><%= I18n.t(:calculation_order) %> </label>
                 </div>
 
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
