@@ -166,6 +166,20 @@
                                class: "guw_complexity form-control form-control-sm",
                                include_blank: false,
                                disabled: !@guw_type.allow_complexity %>
+                <% if !@guw_type.allow_complexity %>
+                  <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
+                                 guw: guow.id,
+                                 class: "guw_complexity",
+                                 include_blank: false,
+                                 disabled: !@guw_type.allow_complexity %>
+                  <%= hidden_field_tag "guw_complexity_#{guow.id}", guow.guw_complexity_id %>
+                <% else %>
+                  <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
+                                 guw: guow.id,
+                                 class: "guw_complexity",
+                                 include_blank: false,
+                                 disabled: !@guw_type.allow_complexity %>
+                <% end %>
               <% end %>
             <% else %>
               <% if guow.off_line == true %>
@@ -187,13 +201,15 @@
                                          class: "complexity_weight-#{uowg.id} guw-#{guow.id} form-control form-control-sm",
                                          guw: guow.id,
                                          title: guow.cplx_comments,
-                                         readonly: !(@guw_type.allow_retained == true) %>
+                                         readonly: !(@guw_type.allow_retained == true),
+                                         title: guow.cplx_comments.blank? ? @guw_type.description : guow.cplx_comments,
+                                         readonly: true %>
                     <% if @guw_type.allow_complexity %>
                       <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight.to_f.round(3),
                                            style: "background-color: ##{color}; text-align: right; ",
                                            class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained form-control form-control-sm",
                                            guw: guow.id,
-                                           title: guow.cplx_comments,
+                                           title: guow.cplx_comments.blank? ? @guw_type.description : guow.cplx_comments,
                                            step: 0.001 %>
                       <script>
                         //$(document).ready(function(){
@@ -284,6 +300,13 @@
                        color = "background-color: ##{default.color_code}"
                      end
                    end
+
+                   if @guw_coefficient.math_set == "N" || @guw_coefficient.math_set == "Z"
+                     step = 1
+                   else
+                     step = 0.001
+                   end
+
                 %>
                 <% ddv = results.first.default_display_value %>
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
@@ -291,19 +314,19 @@
                                      style: "#{color}; text-align: right; ",
                                      class: "complexity_weight-#{uowg.id} form-control form-control-sm guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
-                                     step: 1,
+                                     step: step,
                                      guw: guow.id,
                                      coeff_id: @guw_coefficient.nil? ? nil : @guw_coefficient.id,
                                      coeff_element_id: results.first.id,
-                                     title: ceuw.nil? ? "" : ceuw.comments %>
+                                     title: ceuw.nil? ? @guw_type.description : (ceuw.comments.blank? ? @guw_type.description : ceuw.comments) %>
 
                 <% if @guw_coefficient.allow_intermediate_value == true %>
                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                        ceuw.nil? ? (ddv.nil? ? nil : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
-                                       style: "text-align: right; ",
-                                       class: "complexity_weight-#{uowg.id} form-control form-control-sm retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
-                                       step: 1,
-                                       title: ceuw.nil? ? "" : ceuw.comments %>
+                                       style: "width: 60%; text-align: right;",
+                                       class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
+                                       step: step,
+                                       title: ceuw.nil? ? @guw_type.description : (ceuw.comments.blank? ? @guw_type.description : ceuw.comments) %>
                 <% end %>
               </td>
               <% if @guw_coefficient.allow_comments == true %>

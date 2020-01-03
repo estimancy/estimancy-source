@@ -193,6 +193,31 @@
                         <%= i[0] %>
                       </th>
                     <% end %>
+                  <% elsif i[0] == "Critères" %>
+                    <% if @guw_types.map{ |i| i.allow_criteria }.flatten.include?(true) %>
+                      <th>
+                        <%= I18n.t :criteria %>
+                      </th>
+                    <% end %>
+                  <% elsif i[0] == "Coeff. de Complexité" %>
+                    <% if i[1].blank? %>
+                    <% else %>
+                      <th>
+                        <% if @guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                          <% if @guw_types.map{|i| i.display_threshold }.flatten.include?(true) %>
+                            Complexité
+                          <% else %>
+                            Coeff. de complexité
+                          <% end %>
+                        <% else %>
+                          Complexité
+                        <% end %>
+                      </th>
+                    <% end %>
+                  <% else %>
+                    <th>
+                      <%= i[0] %>
+                    </th>
                   <% end %>
                 <% end %>
 
@@ -278,35 +303,43 @@
   <% if params[:recalculate] == "true" %>
     <%= hidden_field_tag "modified_guw_line_ids", @current_module_project_guw_unit_of_works.map(&:id).flatten.join(",") %>
   <% else %>
-    <%= hidden_field_tag "modified_guw_line_ids", nil %>
+    <% if params[:mgli].present? %>
+      <%= hidden_field_tag "modified_guw_line_ids", params[:mgli] %>
+    <% else %>
+      <%= hidden_field_tag "modified_guw_line_ids", nil %>
+    <% end %>
   <% end %>
 
   <script>
     var my_array = [];
     //$(document).ready(function(){
     $(document).ready(function() {
-        $(".new_guw_button").on('click', function(e){
-            $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
-            $("#hidden_position").val($(this).data("display-order"));
-        });
 
-        $("table#guw input").keyup(function(e) {
-            var new_line = $(this).closest("tr").data("guw-id");
-            my_array.push(new_line);
-            $("#modified_guw_line_ids").val(my_array);
-        });
+      window.history.pushState("", "", "<%= main_app.dashboard_path(@project) %>");
 
-        $("table#guw select").on("change", function(e) {
-            var new_line = $(this).closest("tr").data("guw-id");
-            my_array.push(new_line);
-            $("#modified_guw_line_ids").val(my_array);
-        });
+      $(".new_guw_button").on('click', function(e){
+        $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
+        $("#hidden_position").val($(this).data("display-order"));
+      });
 
-        $(".selected").on("change", function(e) {
-            var new_line = $(this).closest("tr").data("guw-id");
-            my_array.push(new_line);
-            $("#modified_guw_line_ids").val(my_array);
-        });
+      $("table#guw input").keyup(function(e) {
+          var new_line = $(this).closest("tr").data("guw-id");
+          my_array.push(new_line);
+          $("#modified_guw_line_ids").val(my_array);
+      });
+
+      $("table#guw select").on("change", function(e) {
+          var new_line = $(this).closest("tr").data("guw-id");
+          my_array.push(new_line);
+          $("#modified_guw_line_ids").val(my_array);
+      });
+
+      $("table#guw guw_type").on("change", function(e) {
+        var new_line = $(this).closest("tr").data("guw-id");
+        my_array.push(new_line);
+        $("#modified_guw_line_ids").val(my_array);
+      });
+  
     });
   </script>
 
