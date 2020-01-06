@@ -2243,7 +2243,7 @@ fr:
   display_estimation: "Afficher les tableaux de bord de l'estimation en cours"
 
   will_paginate:
-    next_label: suivant →
+    next_label: "suivant →"
     page_entries_info:
       multi_page: "%{model} %{from} - %{to} sur %{count} au total"
       multi_page_html: "%{model} <strong>%{from} - %{to}</strong> sur <strong>%{count}</strong> au total"
@@ -2579,7 +2579,8 @@ fr:
   new_severity: "Nouvelle sévérité"
   new_criticality: "Nouvelle criticité"
   choose_reports_to_show: "Choisissez les rapports à afficher"
-  choose_kpis_to_show: "Choisissez les indicateurs à afficher"  creation_order: "Ordre de création"
+  choose_kpis_to_show: "Choisissez les indicateurs à afficher"
+  creation_order: "Ordre de création"
   show_results_view: "Afficher la vue du module"
   associated_module_projects: "Module_projects liés"
   is_label_widget: "Vignette texte?"
