@@ -1,4 +1,6 @@
 <% organization_id = @organization.id %>
+<% @guw_model = @module_project.guw_model %>
+
 <% @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: organization_id,
                                                         guw_model_id: @guw_model.id,
                                                         project_id: @project.id,
@@ -56,14 +58,14 @@
           <% @guw_complexities = @guw_type.guw_complexities.where(organization_id: organization_id, guw_model_id: @guw_model.id).order("display_order ASC") %>
         <% end %>
 
-        $("tr#<%= guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => guw_unit_of_work, "uowg" => guw_unit_of_work.guw_unit_of_work_group})) %>");
+        $("tr#<%= guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => guw_unit_of_work, "uowg" => guw_unit_of_work.guw_unit_of_work_group, "current_mp" => @module_project })) %>");
 
         <% uowg = guw_unit_of_work.guw_unit_of_work_group %>
 
         <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.where(organization_id: organization_id,
                                                           guw_model_id: @guw_model.id,
                                                           project_id: guw_unit_of_work.project_id,
-                                                          module_project_id: current_module_project.id).order("display_order ASC") %>
+                                                          module_project_id: @module_project.id).order("display_order ASC") %>
 
         <% @selected_uowg_guw_unit_of_works = @uowg_guw_unit_of_works.where(selected: true) %>
 
@@ -94,7 +96,7 @@ $(document).ready(function() {
   });
 
   $('.guw_type').change(function(){
-    reset($(this).attr("guw"));
+//    reset($(this).attr("guw"));
     $.ajax({
       url: "<%= guw.change_cotation_path %>",
       data: "guw_type_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")

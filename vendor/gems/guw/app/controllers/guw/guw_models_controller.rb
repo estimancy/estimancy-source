@@ -196,7 +196,8 @@ class Guw::GuwModelsController < ApplicationController
                                            organization_id: organization_id,
                                            guw_model_id: @guw_model.id,
                                            allow_intermediate_value: ((row[3].nil? ? nil : row[3].value) == 0) ? false : true,
-                                           deported: ((row[4].nil? ? nil : row[4].value) == 0) ? false : true)
+                                           deported: ((row[4].nil? ? nil : row[4].value) == 0) ? false : true,
+                                           show_coefficient_label: ((row[5].nil? ? nil : row[5].value) == 0) ? false : true)
               end
             end
 
@@ -1155,6 +1156,7 @@ class Guw::GuwModelsController < ApplicationController
     coefficients_worksheet.add_cell(0, 2, I18n.t(:coefficient_type))
     coefficients_worksheet.add_cell(0, 3, I18n.t(:allow_intermediate_value))
     coefficients_worksheet.add_cell(0, 4, I18n.t(:deported))
+    coefficients_worksheet.add_cell(0, 5, I18n.t(:show_coefficient_application_label))
 
     @guw_model.guw_coefficients.where(organization_id: @guw_organisation.id).each_with_index do |coeff, index|
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
@@ -1162,6 +1164,7 @@ class Guw::GuwModelsController < ApplicationController
       coefficients_worksheet.add_cell(index + 1, 2, coeff.coefficient_type)
       coefficients_worksheet.add_cell(index + 1, 3, (coeff.allow_intermediate_value == true ? 1 : 0))
       coefficients_worksheet.add_cell(index + 1, 4, (coeff.deported == true ? 1 : 0))
+      coefficients_worksheet.add_cell(index + 1, 5, (coeff.show_coefficient_label == true ? 1 : 0))
 
       counter_line += 1
     end
@@ -1460,7 +1463,7 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(aln1, 0, "Attributs").change_font_bold(true)
 
       guw_type.guw_type_complexities.where(organization_id: @guw_organisation.id,
-                                           guw_model_id: @guw_model.id).each do |type_attribute_complexity|
+                                           guw_model_id: @guw_model.id).order("display_order asc").each do |type_attribute_complexity|
 
         worksheet.add_cell(sln, scn + 1, type_attribute_complexity.name).change_font_bold(true)
         worksheet.add_cell(sln, scn + 2, type_attribute_complexity.value)

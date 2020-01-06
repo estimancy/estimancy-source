@@ -1768,62 +1768,56 @@ class WbsActivitiesController < ApplicationController
 
                 @wbs_activity_ratios.each do |ratio|
 
-                  ratio_elements_worksheet = workbook["#{ratio.name}"]
+                  ratio_elements_worksheet = workbook["#{ratio.name[0..30]}"] ## Taille max d'une feuille excel est de 31 caractères
                   begin
                     ratio_elements_worksheet_tab = ratio_elements_worksheet
-                  rescue
-                    flash[:error] = "La feuille des éléments du ratio '#{ratio.name}' n'existe pas"
-                    redirect_to request.referer + "#tabs-1" #and return
-                    raise ActiveRecord::Rollback and return
-                  end
 
-                  ratio_elements_worksheet_tab.each_with_index do | row, index |
-                    unless row.nil?
-                      if index > 0
-                        case index
-                          # Wbs-activity_ratio-variables
-                          when ratio_variables_line + 1..ratio_variables_line + 4
+                    ratio_elements_worksheet_tab.each_with_index do | row, index |
+                      unless row.nil?
+                        if index > 0
+                          case index
+                            # Wbs-activity_ratio-variables
+                            when ratio_variables_line + 1..ratio_variables_line + 4
 
-                            WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id,
-                                                            name: row[1].nil? ? nil : row[1].value,
-                                                            percentage_of_input: row[2].nil? ? nil : row[2].value,
-                                                            is_modifiable: row[3].nil? ? nil : row[3].value,
-                                                            is_used_in_ratio_calculation: row[4].nil? ? nil : row[4].value,
-                                                            description: row[5].nil? ? nil : row[5].value,
-                                                            organization_id: @organization.id,
-                                                            wbs_activity_id: @wbs_activity.id)
+                              WbsActivityRatioVariable.create(wbs_activity_ratio_id: ratio.id,
+                                                              name: row[1].nil? ? nil : row[1].value,
+                                                              percentage_of_input: row[2].nil? ? nil : row[2].value,
+                                                              is_modifiable: row[3].nil? ? nil : row[3].value,
+                                                              is_used_in_ratio_calculation: row[4].nil? ? nil : row[4].value,
+                                                              description: row[5].nil? ? nil : row[5].value,
+                                                              organization_id: @organization.id,
+                                                              wbs_activity_id: @wbs_activity.id)
 
-                          # Elements formulas
-                          when formulas_line + 1..formulas_line + @wbs_activity_elements.size
+                            # Elements formulas
+                            when formulas_line + 1..formulas_line + @wbs_activity_elements.size
 
-                            wbs_activity_element = @wbs_activity_elements.where(name: row[3].nil? ? nil : row[3].value).first
+                              wbs_activity_element = @wbs_activity_elements.where(name: row[3].nil? ? nil : row[3].value).first
 
-                            WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id,
-                                                           wbs_activity_element_id: wbs_activity_element.id,
-                                                           is_optional: row[5].nil? ? nil : row[5].value,
-                                                           effort_is_modifiable: row[6].nil? ? nil : row[6].value,
-                                                           cost_is_modifiable: row[7].nil? ? nil : row[7].value,
-                                                           formula: row[8].nil? ? nil : row[8].value,
-                                                           organization_id: @organization.id,
-                                                           :wbs_activity_id => @wbs_activity.id)
+                              WbsActivityRatioElement.create(wbs_activity_ratio_id: ratio.id,
+                                                             wbs_activity_element_id: wbs_activity_element.id,
+                                                             is_optional: row[5].nil? ? nil : row[5].value,
+                                                             effort_is_modifiable: row[6].nil? ? nil : row[6].value,
+                                                             cost_is_modifiable: row[7].nil? ? nil : row[7].value,
+                                                             formula: row[8].nil? ? nil : row[8].value,
+                                                             organization_id: @organization.id,
+                                                             :wbs_activity_id => @wbs_activity.id)
 
-                          # Ratio-elements par profile
-                          when ratio_profiles_line..ratio_profiles_line+@wbs_activity_elements.size
+                            # Ratio-elements par profile
+                            when ratio_profiles_line..ratio_profiles_line+@wbs_activity_elements.size
 
-                            if index == ratio_profiles_line
-                              (3..(3+@wbs_activity_profiles.size-1)).to_a.each do |j|
-                                val = row[j].nil? ? nil : row[j].value
-                                if !val.blank?
-                                  profile = @wbs_activity_profiles.where(name: val).first
-                                  unless profile.nil?
-                                    profile_col_number["#{profile.name}"] = j
+                              if index == ratio_profiles_line
+                                (3..(3+@wbs_activity_profiles.size-1)).to_a.each do |j|
+                                  val = row[j].nil? ? nil : row[j].value
+                                  if !val.blank?
+                                    profile = @wbs_activity_profiles.where(name: val).first
+                                    unless profile.nil?
+                                      profile_col_number["#{profile.name}"] = j
+                                    end
                                   end
                                 end
-                              end
 
-                            else
-                              wbs_activity_element = @wbs_activity_elements.where(name: row[2].nil? ? nil : row[2].value).first
-                              #begin
+                              else
+                                wbs_activity_element = @wbs_activity_elements.where(name: row[2].nil? ? nil : row[2].value).first
                                 ratio_element = ratio.wbs_activity_ratio_elements.where(wbs_activity_element_id: wbs_activity_element.id).first
 
                                 @wbs_activity_profiles.each do |profile|
@@ -1838,14 +1832,17 @@ class WbsActivitiesController < ApplicationController
                                     WbsActivityRatioProfile.create(wbs_activity_ratio_element_id: ratio_element.id, organization_profile_id: profile.id, ratio_value: ratio_value)
                                   end
                                 end
-                              #rescue
-                              #end
-                            end
-                          else
-                            # type code here
+                              end
+                            else
+                              # type code here
+                          end
                         end
                       end
                     end
+                  rescue
+                    flash[:error] = "La feuille des éléments du ratio '#{ratio.name}' n'existe pas"
+                    redirect_to request.referer + "#tabs-1" #and return
+                    raise ActiveRecord::Rollback and return
                   end
                 end
 

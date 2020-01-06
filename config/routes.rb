@@ -351,6 +351,13 @@ Projestimate::Application.routes.draw do
 
     get "budget_details" => 'organizations#budget_details'
     post "get_budget_details" => 'organizations#get_budget_details'
+
+    get "export_estimation_model" => 'organizations#export_estimation_model'
+    post "import_estimation_model" => 'organizations#import_estimation_model'
+
+    get "export_estimation_statuses_workflow" => 'organizations#export_estimation_statuses_workflow'
+    post "import_estimation_statuses_workflow" => 'organizations#import_estimation_statuses_workflow'
+
   end
 
   get "export_permissions" => 'permissions#export_permissions'
@@ -363,7 +370,7 @@ Projestimate::Application.routes.draw do
   post 'create_organization_from_image' => 'organizations#create_organization_from_image', as: 'create_organization_from_image'
   get 'update_available_inline_columns' => 'organizations#update_available_inline_columns', as: 'update_available_inline_columns'
   get 'set_available_inline_columns' => 'organizations#set_available_inline_columns', as: 'set_available_inline_columns'
-  post 'organizations/:organization_id/confirm_organization_deletion' => 'organizations#confirm_organization_deletion', :as => :confirm_organization_deletion
+  get 'organizations/:organization_id/confirm_organization_deletion' => 'organizations#confirm_organization_deletion', :as => :confirm_organization_deletion
   post "calculate_mixed_profiles" => "organizations#calculate_mixed_profiles", as: 'calculate_mixed_profiles'
 
   get 'export_organization_reference' => 'organizations#export_organization_reference', :as => :export_organization_reference

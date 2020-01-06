@@ -109,6 +109,8 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+
+          # .joins(:user).where(:user => { :is_super_admin => false })
         else
           @organization_projects = @organization.projects
                                        .where(is_model: false)
@@ -116,6 +118,8 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+
+          # .joins(:user).where(:user => { :is_super_admin => false })
         end
 
         # @organization_projects = [Project.where(id: 3307).first]
@@ -133,10 +137,11 @@ class ProjectsController < ApplicationController
         worksheet_cf.add_cell(0, 5, "Service")
         worksheet_cf.add_cell(0, 6, "Localisation WBS")
 
-        unless @organization.name == "CDS VOYAGEURS"
-          worksheet_cf.add_cell(0, 7, "Localisation Modèle")
-        else
+        #unless @organization.name == "CDS VOYAGEURS"
+        if "cds voyageurs".in?(@organization.name.to_s.downcase)
           worksheet_cf.add_cell(0, 7, "Urgence Devis")
+        else
+          worksheet_cf.add_cell(0, 7, "Localisation Modèle")
         end
 
         worksheet_cf.add_cell(0, 8, "Catégorie")
@@ -383,10 +388,11 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 5, "Service")
         worksheet_wbs.add_cell(0, 6, "Localisation WBS")
 
-        unless @organization.name == "CDS VOYAGEURS"
-          worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
-        else
+        #unless @organization.name == "CDS VOYAGEURS"
+        if "cds voyageurs".in?(@organization.name.to_s.downcase)
           worksheet_wbs.add_cell(0, 7, "Urgence Devis")
+        else
+          worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
         end
 
         worksheet_wbs.add_cell(0, 8, "Catégorie")
@@ -415,47 +421,53 @@ class ProjectsController < ApplicationController
           mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
         end
 
-        mpres.each_with_index do |mpre, iii|
+        wbs_iii = 0
+        mpres.each do |mpre|
 
           mpre_project = mpre.module_project.project
+          module_project = mpre.module_project
 
-          project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
-          project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
-          project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
-          project_project_category = mpre_project.project_category.nil? ? nil : mpre_project.project_category.name
-          project_platform_category = mpre_project.platform_category.nil? ? nil : mpre_project.platform_category.name
-          project_provider = mpre_project.provider.nil? ? nil : mpre_project.provider.name
-          project_estimation_status = mpre_project.estimation_status.nil? ? nil : mpre_project.estimation_status.name
+          if module_project.wbs_activity_ratio_id == mpre.wbs_activity_ratio_id
 
-          unless mpre_project.is_model == true
+            project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
+            project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
+            project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
+            project_project_category = mpre_project.project_category.nil? ? nil : mpre_project.project_category.name
+            project_platform_category = mpre_project.platform_category.nil? ? nil : mpre_project.platform_category.name
+            project_provider = mpre_project.provider.nil? ? nil : mpre_project.provider.name
+            project_estimation_status = mpre_project.estimation_status.nil? ? nil : mpre_project.estimation_status.name
 
-            worksheet_wbs.add_cell(iii+1, 0, mpre_project.title)
-            worksheet_wbs.add_cell(iii+1, 1, project_application.nil? ? mpre_project.application_name : project_application)
-            worksheet_wbs.add_cell(iii+1, 2, mpre_project.business_need)
-            worksheet_wbs.add_cell(iii+1, 3, mpre_project.request_number)
-            worksheet_wbs.add_cell(iii+1, 4, project_project_area.nil? ? '' : project_project_area)
-            worksheet_wbs.add_cell(iii+1, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
+            unless mpre_project.is_model == true
 
-            pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
+              wbs_iii = wbs_iii+1
+              worksheet_wbs.add_cell(wbs_iii, 0, mpre_project.title)
+              worksheet_wbs.add_cell(wbs_iii, 1, project_application.nil? ? mpre_project.application_name : project_application)
+              worksheet_wbs.add_cell(wbs_iii, 2, mpre_project.business_need)
+              worksheet_wbs.add_cell(wbs_iii, 3, mpre_project.request_number)
+              worksheet_wbs.add_cell(wbs_iii, 4, project_project_area.nil? ? '' : project_project_area)
+              worksheet_wbs.add_cell(wbs_iii, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
-            unless field.nil?
-              value = pf.nil? ? nil : pf.value
-              worksheet_wbs.add_cell(iii+1, 6, value)
+              pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
+
+              unless field.nil?
+                value = pf.nil? ? nil : pf.value
+                worksheet_wbs.add_cell(wbs_iii, 6, value)
+              end
+
+              worksheet_wbs.add_cell(wbs_iii, 7, project_platform_category.nil? ? '' : project_platform_category)
+
+              worksheet_wbs.add_cell(wbs_iii, 8, project_project_category.to_s)
+              worksheet_wbs.add_cell(wbs_iii, 9, project_provider.nil? ? '' : project_provider)
+              worksheet_wbs.add_cell(wbs_iii, 10, mpre_project.start_date.to_s)
+              worksheet_wbs.add_cell(wbs_iii, 11, project_estimation_status.to_s)
+              worksheet_wbs.add_cell(wbs_iii, 12, mpre.wbs_activity_ratio.nil? ? nil : mpre.wbs_activity_ratio.name)
+              worksheet_wbs.add_cell(wbs_iii, 13, mpre.name)
+              worksheet_wbs.add_cell(wbs_iii, 14, mpre.tjm)
+              worksheet_wbs.add_cell(wbs_iii, 15, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
+              worksheet_wbs.add_cell(wbs_iii, 16, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
+              worksheet_wbs.add_cell(wbs_iii, 17, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
+              worksheet_wbs.add_cell(wbs_iii, 18, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
             end
-
-            worksheet_wbs.add_cell(iii+1, 7, project_platform_category.nil? ? '' : project_platform_category)
-
-            worksheet_wbs.add_cell(iii+1, 8, project_project_category.to_s)
-            worksheet_wbs.add_cell(iii+1, 9, project_provider.nil? ? '' : project_provider)
-            worksheet_wbs.add_cell(iii+1, 10, mpre_project.start_date.to_s)
-            worksheet_wbs.add_cell(iii+1, 11, project_estimation_status.to_s)
-            worksheet_wbs.add_cell(iii+1, 12, mpre.wbs_activity_ratio.nil? ? nil : mpre.wbs_activity_ratio.name)
-            worksheet_wbs.add_cell(iii+1, 13, mpre.name)
-            worksheet_wbs.add_cell(iii+1, 14, mpre.tjm)
-            worksheet_wbs.add_cell(iii+1, 15, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
-            worksheet_wbs.add_cell(iii+1, 16, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
-            worksheet_wbs.add_cell(iii+1, 17, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
-            worksheet_wbs.add_cell(iii+1, 18, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
           end
         end
 
@@ -617,13 +629,7 @@ class ProjectsController < ApplicationController
 
     @user = current_user
     @pemodules ||= Pemodule.all
-
-    if current_module_project.nil?
-      @module_project = @project.module_projects.first
-    else
-      @module_project = current_module_project
-    end
-
+    @module_project = current_module_project
     @show_hidden = 'true'
 
     status_comment_link = ""
@@ -2354,8 +2360,10 @@ class ProjectsController < ApplicationController
                                           show_tjm: view_widget.show_tjm,
                                           equation: view_widget.equation,
                                           comment: view_widget.comment,
+                                          is_label_widget: view_widget.is_label_widget,
                                           is_kpi_widget: view_widget.is_kpi_widget,
                                           kpi_unit: view_widget.kpi_unit,
+                                          use_organization_effort_unit: view_widget.use_organization_effort_unit,
                                           is_project_data_widget: view_widget.is_project_data_widget,
                                           project_attribute_name: view_widget.project_attribute_name,
                                           icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,

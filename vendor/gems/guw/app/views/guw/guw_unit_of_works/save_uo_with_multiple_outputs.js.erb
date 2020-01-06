@@ -1,7 +1,9 @@
 <% unless @guw_model.nil? %>
   <%
     organization_id = @project.organization_id
-    current_mp = current_module_project
+
+    @guw_model = @module_project.guw_model
+
     @module_positions = ModuleProject.where(organization_id: organization_id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
     @module_positions_x = @project.module_projects.where(organization_id: organization_id).order(:position_x).all.map(&:position_x).max
     @guw_types = @guw_model.guw_types.where(organization_id: organization_id)
@@ -29,7 +31,7 @@
   <% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
                                                 guw_model_id: @guw_model.id,
                                                 project_id: @project.id,
-                                                module_project_id: current_mp.id).each do |gceuw| %>
+                                                module_project_id: @module_project.id).each do |gceuw| %>
     <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
   <% end %>
 
@@ -42,7 +44,7 @@
   <% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
                                                 guw_model_id: @guw_model.id,
                                                 project_id: @project.id,
-                                                module_project_id: current_mp.id).order("updated_at ASC").each do |gceuw| %>
+                                                module_project_id: @module_project.id).order("updated_at ASC").each do |gceuw| %>
     <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
   <% end %>
 
@@ -54,7 +56,7 @@
   $("#dashboard_right_panel").html("<%= j(render 'module_projects/dashboard_right_panel') %>");
 
   var my_array = [];
-  $(document).on('ready turbolinks:load', function() {
+  $(document).ready(function () {
 
     $("input#name").val("");
     $("textarea#comments").val("");
