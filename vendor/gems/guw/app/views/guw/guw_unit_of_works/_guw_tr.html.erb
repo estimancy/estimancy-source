@@ -69,7 +69,7 @@
   </span>
 </td>
 
-<td class="text_field_text_overflow span3">
+<td class="text_field_text_overflow">
   <span class="pull-left">
     <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
   </span>
@@ -431,7 +431,7 @@
                                                                      module_project_id: current_mp.id,
                                                                      guw_unit_of_work_id: guow.id).last %>
               <% end %>
-              <td class="span2">
+              <td class="span3">
                 <% unless @guw_type.nil? %>
                   <% results = @guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.flatten.map{|i| i.guw_coefficient_element }.flatten.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
                   <% unless results.empty? %>
@@ -441,14 +441,14 @@
                                      class: "guw_coefficient guw-#{guow.id}",
                                      guw: guow.id,
                                      readonly: true,
-                                     style: "width: 80%;" %>
+                                     style: "width: 100%;" %>
                     <% else %>
                       <%= select_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
                                                                                                                selected: ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id),
                                      class: "guw_coefficient guw-#{guow.id}",
                                      guw: guow.id,
                                      readonly: !can?(:execute_estimation_plan, @project),
-                                     style: "width: 80%;" %>
+                                     style: "width: 100%;" %>
                     <% end %>
                   <% end %>
                 <% end %>
@@ -612,7 +612,7 @@
 </td>
 
 <% if can? :execute_estimation_plan, @project %>
-  <td class="span3">
+  <td class="span2">
     <%= link_to "", "#!", onclick: "raz_line(#{guow.id})", class: "fa fa-eraser", title: "RAZ" %>
     <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate), remote: true %>
     <%= link_to "", (guow.display_order.to_f < 0) ? '#' : guw.guw_unit_of_work_up_path(guow), class: "fa fa-arrow-up #{(guow.display_order.to_f < 0) ? '' : 'up' }", title: I18n.t(:up), remote: true %>
