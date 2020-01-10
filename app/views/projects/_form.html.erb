@@ -13,7 +13,7 @@
 <% end %>
 
 <% if controller.action_name == 'new' %>
-    <% if current_user.super_admin == true %>
+    <% if params[:is_model] == "true" && current_user.super_admin == true %>
         <div style="margin-bottom: 35px; margin-top: -24px;">
             <%= link_to I18n.t(:import_estimation_model), "#import_estimation_model", class: "pull-right btn btn-primary", title: I18n.t(:import_estimation_model), "data-toggle" => "modal" %>
         </div>
@@ -42,7 +42,7 @@
 <% else %>
   <div style="margin-bottom: 35px; margin-top: -24px;">
     <%= link_to I18n.t(:results_button), dashboard_path(@project), class: "pull-right btn btn-primary button_margin_right", title: "Afficher le tableau de bord" %>
-    <% if current_user.super_admin == true %>
+    <% if @project.is_model == true && current_user.super_admin == true %>
         <%= link_to I18n.t(:export), organization_export_estimation_model_path(organization_id: @organization.id, project_id: @project.id), :method => 'get', class: "pull-right btn btn-primary button_margin_right", title: I18n.t(:export) %>
     <% end %>
   </div>
