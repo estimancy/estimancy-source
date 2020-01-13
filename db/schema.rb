@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20191210134529) do
+ActiveRecord::Schema.define(version: 20200113143055) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -652,9 +652,9 @@ ActiveRecord::Schema.define(version: 20191210134529) do
     t.integer  "guw_coefficient_element_id", limit: 4
     t.integer  "guw_output_id",              limit: 4
     t.integer  "guw_type_id",                limit: 4
-    t.float    "value",                      limit: 24
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.decimal  "value",                                precision: 20, scale: 3
+    t.datetime "created_at",                                                    null: false
+    t.datetime "updated_at",                                                    null: false
   end
 
   add_index "guw_guw_complexity_coefficient_elements", ["organization_id", "guw_model_id", "guw_output_id", "guw_complexity_id", "guw_coefficient_element_id"], name: "by_organization_guw_model_output_cplx_coeffElt", using: :btree
@@ -1000,19 +1000,19 @@ ActiveRecord::Schema.define(version: 20191210134529) do
   add_index "guw_guw_work_units", ["organization_id", "guw_model_id", "name"], name: "by_organization_guw_model_name", using: :btree
 
   create_table "guw_unit_of_work_lines", id: false, force: :cascade do |t|
-    t.integer  "uow_organization_id",           limit: 4,                     null: false
+    t.integer  "uow_organization_id",           limit: 4,     default: 0,     null: false
     t.string   "organization_name",             limit: 255
-    t.integer  "uow_project_id",                limit: 4,                     null: false
+    t.integer  "uow_project_id",                limit: 4,     default: 0,     null: false
     t.string   "project_name",                  limit: 255
-    t.integer  "uow_module_project_id",         limit: 4,                     null: false
+    t.integer  "uow_module_project_id",         limit: 4,     default: 0,     null: false
     t.integer  "uow_pbs_project_element_id",    limit: 4
-    t.integer  "uow_guw_model_id",              limit: 4,                     null: false
+    t.integer  "uow_guw_model_id",              limit: 4,     default: 0,     null: false
     t.string   "uow_guw_model_name",            limit: 255
     t.integer  "guw_uow_group_id",              limit: 4
     t.string   "guw_uow_group_name",            limit: 255
     t.boolean  "uow_selected"
-    t.integer  "guw_unit_of_work_id",           limit: 4,                     null: false
-    t.integer  "id",                            limit: 4,                     null: false
+    t.integer  "guw_unit_of_work_id",           limit: 4,     default: 0,     null: false
+    t.integer  "id",                            limit: 4,     default: 0,     null: false
     t.integer  "organization_id",               limit: 4
     t.integer  "project_id",                    limit: 4
     t.string   "name",                          limit: 255
@@ -1130,42 +1130,42 @@ ActiveRecord::Schema.define(version: 20191210134529) do
   end
 
   create_table "module_project_guw_unit_of_work_groups", id: false, force: :cascade do |t|
-    t.integer  "uow_organization_id",              limit: 4,     null: false
+    t.integer  "uow_organization_id",              limit: 4,     default: 0, null: false
     t.string   "organization_name",                limit: 255
-    t.integer  "uow_project_id",                   limit: 4,     null: false
+    t.integer  "uow_project_id",                   limit: 4,     default: 0, null: false
     t.string   "project_name",                     limit: 255
-    t.integer  "uow_group_module_project_id",      limit: 4,     null: false
+    t.integer  "uow_group_module_project_id",      limit: 4,     default: 0, null: false
     t.integer  "uow_group_pbs_project_element_id", limit: 4
-    t.integer  "guw_unit_of_work_group_id",        limit: 4,     null: false
+    t.integer  "guw_unit_of_work_group_id",        limit: 4,     default: 0, null: false
     t.integer  "number_of_uow_lines",              limit: 8
     t.integer  "number_of_uow_selected_lines",     limit: 8
-    t.integer  "id",                               limit: 4,     null: false
+    t.integer  "id",                               limit: 4,     default: 0, null: false
     t.integer  "organization_id",                  limit: 4
     t.integer  "project_id",                       limit: 4
     t.string   "name",                             limit: 255
     t.text     "comments",                         limit: 65535
     t.integer  "module_project_id",                limit: 4
-    t.datetime "created_at",                                     null: false
-    t.datetime "updated_at",                                     null: false
+    t.datetime "created_at",                                                 null: false
+    t.datetime "updated_at",                                                 null: false
     t.integer  "pbs_project_element_id",           limit: 4
     t.string   "notes",                            limit: 255
     t.integer  "organization_technology_id",       limit: 4
   end
 
   create_table "module_project_guw_unit_of_works", id: false, force: :cascade do |t|
-    t.integer  "uow_organization_id",           limit: 4,                     null: false
+    t.integer  "uow_organization_id",           limit: 4,     default: 0,     null: false
     t.string   "organization_name",             limit: 255
-    t.integer  "uow_project_id",                limit: 4,                     null: false
+    t.integer  "uow_project_id",                limit: 4,     default: 0,     null: false
     t.string   "project_name",                  limit: 255
-    t.integer  "uow_module_project_id",         limit: 4,                     null: false
+    t.integer  "uow_module_project_id",         limit: 4,     default: 0,     null: false
     t.integer  "uow_pbs_project_element_id",    limit: 4
-    t.integer  "uow_guw_model_id",              limit: 4,                     null: false
+    t.integer  "uow_guw_model_id",              limit: 4,     default: 0,     null: false
     t.string   "uow_guw_model_name",            limit: 255
     t.integer  "guw_uow_group_id",              limit: 4
     t.string   "guw_uow_group_name",            limit: 255
     t.boolean  "uow_selected"
-    t.integer  "guw_unit_of_work_id",           limit: 4,                     null: false
-    t.integer  "id",                            limit: 4,                     null: false
+    t.integer  "guw_unit_of_work_id",           limit: 4,     default: 0,     null: false
+    t.integer  "id",                            limit: 4,     default: 0,     null: false
     t.integer  "organization_id",               limit: 4
     t.integer  "project_id",                    limit: 4
     t.string   "name",                          limit: 255
@@ -1342,11 +1342,11 @@ ActiveRecord::Schema.define(version: 20191210134529) do
   add_index "operation_operation_models", ["organization_id", "name"], name: "index_operation_operation_models_on_organization_id_and_name", unique: true, using: :btree
 
   create_table "organization_estimations", id: false, force: :cascade do |t|
-    t.integer  "current_organization_id",        limit: 4,                     null: false
+    t.integer  "current_organization_id",        limit: 4,     default: 0,     null: false
     t.string   "organization_name",              limit: 255
     t.datetime "project_created_date"
-    t.integer  "project_id",                     limit: 4,                     null: false
-    t.integer  "id",                             limit: 4,                     null: false
+    t.integer  "project_id",                     limit: 4,     default: 0,     null: false
+    t.integer  "id",                             limit: 4,     default: 0,     null: false
     t.string   "title",                          limit: 255
     t.string   "version_number",                 limit: 64,    default: "1.0"
     t.string   "alias",                          limit: 255
