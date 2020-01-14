@@ -288,6 +288,8 @@ class Guw::GuwModelsController < ApplicationController
                                             guw_model_id: @guw_model.id)
 
             [2,7,12].each do |column_index|
+            # guw_model_guw_outputs_size = @guw_model.guw_outputs.size
+            # [2, 2 + guw_model_guw_outputs_size, 2 + (guw_model_guw_outputs_size * 2)].each do |column_index|
               name = tab[9][column_index].nil? ? nil : tab[9][column_index].value
               default_value = (tab[9][column_index + 1].nil? ? nil : tab[9][column_index + 1].value) == "true" ? true : false
 
