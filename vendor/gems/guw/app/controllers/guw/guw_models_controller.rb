@@ -1311,7 +1311,8 @@ class Guw::GuwModelsController < ApplicationController
       ind2 = counter_line
       guw_complexity_attributes = ["name", "bottom_range", "top_range", "enable_value", "default_value", "weight", "weight_b", "display_order"]
 
-      @guw_complexities = guw_type.guw_complexities.where(organization_id: @guw_organisation.id, guw_model_id: @guw_model.id).order("display_order asc")
+      @guw_complexities = guw_type.guw_complexities.where(organization_id: @guw_organisation.id,
+                                                          guw_model_id: @guw_model.id).order("display_order asc")
 
       worksheet.add_cell(ind2, 0,  I18n.t(:UO_type_complexity)).change_font_bold(true)
       worksheet.add_cell(ind2 + 2, 0, I18n.t(:threshold)).change_font_bold(true)
@@ -1367,6 +1368,7 @@ class Guw::GuwModelsController < ApplicationController
         end
 
         sn = 15
+
         @guw_outputs.each do |aguw_output|
           @guw_outputs.each_with_index do |guw_output, j|
 
@@ -1387,7 +1389,7 @@ class Guw::GuwModelsController < ApplicationController
         if @guw_outputs.size < 5
           un_column_number = un_column_number + 5
         else
-          un_column_number = (2 + @guw_outputs.size)
+          un_column_number = un_column_number + @guw_outputs.size
         end
 
       end
