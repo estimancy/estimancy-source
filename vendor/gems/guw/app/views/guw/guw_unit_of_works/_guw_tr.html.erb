@@ -437,7 +437,7 @@
                   <% unless results.empty? %>
                     <% if results.size == 1 %>
                       <% if @guw_coefficient.name == "Métrique Quantité" %>
-                        <%= ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id %>
+                        <%= ceuw.guw_coefficient_element.name %>
                       <% else %>
                         <%= select_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
                                                                                                                  selected: ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id),
