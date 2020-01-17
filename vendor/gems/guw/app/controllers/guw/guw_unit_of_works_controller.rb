@@ -1224,7 +1224,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         #reorder to keep good order
-        # reorder guw_unit_of_work.guw_unit_of_work_group
+        #reorder guw_unit_of_work.guw_unit_of_work_group
 
         if params[:guw_type]["#{guw_unit_of_work.id}"].nil?
           guw_type = guw_unit_of_work.guw_type
@@ -1585,7 +1585,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 # end
                 unless cce.nil?
                   unless cce.value.blank?
-                    selected_coefficient_values["#{guw_output.id}"] <<  cce.value * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
+                    selected_coefficient_values["#{guw_output.id}"] <<  cce.value * (project_application.coefficient.nil? ? 1 : project_application.coefficient.to_f)
                   end
                 end
               end
