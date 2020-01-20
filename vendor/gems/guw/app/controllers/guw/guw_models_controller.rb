@@ -197,7 +197,8 @@ class Guw::GuwModelsController < ApplicationController
                                            guw_model_id: @guw_model.id,
                                            allow_intermediate_value: ((row[3].nil? ? nil : row[3].value) == 0) ? false : true,
                                            deported: ((row[4].nil? ? nil : row[4].value) == 0) ? false : true,
-                                           show_coefficient_label: ((row[5].nil? ? nil : row[5].value) == 0) ? false : true)
+                                           show_coefficient_label: ((row[5].nil? ? nil : row[5].value) == 0) ? false : true,
+                                           math_set: row[6].nil? ? nil : row[6].value)
               end
             end
 
@@ -284,6 +285,7 @@ class Guw::GuwModelsController < ApplicationController
                                             color_priority: tab[0][4].nil? ? nil : tab[0][4].value,
                                             color_code: tab[1][4].nil? ? nil : tab[1][4].value,
                                             allow_line_color: tab[2][4].value == "true" ? true : false,
+                                            maximum: tab[3][4].nil? ? nil : tab[3][4].value,
                                             organization_id: organization_id,
                                             guw_model_id: @guw_model.id)
 
@@ -1159,6 +1161,7 @@ class Guw::GuwModelsController < ApplicationController
     coefficients_worksheet.add_cell(0, 3, I18n.t(:allow_intermediate_value))
     coefficients_worksheet.add_cell(0, 4, I18n.t(:deported))
     coefficients_worksheet.add_cell(0, 5, I18n.t(:show_coefficient_application_label))
+    coefficients_worksheet.add_cell(0, 6, "Ensemble autorisé")
 
     @guw_model.guw_coefficients.where(organization_id: @guw_organisation.id).each_with_index do |coeff, index|
       coefficients_worksheet.add_cell(index + 1, 0, coeff.name)
@@ -1167,6 +1170,7 @@ class Guw::GuwModelsController < ApplicationController
       coefficients_worksheet.add_cell(index + 1, 3, (coeff.allow_intermediate_value == true ? 1 : 0))
       coefficients_worksheet.add_cell(index + 1, 4, (coeff.deported == true ? 1 : 0))
       coefficients_worksheet.add_cell(index + 1, 5, (coeff.show_coefficient_label == true ? 1 : 0))
+      coefficients_worksheet.add_cell(index + 1, 6, coeff.math_set)
 
       counter_line += 1
     end
@@ -1293,10 +1297,12 @@ class Guw::GuwModelsController < ApplicationController
       worksheet.add_cell(0, 3, "Color priority")
       worksheet.add_cell(1, 3, "Color code")
       worksheet.add_cell(2, 3, "Allow line color")
+      worksheet.add_cell(3, 3, "Maximum")
 
       worksheet.add_cell(0, 4, guw_type.color_priority)
       worksheet.add_cell(1, 4, guw_type.color_code)
       worksheet.add_cell(2, 4, guw_type.allow_line_color.nil? ? "false" : "true")
+      worksheet.add_cell(3, 4, guw_type.maximum)
 
       unless description.empty?
         description_row_height = description.count("\n") * 15 + 1
