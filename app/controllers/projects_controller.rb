@@ -281,97 +281,78 @@ class ProjectsController < ApplicationController
                 worksheet_cf.add_cell(i, 15, guow.intermediate_weight)
               end
 
-              j = 0
-              @guw_coefficients.each do |gc|
-                if gc.coefficient_type == "Pourcentage"
-                  unless guow.guw_type.nil?
-                    unless guow.guw_type.name.include?("SRV") || guow.guw_type.name.include?("MCO")
 
-                      default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
-                      ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
-                      worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
-                      worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
-                      j = j + 2
-                    end
-                  end
+              ###
+              guw_coefficient_service_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                            guw_model_id: @guw_model.id,
+                                                                            name: "Service").first
 
-                  # Charge sans prod en colonne AI
-                elsif guw_charge_ss_prod_coefficient
-                  if gc.id == guw_charge_ss_prod_coefficient.id
-                    #=== Test ====
-                    #results = []
-                    #results = @guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
-                                                                                    # .includes(:guw_coefficient_element)
-                                                                                    # .where(organization_id: @organization.id, guw_model_id: @guw_model.id, guw_type_id: guow.guw_type_id)
-                                                                                    # .select{|ct| ct.value != nil }
-                                                                                    # .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
-                    #=== Test ====
+              unless guw_coefficient_service_migration.nil?
+                service_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                               guw_model_id: @guw_model.id,
+                                                                               guw_coefficient_id: guw_coefficient_service_migration.id,
+                                                                               project_id: project.id,
+                                                                               module_project_id: pmp.id,
+                                                                               guw_unit_of_work_id: guow.id).order("updated_at ASC").last
 
-                    #unless results.empty?
-                      begin
-                        ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{gc.id}"]
-                      rescue
-                        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                                          guw_model_id: @guw_model.id,
-                                                                          guw_coefficient_id: gc.id,
-                                                                          project_id: project.id,
-                                                                          module_project_id: pmp.id,
-                                                                          guw_unit_of_work_id: guow.id).order("updated_at ASC").last
-                      end
-                        # project = Project.find(2077)
-                        # project.guw_coefficient_element_unit_of_works.where(guw_model_id: 494, module_project_id: 5053, guw_unit_of_work_id: 18606, guw_coefficient_id: 637).first
-                        #####################
-                        worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent))  # « Charge ss prod. (jh) » en colonne AI
-                    #end
-                  end
-                end
-              end
-
-              guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
-                worksheet_cf.add_cell(i, 20 + j, uowa.most_likely)
-              end
-
-              @guw_model_guw_attributes.each_with_index do |guw_attribute, ii|
-                worksheet_cf.add_cell(0, 20+ii, guw_attribute.name)
+                worksheet_cf.add_cell(i, 37, service_migration.percent) # Service
               end
 
 
-              worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size, "Charge ss prod. (jh)")
-              worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 1, "Charge avec prod. (jh)")
-              worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 2, "Coût Services (€)")
+              ###
+              guw_coefficient_quantite_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                            guw_model_id: @guw_model.id,
+                                                                            name: "Quantité").first
 
+              unless guw_coefficient_quantite_migration.nil?
+                quantite_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                               guw_model_id: @guw_model.id,
+                                                                               guw_coefficient_id: guw_coefficient_quantite_migration.id,
+                                                                               project_id: project.id,
+                                                                               module_project_id: pmp.id,
+                                                                               guw_unit_of_work_id: guow.id).order("updated_at ASC").last
 
-              #On recuperer les sorties "Charge ss prod. (jh)"
-              unless guw_output_charge_ss_prod.nil?
-                guw_output_charge_ss_prod_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
-                guw_output_charge_ss_prod_value = (guw_output_charge_ss_prod_value_tmp.blank? ? nil : guw_output_charge_ss_prod_value_tmp.to_f)
-                guw_output_charge_ss_prod_value_rounded = (guw_output_charge_ss_prod_value.nil? || guw_output_charge_ss_prod_value == 0) ? nil : guw_output_charge_ss_prod_value.round(2)
-                worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, guw_output_charge_ss_prod_value_rounded)  # « Charge ss prod. (jh) » en colonne AI
-
+                worksheet_cf.add_cell(i, 38, quantite_migration.percent) # Quantité
               end
 
-              #On recuperer les sorties avec "Charge (jh)" avec productivité
-              unless guw_output_effort.nil?
-                guw_output_effort_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"])
-                guw_output_effort_value = (guw_output_effort_value_tmp.blank? ? nil : guw_output_effort_value_tmp.to_f)
-                guw_output_charge_ss_prod_value_rounded = (guw_output_effort_value.nil? || guw_output_effort_value == 0) ? nil : guw_output_effort_value.round(2)
+
+              ###
+              guw_coefficient_metrique_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                            guw_model_id: @guw_model.id,
+                                                                            name: "Métrique Quantité").first
+
+              unless guw_coefficient_metrique_migration.nil?
+                metrique_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                               guw_model_id: @guw_model.id,
+                                                                               guw_coefficient_id: guw_coefficient_metrique_migration.id,
+                                                                               project_id: project.id,
+                                                                               module_project_id: pmp.id,
+                                                                               guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
+                worksheet_cf.add_cell(i, 39, metrique_migration.percent) # Métrique
               end
 
-              #On recuperer les sorties avec " Coût Services (€) "
-              unless guw_output_cost.nil?
-                guw_output_cost_value_tmp = guow.ajusted_size.nil? ? nil : guow.ajusted_size["#{guw_output_cost.id}"]#.to_f.round(2)
-                guw_output_cost_value = (guw_output_cost_value_tmp.blank? ? nil : guw_output_cost_value_tmp.to_f)
-                guw_output_cost_value_rounded = ((guw_output_cost_value.nil? || guw_output_cost_value == 0) ? nil : guw_output_cost_value.round(2))
+
+              ###
+              guw_coefficient_nbj_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                            guw_model_id: @guw_model.id,
+                                                                            name: "Nombre de jours").first
+
+              unless guw_coefficient_nbj_migration.nil?
+                nbj_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                               guw_model_id: @guw_model.id,
+                                                                               guw_coefficient_id: guw_coefficient_nbj_migration.id,
+                                                                               project_id: project.id,
+                                                                               module_project_id: pmp.id,
+                                                                               guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
+                worksheet_cf.add_cell(i, 40, nbj_migration.percent) # Métrique
               end
 
-              worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 1, guw_output_effort_value)  # « Charge avec prod. (jh) » en colonne AJ
-              worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 2, guw_output_cost_value_rounded)  # « Coût Services (€) » en colonne AK
 
-              i = i + 1
-
-              @total_effort[project.id] << guw_output_effort_value.to_f
-              @total_cost[project.id] << guw_output_cost_value.to_f
             end
+
+
           end
         end
 
