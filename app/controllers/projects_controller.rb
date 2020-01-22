@@ -119,7 +119,7 @@ class ProjectsController < ApplicationController
           # .joins(:user).where(:user => { :is_super_admin => false })
         end
 
-        # @organization_projects = [Project.where(id: 15274).first]
+        # @organization_projects = [Project.where(id: 15297).first]
 
         worksheet_cf = workbook.worksheets[0]
         worksheet_cf.sheet_name = 'Comp. Abaques & Serv. Dire Exp'
@@ -191,7 +191,6 @@ class ProjectsController < ApplicationController
         end
 
         @organization_projects.each do |project|
-        #@organization_projects.where(id: 3021).each do |project|
 
           pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
 
@@ -416,16 +415,28 @@ class ProjectsController < ApplicationController
                                                                                name: "Quantité").first
 
                 unless guw_coefficient_quantite_migration.nil?
-                  quantite_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                                                  guw_model_id: @guw_model.id,
-                                                                                  guw_coefficient_id: guw_coefficient_quantite_migration.id,
-                                                                                  project_id: project.id,
-                                                                                  module_project_id: pmp.id,
-                                                                                  guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+                  nbj_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                             guw_model_id: @guw_model.id,
+                                                                             guw_coefficient_id: guw_coefficient_quantite_migration.id,
+                                                                             project_id: project.id,
+                                                                             module_project_id: pmp.id,
+                                                                             guw_unit_of_work_id: guow.id).order("updated_at ASC").last
 
-                  worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 4, quantite_migration.percent) # Quantité
+                  ce = guw_coefficient_quantite_migration.guw_coefficient_elements.first
+
+                  unless ce.nil?
+                    cces = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                                                                      guw_model_id: @guw_model.id,
+                                                                      guw_type_id: guow.guw_type_id,
+                                                                      guw_coefficient_element_id: ce.id)
+
+                    if !cces.map(&:value).empty?
+                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 4, nbj_migration.percent) # Nb de jours
+                    end
+
+                  end
+
                 end
-
 
 
 
@@ -442,7 +453,20 @@ class ProjectsController < ApplicationController
                                                                              module_project_id: pmp.id,
                                                                              guw_unit_of_work_id: guow.id).order("updated_at ASC").last
 
-                  worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 5, nbj_migration.percent) # Nb de jours
+                  ce = guw_coefficient_nbj_migration.guw_coefficient_elements.first
+
+                  unless ce.nil?
+                    cces = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                                                                     guw_model_id: @guw_model.id,
+                                                                     guw_type_id: guow.guw_type_id,
+                                                                     guw_coefficient_element_id: ce.id)
+
+                    if !cces.map(&:value).empty?
+                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 5, nbj_migration.percent) # Nb de jours
+                    end
+
+                  end
+
                 end
 
 
