@@ -366,8 +366,6 @@ class ProjectsController < ApplicationController
               worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 1, guw_output_effort_value)  # « Charge avec prod. (jh) » en colonne AJ
               worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 2, guw_output_cost_value_rounded)  # « Coût Services (€) » en colonne AK
 
-              i = i + 1
-
               @total_effort[project.id] << guw_output_effort_value.to_f
               @total_cost[project.id] << guw_output_cost_value.to_f
 
@@ -503,11 +501,13 @@ class ProjectsController < ApplicationController
 
 
 
-                worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 7, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_migration.id}"])) # Charge
+                worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 7, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_migration.id}"].to_f.round(2))) # Charge
                 worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 8, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_cout_migration.id}"])) # Cout
               rescue
                 #
               end
+
+              i = i + 1
 
             end
 
