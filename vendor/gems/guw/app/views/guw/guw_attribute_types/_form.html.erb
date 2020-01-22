@@ -16,7 +16,7 @@
       </div>
 
       <div class="form-inputs">
-        <%= f.input :additional_description, label: I18n.t(:additional_description) %>
+        <%= f.input :additional_description, as: "string", label: I18n.t(:additional_description) %>
       </div>
 
       <% if can? :manage_modules_instances, ModuleProject %>

@@ -490,7 +490,6 @@ ActiveRecord::Schema.define(version: 20200122142616) do
     t.boolean  "is_new_status"
     t.text     "transaction_id",                          limit: 65535
     t.boolean  "create_new_version_when_changing_status"
-    t.float    "nb_day_before_archiving",                 limit: 24
   end
 
   add_index "estimation_statuses", ["organization_id"], name: "by_organization", using: :btree
@@ -2162,7 +2161,6 @@ ActiveRecord::Schema.define(version: 20200122142616) do
     t.date     "change_date"
     t.integer  "time_count",                     limit: 4
     t.boolean  "allow_export_pdf"
-    t.datetime "archiving_time"
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
