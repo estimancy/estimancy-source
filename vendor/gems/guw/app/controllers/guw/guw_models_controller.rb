@@ -414,7 +414,8 @@ class Guw::GuwModelsController < ApplicationController
                     Guw::GuwAttributeType.where(organization_id: organization_id,
                                                 guw_model_id: @guw_model.id,
                                                 guw_attribute_id: att.id,
-                                                guw_type_id: @guw_type.id).first_or_create(default_value: tab[row_number + j + 2][16].nil? ? nil : tab[row_number + j + 2][16].value)
+                                                guw_type_id: @guw_type.id).first_or_create(default_value: tab[row_number + j + 2][16].nil? ? nil : tab[row_number + j + 2][16].value,
+                                                                                           additional_description: tab[row_number + j + 2][17].nil? ? nil : tab[row_number + j + 2][17].value)
 
                   end
                 end
@@ -1479,7 +1480,7 @@ class Guw::GuwModelsController < ApplicationController
         worksheet.add_cell(sln, scn + 2, type_attribute_complexity.value)
         scn += 5
 
-        ["Prod","[","[","A","B", "Valeur par defaut de l'attribut"].each_with_index do |val, index|
+        ["Prod","[","[","A","B", "Valeur par defaut de l'attribut", "#{I18n.t(:additional_description)}"].each_with_index do |val, index|
           worksheet.add_cell(aln1, an + index, val).change_font_bold(true)
         end
         an += 5
@@ -1505,6 +1506,7 @@ class Guw::GuwModelsController < ApplicationController
                                                                guw_attribute_id: attribute.id,
                                                                guw_type_id: guw_type.id).first
               worksheet.add_cell(aln2 + index, 16, (guw_attribute_type.nil? ? nil : guw_attribute_type.default_value))
+              worksheet.add_cell(aln2 + index, 17, guw_attribute_type.additional_description)
             rescue
               # ignored
             end

@@ -67,7 +67,7 @@
             <% end %>
             <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
               <td class="span3">
-                <%= link_to "#{uowa.guw_attribute.name} #{gat.nil? ? nil : "(#{gat.default_value.to_i})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value.to_i  %>
+                <%= link_to "#{uowa.guw_attribute.name}#{gat.additional_description} #{gat.nil? ? nil : "(#{gat.default_value.to_i})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value.to_i  %>
               </td>
               <%# if @guw_model.three_points_estimation == true %>
                 <!--<td class="span1">-->
