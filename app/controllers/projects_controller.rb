@@ -119,7 +119,7 @@ class ProjectsController < ApplicationController
           # .joins(:user).where(:user => { :is_super_admin => false })
         end
 
-        # @organization_projects = [Project.where(id: 3307).first]
+        # @organization_projects = [Project.where(id: 15297).first]
 
         worksheet_cf = workbook.worksheets[0]
         worksheet_cf.sheet_name = 'Comp. Abaques & Serv. Dire Exp'
@@ -191,7 +191,6 @@ class ProjectsController < ApplicationController
         end
 
         @organization_projects.each do |project|
-        #@organization_projects.where(id: 3021).each do |project|
 
           pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
 
@@ -367,15 +366,156 @@ class ProjectsController < ApplicationController
               worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 1, guw_output_effort_value)  # « Charge avec prod. (jh) » en colonne AJ
               worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 2, guw_output_cost_value_rounded)  # « Coût Services (€) » en colonne AK
 
-              i = i + 1
-
               @total_effort[project.id] << guw_output_effort_value.to_f
               @total_cost[project.id] << guw_output_cost_value.to_f
+
+
+              begin
+
+                worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 3, "Service")
+
+                worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 4, "Quantité")
+                worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 5, "Nb de jours")
+
+                worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 6, "Métrique Quantité")
+
+                worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 7, "Charge (j.h)")
+                worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 8, "Coût (€)")
+
+
+
+
+                ###
+                guw_coefficient_service_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                              guw_model_id: @guw_model.id,
+                                                                              name: "Service").first
+
+                unless guw_coefficient_service_migration.nil?
+                  service_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                                 guw_model_id: @guw_model.id,
+                                                                                 guw_coefficient_id: guw_coefficient_service_migration.id,
+                                                                                 project_id: project.id,
+                                                                                 module_project_id: pmp.id,
+                                                                                 guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
+                  unless service_migration.guw_coefficient_element.nil?
+                    worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 3, service_migration.guw_coefficient_element.name) # Service
+                  end
+
+                end
+
+
+
+
+                ###
+                guw_coefficient_quantite_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                               guw_model_id: @guw_model.id,
+                                                                               name: "Quantité").first
+
+                unless guw_coefficient_quantite_migration.nil?
+                  nbj_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                             guw_model_id: @guw_model.id,
+                                                                             guw_coefficient_id: guw_coefficient_quantite_migration.id,
+                                                                             project_id: project.id,
+                                                                             module_project_id: pmp.id,
+                                                                             guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
+                  ce = guw_coefficient_quantite_migration.guw_coefficient_elements.first
+
+                  unless ce.nil?
+                    cces = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                                                                      guw_model_id: @guw_model.id,
+                                                                      guw_type_id: guow.guw_type_id,
+                                                                      guw_coefficient_element_id: ce.id)
+
+                    if !cces.map(&:value).empty?
+                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 4, nbj_migration.percent) # Nb de jours
+                    end
+
+                  end
+
+                end
+
+
+
+                ###
+                guw_coefficient_nbj_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                          guw_model_id: @guw_model.id,
+                                                                          name: "Nb de jours").first
+
+                unless guw_coefficient_nbj_migration.nil?
+                  nbj_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                             guw_model_id: @guw_model.id,
+                                                                             guw_coefficient_id: guw_coefficient_nbj_migration.id,
+                                                                             project_id: project.id,
+                                                                             module_project_id: pmp.id,
+                                                                             guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
+                  ce = guw_coefficient_nbj_migration.guw_coefficient_elements.first
+
+                  unless ce.nil?
+                    cces = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                                                                     guw_model_id: @guw_model.id,
+                                                                     guw_type_id: guow.guw_type_id,
+                                                                     guw_coefficient_element_id: ce.id)
+
+                    if !cces.map(&:value).empty?
+                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 5, nbj_migration.percent) # Nb de jours
+                    end
+
+                  end
+
+                end
+
+
+
+
+                ### Métrique ###
+                guw_coefficient_metrique_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                               guw_model_id: @guw_model.id,
+                                                                               name: "Métrique Quantité").first
+
+                unless guw_coefficient_metrique_migration.nil?
+                  metrique_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                                  guw_model_id: @guw_model.id,
+                                                                                  guw_coefficient_id: guw_coefficient_metrique_migration.id,
+                                                                                  project_id: project.id,
+                                                                                  module_project_id: pmp.id,
+                                                                                  guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
+                  unless metrique_migration.guw_coefficient_element.nil?
+                    worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 6, metrique_migration.guw_coefficient_element.name) # Métrique
+                  end
+                end
+
+
+
+                ### Charge ###
+                guw_output_charge_migration = Guw::GuwOutput.where( organization_id: @organization.id,
+                                                                    guw_model_id: @guw_model.id,
+                                                                    name: "Charge (j.h)").first
+
+                guw_output_cout_migration = Guw::GuwOutput.where( organization_id: @organization.id,
+                                                                  guw_model_id: @guw_model.id,
+                                                                  name: "Coût (€)").first
+
+
+
+                worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 7, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_migration.id}"].to_f.round(2))) # Charge
+                worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 8, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_cout_migration.id}"])) # Cout
+              rescue
+                #
+              end
+
+              i = i + 1
+
             end
+
+
           end
         end
 
-        ########
+        #################
 
         worksheet_wbs.add_cell(0, 0, "Devis")
         worksheet_wbs.add_cell(0, 1, "Application")
@@ -405,7 +545,7 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 18, "Coût retenu (€)")
 
 
-        fe = Field.where(organization_id: @organization.id, 
+        fe = Field.where(organization_id: @organization.id,
                          name: ["Charge Totale (jh)", "Effort Total (UC)", "Effort Total (jh)", "Charge totale (j)"]).first
 
         fc = Field.where(organization_id: @organization.id,
