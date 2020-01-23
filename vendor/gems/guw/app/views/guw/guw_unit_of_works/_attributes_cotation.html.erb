@@ -85,9 +85,9 @@
 
               <td class="span1">
                 <% if guw_type.mandatory_comments == true %>
-                  <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "input-mini ml_#{uowa.id}", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
+                  <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini ml_#{uowa.id}", default_value: gat.default_value, readonly: !can?(:execute_estimation_plan, @project) %>
                 <% else %>
-                  <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "input-mini", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
+                  <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value) : uowa.most_likely, class: "input-mini", default_value: gat.default_value, readonly: !can?(:execute_estimation_plan, @project) %>
                 <% end %>
               </td>
 
