@@ -3252,7 +3252,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                       guw_complexity = Guw::GuwComplexity.where(organization_id: @organization.id,
                                                                 guw_model_id: @guw_model.id,
                                                                 guw_type_id: @guw_type.id,
-                                                                name: row[18].nil? ? nil : row[18].value).first
+                                                                name: row[17].nil? ? nil : row[17].value).first
                     end
 
                     guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
