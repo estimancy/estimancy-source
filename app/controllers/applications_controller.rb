@@ -58,7 +58,22 @@ class ApplicationsController < ApplicationController
 
     application_id = @application.id
     @organization = Organization.find(params[:organization_id])
-    @application.destroy
+    @application_name = @application.name
+
+    habtm_applications_size = ApplicationsProjects.where(application_id: application_id).all.size   # @application.projects
+    project_applications_size = Project.where(application_id: application_id).all.size
+
+    if habtm_applications_size > 1 || project_applications_size > 1
+      @application.is_ignored = true
+      if @application.save
+        flash[:notice] = "L'application #{@application_name} a été désactivée car elle est utilisée dans un devis"
+      end
+    else
+      @application.destroy
+      flash[:notice] = "L'application #{@application_name} a bien été supprimée"
+    end
+
+
     redirect_to redirect_apply(edit_organization_application_path(@organization, application_id), nil, organization_setting_path(@organization, :anchor => 'tabs-applications') )
   end
 
