@@ -202,35 +202,30 @@ class OrganizationProfilesController < ApplicationController
     organization = project.organization
     module_project = project.module_projects.last
 
-    mpres = ModuleProjectRatioElement.where(organization_id: project.organization_id,
-                                            module_project_id: module_project.id).all
+    mpre = ModuleProjectRatioElement.where(organization_id: project.organization_id,
+                                           module_project_id: module_project.id).last.root
 
-    mpres.each do |mpre|
+    unless mpre.retained_cost_probable.nil? || mpre.retained_effort_probable.nil?
+      value = mpre.retained_cost_probable / mpre.retained_effort_probable
 
-      unless mpre.retained_cost_probable.nil? || mpre.retained_effort_probable.nil?
-        value = mpre.retained_cost_probable / mpre.retained_effort_probable
+      organization.guw_models.each do |guw_model|
+        guw_model.guw_types.where(name: "CPT1").each do |guw_type|
 
-        organization.guw_models.each do |guw_model|
-          guw_model.guw_types.where(name: "CPT1").each do |guw_type|
-            guw_type_guw_complexity = guw_type.guw_complexities.first
+          guw_type_guw_complexity = guw_type.guw_complexities.first
 
-            gcces = Guw::GuwComplexityCoefficientElement.where(organization_id: organization.id,
-                                                               guw_model_id: guw_model.id,
-                                                               guw_complexity_id: guw_type_guw_complexity.id,
-                                                               guw_type_id: guw_type.id).all
+          gc = Guw::GuwCoefficient.where(organization_id: organization.id,
+                                         guw_model_id: guw_model.id,
+                                         name: "TJM").first
 
-            gcces.each do |gcce|
-              gcce_guw_coefficient_element = gcce.guw_coefficient_element
-              if gcce_guw_coefficient_element.name == "Conv."
-                gcce_guw_coefficient_element.value = value
-                gcce_guw_coefficient_element.default_display_value = value
-                gcce_guw_coefficient_element.save
-              end
-            end
+          gc.guw_coefficient_elements.where(name: "Conv.").each do |gce|
+            gce.value = value
+            gce.default_display_value = value
+            gce.save
           end
         end
       end
     end
+
     redirect_to main_app.edit_organization_path(organization)
   end
 
