@@ -135,7 +135,8 @@ class OrganizationProfilesController < ApplicationController
       mpre_wbs_activity_element = mpre.wbs_activity_element
       mpre_wbs_activity_element_name = mpre_wbs_activity_element.name.to_s
 
-      op = OrganizationProfile.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).first
+      op = OrganizationProfile.where(organization_id: organization.id,
+                                     name: mpre_wbs_activity_element_name).first
       unless op.nil?
         op.cost_per_hour = tjm
         op.save
@@ -148,11 +149,14 @@ class OrganizationProfilesController < ApplicationController
         #guw_model.guw_types.where("LOWER(name) LIKE ?", "%#{ mpre_wbs_activity_element_name_without_localisation.downcase }%").each do |guw_type|
         guw_model.guw_types.each do |guw_type|
           guw_type_name = guw_type.name.gsub('Etude ', '').downcase
-          if guw_type_name.in?(mpre_wbs_activity_element_name_without_localisation.gsub('Etude ', '').downcase)
+
+          tmp_downcase = mpre_wbs_activity_element_name_without_localisation.gsub('Etude ', '').downcase
+
+          if guw_type_name.in?(tmp_downcase) || tmp_downcase.in?(guw_type_name)
 
             guw_type_guw_complexity = guw_type.guw_complexities.first
 
-            if guw_type.name.include?("MCO")
+            if guw_type.name.to_s.include?("MCO") || guw_type.name.to_s.include?("mco")
               guw_type_guw_complexity.weight = tjm
               guw_type_guw_complexity.save
             else
