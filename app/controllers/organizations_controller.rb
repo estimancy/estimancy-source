@@ -3568,9 +3568,9 @@ class OrganizationsController < ApplicationController
       @fields_coefficients[f.id] = f.coefficient
     end
 
-    if user_signed_in?
-      Monitoring.create(user: User.current, action: "Accéder à la liste des devis de l'organisation #{@organization.name}", action_at: Time.now+3600)
-    end
+    # if user_signed_in?
+    #   Monitoring.create(user: User.current, action: "Accéder à la liste des devis de l'organisation #{@organization.name}", action_at: Time.now+3600)
+    # end
 
   end
 

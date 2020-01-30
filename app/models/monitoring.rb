@@ -1,2 +1,2 @@
-class Monitoring < ActiveRecord::Base
-end
+# class Monitoring < ActiveRecord::Base
+# end
