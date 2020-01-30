@@ -230,3 +230,37 @@ class OrganizationProfilesController < ApplicationController
   end
 
 end
+
+## SCRIPT DE VERIFICATION ##
+#
+# def verif(model_id)
+#   total = 0
+#
+#   organization = Organization.where(id: 66).first
+#   guw_model = Guw::GuwModel.where(id: model_id).first
+#
+#   guw_model.guw_types.each do |guw_type|
+#     if guw_type.name.include?("SRV")
+#
+#       guw_complexity = guw_type.guw_complexities.first
+#
+#       gcces = Guw::GuwComplexityCoefficientElement.where(organization_id: organization.id,
+#                                                          guw_model_id: guw_model.id,
+#                                                          guw_complexity_id: guw_complexity.id,
+#                                                          guw_type_id: guw_type.id).all
+#
+#       gcces.each do |gcce|
+#
+#         gcce_e = gcce.guw_coefficient_element
+#
+#         if gcce_e.name.include?("Paris") || gcce_e.name.include?("Province")
+#           total += gcce.value.to_f
+#         end
+#       end
+#
+#     end
+#   end
+#
+#   return total.to_f
+#
+# end
