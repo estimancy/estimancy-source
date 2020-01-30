@@ -162,21 +162,17 @@
                                include_blank: false,
                                disabled: !@guw_type.allow_complexity %>
               <% else %>
-                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
-                               class: "guw_complexity form-control form-control-sm",
-                               include_blank: false,
-                               disabled: !@guw_type.allow_complexity %>
                 <% if !@guw_type.allow_complexity %>
                   <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
                                  guw: guow.id,
-                                 class: "guw_complexity",
+                                 class: "guw_complexity form-control form-control-sm",
                                  include_blank: false,
                                  disabled: !@guw_type.allow_complexity %>
                   <%= hidden_field_tag "guw_complexity_#{guow.id}", guow.guw_complexity_id %>
                 <% else %>
                   <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
                                  guw: guow.id,
-                                 class: "guw_complexity",
+                                 class: "guw_complexity form-control form-control-sm",
                                  include_blank: false,
                                  disabled: !@guw_type.allow_complexity %>
                 <% end %>

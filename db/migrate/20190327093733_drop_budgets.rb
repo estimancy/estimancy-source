@@ -1,5 +1,9 @@
 class DropBudgets < ActiveRecord::Migration
   def change
-    drop_table :budgets
+    begin
+      drop_table :budgets
+    rescue
+      #
+    end
   end
 end

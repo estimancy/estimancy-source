@@ -607,11 +607,11 @@ class ProjectsController < ApplicationController
     #   @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.comments } )
     #   JSON.parse(@http.body_str)
     # end
-
-    if user_signed_in?
-      project_name = @project.title
-      Monitoring.create(user: User.current, action: "Accéder au dashboard de l'estimation #{project_name}", action_at: Time.now + 3600)
-    end
+    #
+    # if user_signed_in?
+    #   project_name = @project.title
+    #   Monitoring.create(user: User.current, action: "Accéder au dashboard de l'estimation #{project_name}", action_at: Time.now + 3600)
+    # end
 
     @current_organization = @project.organization
     @pbs_project_element = current_component

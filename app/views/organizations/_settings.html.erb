@@ -20,7 +20,6 @@
         </div>
       </div>
     </section>
-
   </div>
 
   <div class="col-2">
@@ -52,42 +51,6 @@
           <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_project_categories', item_title: I18n.t('project_categories'), anchor: 'tabs-project-categories') %>"><span><%= I18n.t("project_categories") %></span></a>
         </li>
 
-  <div id="tabs-estimations-statuses" style="min-height: 50px;">
-    <% if can? :show_estimation_statuses, EstimationStatus %>
-        <% if can? :manage, EstimationStatus %>
-            <div class="group_button">
-                <%= link_to I18n.t('create_button'), new_estimation_status_path(:organization_id => @organization.id), :class => 'btn' %>
-                <%= link_to I18n.t(:export), organization_export_estimation_statuses_workflow_path(organization_id: @organization.id), :method => 'get', class: "btn", title: I18n.t(:export) %>
-                <%= link_to I18n.t(:import), "#import_estimation_statuses_workflow", class: "btn", title: I18n.t(:export), "data-toggle" => "modal" %>
-            </div>
-
-            <div id="import_estimation_statuses_workflow" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <%= form_tag organization_import_estimation_statuses_workflow_path(organization_id: @organization.id), :method => 'post', :multipart => true, :class => 'simple_form' do %>
-                  <div class="modal-header modal-drag">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="myModalLabel"> <%= "#{I18n.t(:import_from)} #{I18n.t(:estimations_statuses)}" %></h3>
-                  </div>
-                  <div class="modal-body">
-                    <%= hidden_field_tag "organization_id", @organization.id %>
-                    <%#= select_tag "add_or_replace_status", options_for_select([ ["AJOUTER / METTRE A JOUR", "add"], ["REMPLACER", "replace"] ]), include_blank: true  %>
-                    <%= file_field_tag :file %>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                    <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-                  </div>
-                  <div class="loading span11 hide">
-                    <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
-                  </div>
-              <% end %>
-            </div>
-
-        <% end %>
-        <%= render "estimation_statuses/statuses_management", object: [@organization, @organization_group] %>
-    <% else %>
-        <div class="red_color"><%= I18n.t(:notice_cannot_view_estimation_statuses) %></div>
-    <% end %>
-  </div>
         <li class="nav-item">
           <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_providers', item_title: I18n.t('providers'), anchor: 'tabs-providers') %>"><span><%= I18n.t("providers") %></span></a>
         </li>
@@ -98,7 +61,6 @@
 
         <li class="nav-item">
           <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_profiles', item_title: I18n.t('profiles'), anchor: 'tabs-profiles') %>"><span><%= I18n.t("profiles") %></span></a>
-
         </li>
 
         <li class="nav-item">
