@@ -313,7 +313,7 @@ module OrganizationsHelper
           content_tag("td class='text-left'") do
             link_to project.status_name, main_app.add_comment_on_status_change_path(project_id: project.id),
                     remote: true,
-                    class: "btn btn-status",
+                    class: "btn btn-status estimancy",
                     style: "padding: 8px; background-color: #{project.status_background_color}".to_s.html_safe
           end
         else

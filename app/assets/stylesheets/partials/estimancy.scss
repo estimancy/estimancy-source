@@ -43,7 +43,11 @@ a:hover.no-underline {
   text-decoration: none;
 }
 
-.estimancy, span.estimancy, span.estimancy a, th a.estimancy {
+span.estimancy, span.estimancy a, th a.estimancy {
+  color: #007DAB;
+}
+
+.estimancy_title {
   color: #007DAB;
 }
 
