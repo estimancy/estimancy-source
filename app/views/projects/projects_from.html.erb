@@ -28,7 +28,8 @@
         <tr>
           <th class="text-left"><%= I18n.t(:label_model_name) %></th>
           <th class="text-left">Vers.</th>
-          <th class="text-left" style="width: 25%;"><%= I18n.t(:created_at) %></th>
+          <th class="text-left">Description</th>
+          <th class="text-left" style="width: 25%;"><%= I18n.t(:updated_at) %></th>
           <th class="text-left"></th>
         </tr>
       </thead>
@@ -54,6 +55,7 @@
                 <% end %>
               </td>
               <td><%= project.version_number %></td>
+              <td><%= project.description.to_s.truncate(100) %></td>
               <td><%= I18n.l(project.updated_at) %></td>
               <td>
                 <div class="tools" style="float: right;">

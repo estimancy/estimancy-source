@@ -281,7 +281,7 @@ module OrganizationsHelper
         end
       when :title
         content_tag('td', can_show_estimation?(project) ?
-                              link_to(value, dashboard_path(project), :class => 'estimancy') : value)
+                              link_to(value, dashboard_path(project), :class => 'estimancy hide_overview') : value)
       when :original_model
         begin
           if project.original_model
@@ -313,7 +313,7 @@ module OrganizationsHelper
           content_tag("td class='text-left'") do
             link_to project.status_name, main_app.add_comment_on_status_change_path(project_id: project.id),
                     remote: true,
-                    class: "btn btn-status estimancy",
+                    class: "btn btn-status hide_overview",
                     style: "padding: 8px; background-color: #{project.status_background_color}".to_s.html_safe
           end
         else

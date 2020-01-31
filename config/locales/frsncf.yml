@@ -800,7 +800,7 @@ frsncf:
   informations: "Informations sur l'utilisateur"
   user_status: "Statut de l'utilisateur"
   created_at: "Créé le"
-  updated_at: "Mis à jour le"
+  updated_at: "Modifié le"
   last_login: "Dernière connexion"
   previous_login: "Connexion précédente"
   time_zone: "Fuseau journalier"
