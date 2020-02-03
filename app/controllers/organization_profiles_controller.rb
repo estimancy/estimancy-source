@@ -231,12 +231,12 @@ class OrganizationProfilesController < ApplicationController
 
 end
 
-## SCRIPT DE VERIFICATION ##
+# SCRIPT DE VERIFICATION ##
 #
-# def verif(model_id)
+# def verif(model_id, organization_id)
 #   total = 0
 #
-#   organization = Organization.where(id: 66).first
+#   organization = Organization.where(id: organization_id).first
 #   guw_model = Guw::GuwModel.where(id: model_id).first
 #
 #   guw_model.guw_types.each do |guw_type|
@@ -262,5 +262,4 @@ end
 #   end
 #
 #   return total.to_f
-#
 # end
