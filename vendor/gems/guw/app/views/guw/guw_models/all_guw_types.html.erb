@@ -1,15 +1,20 @@
-<h4>
-  <strong>
-    <%= link_to @guw_model, guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
-  </strong>
-  <% if can? :manage_modules_instances, ModuleProject %>
-    <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), :class => 'btn btn-mini pull-right button_margin_right'%>
-  <% end %>
-  <%= link_to "Afficher sous forme d'onglet", guw.guw_model_path(@guw_model), class: "btn btn-mini pull-right button_margin_right" %>
-</h4>
+<div class="row-fluid">
+  <div class="span6">
+    <h4>
+      <strong>
+        <%= link_to @guw_model, guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
+      </strong>
+    </h4>
+  </div>
+  <div class="span6">
+    <% if can? :manage_modules_instances, ModuleProject %>
+      <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), :class => 'btn btn-mini btn-primary pull-right button_margin_right'%>
+    <% end %>
+  </div>
+</div>
 
 <div class="row-fluid">
-  <table class="table table-bordered table-striped tablesorterPager">
+  <table id="table_list_applications" class="table table-bordered table-striped tablesorter tablesorterPager ">
     <thead>
       <tr>
         <th>Nom</th>

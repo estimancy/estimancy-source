@@ -2172,7 +2172,7 @@ class Guw::GuwModelsController < ApplicationController
 
   def all_guw_types
     @guw_model = Guw::GuwModel.find(params[:guw_model_id])
-    @guw_types = @guw_model.guw_types
+    @guw_types = @guw_model.guw_types.order("name asc")
     @organization = @guw_model.organization
     set_page_title "Liste des unités d'oeuvres"
     set_breadcrumbs I18n.t(:organizations) => "/organizationals_params?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""

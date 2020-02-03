@@ -27,9 +27,9 @@
           <tr>
             <td class="span7">
               <% if i.default_display == "list" %>
-                <%= link_to i.name, guw.guw_model_all_guw_types_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+                <%= link_to i.name, guw.guw_model_all_guw_types_path(i, organization_id: @organization.id), :"data-confirm" => I18n.t(:warning_edit_instance_module), :"data-turbolinks" => false %>
               <% else %>
-                <%= link_to i.name, guw.guw_model_path(i, organization_id: @organization.id), confirm: I18n.t(:warning_edit_instance_module) %>
+                <%= link_to i.name, guw.guw_model_path(i, organization_id: @organization.id), :"data-confirm" => I18n.t(:warning_edit_instance_module), :"data-turbolinks" => false %>
               <% end %>
             </td>
             <td class="span2 align-center">
