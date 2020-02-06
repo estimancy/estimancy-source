@@ -15629,7 +15629,7 @@ $( document ).ready(function() {
         if(!$(e.target).parents('.tools').length) {
             //if ( $(this).hasClass('selected') ) {
             //if ( $(this).hasClass('selected') || ($(e.target).hasClass('estimancy')) ) {
-            if ( $(this).hasClass('selected') || ($(e.target).closest('td').find('a').hasClass('estimancy')) ) {
+            if ( $(this).hasClass('selected') || ($(e.target).closest('td').find('a').hasClass('hide_overview')) ) {
                 $(this).removeClass('selected');
             }
             else {

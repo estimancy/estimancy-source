@@ -1163,7 +1163,7 @@ class ProjectsController < ApplicationController
       end
     end
 
-    @project.demand_id = params[:project][:demand_id]
+    # @project.demand_id = params[:project][:demand_id]
 
     @project.creator_id = current_user.id
     @project.status_comment = "#{I18n.l(Time.now)} : #{I18n.t(:estimation_created_by, username: current_user.name)} \r\n"
@@ -3607,6 +3607,7 @@ public
       end
 
       @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+      @projects = @projects.reverse
 
       @fields_coefficients = {}
       @pfs = {}
@@ -4071,9 +4072,9 @@ public
     new_status = EstimationStatus.find(new_status_id)
     new_status_name = EstimationStatus.find(new_status_id).name rescue nil
 
-    if new_status.allow_correction_before_change == true || (new_status.allow_correction_before_change == false && @project.guw_unit_of_works.map(&:guw_unit_of_work_id).flatten.compact.empty?)
+    # if new_status.allow_correction_before_change == true || (new_status.allow_correction_before_change == false && @project.guw_unit_of_works.map(&:guw_unit_of_work_id).flatten.compact.empty?)
       StatusHistory.create(organization: @project.organization.name,
-                           demand: @project.demand.nil? ? nil : @project.demand,
+                           # demand: @project.demand.nil? ? nil : @project.demand,
                            project_id: @project.id,
                            project: @project.title,
                            version_number: nil,
@@ -4085,12 +4086,12 @@ public
                            user: current_user.name,
                            gap: nil)
 
-      unless @project.demand.nil?
-        @project.demand.service_demand_livrables.where(selected: true).each do |sdl|
-          sdl.actual_date = Time.now
-          sdl.save
-        end
-      end
+      # unless @project.demand.nil?
+      #   @project.demand.service_demand_livrables.where(selected: true).each do |sdl|
+      #     sdl.actual_date = Time.now
+      #     sdl.save
+      #   end
+      # end
 
       new_comments = ""
       auto_updated_comments = ""
@@ -4168,15 +4169,16 @@ public
 
       if @project.save
 
-        EstimationStatusesProject.create(estimation_status_id: @project.estimation_status_id,
-                                         project_id: @project.id,
-                                         transition_date: Time.now)
-
-        unless @project.estimation_status.notification_emails.blank?
-          UserMailer.send_notification(@project, @project.estimation_status).deliver_now
-        end
+        # EstimationStatusesProject.create(estimation_status_id: @project.estimation_status_id,
+        #                                  project_id: @project.id,
+        #                                  transition_date: Time.now)
+        #
+        # unless @project.estimation_status.notification_emails.blank?
+        #   UserMailer.send_notification(@project, @project.estimation_status).deliver_now
+        # end
 
         model = Project.where(id: @project.original_model_id).first
+
         unless model.nil?
           if model.title == "IFPUG Sourcing"
 
@@ -4216,9 +4218,9 @@ public
       else
         flash[:error] = I18n.t('errors.messages.not_saved')
       end
-    else
-      flash[:warning  ] = "You can not change pass this quotation to \"Controlled\" because there are pending corrections."
-    end
+    # else
+    #   flash[:warning  ] = "You can not change pass this quotation to \"Controlled\" because there are pending corrections."
+    # end
 
     if request.env["HTTP_REFERER"].present?
       redirect_to :back
@@ -4474,50 +4476,51 @@ public
   end
 
   private def simulate_ai(project, uo)
-    # model = Project.where(id: uo.project.original_model_id).first
-    #   if model.title == "IFPUG Sourcing"
-    #     if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
-    #       if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-    #         display = false
-    #       elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-    #         display = false
-    #       else
-    #         display = true
-    #       end
-    #     elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
-    #       if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-    #         display = false
-    #       else
-    #         display = true
-    #       end
-    #     elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
-    #       if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-    #         display = false
-    #       elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-    #         display = false
-    #       elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-    #         display = false
-    #       else
-    #         display = true
-    #       end
-    #     elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
-    #       if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
-    #         display = false
-    #       else
-    #         display = true
-    #       end
-    #     else
-    #       display = true
-    #     end
-    #   end
-    #
-    # if project.is_valid == true || display == false
-    #   project.is_valid = !display
-    #   project.save(validate: false)
-    # end
+    model = Project.where(id: uo.project.original_model_id).first
 
-    @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.description } )
-    JSON.parse(@http.body_str)
+    if model.title == "IFPUG Sourcing"
+      if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
+        if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+          display = false
+        elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+          display = false
+        else
+          display = true
+        end
+      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
+        if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+          display = false
+        else
+          display = true
+        end
+      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
+        if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+          display = false
+        elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+          display = false
+        elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+          display = false
+        else
+          display = true
+        end
+      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
+        if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
+          display = false
+        else
+          display = true
+        end
+      else
+        display = true
+      end
+    end
+
+    if project.is_valid == true || display == false
+      project.is_valid = !display
+      project.save(validate: false)
+    end
+
+    # @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.description } )
+    # JSON.parse(@http.body_str)
 
   end
 

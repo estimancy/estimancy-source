@@ -279,3 +279,7 @@ gem 'jscolor-rails'
 gem 'selectize-rails'
 
 gem 'order_as_specified'
+
+gem 'prometheus-client'
+
+gem 'docker-sync'
