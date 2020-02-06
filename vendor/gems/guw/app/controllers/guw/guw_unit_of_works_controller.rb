@@ -1882,9 +1882,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       guw_unit_of_work_guw_complexity = @guw_unit_of_work.guw_complexity
 
       if guw_unit_of_work_guw_complexity.nil?
-        array_pert << 0 + (@oci.nil? ? 0 : @oci.init_value.to_f)
+        array_pert << 0
       else
-        array_pert << (guw_unit_of_work_guw_complexity.weight.nil? ? 1 : guw_unit_of_work_guw_complexity.weight.to_f)  + (@oci.nil? ? 0 : @oci.init_value.to_f)
+        array_pert << (guw_unit_of_work_guw_complexity.weight.nil? ? 1 : guw_unit_of_work_guw_complexity.weight.to_f)
       end
 
       if @guw_unit_of_work.changed?
@@ -1945,7 +1945,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         #gestion des valeurs intermédiaires
         @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
       else
-        @final_value = (@guw_unit_of_work.off_line? ? nil : array_pert.empty? ? nil : array_pert.sum.to_f)
+        @final_value = (@guw_unit_of_work.off_line? ? nil : (array_pert.empty? ? nil : array_pert.sum.to_f)) + (@oci.nil? ? 0 : @oci.init_value.to_f)
       end
 
       coeffs = []
