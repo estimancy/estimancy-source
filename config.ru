@@ -5,14 +5,17 @@
 
 require ::File.expand_path('../config/environment',  __FILE__)
 
+require 'prometheus/middleware/collector'
+require 'prometheus/middleware/exporter'
+
 # Test To call wordpress
 
 use Rack::ReverseProxy do
   reverse_proxy /^\/support(\/.*)$/, 'https://estimancy.com/', :username => '', :password => '', :timeout => 500, :preserve_host => true
 end
 
-# End Test To call wordpress
-
+use Prometheus::Middleware::Collector
+use Prometheus::Middleware::Exporter
 
 run Projestimate::Application
 
