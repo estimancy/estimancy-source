@@ -44,7 +44,7 @@ class Ability
         # end
 
         #La gestion des paramètres se fait fait dans ApplicationController ==> current_ability
-        # organization_projects = projects.compact
+        organization_projects = projects.compact
 
         #remettre getsorted pour la liste complete des devis
         # organization_projects = get_sorted_estimations(organization.id, projects, sort_column, sort_order, search_hash, min, max, action)
