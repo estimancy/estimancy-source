@@ -1942,7 +1942,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
       if @oc.nil?
-        #gestion des valeurs intermédiaires
         @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
       else
         @final_value = (@guw_unit_of_work.off_line? ? nil : (array_pert.empty? ? nil : array_pert.sum.to_f)) + (@oci.nil? ? 0 : @oci.init_value.to_f)
