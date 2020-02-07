@@ -919,7 +919,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
 
               if cplx_coeff.nil?
-                intermediate_percent = (1 + ((result_low + 4 * result_most_likely +  result_high) / 6) / 100)
+                if guw_type.attribute_type == "Coefficient"
+                  intermediate_percent = (result_low + 4 * result_most_likely +  result_high) / 6
+                else
+                  intermediate_percent = (1 + ((result_low + 4 * result_most_likely +  result_high) / 6) / 100)
+                end
               else
                 intermediate_percent = (cplx_coeff.to_f / 100)
               end
