@@ -311,6 +311,7 @@ ActiveRecord::Schema.define(version: 20191210134529) do
     t.boolean  "create_new_version_when_changing_status"
     t.boolean  "allow_correction_before_change"
     t.text     "notification_emails",                     limit: 65535
+    t.float    "nb_day_before_archiving",                 limit: 24
   end
 
   add_index "estimation_statuses", ["organization_id"], name: "by_organization", using: :btree
@@ -1803,6 +1804,7 @@ ActiveRecord::Schema.define(version: 20191210134529) do
     t.integer  "demand_id",                      limit: 4
     t.boolean  "urgent_project"
     t.boolean  "is_valid",                                     default: true
+    t.datetime "archiving_time"
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
