@@ -25,13 +25,14 @@ def ia_based_sizing_control (userStory):
         data = csv.DictReader(csvfile, delimiter=',', quotechar='\"')
         #  Read file
         data = list(data)
+        print(data)
         i=0
+        UOs="UNKNOWN".split(' ')
         for line in data :
             if (line['Functional requirement']!='' and line['UO type'] !=''):
-                if line['Functional requirement'] == userStory:
+                if line['Functional requirement']==userStory:
+                    print ("found")
                     UOs=line['UO type'].strip("()").split(' ')
-                else:
-                    UOs="UNKNOWN".split(' ')
     return (UOs)
 
 if __name__ == "__main__":
