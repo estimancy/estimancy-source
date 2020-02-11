@@ -86,12 +86,6 @@ gem 'rb-readline'
 #Cache management
 # gem 'cache_digests'
 
-#Databases data translations
-gem 'globalize'
-
-#Dumping and restoring data :
-gem 'yaml_db'
-
 #Optional gem for monitoring
 group :ic do
   gem 'newrelic_rpm'
@@ -152,7 +146,6 @@ gem 'sinatra', :require => false
 gem 'slim'
 
 # For chart generation
-gem 'chartkick'
 gem 'highcharts-rails'
 gem 'groupdate'
 
@@ -258,16 +251,11 @@ gem "rails-observers", "0.1.5"
 
 gem 'biz'
 
-gem 'carrierwave', '~> 0.11.2'
 gem 'bootstrap-sass', '~> 3.3.7'
 
 gem 'rack-cors', require: 'rack/cors'
 
 gem 'chartkick'
-
-#AppSignal
-# gem 'appsignal'
-gem 'carrierwave', '~> 0.11.2'
 
 gem 'jquery-number-rails'
 
@@ -281,5 +269,3 @@ gem 'selectize-rails'
 gem 'order_as_specified'
 
 gem 'prometheus-client'
-
-gem 'docker-sync'
