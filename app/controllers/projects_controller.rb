@@ -4519,8 +4519,8 @@ public
       project.save(validate: false)
     end
 
-    # @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.description } )
-    # JSON.parse(@http.body_str)
+    @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.description } )
+    JSON.parse(@http.body_str)
 
   end
 

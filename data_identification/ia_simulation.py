@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 @app.route("/ia_based_sizing_control", methods=['GET', 'POST'])
 def ia_based_sizing_control():
-    res = ia_based_sizing_control(request.form['us'])
+    res = ia_based_sizing_control("Update an employee")
     return json.dumps(res)
 
 ##########################################################################################
