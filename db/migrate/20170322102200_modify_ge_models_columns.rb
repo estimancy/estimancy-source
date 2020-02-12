@@ -35,8 +35,15 @@ class ModifyGeModelsColumns < ActiveRecord::Migration
 
     # delete column
     remove_column :ge_ge_models, :transform_size_and_effort, :display_size_and_effort_attributes
-    remove_column :ge_ge_models, :ent1_effort_unit, :ent2_effort_unit, :ent3_effort_unit, :ent4_effort_unit
-    remove_column :ge_ge_models, :sort1_effort_unit, :sort2_effort_unit, :sort3_effort_unit, :sort4_effort_unit
+    remove_column :ge_ge_models, :ent1_effort_unit
+    remove_column :ge_ge_models, :ent2_effort_unit
+    remove_column :ge_ge_models, :ent3_effort_unit
+    remove_column :ge_ge_models, :ent4_effort_unit
+
+    remove_column :ge_ge_models, :sort1_effort_unit
+    remove_column :ge_ge_models, :sort2_effort_unit
+    remove_column :ge_ge_models, :sort3_effort_unit
+    remove_column :ge_ge_models, :sort4_effort_unit
   end
 
   def down
