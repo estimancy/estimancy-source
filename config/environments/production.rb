@@ -93,6 +93,8 @@ Projestimate::Application.configure do
     end
   end
 
+  config.eager_load = true
+
 
   config.secret_key_base = "5293b9cc3ca1ba21e3363e94add734f60a0c080e10dd55ded8370cfeee42d6b0c3350c081d8b16514d7268572c34bdd277f7d058ec467139eb44775fb106eabf"
 

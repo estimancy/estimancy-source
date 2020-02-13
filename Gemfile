@@ -13,31 +13,33 @@ gem 'cookies_eu'
 gem 'bcrypt-ruby', :require => 'bcrypt'
 gem 'useragent'
 
+gem 'mysql2', '~> 0.3.21'
+
 # Include database gems for the adapters found in the database
 # configuration file
-require 'erb'
-require 'yaml'
-database_file = File.join(File.dirname(__FILE__), 'config/database.yml')
-if File.exist?(database_file)
-  database_config = YAML::load(ERB.new(IO.read(database_file)).result)
-  adapters = database_config.values.map { |c| c['adapter'] }.compact.uniq
-  if adapters.any?
-    adapters.each do |adapter|
-      case adapter
-        when 'mysql2'
-          gem 'mysql2', '~> 0.3.21' #'~> 0.3.11'
-        when /postgres/
-          gem 'pg'
-        else
-          # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
-      end
-    end
-  else
-    warn('No adapter found in config/database.yml, please configure it first')
-  end
-else
-  warn('Please configure your config/database.yml first')
-end
+# require 'erb'
+# require 'yaml'
+# database_file = File.join(File.dirname(__FILE__), 'config/database.yml')
+# if File.exist?(database_file)
+#   database_config = YAML::load(ERB.new(IO.read(database_file)).result)
+#   adapters = database_config.values.map { |c| c['adapter'] }.compact.uniq
+#   if adapters.any?
+#     adapters.each do |adapter|
+#       case adapter
+#         when 'mysql2'
+#           gem 'mysql2', '~> 0.3.21' #'~> 0.3.11'
+#         when /postgres/
+#           gem 'pg'
+#         else
+#           # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
+#       end
+#     end
+#   else
+#     warn('No adapter found in config/database.yml, please configure it first')
+#   end
+# else
+#   warn('Please configure your config/database.yml first')
+# end
 
 #For PostgreSQL database
 #gem 'pg'
@@ -82,9 +84,6 @@ gem 'amoeba', '~> 3.0.0'
 
 # Required for rspec and rails command
 gem 'rb-readline'
-
-#Cache management
-# gem 'cache_digests'
 
 #Optional gem for monitoring
 group :ic do
@@ -269,3 +268,5 @@ gem 'selectize-rails'
 gem 'order_as_specified'
 
 gem 'prometheus-client'
+
+gem 'jquery-tablesorter'

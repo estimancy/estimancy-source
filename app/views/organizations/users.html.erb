@@ -1,3 +1,7 @@
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.min.js" integrity="sha256-WX1A5tGpPfZZ48PgoZX2vpOojjCXsytpCvgPcRPnFKU=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.default.min.css" integrity="sha256-5sgExNTnkN8NcApKIU73/aqgZmqq/zJp9+9zXf9aSEw=" crossorigin="anonymous" />
+
 <section class="card card-content-bloc estimancy-form">
     <% if can? :show_organization_users, User %>
       <div class="mb-5">
@@ -16,10 +20,10 @@
                 <div class="col-6">
                   <div class="float-right">
                     <% if can? :manage, User, :organization_id => @organization.id %>
-                        <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
-                        <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
-                          <%= I18n.t(:import) %>
-                        </a>
+                      <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+                      <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
+                        <%= I18n.t(:import) %>
+                      </a>
                     <% end %>
                     <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn btn-primary btn-estimancy', method: "post" %>
                   </div>
@@ -50,8 +54,8 @@
 
 
 
-            <div id="organization_users" style="width:100%;overflow:auto; white-space:nowrap;">
-              <table class="table tablesorter table-list table-sm" style="width:100%;overflow:auto;">
+            <div id="organization_users" style="width:100%; overflow:auto; white-space:nowrap;">
+              <table class="table tablesorter table-list table-sm" style="width:100%; overflow:auto;">
                 <thead>
                   <tr>
                     <th><%= I18n.t(:first_name) %></th>
@@ -139,3 +143,15 @@
         </div>
       <% end %>
 </section>
+
+<script>
+    $(function() {
+        $(".tablesorter").tablesorter({
+            theme: 'blue',
+            widgets: ['zebra', 'filter'],
+            widgetOptions: {
+                filter_reset: '.reset'
+            }
+        });
+    });
+</script>

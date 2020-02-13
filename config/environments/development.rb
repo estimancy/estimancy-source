@@ -60,6 +60,7 @@ Projestimate::Application.configure do
   config.action_mailer.default :charset => "utf-8"
 
   config.action_mailer.default_url_options = { host: APP_CONFIG['HOST_URL'] }
+  config.eager_load = false
 
 end
 

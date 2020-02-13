@@ -21,6 +21,7 @@
 //= require jquery-number
 //= require spectrum.js
 //= require jscolor
+//= require jquery-tablesorter
 //
 // require jquery-min.js
 //= require jquery-ui-min.js
