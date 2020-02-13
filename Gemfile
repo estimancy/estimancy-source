@@ -13,7 +13,7 @@ gem 'cookies_eu'
 gem 'bcrypt-ruby', :require => 'bcrypt'
 gem 'useragent'
 
-gem 'mysql2', '~> 0.3.21'
+gem 'mysql2', '~> 0.4.9' #'~> 0.3.21'
 
 # Include database gems for the adapters found in the database
 # configuration file
