@@ -1,0 +1,5 @@
+<div class="btn-group" style="float: right;">
+  <% classes.each do |cla| %>
+      <button class="btn btn-mini"><a href="#accordion<%= cla.to_s %>"><%= I18n.t("label_#{cla.to_s}") %></a></button>
+  <% end %>
+</div>

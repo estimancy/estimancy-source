@@ -1,0 +1,32 @@
+<div class="tabs">
+
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        <%= I18n.t(:complexity_threshold) %>
+      </a>
+    </li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for(@guw_type_complexity) do |f| %>
+      <%= f.error_notification %>
+
+      <div class="form-inputs">
+
+        <%= f.input :guw_type_id, as: :hidden, input_html: { value: params[:guw_type_id] } %>
+        <%= f.input :organization_id, as: :hidden, input_html: { value: @current_organization.id } %>
+        <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+
+        <%= f.input :name, label: I18n.t(:thresold_name) %>
+        <%= f.input :description, input_html: { rows: "5"} %>
+        <%= f.input :value, label: I18n.t(:weight) %>
+        <%= f.input :display_order, label: I18n.t(:display_order) %>
+      </div>
+
+      <div class="actions-tabs">
+        <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+      </div>
+    <% end %>
+  </div>
+</div>

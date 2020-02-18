@@ -1,0 +1,54 @@
+<div class="tabs">
+
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        <%= I18n.t :unit_of_work %>
+      </a>
+    </li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for(@guw_type) do |f| %>
+      <%= f.error_notification %>
+
+      <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+
+      <div class="form-inputs">
+        <%= f.input :name, label: I18n.t(:work_unit_type) %>
+
+        <%= f.input :description, input_html: { class: 'tinymce', rows: 10, cols: 20 } %>
+
+        <%= f.input :maximum %>
+
+        <%= f.input :allow_criteria, label: I18n.t(:Changing_the_count_enter) %>
+        <%= f.input :attribute_type, as: :select, label: "Type de calcul pour les attributs", collection: ["Coefficient", "Pourcentage"] %>
+
+        <%= f.input :allow_retained, label: I18n.t(:Changing_of_the_size_enter) %>
+
+        <% if @guw_model.config_type == "old" %>
+          <%= f.input :allow_quantity, label: I18n.t(:Changing_the_quantity_enter) %>
+        <% end %>
+
+        <%= f.input :display_threshold, label: "Afficher le seuil" %>
+        <%= f.input :allow_complexity, label: I18n.t(:Changing_the_complexity_enter) %>
+        <%= f.input :mandatory_comments, label: "Commentaire sur critères obligatoire" %>
+
+        <%= f.input :color_code, label: "Code couleur", input_html: {class: 'color'} %>
+        <%= f.input :color_priority, label: "Priorité de la couleur" %>
+        <%= f.input :allow_line_color, label: "Activez la couleur sur une ligne" %>
+
+        <%= f.input :is_default, label: "Type d'UO par défaut" %>
+      </div>
+
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary"  %>
+          <%= link_to I18n.t(:delete), @guw_type, method: :delete, data: {confirm: I18n.t(:are_you_sure)}, class: "btn btn-danger pull-right" %>
+        <% end %>
+        <%= link_to I18n.t(:back), :back, class: "btn" %>
+      </div>
+
+    <% end %>
+  </div>
+</div>

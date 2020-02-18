@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @wbs_activity_ratio_variable.name %>
+</p>
+
+<p>
+  <b>Description:</b>
+  <%= @wbs_activity_ratio_variable.description %>
+</p>
+
+<p>
+  <b>Percentage:</b>
+  <%= @wbs_activity_ratio_variable.percentage %>
+</p>
+
+<p>
+  <b>Is modifiable:</b>
+  <%= @wbs_activity_ratio_variable.is_modifiable %>
+</p>
+
+
+<%= link_to 'Edit', edit_wbs_activity_ratio_variable_path(@wbs_activity_ratio_variable) %> |
+<%= link_to 'Back', wbs_activity_ratio_variables_path %>

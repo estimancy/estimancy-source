@@ -1,0 +1,18 @@
+
+$("#notifications").html("");
+
+$(".modal-body-inner").html("<%= j render(:partial => "form") %>");
+$("#myModalLabel").css('font-size', 'larger');
+$("#myModalLabel").html('<%= I18n.t(:additional_description) %>');
+
+
+$("#edit_component").modal({
+  keyboard: false,
+  backdrop: "static",
+  backdrop: false
+});
+
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");
+
+

@@ -1,0 +1,8 @@
+<%=simple_format(I18n.t(:mail_salutation, :value => 'Administrator')) %>
+
+<%= simple_format(@message) %>
+
+<%=simple_format(I18n.t(:mail_complimentary_close)) %>
+
+<%=simple_format(I18n.t(:mail_footer)) %>
+<a href='<%= "#{SETTINGS['HOST_URL']}" %>'>Estimancy</a>

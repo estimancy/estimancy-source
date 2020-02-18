@@ -1,0 +1,33 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:global_permissions) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for(@permission) do |f| %>
+      <%= f.error_notification %>
+
+      <%= f.input :alias, :label => I18n.t('alias'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+
+      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge'} %>
+
+      <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+
+      <%= f.input :object_type, :label => I18n.t(:object_type), :collection => [ ['General Objects','general_objects'], ['Organization Super Admin Objects','organization_super_admin_objects'], ['Project Dependencies Objects','project_dependencies_objects'], ['Modules Objects','module_objects']], :input_html => {:class => 'input-xxlarge'}, include_blank: false %>
+
+      <%= f.input :category, :label => I18n.t('category'), :collection => ['Admin', 'Library - Organization', 'Organization Estimation Template', 'Library - Project Settings', 'Projects', 'Project', 'Organization Data', 'Module Instances', 'Cocomo Data', '1 level Unit of Work Data'], :input_html => {:class => 'input-xxlarge'} %>
+
+      <%= f.input :is_master_permission, :label => I18n.t('is_permission_master'), :input_html => {:class => 'input-xxlarge'}, :as => :boolean %>
+
+      <%= f.input :is_permission_project, :label => I18n.t('is_permission_project'), :input_html => {:class => 'input-small'}, :as => :boolean %>
+
+      <%= f.input :object_associated, :label => I18n.t('label_associated_object'), :input_html => {:class => 'input-xxlarge'}, :as => :select, :collection => ActiveRecord::Base.connection.tables.map{|t| t.classify }.compact.reject{|j| j == 'SchemaMigration' } %>
+
+      <div class="actions-tabs">
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <%= link_to I18n.t('back'), permissions_path, :class => 'btn' %>
+      </div>
+
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,28 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:wbs_activity_elements) %> </a></li>
+  </ul>
+  <div id="tabs-1">
+
+    <%= simple_form_for(@wbs_activity_element) do |f| %>
+      <%= f.error_notification %>
+
+      <%= f.input :organization_id, :as => :hidden, :input_html => { value:  @organization.id} %>
+      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+
+      <%= f.input :wbs_activity_id, :as => :hidden, :label => 'WBS-Activity', :input_html => {:value => @wbs_activity.id, :class => 'input-xxlarge'} %>
+      <%= f.input :parent_id, :label => I18n.t('parent'), :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :selected => @selected_parent.nil? ? '' : @selected_parent.id, :input_html => {:class => 'input-xxlarge'} %>
+      <%= hidden_field_tag :selected_parent_id, params[:selected_parent_id] %>
+      <%= f.input :position, :label => 'Position', :input_html => {:class => 'input-large'} %>
+      <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 3} %>
+      <div class="actions-tabs">
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <%= link_to I18n.t('back'), edit_wbs_activity_path(@wbs_activity, :anchor => 'tabs-2'), :class => 'btn' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+
+
+

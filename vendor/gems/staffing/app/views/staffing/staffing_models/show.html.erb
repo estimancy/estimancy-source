@@ -1,0 +1,45 @@
+<p id="notice"><%= I18n.t(:notice) %></p>
+
+<p>
+  <b><%= I18n.t(:organizations) %>:</b>
+  <%= @staffing_model.organization_id %>
+</p>
+
+<p>
+  <b><%= I18n.t(:name) %>:</b>
+  <%= @staffing_model.name %>
+</p>
+
+<p>
+  <b><%= I18n.t(:coefficient) %>:</b>
+  <%= @staffing_model.coefficient %>
+</p>
+
+<p>
+  <b>Coeff n:</b>
+  <%= @staffing_model.coef_n %>
+</p>
+
+<p>
+  <b><%= I18n.t(:three_points_estimation)%>:</b>
+  <%= @staffing_model.three_points_estimation %>
+</p>
+
+<p>
+  <b><%= I18n.t(:Enabled_input) %>:</b>
+  <%= @staffing_model.enabled_input %>
+</p>
+
+<p>
+  <b><%= I18n.t(:Copy) %>:</b>
+  <%= @staffing_model.copy_id %>
+</p>
+
+<p>
+  <b><%= I18n.t(:Copy_number) %>:</b>
+  <%= @staffing_model.copy_number %>
+</p>
+
+
+<%= link_to I18n.t(:edit), edit_staffing_model_path(@staffing_model) %> |
+<%= link_to I18n.t(:back), staffing_models_path %>

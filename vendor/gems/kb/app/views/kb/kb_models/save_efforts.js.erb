@@ -1,0 +1,173 @@
+$("#formula").html("<%= @kb_input.formula %>")
+
+$("#effort").val("<%= @effort %>")
+$(".effort").val("<%= convert_with_precision(@effort, user_number_precision) %>")
+
+$(".project_numbers").html("<%= @kb_input.values.size %>")
+
+$(function () {
+        $('#scatter_chart').highcharts({
+          chart: {
+            zoomType: 'x'
+          },
+title: {
+        text: "<%= @kb_model.name %>"
+        },
+xAxis: {
+        title: {
+        enabled: true,
+        text: 'Taille',
+        min: 0
+        }
+},
+yAxis: {
+        title: {
+        text: 'Effort',
+        min: 0
+        }
+},
+series: [{
+        name: 'Distribution Taille / Effort',
+        marker: {
+        radius: 3
+        },
+type: 'scatter',
+color: 'rgba(223, 83, 83, 1)',
+data: <%= @kb_input.values %>
+},{
+        name: 'Courbe de régression linéaire',
+        marker: {
+        radius: 0
+        },
+type: 'line',
+color: 'rgba(200, 200, 200, 1)',
+data: <%= @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort %>
+
+},{
+        name: 'Courbe de régression linéaire + 80%',
+        marker: {
+        radius: 0
+        },
+type: 'line',
+color: 'rgba(83, 223, 83, 1)',
+data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort %>
+},{
+        name: 'Courbe de régression linéaire - 80%',
+        marker: {
+        radius: 0
+        },
+type: 'line',
+color: 'rgba(83, 223, 255, 1)',
+data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
+},{
+        name: 'Taille calculé',
+        marker: {
+        radius: 5
+        },
+type: 'scatter',
+color: 'rgba(0, 0, 0, 1)',
+data: <%= [[@size, @effort.round(2)]] %>
+}]
+});
+});
+
+
+/**
+* Sand-Signika theme for Highcharts JS
+* @author Torstein Honsi
+*/
+
+// Load the fonts
+Highcharts.createElement('link', {
+        href: '//fonts.googleapis.com/css?family=Signika:400,700',
+        rel: 'stylesheet',
+        type: 'text/css'
+        }, null, document.getElementsByTagName('head')[0]);
+
+// Add the background image to the container
+Highcharts.wrap(Highcharts.Chart.prototype, 'getContainer', function (proceed) {
+        proceed.call(this);
+        this.container.style.background = 'url(http://www.highcharts.com/samples/graphics/sand.png)';
+        });
+
+Highcharts.theme = {
+        colors: ["#f45b5b", "#8085e9", "#8d4654", "#7798BF", "#aaeeee", "#ff0066", "#eeaaee", "#55BF3B", "#DF5353", "#7798BF", "#aaeeee"],
+        chart: {
+        backgroundColor: null
+        },
+title: {
+        style: {
+        color: 'black',
+        fontSize: '13px',
+        fontWeight: 'bold'
+        }
+},
+subtitle: {
+        style: {
+        color: 'black'
+        }
+},
+tooltip: {
+        borderWidth: 0
+        },
+legend: {
+        itemStyle: {
+        fontWeight: 'bold',
+        fontSize: '13px'
+        }
+},
+xAxis: {
+        labels: {
+        style: {
+        color: '#6e6e70'
+        }
+}
+},
+yAxis: {
+        labels: {
+        style: {
+        color: '#6e6e70'
+        }
+}
+},
+plotOptions: {
+        series: {
+        shadow: true
+        },
+candlestick: {
+        lineColor: '#404048'
+        },
+map: {
+        shadow: false
+        }
+},
+
+// Highstock specific
+navigator: {
+        xAxis: {
+        gridLineColor: '#D0D0D8'
+        }
+},
+rangeSelector: {
+        buttonTheme: {
+        fill: 'white',
+        stroke: '#C0C0C8',
+        'stroke-width': 1,
+        states: {
+        select: {
+        fill: '#D0D0D8'
+        }
+}
+}
+},
+scrollbar: {
+        trackBorderColor: '#C0C0C8'
+        },
+
+// General
+background2: '#E0E0E8'
+
+};
+
+// Apply the theme
+Highcharts.setOptions(Highcharts.theme);

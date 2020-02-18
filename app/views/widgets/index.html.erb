@@ -1,0 +1,42 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:widgets) %></a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <table border="0" width="100%">
+      <tr>
+        <td style="text-align:right;">
+          <%= link_to I18n.t('new_widget'), new_widget_path, :class => 'btn' %>
+        </td>
+      </tr>
+    </table>
+
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:pe_attribute_name) %></th>
+        <th><%= I18n.t(:icon) %></th>
+        <th><%= I18n.t(:status_color) %></th>
+        <th class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @widgets.each do |widget| %>
+          <tr>
+            <td><%= widget.name %></td>
+            <td><%= widget.pe_attribute.name if widget.pe_attribute %></td>
+            <td><span><i class="<%= widget.icon_class %> icon-large"></i><%= widget.icon_class %></span></td>
+            <td style="max-width: 10px; background-color: <%= "##{widget.color}" %>"> <%= widget.color %> </td>
+            <td class="align-center">
+              <%= link_to "", edit_widget_path(widget), :class => 'icon-pencil icon-large', :title => I18n.t('edit') %>
+              <%= link_to "", widget, method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "icon-trash icon-large" %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+</div>

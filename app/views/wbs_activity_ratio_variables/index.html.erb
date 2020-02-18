@@ -1,0 +1,29 @@
+<h1>Listing wbs_activity_ratio_variables</h1>
+
+<table>
+  <tr>
+    <th>Name</th>
+    <th>Description</th>
+    <th>Percentage</th>
+    <th>Is modifiable</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @wbs_activity_ratio_variables.each do |wbs_activity_ratio_variable| %>
+  <tr>
+    <td><%= wbs_activity_ratio_variable.name %></td>
+    <td><%= wbs_activity_ratio_variable.description %></td>
+    <td><%= wbs_activity_ratio_variable.percentage %></td>
+    <td><%= wbs_activity_ratio_variable.is_modifiable %></td>
+    <td><%= link_to 'Show', wbs_activity_ratio_variable %></td>
+    <td><%= link_to 'Edit', edit_wbs_activity_ratio_variable_path(wbs_activity_ratio_variable) %></td>
+    <td><%= link_to 'Destroy', wbs_activity_ratio_variable, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Wbs activity ratio variable', new_wbs_activity_ratio_variable_path %>

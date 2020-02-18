@@ -1,0 +1,28 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:label_wbs_activity_ratio) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for(@wbs_activity_ratio) do |f| %>
+      <%= f.error_notification %>
+
+      <%= f.input :organization_id, :as => :hidden, :input_html => { value:  @organization.id} %>
+      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+      <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+      <%= f.input :wbs_activity_id, :label => 'WBS Activity', :as => :hidden, :input_html => {:class => 'input-xxlarge', :rows => 5, :value => @activity_id} %>
+
+      <div class="actions-tabs">
+
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <% end %>
+
+        <% params[:activity_id].nil? ? @activity_id=@wbs_activity_ratio.wbs_activity_id : @activity_id=params[:activity_id] %>
+        <%= link_to I18n.t('back'), edit_wbs_activity_path(@activity_id , :anchor => 'tabs-3'), :class => 'btn back' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+

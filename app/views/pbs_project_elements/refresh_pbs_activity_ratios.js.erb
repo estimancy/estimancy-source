@@ -1,0 +1,3 @@
+$("#notifications").html("");
+$("#pbs_project_element_wbs_activity_ratio_id").html("<%=raw j select_tag "pbs_project_element[wbs_activity_ratio_id]", options_for_select(@pbs_activity_ratios.map{|i| [i.name, i.id] } ), :prompt => 'Select Default WBS-Activity-Ratio...'  %>");
+$("#notifications").html("<%= j(render "layouts/notifications") %>");

@@ -1,0 +1,15 @@
+//$("#entrees").html("<%#= j(render(:partial => 'test', :object => [@inputs_attributes_alias, @outputs_attributes_alias, @traductions], locals: {f: @f})) %>");
+
+//$("#entrees").html("<%#= j(render(:partial => 'form_inputs_attributes', :object => [@inputs_attributes_alias, @outputs_attributes_alias, @traductions], locals: {f: @f})) %>");
+//$("#sorties").html("<%#= j(render(:partial => 'form_outputs_attributes', :object => [@inputs_attributes_alias, @outputs_attributes_alias, @traductions], locals: {f: @f})) %>");
+
+<% if @ge_model_instance_mode == "defects_calculation" %>
+    $('.inputs_only_for_standard_mode').hide();
+    $('.outputs_only_for_standard_mode').hide();
+<% else %>
+    $('.inputs_only_for_standard_mode').show();
+    $('.outputs_only_for_standard_mode').show();
+<% end %>
+
+
+$("#notifications").html("");

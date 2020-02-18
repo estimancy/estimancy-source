@@ -1,0 +1,42 @@
+<div class="tabs">
+
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        <%= I18n.t(:complexity).pluralize %> de <%= @guw_type %>
+      </a>
+    </li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for(@guw_complexity) do |f| %>
+      <%= f.error_notification %>
+
+      <div class="form-inputs">
+
+        <%= f.input :guw_type_id, as: :hidden, input_html: { value: params[:guw_type_id] } %>
+        <%= f.input :organization_id, as: :hidden, input_html: { value: @current_organization.id } %>
+
+        <%= f.input :name %>
+
+        <% if @guw_type.allow_criteria == true %>
+          <%= f.input :bottom_range, label: I18n.t(:low_border_include) %>
+          <%= f.input :top_range, label: I18n.t(:high_border_include) %>
+          <%= f.input :enable_value, label: I18n.t(:Product) %>
+        <% end %>
+
+        <%= f.input :default_value, label: "Valeur par défaut" %>
+        <%= f.input :weight, label: I18n.t(:weight) %>
+        <%= f.input :weight_b, label: "Ordonnée à l'origine" %>
+        <%= f.input :display_order, label: I18n.t(:display_order) %>
+      </div>
+
+      <div class="actions-tabs">
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+        <% end %>
+        <%= link_to I18n.t(:back), :back, class: "btn" %>
+      </div>
+    <% end %>
+  </div>
+</div>

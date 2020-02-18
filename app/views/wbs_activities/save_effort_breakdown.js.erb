@@ -1,0 +1,138 @@
+<%
+    @module_project = current_module_project
+    @pbs_project_element = current_component
+
+    @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+    @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).max
+
+    @wbs_activity = @module_project.wbs_activity
+    @project_wbs_activity_elements = WbsActivityElement.sort_by_ancestry(@wbs_activity.wbs_activity_elements.arrange(:order => :position))
+
+    @wbs_activity_ratio = @module_project.get_wbs_activity_ratio(@pbs_project_element.id)
+    if @wbs_activity_ratio.nil?
+      unless params[:ratio].nil?
+        @wbs_activity_ratio = WbsActivityRatio.find(params[:ratio])
+      end
+    end
+
+    unless @wbs_activity_ratio.nil?
+      ratio_elements = @wbs_activity_ratio.wbs_activity_ratio_elements.joins(:wbs_activity_element).arrange(order: 'position')
+      @wbs_activity_ratio_elements = WbsActivityRatioElement.sort_by_ancestry(ratio_elements)
+
+      # Module_project Ratio elements
+      @module_project_ratio_elements = @module_project.get_module_project_ratio_elements(@wbs_activity_ratio, @pbs_project_element)
+
+      # Module Project Ratio Variables
+      @module_project_ratio_variables = @module_project.get_module_project_ratio_variables(@wbs_activity_ratio, @pbs_project_element)
+    end
+ %>
+
+$("#estimation_graph_box").html("<%= j(render partial: "wbs_activities/settings", object: @wbs_activity_ratio) %>");
+$("#output_data_view_widgets_results").html("<%=raw j(render(partial: 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x])) %>");
+
+
+var gridster = [];
+var iteration = -1;
+$(function () { //DOM Ready
+
+    $('[id^="view_widgets_container_"]').each(function () {
+        var container_id = $(this).attr('id');
+        var $widgets_container = $('#' + container_id);
+
+        //$("#"+container_id+ " > ul").gridster({
+        gridster[++iteration] = $("#" + container_id + " ul").gridster({
+            namespace: '#' + container_id,
+            widget_margins: [5, 5],
+            widget_base_dimensions: [60, 60], //widget_base_dimensions: [60, 60],
+            widget_selector: "li",
+            extra_rows: 0,
+            extra_cols: 0,
+            shift_widgets_up: false,
+            shift_larger_widgets_down: false,
+            collision: {
+                wait_for_mouseup: true
+            },
+
+            //autogenerate_stylesheet: true,
+            min_cols: 1,
+            max_cols: 100,
+
+            serialize_params: function ($w, wgd) {
+                return {
+                    /* add element (ID, view_widget_id and container_id) to data*/
+                    id: $w.attr('id'),
+                    view_widget_id: $w.data('view_widget_id'),
+                    container_id: $w.data('container_id'),
+                    /* defaults */
+                    col: wgd.col, row: wgd.row, size_x: wgd.size_x, size_y: wgd.size_y
+                }
+            },
+
+            draggable: {
+                // Update all widgets positions
+                stop: function (event, ui) {
+                    //var gridster = $(".gridster ul").gridster().data('gridster');
+                    var gridster = $('#' + container_id + ".gridster ul").gridster().data('gridster');
+                    var gridster_elements = gridster.serialize();
+
+                    //alert(JSON.stringify(gridster_elements));
+                    //alert(gridster_elements);
+                    //alert(JSON.parse(gridster_elements);
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "/update_view_widget_positions",
+                        data: {
+                            view_id: this.id,
+                            views_widgets: gridster_elements
+                        }
+                    });
+                }
+            },
+
+
+            // Qui marchait avec l'ancienne version
+            resize: {
+                enabled: true,
+                axes: ['both'],
+
+                //handles: ['n', 'e', 's', 'w', 'ne', 'se', 'sw', 'nw'],
+                //max_size: [20, 20],
+                //min_size: [1, 1],
+
+                stop: function (event, ui, $widget) {
+
+                    // Get final width and height of widget
+                    var newHeight = this.resize_coords.data.height;
+                    var newWidth = this.resize_coords.data.width;
+                    var text_size = ((newHeight + newWidth) / 2) * 0.015;
+
+                    //Update the font-size according to the widget sizes
+                    var widget_id = $widget.data('id');
+                    $('li#' + widget_id + '.widget_text').css("fontSize", text_size + "em");
+
+                    // Update font-size : $('.changeMe').css("font-size", $(this).val() + "px");
+                    $('#widget_text_' + widget_id + '.widget_text.without_min_max').fitText(0.6);
+                    $('#widget_text_' + widget_id + '.widget_text.with_min_max').fitText(0.7);
+                    $("li.no_estimation_value").fitText(2);
+                    $('#widget_name_' + widget_id + '.widget_name').fitText(0.8);
+                    $('span#min_max_' + widget_id + '.min_max').fitText(1);
+
+                    //Update the widget size (width, height) in database
+                    var newDimensions = this.serialize($widget)[0]; //get final sizex and sizey
+                    $.ajax({
+                        method: 'GET',
+                        url: "/update_view_widget_sizes",
+                        data: {
+                            view_widget_id: $widget.data('view_widget_id'),
+                            sizex: newDimensions.size_x,
+                            sizey: newDimensions.size_y
+                        }
+                    });
+                }
+            }
+
+        }).data('gridster');
+    })
+});
+

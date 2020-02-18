@@ -1,0 +1,28 @@
+<h2><%= params[:action_to_do].eql?("update_password_first_connexion") ? I18n.t(:update_password_first_connexion) : I18n.t(:update_email_login_password) %></h2>
+<hr>
+
+<%= simple_form_for(resource, as: resource_name, url: update_user_registration_path, html: { method: :put }) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :email, required: true, autofocus: true, label: I18n.t(:email) %>
+    <%= f.input :login_name, required: true, :label => I18n.t('login_name') %>
+
+    <% if devise_mapping.confirmable? && resource.pending_reconfirmation? %>
+      <p>Currently waiting confirmation for: <%= resource.unconfirmed_email %></p>
+    <% end %>
+
+    <%= f.input :current_password, hint: I18n.t(:text_need_current_password_to_confirm_change), required: true, label: I18n.t(:current_password) %>
+    <%= f.input :password, autocomplete: "off", required: false, label: I18n.t(:password) %>
+    <%= f.input :password_confirmation, required: false, label: I18n.t(:password_confirmation) %>
+  </div>
+
+  <div>
+    <%= f.button :submit, I18n.t(:update), :class => 'btn btn-danger' %>
+  </div>
+<% end %>
+
+<!--<p>Unhappy? <%#= link_to "Cancel my account", registration_path(resource_name), data: { confirm: "Are you sure?" }, method: :delete %></p>-->
+<p><%#= link_to I18n.t(:label_cancel_my_account), registration_path(resource_name), data: { confirm: I18n.t(:are_you_sure) }, method: :delete %></p>
+
+<%= link_to I18n.t(:back), :back %>

@@ -1,0 +1,35 @@
+<br>
+<br>
+<br>
+<div class="container-fluid text-center">
+  <div class="panel-body">
+
+    <div class="row-fluid">
+      <div class="span12">
+        <i class="fa fa-5x fa-info-circle"></i>
+      </div>
+    </div>
+    <div class="row-fluid">
+      <div class="span12">
+        <strong>
+          <h3>
+            <%= I18n.t(:error_message_1) %>
+          </h3>
+          <h3>
+            <%= I18n.t(:error_message_2) %>
+          </h3>
+          <h3>
+            <%= I18n.t(:error_message_3) %>
+          </h3>
+        </strong>
+        <br>
+      </div>
+    </div>
+    <div class="row">
+      <div class="span12">
+        <%= link_to I18n.t("Revenir sur la page précédente"), :back, class: "btn" %>
+      </div>
+    </div>
+  </div>
+</div>
+

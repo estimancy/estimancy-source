@@ -1,0 +1,26 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:label_view) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for([@organization, @view]) do |f| %>
+      <%= f.error_notification %>
+
+      <div class="form-inputs">
+        <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
+        <%= f.input :name %>
+        <%= f.association :pemodule, collection: [@view.pemodule] %>
+        <%= f.input :is_default_view, label: I18n.t(:define_as_default_view) %>
+        <%= f.input :description, :input_html => { rows: 10, class: 'input-xxlarge' } %>
+      </div>
+
+      <div class="actions-tabs">
+        <% if can? :manage, View %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-views'), :class => 'btn' %>
+      </div>
+    <% end %>
+  </div>
+</div>

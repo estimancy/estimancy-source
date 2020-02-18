@@ -1,0 +1,87 @@
+<%= simple_form_for @project, :url => update_comments_status_change_path(params[:id]), method: 'post' do |f| %>
+
+  <% if @project.private == false || current_user.super_admin == true || can?(:manage, @project) %>
+    <%= hidden_field_tag :project_id, params[:project_id] %>
+
+    <% if can_alter_estimation?(@project) && can?(:alter_project_status_comment, @project) %>
+      <%#= f.input :status_comment, :as => :text, label: I18n.t(:comment), :input_html => { :value => @text_comments.to_s, :class => 'attribute_note_area'} %>
+      <%= f.input :new_status_comment, :as => :text, label: I18n.t(:comment), :input_html => { :class => 'span6', :rows => 5 } %>
+    <% end %>
+
+    <% if can_alter_estimation?(@project) && can?(:alter_estimation_status, @project) %>
+      <%= f.input :estimation_status_id, required: false,
+                  label: I18n.t(:change_estimation_status),
+                  as: :select,
+                  collection: @project.project_estimation_statuses(@organization),
+                  input_html: { :class => 'input-xlarge', disabled: @project.is_locked },
+                  include_blank: false %>
+
+
+      <% if @project.is_locked == true %>
+        <% @project.module_projects.each do |module_project| %>
+          <% module_project.views_widgets.each do |view_widget| %>
+            <% if view_widget.min_value != nil || view_widget.max_value != nil %>
+              <p>
+                <%= view_widget.validation_text %>
+              </p>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <div class="modal-footer-left">
+      <% if can_alter_estimation?(@project) && (can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project)) %>
+        <%= f.submit I18n.t('save'), :class => 'btn', :id => 'add_comment_on_status_change' %>
+        <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+      <% end %>
+    </div>
+  <% end %>
+
+  <hr>
+
+  <div class="widget-box collapsible">
+    <div class="widget-title">
+      <a href="#collapseIn" data-toggle="collapse"> <span class="icon"> <i class="icon-align-left"></i> </span>  </a>
+      <h5> <%= I18n.t(:comment_history) %> </h5>
+    </div>
+
+    <div class="collapse in" id="collapseIn">
+      <div class="widget-content tab-content">
+        <%= simple_format(@text_comments.to_s) %>
+      </div>
+    </div>
+  </div>
+
+  <!--<hr>-->
+
+  <!--<div class="row-fluid">-->
+    <!--<div class="span12">-->
+
+      <!--<h4>-->
+        <!--<%# I18n.t(:comment_history) %>-->
+      <!--</h4>-->
+
+      <!--<%# ptitle = @project.title %>-->
+      <!--<%# oname = @project.organization.name %>-->
+      <%# status_histories = StatusHistory.where(organization: oname,
+#                                                 project: ptitle,
+                                                version_number: @project.version_number).all %>
+      <!--<%# status_histories.each do |sh| %>-->
+        <!--<p>-->
+          <!--<b><%# sh.change_date.strftime("Le %d/%m/%Y à %H:%M") %></b>-->
+          <!--<br>-->
+          <!--<b><%# sh.action %></b> : <b><%# sh.origin %></b> à <b><%# sh.target %></b> par <b><%# sh.user %></b>-->
+          <!--<br>-->
+          <!--<i><%# sh.comments %></i>-->
+          <!--<br>-->
+          <!--Ecart : <%# sh.gap %> secondes-->
+        <!--</p>-->
+
+        <!--<br>-->
+
+    <!--<%# end %>-->
+    <!--</div>-->
+  <!--</div>-->
+
+<% end %>

@@ -1,0 +1,5 @@
+$("#notifications").html("");
+$("#div_show_results_with_profiles").html("<%=raw j(render :partial => 'projects/activities_by_profile', :locals => { project: @project, effort_attribute: @attribute, module_project: @module_project, project_organization_profiles: @project_organization_profiles, estimation_pbs_probable_results: @estimation_pbs_probable_results, ratio_reference: @ratio_reference} ) %>");
+$('.spiner').hide();
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");
+$('#display_results_by_profile').hide();

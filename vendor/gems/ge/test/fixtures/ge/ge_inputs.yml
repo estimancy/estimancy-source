@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  formula: MyString
+  values: MyText
+  ge_model_id: 1
+  module_project_id: 1
+  organization_id: 1
+
+two:
+  formula: MyString
+  values: MyText
+  ge_model_id: 1
+  module_project_id: 1
+  organization_id: 1

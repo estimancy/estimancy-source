@@ -1,0 +1,69 @@
+<table class="table table-striped table-bordered table-condensed">
+  <thead>
+  <tr>
+    <!--<th>Organisation de référence</th>-->
+    <th>Champ concerné</th>
+    <th>Valeur de référence</th>
+    <th>Organisation</th>
+    <th>Module de Taille</th>
+    <th>Nature différences</th>
+    <th>Différences</th>
+  </tr>
+  </thead>
+
+  <% @guw_types_complexities_differences.each do |difference| %>
+      <% guw_model = Guw::GuwModel.where(id: difference[:guw_model_id]).first %>
+      <% guw_type = Guw::GuwType.where(id: difference[:guw_type_id]).first %>
+
+      <% column_name = difference[:column_name] %>
+      <tr>
+        <!--<td><%#= @reference_organization.name %></td>-->
+        <td><%= column_name %></td>
+        <td>
+          <% guw_type_complexity = Guw::GuwComplexity.where(id: difference[:reference_id]).first %>
+          <% if  guw_type_complexity %>
+              <%= "Nom: #{guw_type_complexity.name}" %> <br>
+              <% if guw_type.allow_criteria == true %>
+                  <%= "#{I18n.t(:low_border_include) } : #{guw_type_complexity.bottom_range}" %><br>
+                  <%= "#{I18n.t(:high_border_include) } : #{guw_type_complexity.top_range}" %><br>
+                  <%= "#{I18n.t(:Product) } : #{guw_type_complexity.enable_value}" %><br>
+              <% end %>
+
+              <%= "#{I18n.t(:default_value) } : #{guw_type_complexity.default_value}" %><br>
+              <%= "#{I18n.t(:weight) } : #{guw_type_complexity.weight}" %><br>
+              <%= "Ordonnée à l'origine : #{guw_type_complexity.weight_b}" %><br>
+              <%= "#{I18n.t(:display_order) } : #{guw_type_complexity.display_order}" %>
+          <% else %>
+              -
+          <% end %>
+
+        </td>
+        <td><%= Organization.where(id: difference[:organization_id]).first %></td>
+        <td>
+          <%#= link_to guw_model.name, guw.guw_model_path(guw_model, organization_id: difference[:organization_id]), confirm: I18n.t(:warning_edit_instance_module) %>
+          <%= link_to guw_model.name, guw.edit_guw_model_path(guw_model, organization_id: difference[:organization_id], anchor: "tabs-attributs"), confirm: I18n.t(:warning_edit_instance_module) %>
+        </td>
+
+        <td><%= difference[:nature] %></td>
+        <td>
+          <% guw_type_complexity =  Guw::GuwComplexity.where(id: difference[:element_id]).first %>
+          <% if  guw_type_complexity %>
+              <%= "Nom: #{guw_type_complexity.name}" %> <br>
+              <% if guw_type.allow_criteria == true %>
+                  <%= "#{I18n.t(:low_border_include) } : #{guw_type_complexity.bottom_range}" %><br>
+                  <%= "#{I18n.t(:high_border_include) } : #{guw_type_complexity.top_range}" %><br>
+                  <%= "#{I18n.t(:Product) } : #{guw_type_complexity.enable_value}" %><br>
+              <% end %>
+
+              <%= "#{I18n.t(:default_value) } : #{guw_type_complexity.default_value}" %><br>
+              <%= "#{I18n.t(:weight) } : #{guw_type_complexity.weight}" %><br>
+              <%= "Ordonnée à l'origine : #{guw_type_complexity.weight_b}" %><br>
+              <%= "#{I18n.t(:display_order) } : #{guw_type_complexity.display_order}" %>
+          <% else %>
+              -
+          <% end %>
+        </td>
+      </tr>
+  <% end %>
+
+</table>

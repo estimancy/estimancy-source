@@ -1,0 +1,72 @@
+  <!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+
+  <title><%= @page_title ? @page_title : controller.action_name %></title>
+
+  <%= stylesheet_link_tag 'application', media: 'screen' %>
+  <%= stylesheet_link_tag 'print', media: 'print' %>
+
+  <%= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '', 'data-turbolinks-track': 'reload' %>
+
+  <% if @online_support == "1" %>
+    <script type="text/javascript" src="http://www.spark-angels.com/panserver3/multiwidget/spk_multiwidget.js"></script>
+  <% end %>
+
+  <%= csrf_meta_tag %>
+</head>
+<body>
+
+<%= render 'layouts/modal' %>
+
+  <div class="nav navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <div class="pull-left">
+          <a target="_blank" href="http://www.estimancy.com">
+            <%= image_tag("/assets/Estimancy_Logo_Base-Line_RVB.png", width: 250, style: "margin-bottom: 10px;") %>
+          </a>
+        </div>
+
+        <div class="pull-right" style="margin: 27px 0 0 250px; font-size: large; font-weight: normal;">
+          <% organization_env_title = @current_organization.nil? ? nil : @current_organization.headband_title %>
+            <%= raw(organization_env_title) %>
+        </div>
+
+        <div class="pull-right" style="margin-top:16px; margin-left: 10px">
+          <% if defined?(current_user)  %>
+            <%= render 'layouts/send_feedback', :handlers => [:erb], :formats => [:html] %>
+          <% end %>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <div class="nav navbar">
+    <div class="navbar-inner">
+      <div class="container">
+        <% if user_signed_in? %>
+          <%= render 'layouts/user_account' %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-fluid" style="margin-top: 8px; padding-right: 10px; padding-left: 10px;">
+    <div class="row-fluid">
+      <div class="span12">
+        <div id="main">
+          <%= yield %>
+          <%= content_for :render_async %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%= render 'cookies_eu/consent_banner' %>
+
+</body>
+</html>
+
+<%= render 'layouts/notifications' %>

@@ -1,0 +1,36 @@
+<h3>
+  <%= I18n.t(:button_ask_account ) %>
+</h3>
+
+<%= form_tag '/create_inactive_user', :id => 'ask_new_account', :class => 'simple_form' do %>
+
+<div class="field_login">
+  <%= label_tag I18n.t('first_name') %>
+  <%= text_field_tag :first_name, '', :class => 'login_info span5' %>
+
+  <%= label_tag I18n.t('last_name') %>
+  <%= text_field_tag :last_name, '',:class => 'login_info span5' %>
+
+  <%= label_tag I18n.t('login_name') %>
+  <%= text_field_tag :login_name, '', :class => 'login_info span5' %>
+
+  <%= label_tag I18n.t('email') %>
+  <%= text_field_tag :email, '', :class => 'login_info span5' %>
+
+  <%= label_tag I18n.t('languages')%>
+  <%= select_tag :language, options_for_select(Language.all.map{|i| [i.name, i.id] }.sort), :class => 'login_info span5', :prompt => I18n.t('helpers.select.prompt') %>
+  </div>
+
+  <br/>
+  <div class="actions-tabs"><%= submit_tag I18n.t('send_request') %></div>
+  <div>
+    <br/>
+      <%= simple_format(I18n.t(:ask_new_account_help)) %>
+    <br/>
+  </div>
+
+  <div class="actions-tabs">
+    <%= link_to I18n.t('back'), '' %>
+  </div>
+<% end %>
+

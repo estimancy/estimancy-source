@@ -1,0 +1,240 @@
+<%= simple_form_for(@views_widget, :remote => true) do |f| %>
+  <%= f.error_notification %>
+  <div class="form-inputs">
+    <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
+    <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+    <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+
+    <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
+
+    <div class="well well-rounded" style="border-width: 1px; margin-bottom: 10px; padding-bottom: 10px;">
+        <table>
+          <tr>
+            <td><%= f.input :name, label: I18n.t(:name) %></td>
+            <td>
+              <label class="checkbox"></label>
+              <%= f.input :show_name, label: I18n.t(:show_name) %>
+            </td>
+          </tr>
+          <tr>
+            <!--<td><%#= f.association :pbs_project_element, label: I18n.t(:associate_pbs_element), collection: @project_pbs_project_elements, selected: @views_widget.pbs_project_element.nil? ? '' : @views_widget.pbs_project_element.id, include_blank: false, input_html:{class: "inline_attr"}  %></td>-->
+            <td>
+              <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+                <%= f.association :module_project, label: "Modules", collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, include_blank: true, input_html:{ class: "inline_attr" } %>
+              <% else %>
+                <%= f.association :module_project, label: "Modules", collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: true, input_html:{ class: "inline_attr" } %>
+              <% end %>
+            </td>
+            <td><%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: I18n.t(:associated_attribute), input_html: {class: "inline_attr input-xxl"}, include_blank: true %></td>
+          </tr>
+        </table>
+    </div>
+    <div class="well well-rounded" style="border-width: 1px; margin-bottom: 10px; padding-bottom: 10px;">
+      <table>
+        <tr>
+          <td><%= f.input :widget_type, collection: @views_widget_types, as: :grouped_select, group_method: :last, :group_label_method => :first, :label => I18n.t(:widget_type), include_blank: false, input_html:{class: "inline_attr"} %></td>
+          <td>
+            <% if @views_widget.new_record? %>
+              <%= f.input :color, label: I18n.t(:status_color), input_html: { value: "blanchedalmond" } %>
+            <% else %>
+              <%= f.input :color, label: I18n.t(:status_color) %>
+            <% end %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label><%= I18n.t :fields %></label>
+            <% selected = @views_widget.project_fields.first %>
+            <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?) %>
+          </td>
+
+          <td>
+            <label class="checkbox" style="margin-top: -9px;"></label>
+            <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
+          </td>
+          <td><div id="view_icon_class_image"></div></td>
+        </tr>
+
+        <tr>
+          <td colspan="2">
+            <b>
+              La valeur minmale doit être inférieure à la valeur maximale.
+            </b>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <%= f.input :min_value, as: :integer, label: I18n.t(:val_min), :input_html => { value: @min_value, placeholder: "Valeur min. autorisée" } %>
+          </td>
+          <td>
+            <%= f.input :max_value, as: :integer, label: I18n.t(:val_max), :input_html => { value: @max_value, placeholder: "Valeur max. autorisée" } %>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <%= f.input :validation_text, as: :string, label: "Texte de validation", :input_html => { value: @views_widget.validation_text } %>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <label class="checkbox"></label>
+            <%= f.input :show_tjm, as: :boolean, label: I18n.t(:show_tjm), input_html: {class: 'inline_attr'} %>
+            <%= f.input :show_min_max, as: :boolean, label: I18n.t(:show_min_max), input_html: {class: 'inline_attr'} %>
+            <%= f.input :show_wbs_activity_ratio, as: :boolean, label: I18n.t(:show_wbs_activity_ratio), disabled: !@module_project.wbs_activity %>
+          </td>
+        </tr>
+      </table>
+      <%= f.input :use_organization_effort_unit, label: I18n.t(:organization_effort_unit, value: @current_organization) %>
+    </div>
+  </div>
+  
+  <div class="actions-tabs">
+    <% if can?(:alter_estimation_plan, @project) || ( can?(:manage_estimation_widgets, @project) && @views_widget.project_fields.empty? && (@views_widget.min_value < @views_widget.max_value)) %>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+    <% end %>
+    <button class="btn" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+  </div>
+<% end %>
+
+<script>
+
+    $("#views_widget_color").spectrum({
+        showPaletteOnly: true,
+        showPalette:true,
+        hideAfterPaletteSelect:true,
+        showInitial: true,
+        preferredFormat: "hex",
+        replacerClassName: 'mycolorpicker',
+        //color: 'blanchedalmond',
+        <% if @views_widget.new_record? %>
+          color: 'blanchedalmond',
+        <% end %>
+
+        palette: [
+            ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
+            ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
+            ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
+            ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
+        ]
+    });
+
+
+    // Update the view_widget show_min_max attribute according to the selected widget_type
+    var delete_min_max_on_widget_type = [ "line_chart", "bar_chart", "area_chart", "pie_chart", "timeline", "stacked_bar_chart", "histogram_effort_per_phase", "pie_chart_effort_per_phase", "histogram_cost_per_phase",
+        "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
+
+    var widget_type = $("#views_widget_widget_type").val();
+
+    // Affichage du MIN/MAX
+    if (widget_type == "text" || widget_type == "bar_chart"){
+        $('#views_widget_show_min_max').removeAttr('disabled');
+    }
+    else {
+        $('#views_widget_show_min_max').attr('checked', false);
+        $('#views_widget_show_min_max').attr('disabled','disabled');
+        $("#views_widget_widget_type").value = 0;
+    }
+
+    // Affichage ou non du TJM
+    if ((widget_type == "table_cost_per_phase") || (widget_type == "table_cost_per_phase_without_zero") ||
+        (widget_type == "cost_per_phases_profiles_table") || (widget_type == "cost_per_phases_profiles_table_without_zero") ||
+        (widget_type == "table_effort_and_cost_per_phase") || (widget_type == "table_effort_and_cost_per_phase_without_zero") ||
+        (widget_type == "table_effort_and_cost_per_phases_profiles") || (widget_type == "table_effort_and_cost_per_phases_profiles_without_zero"))
+    {
+        $('#views_widget_show_tjm').removeAttr('disabled');
+    }
+    else {
+        $('#views_widget_show_tjm').attr('checked', false);
+        $('#views_widget_show_tjm').attr('disabled','disabled');
+    }
+
+//    if (widget_type !== ""){
+//        if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
+//            $('#views_widget_show_min_max').attr('disabled','disabled');
+//            $("#views_widget_widget_type").value = 0;
+//        }
+//        else{
+//            $('#views_widget_show_min_max').removeAttr('disabled');
+//        }
+//    }
+
+
+
+    // Update the view_widget attribute according to the selected module
+    $("#views_widget_module_project_id").change(function() {
+        if ($(this).val() !== ""){
+            return $.ajax({
+                url: "/update_widget_module_project_data",
+                method: "GET",
+                data: "module_project_id=" + $(this).val()
+            });
+        }
+    });
+
+    // Update the view_widget attribute according to the selected module
+    $("#views_widget_estimation_value_id").change(function() {
+        var attibute_alias = $(this).val();
+        //if (attibute_alias !== ""){
+            return $.ajax({
+                url: "/show_widget_effort_display_unit",
+                method: "GET",
+                data: {
+                    estimation_value_id: $(this).val(),
+                    view_widget_id: "<%= @views_widget.id %>",
+                    module_project_id: $("#views_widget_module_project_id").val()
+                }
+            });
+        //}
+    });
+
+
+    $("#views_widget_widget_type").change(function() {
+        var widget_type = $(this).val();
+
+        if (widget_type == "text" || widget_type == "bar_chart"){
+            $('#views_widget_show_min_max').removeAttr('disabled');
+        }
+        else {
+            $('#views_widget_show_min_max').attr('checked', false);
+            $('#views_widget_show_min_max').attr('disabled','disabled');
+            $("#views_widget_widget_type").value = 0;
+        }
+
+        // Affichage on non du TJM
+        if ((widget_type == "table_cost_per_phase") || (widget_type == "table_cost_per_phase_without_zero") ||
+            (widget_type == "cost_per_phases_profiles_table") || (widget_type == "cost_per_phases_profiles_table_without_zero") ||
+            (widget_type == "table_effort_and_cost_per_phase") || (widget_type == "table_effort_and_cost_per_phase_without_zero") ||
+            (widget_type == "table_effort_and_cost_per_phases_profiles") || (widget_type == "table_effort_and_cost_per_phases_profiles_without_zero"))
+        {
+            $('#views_widget_show_tjm').removeAttr('disabled');
+        }
+        else {
+            $('#views_widget_show_tjm').attr('checked', false);
+            $('#views_widget_show_tjm').attr('disabled','disabled');
+        }
+
+
+//        if (widget_type !== ""){
+//            if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
+//                $('#views_widget_show_min_max').attr('disabled','disabled');
+//                $("#views_widget_widget_type").value = 0;
+//            } else{
+//                $('#views_widget_show_min_max').removeAttr('disabled');
+//            }
+//        }
+    });
+
+
+    //manage the label widget
+    $("#views_widget_is_label_widget").change(function(){
+        if($(this).is(':checked')){
+            //alert(1);
+            //$("#new_views_widget").closest("tr").find(":input.inline_attr").attr("disabled", 'disabled');
+            $("form#new_views_widget select.inline_attr, input:checkbox.inline_attr ").attr("disabled", 'disabled');
+        } else{
+            //alert(0);
+            $("form#new_views_widget select.inline_attr, input:checkbox.inline_attr ").removeAttr('disabled');
+        }
+    });
+
+</script>

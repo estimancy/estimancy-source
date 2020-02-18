@@ -1,0 +1,34 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:estimations_statuses) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+
+    <%= simple_form_for(@estimation_status) do |f| %>
+      <%= f.error_notification %>
+      <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
+
+      <div class="form-inputs">
+        <div class="row-fluid">
+          <%= f.input :status_number, label: I18n.t(:status_number) %>
+          <%= f.input :name, label: I18n.t(:name) %>
+          <%= f.input :status_alias, label: I18n.t(:alias) %>
+
+          <%= f.input :is_archive_status, label: I18n.t(:is_archive_status) %>
+          <%= f.input :is_new_status, label: I18n.t(:is_new_status) %>
+          <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed) %>
+          <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
+          <%= f.input :description, label: I18n.t(:description), input_html: {:class => 'input-xxlarge', :rows => 5} %>
+        </div>
+      </div>
+
+      <div class="actions-tabs">
+        <% if can? :manage, EstimationStatus %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses'), :class => 'btn' %>
+      </div>
+    <% end %>
+  </div>
+</div>

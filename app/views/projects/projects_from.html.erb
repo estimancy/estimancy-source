@@ -1,0 +1,9 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-group"><%= I18n.t(:estimation_models) %></a></li>
+  </ul>
+
+  <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <%= render partial: "projects/estimation_models", object: @estimation_models %>
+  </div>
+</div>

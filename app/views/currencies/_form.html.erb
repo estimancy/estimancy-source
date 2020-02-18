@@ -1,0 +1,25 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:currencies) %> </a></li>
+  </ul>
+
+    <div id="tabs-1">
+      <%= simple_form_for(@currency) do |f| %>
+          <%= f.error_notification %>
+
+          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')}  %>
+          <%= f.input :alias, :label => I18n.t('alias'), :input_html => {:class => 'input-xxlarge'} %>
+          <%= f.input :description, :label => I18n.t('description') , :input_html => {:class => 'input-xxlarge', :rows => 5} %> <br />
+          <%= f.input :iso_code, :label => I18n.t('iso_code'), :input_html => {:class => 'input-xxlarge'} %>
+          <%= f.input :iso_code_number, :label => I18n.t('iso_code_number'), :input_html => {:class => 'input-xxlarge'} %>
+          <%= f.input :sign, :label => I18n.t('currency_sign'), :input_html => {:class => 'input-xxlarge'} %>
+          <%= f.input :conversion_rate, :label => I18n.t('conversion_rate'), :input_html => {:class => 'input-xxlarge'} %>
+
+          <div class="actions-tabs">
+            <%= f.submit I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= f.submit I18n.t('apply'), :class => 'btn btn-primary' %>
+          </div>
+      <% end %>
+    </div>
+</div>
+

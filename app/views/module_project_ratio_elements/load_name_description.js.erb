@@ -1,0 +1,5 @@
+$("#modal_comments_content").html("<%= j(render 'name_description_modal', { :mp_ratio_element => @module_project_ratio_element })%>")
+$("#modal_comments").modal({
+    keyboard: false,
+    backdrop: "static"
+});

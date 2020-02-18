@@ -1,0 +1,42 @@
+<div class="component_tree" id="project_wbs_product_section">
+  <div class="overflow">
+
+    <ul class="nav nav-tabs" id="pbs_wbs">
+      <li class="active"><a href="#pbs"><%= I18n.t(:wbs_product) %></a></li>
+      <li><a href="#wbs"><%= I18n.t(:wbs_activity) %></a></li>
+    </ul>
+
+    <div class="tab-content">
+      <% if @project_default_ratio %>
+        <div class = "pull-right darkorange_color"><%= I18n.t(:project_default_ratio) %> : <%= link_to "#{@project_default_ratio}", edit_wbs_activity_path(@project_default_ratio.wbs_activity.id, project_default_ratio: @project_default_ratio, Ratio: @project_default_ratio.id, anchor: 'tabs-4')  %></div>
+      <% else %>
+          <div class = "pull-right darkorange_color"><%= I18n.t(:project_default_ratio) %> : <%= I18n.t(:no_default_ratio) %></div>
+      <% end %>
+
+      <div class="tab-pane active" id="pbs">
+        <% unless @project.nil? || @project.pe_wbs_projects.products_wbs.first.nil? %>
+          <%=raw generate_wbs_product(@project.pe_wbs_projects.products_wbs.first.pbs_project_elements.last.root, @project, '', 5) %>
+        <% end %>
+      </div>
+
+      <div class="tab-pane" id="wbs">
+        <% unless @project.nil? || @pe_wbs_project_activity.nil? %>
+          <%=raw generate_wbs_project_elt_tree(@pe_wbs_project_activity.wbs_project_elements.elements_root.first, '', @show_hidden) %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $(function () {
+        $('#pbs_wbs a:first').tab('show');
+      })
+      $('#pbs_wbs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+      })
+    });
+  </script>
+
+</div>

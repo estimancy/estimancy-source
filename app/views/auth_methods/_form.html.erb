@@ -1,0 +1,72 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:auth_methods) %> </a></li>
+  </ul>
+  <div id="tabs-1">
+    <%= simple_form_for(@auth_method) do |f| %>
+        <%= f.error_notification %>
+
+        <div>
+          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+          <%= f.input :server_name, :label => I18n.t('server_name'), :input_html => {:class => 'input-large'} %>
+          <table>
+            <tr>
+              <td><%= f.input :port, :as => :select, :collection => ['389', '636'], :label => I18n.t('port'), :input_html => {:class => 'input-medium'} %></td>
+              <td>&nbsp &nbsp &nbsp</td>
+              <td><%= f.input :encryption, :label => I18n.t('encryption'),  :collection => ['No encryption', 'SSL (ldaps://)', 'StartTLS' ] %></td>
+            </tr>
+          </table>
+          <%= f.input :ldap_bind_dn, :label => I18n.t('ldap_bind_dn'), :input_html => {:class => 'input-xxlarge', :type => "text"} %>
+          <%= f.input :password, :label => I18n.t('ldap_bind_encrypted_password'), :input_html => {:class => 'input-xlarge', :disabled => false, :type => "text"} %>
+          <%= f.input :base_dn, :label => I18n.t('base_dn'), :input_html => {:class => 'input-xxlarge'} %>
+          <table>
+            <tr>
+              <td><%= f.input :priority_order, :label => I18n.t('priority_order'), :input_html => {:class => 'input-small'} %></td>
+              <td>&nbsp &nbsp &nbsp</td>
+              <td><%= f.input :on_the_fly_user_creation, :label => I18n.t('on_the_fly_user_creation') %></td>
+            </tr>
+          </table>
+
+          <div id="accordion1" class="accordion">
+            <div class="accordion-group accordion-caret">
+              <div class="accordion-heading">
+                <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion1" href="#collapseOne">
+                  <i class="fa fa-caret-down"></i>
+                  <b><%= I18n.t('ldap_attributes') %></b>
+                </a>
+              </div>
+              <div id="collapseOne" class="accordion-body in collapse">
+                <div class="accordion-inner">
+                  <table>
+                    <tr>
+                      <td><%= f.input :user_name_attribute, :label => I18n.t('user_name_attribute'), :input_html => {:class => 'input-large'} %></td>
+                    </tr>
+                    <tr>
+                      <td><%= f.input :first_name_attribute, :label => I18n.t('first_name_attribute'), :input_html => {:class => 'input-large'} %></td>
+                      <td><%= f.input :last_name_attribute, :label => I18n.t('last_name_attribute'), :input_html => {:class => 'input-large'} %></td>
+                    </tr>
+                    <tr>
+                      <td><%= f.input :email_attribute, :label => I18n.t('email_attribute'), :input_html => {:class => 'input-large', :type => "text"} %></td>
+                      <td><%= f.input :initials_attribute, :label => I18n.t('initials_attribute'), :input_html => {:class => 'input-large'} %></td>
+                    </tr>
+                  </table>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions-tabs">
+            <% if action_name.in?(%w(new create)) %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <% elsif action_name == 'edit' || action_name=='update' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <% end %>
+            <%= link_to I18n.t('back'), auth_methods_path, :class => 'btn' %>
+          </div>
+    <% end %>
+    </div>
+  </div>
+</div>

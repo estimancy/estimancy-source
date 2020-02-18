@@ -1,0 +1,24 @@
+<% unless @initialization_module_project.nil? %>
+  <% pmod = @initialization_module_project %>
+
+    <% left_position = pmod.left_position.nil? ? "30%" : "#{pmod.left_position.to_f}px" %>
+    <% top_position = pmod.top_position.nil? ? "0px" : "#{pmod.top_position.to_f}px" %>
+
+      <div class="module_project <%= "#{@initialization_module.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center"
+           id="<%= "mp_#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %>" data-module_project_id="<%= pmod.id %>"
+           style="top: <%= top_position %>; left: <%= left_position %>" >
+
+        <%= link_to pmod, "#", class: "a_white" %>
+
+        <% unless @project.locked? %>
+          <%= link_to '', '#', :title => "#{@project}: \n #{@initialization_module.description}", :class => "a_white icon-info attribute_tooltip" %>
+        <% end %>
+
+        <% if pmod.show_results_view %>
+            <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-open a_white", :title => I18n.t(:title_hide_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
+        <% else %>
+            <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-close a_white", :title => I18n.t(:title_show_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
+        <% end %>
+      </div>
+
+<% end %>

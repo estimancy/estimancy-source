@@ -1,0 +1,24 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-2"><%= I18n.t(:maintenance_message)%></a></li>
+  </ul>
+
+  <div id="tabs-2">
+    <%= form_tag mass_mailing_path do %>
+
+
+
+      <div class="input string optional user_initials">
+        <label class="string control-label" for="objet">Objet</label>
+        <input class="string input-xxlarge" id="objet" name="objet" size="50" type="text">
+      </div>
+
+      <div class="input string optional user_initials">
+        <label class="string optional control-label" for="message">Message de maintenance</label>
+        <%= text_area_tag "message", "", class: "tinymce optional", rows: "15" %>
+      </div>
+
+      <%= submit_tag I18n.t(:send_all_users), class: "btn" %>
+    <% end %>
+  </div>
+</div>

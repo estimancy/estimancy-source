@@ -1,0 +1,16 @@
+//Module without activities
+<% if @wbs_project_elt_id.nil? || @wbs_project_elt_id==""%>
+    <% if @is_valid %>
+        $(".<%= @level %>.<%= @est_val_id %>").css("border", "1px solid #cccccc");
+    <% else %>
+        $(".<%= @level %>.<%= @est_val_id %>").css("border", "1px solid red");
+    <% end %>
+
+//Module with activities
+<% else %>
+    <% if @is_valid %>
+        $(".<%= @level %>.<%= @est_val_id %>.<%= @wbs_project_elt_id %>").css("border", "1px solid #cccccc");
+    <% else %>
+        $(".<%= @level %>.<%= @est_val_id %>.<%= @wbs_project_elt_id %>").css("border", "1px solid red");
+    <% end %>
+<% end %>

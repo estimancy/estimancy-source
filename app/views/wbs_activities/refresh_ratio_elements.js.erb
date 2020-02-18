@@ -1,0 +1,17 @@
+//$("#ratio_section").html("<%#= j(render(:partial => 'wbs_activity_ratio_elements', :object => @wbs_activity_ratio_elements)) %>");
+$("#percentage_of_input_ratio_section").html("<%= j(render(:partial => 'wbs_activity_ratio_elements_percentage_of_input', :object => [@wbs_activity_ratio_elements, @selected_ratio])) %>");
+$("#formula_ratio_section").html("<%= j(render(:partial => 'wbs_activity_ratio_elements_formula', :object => [@wbs_activity_ratio_elements, @selected_ratio])) %>");
+
+
+$("#activities_ratio_per_profile").html("<%= j(render(:partial => 'wbs_activities/activities_ratio_per_profile', :object => [@wbs_activity_ratio_elements, @wbs_organization_profiles])) %>");
+
+$("#notifications").html("");
+
+if(($('.div_tabs_to_disable').data('enable_update')) ==  false){
+    $('.div_tabs_to_disable').find('input, textarea, button, select, a').attr('disabled','disabled');
+    $('.select_ratio').removeAttr("disabled");
+}
+
+//Update the total ratio value per activity when activity's profile ratio has changed
+update_wbs_activity_ratio_profiles();
+

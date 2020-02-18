@@ -1,0 +1,24 @@
+<h1><%= I18n.t(:Listing_staffing_models) %></h1>
+
+<table>
+  <%= I18n.t(:simple_text_show).html_safe  %>
+<% @staffing_models.each do |staffing_model| %>
+  <tr>
+    <td><%= staffing_model.organization_id %></td>
+    <td><%= staffing_model.name %></td>
+    <td><%= staffing_model.coefficient %></td>
+    <td><%= staffing_model.coef_n %></td>
+    <td><%= staffing_model.three_points_estimation %></td>
+    <td><%= staffing_model.enabled_input %></td>
+    <td><%= staffing_model.copy_id %></td>
+    <td><%= staffing_model.copy_number %></td>
+    <td><%= link_to I18n.t(:Show), staffing_model %></td>
+    <td><%= link_to I18n.t(:edit), edit_staffing_model_path(staffing_model) %></td>
+    <td><%= link_to I18n.t(:delete), staffing_model, method: :delete, data: { confirm: I18n.t(:are_you_sure) } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to I18n.t(:new_staffing_model), new_staffing_model_path %>

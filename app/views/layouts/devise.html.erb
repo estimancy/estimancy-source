@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Estimancy </title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <%= stylesheet_link_tag 'application' %>
+  <%= javascript_include_tag :application %>
+  <%= csrf_meta_tag %>
+
+</head>
+<body class="login">
+
+<div class="login_background">
+  <div class="login_window">
+    <div class="login_wrapper"></div>
+      <div class="login_information">
+        <div id="notifications">
+          <%= render 'layouts/notifications' %>
+        </div>
+        <%= yield %>
+      </div>
+  </div>
+</div>
+
+<%= render 'cookies_eu/consent_banner' %>
+
+
+</body>
+</html>

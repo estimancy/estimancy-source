@@ -1,0 +1,25 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b><%= I18n.t(:label_Organization) %>:</b>
+  <%= @estimation_status.organization_id %>
+</p>
+
+<p>
+  <b><%=I18n.t(:status_number)%>:</b>
+  <%= @estimation_status.status_number %>
+</p>
+
+<p>
+  <b><%= I18n.t(:name) %>:</b>
+  <%= @estimation_status.name %>
+</p>
+
+<p>
+  <b><%= I18n.t(:description) %>:</b>
+  <%= @estimation_status.description %>
+</p>
+
+
+<%= link_to I18n.t(:edit), edit_estimation_status_path(@estimation_status) %> |
+<%= link_to I18n.t(:Back), estimation_statuses_path %>

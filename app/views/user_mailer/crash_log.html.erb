@@ -1,0 +1,29 @@
+<p>
+  Une erreur est survenue sur le serveur
+</p>
+
+<br>
+
+<p>
+  <b>
+    <%= @user %> - <%= @organization %> - <%= @project %> - <%= Time.now %>
+  </b>
+</p>
+
+<br>
+
+<b>
+  <%= @exception %>
+</b>
+
+<br>
+
+<table>
+  <% @backtrace.each do |bt| %>
+    <tr>
+      <td>
+        <%= bt %>
+      </td>
+    </tr>
+  <% end %>
+</table>

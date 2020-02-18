@@ -1,0 +1,35 @@
+<h3>
+  <%= I18n.t(:button_ask_account ) %>
+</h3>
+
+<%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <% if session["devise.user_attributes"] %>
+      <%= f.input :first_name, required: true, autofocus: true, :label => I18n.t('first_name'), :input_html => { :class => 'login_info span5', :value => (@firstname_with_provider if @firstname_with_provider)} %>
+      <%= f.input :last_name, required: true, :label => I18n.t('last_name'), :input_html => { :class => 'login_info span5', :value => (@lastname_with_provider if @lastname_with_provider) } %>
+      <%= f.input :login_name, required: true, :label => I18n.t('login_name'), :input_html => { :class => 'login_info span5', :value => (@login_name_with_provider if @login_name_with_provider) } %>
+      <%= f.input :email, required: true, :input_html => { :class => 'login_info span5', :value => (@email_with_provider if @email_with_provider) } %>
+    <% else %>
+      <%= f.input :first_name, required: true, autofocus: true, :label => I18n.t('first_name'), :input_html => { :class => 'login_info span5'} %>
+      <%= f.input :last_name, required: true, :label => I18n.t('last_name'), :input_html => { :class => 'login_info span5'} %>
+      <%= f.input :login_name, required: true, :label => I18n.t('login_name'), :input_html => { :class => 'login_info span5' } %>
+      <%= f.input :email, required: true, :input_html => { :class => 'login_info span5'} %>
+    <% end %>
+    <%= f.input :language_id, :as => :collection_select, collection: Language.all.map{|i| [i.name, i.id] }.sort, :prompt => I18n.t('helpers.select.prompt'), :input_html => {:class => "login_info span5"} %>
+    <%= f.input :password, required: true, :input_html => { :class => 'login_info span5' } %>
+    <%= f.input :password_confirmation, required: true, :input_html => { :class => 'login_info span5' } %>
+  </div>
+
+  <div>
+    <%= f.button :submit, I18n.t('send_request'), :class => 'btn btn-primary' %>
+  </div>
+<% end %>
+
+<%= render "devise/shared/links" %>
+
+<div class="login_page">
+</div>
+
+</div>

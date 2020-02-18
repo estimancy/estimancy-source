@@ -1,0 +1,22 @@
+<% pmod = @initialization_module_project %>
+<% unless current_module_project.nil? or pmod.nil? %>
+  <% (current_module_project.id == pmod.id) ? select_pemodule = 'selected_module_project' : 'unselected_module_project' %>
+<% end %>
+
+<% unless pmod.nil? %>
+  <tr>
+    <td colspan="<%= @module_positions_x %>">
+      <!--<div class="<%#= select_pemodule %> module_project_min <%#= "#{@initialization_module.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center">-->
+      <div class="<%= select_pemodule %> module_project_min <%= "#{pmod.pemodule.alias}_#{pmod.position_x}_#{pmod.position_y}" %> text-center" style="background-color: <%= "#{pmod.color}" %>">
+
+        <%= link_to pmod, activate_module_project_path(pmod), remote: true, "data-turbolinks": "false" %>
+
+        <% if pmod.show_results_view %>
+            <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-open a_white blue", :title => I18n.t(:title_hide_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
+        <% else %>
+            <%= link_to '', show_module_project_results_view_path(module_project_id: pmod.id), id:"show_results_view", :class => "icon-eye-close a_white blue", :title => I18n.t(:title_show_results_view, :value => "#{pmod.pemodule.title}"), remote: true %>
+        <% end %>
+      </div>
+    </td>
+  </tr>
+<% end %>

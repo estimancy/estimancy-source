@@ -1,0 +1,12 @@
+$("#notifications").html("<%= j(render "layouts/notifications") %>");
+$("#activities_ratio_per_profile").html("<%= j(render(:partial => 'wbs_activities/activities_ratio_per_profile', :object => [@wbs_activity_ratio_elements, @wbs_organization_profiles])) %>");
+
+//Update the total ratio value per activity when activity's profile ratio has changed
+update_wbs_activity_ratio_profiles();
+
+//Redirect to the correct URL (Apply or SAVE)
+//window.location.replace("<%#= @redirect_url_apply_or_save_path %>");
+//window.location.href = "<%#= @redirect_url_apply_or_save_path %>";
+
+$(location).attr('href','<%= @redirect_url_apply_or_save_path %>');
+$(location).reload();

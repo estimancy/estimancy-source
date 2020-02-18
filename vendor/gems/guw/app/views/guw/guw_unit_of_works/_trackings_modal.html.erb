@@ -1,0 +1,19 @@
+<%= form_tag guw.save_trackings_path, method: "post" do %>
+  <div class="modal-header modal-drag">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="tracking_label<%= guow.id %>">
+      <b>
+        <%= guow.guw_type %>
+      </b> - <%= I18n.t(:trackings_of, parameter: guow)  %> </h4>
+    </h4>
+  </div>
+  <div class="modal-body">
+    <%= text_area_tag "trackings[#{guow.id}]", guow.tracking, class: "attribute_note_area", readonly: !can?(:execute_estimation_plan, @project) %>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-default" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+    <% if can? :execute_estimation_plan, @project %>
+      <button type="submit" class="btn btn-default"><%= I18n.t(:save) %></button>
+    <% end %>
+  </div>
+<% end %>

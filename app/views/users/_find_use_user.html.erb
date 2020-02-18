@@ -1,0 +1,31 @@
+<% if @related_projects_securities.nil? || @related_projects_securities.empty? %>
+  <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_user_finduse_no_project, :value => @user)}" %></div>
+    <br>
+<% else %>
+  <table border="0" width="100%" class="table tablesorterPager table-striped table-bordered table-condensed">
+    <tr>
+      <th colspan="3"><%= I18n.t(:text_user_associated_projects) %></th>
+    </tr>
+
+    <tr>
+      <th><%= I18n.t(:label_project_name) %></th>
+      <th><%= I18n.t(:label_permission_access) %></th>
+      <th><%= I18n.t(:permissions) %></th>
+    </tr>
+    <% @related_projects_securities.each do |project_security| %>
+      <tr>
+        <td>
+          <span class='attribute_tooltip' title="<%= project_security.project.description %>"><%= raw link_to("#{project_security.project}", edit_project_path(project_security.project)) %> </span>
+        </td>
+        <td>
+          <% if !project_security.user.nil? %>
+            <%= "direct" %>
+          <% elsif !project_security.group.nil?  %>
+            <%= "via the '#{project_security.group.name}' group" %>
+          <% end %>
+        </td>
+        <td><%= project_security.project_security_level.name %></td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

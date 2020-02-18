@@ -1,0 +1,237 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-report"><%= I18n.t(:filtered_excel_report)%></a></li>
+    <li><a href="#tabs-report-all"><%= I18n.t(:detailed_excel_report)%></a></li>
+    <li><a href="#tabs-pdf-all"><%= I18n.t(:detailed_pdf_report)%></a></li>
+    <% unless "saas".in?(request.original_url) %>
+      <li><a href="#extract-data"><%= I18n.t(:raw_data_extract)%></a></li>
+    <% end %>
+  </ul>
+
+  <% unless "saas".in?(request.original_url) %>
+    <div id="extract-data" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+      <p>
+        <%= I18n.t(:raw_data_range_dates) %>
+      </p>
+
+      <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
+        <div class="row-fluid">
+          <div class="span12">
+            <%= label_tag 'Date min' %>
+            <%= text_field_tag 'date_min', "", class: "date-picker" %>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <%= label_tag 'Date max' %>
+            <%= text_field_tag 'date_max', "", class: "date-picker" %>
+          </div>
+        </div>
+
+        <br>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary" %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div id="tabs-report-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+   <%= form_tag "generate_report_excel_detail", method: "post" do %>
+      <h4><%= I18n.t(:generate_excel_report_all_quotations) %></h4>
+      <p>
+        <%= I18n.t(:Abaque_Wbs_quotation_export) %>
+      </p>
+      <br>
+      <%= hidden_field_tag "organization_id", params[:organization_id] %>
+      <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
+    <% end %>
+  </div>
+
+  <div id="tabs-report" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+
+    <h4><%= I18n.t(:generate_filtered_excel_report) %></h4>
+    <p>
+      <%= I18n.t(:selected_quotation_export) %>
+    </p>
+
+      <%= form_tag "generate_report_excel_estimations", method: "post" do %>
+
+      <%= hidden_field_tag "organization_id", params[:organization_id] %>
+
+      <div class="row-fluid">
+        <div class="span3 well well-rounded">
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:label_project_name) %>
+              <%= text_field_tag "title", "" %>
+            </div>
+          </div>
+          <br>
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:Product_Name) %>
+              <%# text_field_tag "application", "" %>
+              <%= select_tag "report[application_id]", options_for_select(@organization.applications.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
+            </div>
+          </div>
+          <br>
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:Start_date_organizations) %>
+              <%= text_field_tag "report_date[start_date]", "", class: 'date-picker' %>
+            </div>
+          </div>
+          <br>
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:end_date_organizations) %>
+              <%= text_field_tag "report_date[end_date]", "", class: 'date-picker' %>
+            </div>
+          </div>
+        </div>
+        <div class="span3 well well-rounded">
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:Platform_Categorie_organization) %>
+              <%= select_tag "report[platform_category_id]", options_for_select(@organization.platform_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
+            </div>
+          </div>
+          <br>
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:Project_Category) %>
+              <%= select_tag "report[project_category_id]", options_for_select(@organization.project_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
+            </div>
+          </div>
+          <br>
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:Category_acquistion) %>
+              <%= select_tag "report[acquisition_category_id]", options_for_select(@organization.acquisition_categories.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
+            </div>
+          </div>
+          <br>
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:project_area) %>
+              <%= select_tag "report[project_area_id]", options_for_select(@organization.project_areas.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
+            </div>
+          </div>
+          <br>
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:Estimating_Status) %>
+              <%= select_tag "report[estimation_status_id]", options_for_select(@organization.estimation_statuses.map{|i| [i.name, i.id]}), prompt: I18n.t(:Indifferent) %>
+            </div>
+          </div>
+        </div>
+
+        <div class="span4 well well-rounded">
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:counting_details) %>
+              <%= check_box_tag "detail", "checked", true %>
+            </div>
+          </div>
+
+          <br>
+
+          <div class="row-fluid">
+            <div class="span12">
+              <%= label_tag I18n.t(:module_size_select) %>
+              <%= select_tag "guw_model_id", options_for_select(@organization.guw_models.map{|i| [i.name, i.id]} ) %>
+            </div>
+          </div>
+          <br>
+        </div>
+      </div>
+
+      <br>
+      <div class="row-fluid">
+        <div class="span12">
+          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div id="tabs-pdf-all" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <h4>
+      <%= I18n.t(:quotation_PDF_export) %>
+    </h4>
+
+    <div class="row-fluid">
+      <div class="span12">
+        <% @projects = @organization.projects %>
+        <%= form_tag multiple_export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form', target: "_blank" do %>
+          <div class="modal-body" style="height: inherit;">
+
+            <p>
+              <label>
+                <b> <%= I18n.t :business_need %></b>
+              </label>
+              <%= select_tag "business_need", options_for_select(@projects.map(&:business_need).uniq.compact) %>
+            </p>
+
+            <p>
+              <label>
+                <b><%= I18n.t :request_number %></b>
+              </label>
+              <%= select_tag "request_number", options_for_select(@projects.map(&:request_number).uniq.compact) %>
+            </p>
+
+            </p>
+            <label>
+              <b><%= I18n.t :title %></b>
+            </label>
+            <%= text_field_tag :title %>
+            </p>
+
+            <div class="row-fluid">
+              <div class="span12">
+                <label>
+                <b><%= I18n.t :date_min %></b>
+                </label>
+                <%= text_field_tag :date_min, '', class: 'date-picker' %>
+              </div>
+            </div>
+
+            <br>
+
+            <div class="row-fluid">
+              <div class="span12">
+                <label>
+                <b><%= I18n.t :date_max %></b>
+                </label>
+                <%= text_field_tag :date_max, '', class: 'date-picker' %>
+              </div>
+            </div>
+
+          </div>
+
+          <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
+
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  $(document).ready(function () {
+    $(".date-picker").datepicker({
+      language: '<%= set_user_language %>',
+      autoclose: true,
+      todayHighlight: true,
+      todayBtn: true
+    });
+  });
+</script>

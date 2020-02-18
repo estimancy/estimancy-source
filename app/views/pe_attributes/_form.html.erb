@@ -1,0 +1,100 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:pe_attributes) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for(@attribute) do |f| %>
+        <%= f.error_notification %>
+
+        <div>
+          <table>
+            <tr>
+              <td><%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge', :autofocus => (controller.action_name == 'new')} %></td>
+              <td><%= f.input :alias, :label => I18n.t('alias'), :input_html => {:class => 'input-medium'} %></td>
+            </tr>
+
+            <tr>
+              <td>
+                <%= f.input :single_entry_attribute, :label => I18n.t('label_single_entry_attribute'), :as => :select, :input_html => {:class => 'input-xlarge'} %>
+              </td>
+            </tr>
+          </table>
+
+          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 6} %>
+          <%= f.input :aggregation, :label => I18n.t('aggregation'), :as => :select, :collection => PeAttribute::type_aggregation %>
+
+          <%= f.input :attr_type, :label => I18n.t('validation_options') do %>
+            <% if @attribute.options.empty? %>
+              <%= select_tag 'options[]', options_for_select(PeAttribute::type_values), :onchange => 'select_value_options(this.value);', :prompt => I18n.t('helpers.select.prompt') %>
+              <%= select_tag 'options[]', options_for_select(PeAttribute::value_options), :onchange => 'select_boolean(this.value);', :class => 'type_value', :style => 'display:none;', :prompt => I18n.t('helpers.select.prompt') %>
+              <%= text_field_tag 'options[]', @attribute.options[2], {:class => 'text_field_value', :style => 'display:none;'} %>
+              <div class="pe_attribute_precision" style="display:none;">
+                <%= f.input :precision, :label => I18n.t('label_precision'), :input_html => {:min => 0, :max => 6} %>
+              </div>
+            <% else %>
+              <%= select_tag 'options[]', options_for_select(PeAttribute::type_values, :selected => (@attribute.options[0] || @attribute.attr_type)), :onchange => 'select_value_options(this.value);', :prompt => I18n.t('helpers.select.prompt') %>
+              <% if @attribute.attr_type=='list' %>
+                <%= select_tag 'options[]', options_for_select(PeAttribute::value_options, :selected => @attribute.options[1]), :class => 'type_value', :style => 'display:none;', :prompt => I18n.t('helpers.select.prompt') %>
+              <% else %>
+                <%= select_tag 'options[]', options_for_select(PeAttribute::value_options, :selected => @attribute.options[1]), :class => 'type_value', :prompt => I18n.t('helpers.select.prompt') %>
+              <% end %>
+              <%= text_field_tag 'options[]', @attribute.options[2], {:class => 'text_field_value'} %>
+              <% if @attribute.attr_type=='list' %>
+                <span class='help_on_list'> <%= I18n.t(:text_help_list_attribute) %>  </span>
+              <% else %>
+                <span class='help_on_list' style="display:none;"> <%= I18n.t(:text_help_list_attribute) %>  </span>
+              <% end %>
+              <% if @attribute.attr_type=='float' %>
+                <span class="pe_attribute_precision"> <%= f.input :precision, :label => I18n.t('label_precision'), :input_html => {:min => 0, :max => 6} %> </span>
+              <% else %>
+                <span class="pe_attribute_precision" style="display:none;"> <%= f.input :precision, :label => I18n.t('label_precision'), :input_html => {:min => 0, :max => 6} %> </span>
+              <% end %>
+            <% end %>
+          <% end %>
+
+        </div>
+
+        <div class="actions-tabs">
+          <% if action_name == 'new' || action_name=="create" %>
+            <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <% elsif action_name == 'edit' || action_name=="update" %>
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+          <% end %>
+          <%= link_to I18n.t('back'), :back, :class => 'btn' %>
+        </div>
+
+    <% end %>
+
+    <script>
+        function select_value_options(elem) {
+            if (elem == null || elem == "") {
+                $(".type_value").hide();
+                $(".text_field_value").hide();
+                $(".help_on_list").hide();
+                $(".pe_attribute_precision").hide();
+            }
+            else if (elem == "list" || elem == "array") {
+                $(".type_value").hide();
+                $(".text_field_value").show();
+                $(".help_on_list").show();
+                $(".pe_attribute_precision").hide();
+            }
+            else if (elem == "float") {
+                $(".type_value").show();
+                $(".text_field_value").show();
+                $(".help_on_list").hide();
+                $(".pe_attribute_precision").show();
+            }
+            else {
+                $(".type_value").show();
+                $(".text_field_value").show();
+                $(".help_on_list").hide();
+                $(".pe_attribute_precision").hide();
+            }
+        }
+    </script>
+  </div>
+</div>

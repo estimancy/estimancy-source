@@ -1,0 +1,32 @@
+<div class="span5">
+  <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :class => 'simple_form') do |f| %>
+
+      <%# flash.each do |key, value| %>
+          <!--<div class="flash <%#= key %>"><p style="color: red"><%#= value %></p></div>-->
+      <%# end %>
+
+      <% if params['user'] %>
+        <%= devise_error_messages! %>
+      <% end %>
+
+    <div class="login_input">
+      <div class="input-prepend">
+        <span class="add-on"><img src="/assets/man.png" /></span>
+        <%= f.text_field :id_connexion, required: false, autofocus: true, :label => I18n.t('login_name'), :class => 'login_username', :placeholder => I18n.t('login_name_or_email') %>
+      </div>
+
+      <div class="input-prepend">
+        <span class="add-on"><img src="/assets/keez.png" /></span>
+        <%= f.password_field :password, required: false, :label => I18n.t('password'), :class => 'login_pw', :placeholder => I18n.t('password')%>
+      </div>
+
+      <label class="checkbox">
+        <%= f.check_box :remember_me, :label => I18n.t(:remember_me), as: :boolean if devise_mapping.rememberable? %>
+        <%= I18n.t(:remember_me ) %>
+      </label>
+
+      <%= f.button :submit, I18n.t('connect'), :class => "btn btn-danger" %>
+    </div>
+  <% end %>
+</div>
+<%= render "devise/shared/links" %>

@@ -1,0 +1,10 @@
+<% for profile in @organization_profiles_list.order('name') %>
+    <div>
+      <% if @wbs_activity %>
+        <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id, @wbs_activity.organization_profiles.include?(profile) %>
+      <% else %>
+        <%= check_box_tag "wbs_activity[organization_profile_ids][]", profile.id %>
+      <% end %>
+          <i class="profile_description_tooltip" title="<%= profile.description %>"><%= profile.name %></i>
+    </div>
+<% end %>

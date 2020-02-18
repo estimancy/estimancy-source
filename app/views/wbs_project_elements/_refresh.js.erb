@@ -1,0 +1,16 @@
+$("#project_wbs_product_section").html("<%=raw j generate_wbs_activity(@project.wbs_project_element_root, @project, '', 5) %>");
+
+$("#main").html("<%= j render(:partial => "users/wbs_activity_process", :locals => { :result => @result } ) %>");
+
+$( ".tabs" ).tabs().find( ".ui-tabs-nav" ).sortable({ axis: "x" });
+
+$('.component_tree > ul li').hover(
+
+    function () {
+      $(this.children).css('display', 'inline');
+    },
+
+    function () {
+     $('.block_link').hide();
+    }
+);

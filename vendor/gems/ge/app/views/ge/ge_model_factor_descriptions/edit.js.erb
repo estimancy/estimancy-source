@@ -1,0 +1,23 @@
+$("#notifications").html("");
+
+$(".modal-body-inner").html("<%= j render(:partial => "form") %>");
+$("#myModalLabel").css('font-size', 'larger');
+$("#myModalLabel").html('<%= I18n.t(:additional_description) %>');
+
+$("#edit_component").modal({
+  keyboard: false,
+  backdrop: "static",
+  backdrop: false
+});
+
+//get slider values
+var slider =  $('#<%= "factor_#{@ge_factor.alias}" %>').data("ionRangeSlider");
+var from = slider.result.from
+var from_factor = slider.result.from
+var factor_value = slider.result.from_value
+var to = slider.result.to
+
+$('#<%= "edit_ge_model_factor_description_#{@ge_model_factor_description.id}" %>').append('<input id="factor_selected_value" name="factor_selected_value" value="'+factor_value+'" type="hidden">');
+
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");

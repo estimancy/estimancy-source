@@ -1,0 +1,53 @@
+<table class="table table-striped table-bordered table-condensed">
+  <thead>
+  <tr>
+    <!--<th>Organisation de référence</th>-->
+    <th>Champ concerné</th>
+    <th>Valeur de référence</th>
+    <th>Organisation</th>
+    <th>Module de Taille</th>
+    <th>Nature différences</th>
+    <th>Différences</th>
+  </tr>
+  </thead>
+
+  <% @attributes_type_complexities_differences.each do |difference| %>
+      <% column_name = difference[:column_name] %>
+      <tr>
+        <!--<td><%#= @reference_organization.name %></td>-->
+        <td><%= column_name %></td>
+        <td>
+          <% type_complexity = Guw::GuwTypeComplexity.where(id: difference[:reference_id]).first %>
+          <% if  type_complexity %>
+              <%= "Nom : #{type_complexity.name}" %> <br>
+              <%= "Description : #{type_complexity.description}" %> <br>
+              <%= "Valeur : #{type_complexity.value}" %><br>
+              <%= "Ordre d'affichage : #{type_complexity.display_order}" %>
+          <% else %>
+              -
+          <% end %>
+        </td>
+        <td><%= Organization.where(id: difference[:organization_id]).first %></td>
+        <td>
+          <% guw_model = Guw::GuwModel.where(id: difference[:guw_model_id]).first %>
+          <%#= link_to guw_model.name, guw.guw_model_path(guw_model, organization_id: difference[:organization_id]), confirm: I18n.t(:warning_edit_instance_module) %>
+          <%= link_to guw_model.name, guw.edit_guw_model_path(guw_model, organization_id: difference[:organization_id], anchor: "tabs-attributs"), confirm: I18n.t(:warning_edit_instance_module) %>
+        </td>
+
+        <td><%= difference[:nature] %></td>
+        <td>
+          <% type_complexity =  Guw::GuwTypeComplexity.where(id: difference[:element_id]).first %>
+          <%#= column_name %>
+          <% if  type_complexity %>
+              <%= "Nom : #{type_complexity.name}" %> <br>
+              <%= "Description : #{type_complexity.description}" %> <br>
+              <%= "Valeur : #{type_complexity.value}" %><br>
+              <%= "Ordre d'affichage : #{type_complexity.display_order}" %>
+          <% else %>
+              -
+          <% end %>
+        </td>
+      </tr>
+  <% end %>
+
+</table>

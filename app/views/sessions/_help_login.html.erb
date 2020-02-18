@@ -1,0 +1,25 @@
+<h2><%= I18n.t(:help ) %></h2>
+<div>
+  <strong><%= I18n.t(:login_name ) %></strong> :   <%= I18n.t(:ldap_account_or_application_account ) %>
+</div>
+<div>
+  <strong><%= I18n.t(:open_url_id ) %></strong> : <%= I18n.t(:not_yet_supported ) %>
+</div>
+<div>
+  <strong><%= I18n.t(:password ) %></strong> : <%= I18n.t(:ldap_account_password_or_application_account_password ) %>
+</div>
+<br/>
+<div>
+   <strong><%= I18n.t(:button_ask_account ) %></strong> ? <%= I18n.t(:text_ask_new_account ) %>
+</div>
+<div>
+   <strong><%= I18n.t(:button_forgotten_password ) %></strong> <%= I18n.t(:text_forgotten_password ) %>
+</div>
+<br/>
+<div>
+  <%= I18n.t(:additional_guidance ) %> <a href="<%= load_admin_setting('url_wiki') %>"><%= I18n.t(:here ) %></a> <%= I18n.t(:or ) %> <a href="mailto:<%= load_admin_setting('notifications_email') %>"><%= I18n.t(:contact ) %></a> <%= I18n.t(:administrators ) %>
+</div>
+<br/>
+<div>
+  <%= link_to I18n.t('back'), '' %>
+</div>

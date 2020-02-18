@@ -1,0 +1,40 @@
+<%= form_tag search_path, method: "GET", remote: true do %>
+  <div class="tabs">
+    <ul>
+      <li><a href="#tabs-group"><%= I18n.t(:estimation_setting) %></a></li>
+    </ul>
+
+    <div id="tabs-estimations" class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+      <table>
+        <tr>
+          <td colspan=2 style="text-align:right;">
+
+            <% if can? :create_project_from_template, Project %>
+              <%= link_to I18n.t('new_project_from'), projects_from_path(organization_id: @organization.id), :class => 'btn', "data-turbolinks": "false" %>
+            <% end %>
+
+            <% if can? :create_project_from_scratch, Project %>
+              <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id), :class => 'btn', "data-turbolinks": "false" %>
+            <% end %>
+
+            <% unless "saas".in?(request.original_url) %>
+              <%= link_to "Extraction de données brutes", raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', "data-turbolinks": "false", method: 'post' %>
+            <% end %>
+
+          </td>
+
+        </tr>
+      </table>
+
+      <div id="organization_projects">
+        <%= render :partial => 'organizations/organization_projects', object: [@organization, @projects] %>
+        <%# render_async main_app.organization_async_estimations_path(@organization) do %>
+<!--      Veuillez patienter pendant le chargement des devis... -->
+        <%# end %>
+      </div>
+    </div>
+  </div>
+
+  <%= submit_tag "", class: "invisible_button" %>
+
+<% end %>

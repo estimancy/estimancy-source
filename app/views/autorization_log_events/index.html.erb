@@ -1,0 +1,65 @@
+<h1>Listing autorization_log_events</h1>
+
+<table>
+  <tr>
+    <th>Organization</th>
+    <th>Author</th>
+    <th>Item type</th>
+    <th>Item</th>
+    <th>Event</th>
+    <th>Object</th>
+    <th>Created at</th>
+    <th>Transaction</th>
+    <th>Object changes</th>
+    <th>Is project security</th>
+    <th>Is model security</th>
+    <th>Is group security</th>
+    <th>Is security on created from model</th>
+    <th>Project</th>
+    <th>Group</th>
+    <th>User</th>
+    <th>Estimation status</th>
+    <th>Permission</th>
+    <th>Project security</th>
+    <th>Project security level</th>
+    <th>Permissions project security level</th>
+    <th>Estimation status group role</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @autorization_log_events.each do |autorization_log_event| %>
+  <tr>
+    <td><%= autorization_log_event.organization_id %></td>
+    <td><%= autorization_log_event.author_id %></td>
+    <td><%= autorization_log_event.item_type %></td>
+    <td><%= autorization_log_event.item_id %></td>
+    <td><%= autorization_log_event.event %></td>
+    <td><%= autorization_log_event.object %></td>
+    <td><%= autorization_log_event.created_at %></td>
+    <td><%= autorization_log_event.transaction_id %></td>
+    <td><%= autorization_log_event.object_changes %></td>
+    <td><%= autorization_log_event.is_project_security %></td>
+    <td><%= autorization_log_event.is_model_security %></td>
+    <td><%= autorization_log_event.is_group_security %></td>
+    <td><%= autorization_log_event.is_security_on_created_from_model %></td>
+    <td><%= autorization_log_event.project_id %></td>
+    <td><%= autorization_log_event.group_id %></td>
+    <td><%= autorization_log_event.user_id %></td>
+    <td><%= autorization_log_event.estimation_status_id %></td>
+    <td><%= autorization_log_event.permission_id %></td>
+    <td><%= autorization_log_event.project_security_id %></td>
+    <td><%= autorization_log_event.project_security_level_id %></td>
+    <td><%= autorization_log_event.permissions_project_security_level_id %></td>
+    <td><%= autorization_log_event.estimation_status_group_role_id %></td>
+    <td><%= link_to 'Show', autorization_log_event %></td>
+    <td><%= link_to 'Edit', edit_autorization_log_event_path(autorization_log_event) %></td>
+    <td><%= link_to 'Destroy', autorization_log_event, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Autorization log event', new_autorization_log_event_path %>

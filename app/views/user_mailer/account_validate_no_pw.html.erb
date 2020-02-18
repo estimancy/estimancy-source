@@ -1,0 +1,9 @@
+<%=simple_format(I18n.t(:mail_salutation, :value => @user.name)) %>
+
+<%=simple_format(I18n.t(:mail_body_account_activation)) %>
+<%=simple_format(I18n.t(:mail_body_account_information_no_pwd)) %>
+
+<%=simple_format(I18n.t(:mail_complimentary_close)) %>
+
+<%=simple_format(I18n.t(:mail_footer)) %>
+<a href='<%= "#{SETTINGS['HOST_URL']}" %>'>Estimancy</a>

@@ -1,0 +1,12 @@
+$("#notifications").html("");
+
+$(".modal-body-inner").html("<%=raw j render :partial => 'projects/find_use_related_estimation_model', :object => @related_projects %>");
+
+$("#myModalLabel").html("<%= I18n.t(:text_find_use_estimation_model, :model_name => @project.title) %>");
+
+$("#edit_component").modal({
+    keyboard: false,
+    backdrop: "static"
+});
+
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");

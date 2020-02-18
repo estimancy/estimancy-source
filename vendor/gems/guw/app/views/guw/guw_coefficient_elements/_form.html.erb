@@ -1,0 +1,40 @@
+<div class="tabs">
+
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        Configuration du coefficient
+      </a>
+    </li>
+  </ul>
+
+  <div id="tabs-1">
+    <div class="row-fluid">
+      <div class="span12">
+        <%= simple_form_for([@guw_model, @guw_coefficient, @guw_coefficient_element]) do |f| %>
+          <%= f.error_notification %>
+
+          <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+          <%= f.input :guw_coefficient_id, as: :hidden, input_html: { value: @guw_coefficient.id } %>
+          <%= f.input :organization_id, as: :hidden, input_html: { value: @current_organization.id } %>
+
+          <div class="form-inputs">
+            <%= f.input :name, label: I18n.t(:name) %>
+            <%= f.input :description, label: I18n.t(:description), input_html: { class: "input-xxlarge", rows: "5" } %>
+            <%= f.input :default, label: I18n.t(:default_value) %>
+            <%= f.input :value, label: I18n.t(:value) %>
+            <%= f.input :default_display_value, label: "Valeur par défaut à l'affichage" %>
+            <%= f.input :color_code, input_html: {class: 'color'} %>
+            <%= f.input :color_priority %>
+            <%= f.input :display_order, label: I18n.t(:display_order) %>
+          </div>
+
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+          <% end %>
+          <%= link_to I18n.t(:back), :back, class: "btn" %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

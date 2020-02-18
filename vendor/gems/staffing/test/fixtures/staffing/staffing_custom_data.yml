@@ -1,0 +1,25 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  method: MyString
+  staffing_constraint: MyString
+  period_unit: MyString
+  max_staffing: 1.5
+  max_duration: 1.5
+  staffing_coordinates: MyString
+  coef_a: 1.5
+  coef_b: 1.5
+  coef_a_prime: 1.5
+  coef_b_prime: 1.5
+
+two:
+  method: MyString
+  staffing_constraint: MyString
+  period_unit: MyString
+  max_staffing: 1.5
+  max_duration: 1.5
+  staffing_coordinates: MyString
+  coef_a: 1.5
+  coef_b: 1.5
+  coef_a_prime: 1.5
+  coef_b_prime: 1.5
