@@ -3490,47 +3490,47 @@ public
   end
 
   def search
-    if params[:item_title] == "Applications"
+    if params[:item_title] == "applications"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_applications',
                                             item_title: 'Applications',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Project areas"
+    elsif params[:item_title] == "project_areas"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_project_areas',
                                             item_title: 'Project areas',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Project categories"
+    elsif params[:item_title] == "project_categories"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_project_categories',
                                             item_title: 'Project categories',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Business value"
+    elsif params[:item_title] == "platform_categories"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_platform_categories',
                                             item_title: 'Business values',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Providers"
+    elsif params[:item_title] == "providers"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_providers',
                                             item_title: 'Providers',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Profiles"
+    elsif params[:item_title] == "profiles"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_profiles',
                                             item_title: 'Profiles',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Estimation models"
+    elsif params[:item_title] == "estimation_models"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_estimation_models',
                                             item_title: 'Estimation models',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Estimation models"
+    elsif params[:item_title] == "estimation_models"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_estimation_models',
                                             item_title: 'Estimation models',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Custom fields"
+    elsif params[:item_title] == "custom_fields"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_fields',
                                             item_title: 'Custom fields',
@@ -3647,6 +3647,92 @@ public
 
   def advanced_search
     search
+  end
+
+  def projects_list_search
+
+    @organization = @current_organization
+
+    @object_per_page = (current_user.object_per_page || 10)
+    @min = 0
+    @max = @object_per_page
+    @sort_column = (params[:sort_column].blank? ? session[:sort_column] : params[:sort_column])
+    @sort_order = (params[:sort_order].blank? ? session[:sort_order] : params[:sort_order])
+    @sort_action = (params[:sort_action].blank? ? session[:sort_action] : params[:sort_action])
+    @search_hash = {}
+    @search_string = ""
+    @search_column = ""
+    @search_value = ""
+
+    # filtre sur les versions
+    @filter_version = params[:filter_organization_projects_version]
+
+    params.delete("utf8")
+    params.delete("commit")
+    params.delete("action")
+    params.delete("controller")
+    params.delete("filter_organization_projects_version")
+    params.delete("sort_action")
+    params.delete("sort_column")
+    params.delete("sort_order")
+    params.delete("min")
+    params.delete("max")
+    params.delete_if { |k, v| v.nil? || v.blank? }
+
+    @search_hash = params
+    unless @search_hash.blank?
+      @search_hash.each do |k, v|
+        @search_string << "&search[#{k}]=#{v}"
+      end
+    end
+
+    session[:search_string] = @search_string
+    session[:search_hash] = @search_hash
+
+    # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
+    @projects = @organization.projects.where(:is_model => [nil, false]).order("start_date desc")
+
+    if @sort_action.to_s == "true" && @sort_column != "" && @sort_order != ""
+      @organization_estimations = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
+    else
+      @organization_estimations = get_multiple_search_results(@organization.id, @projects, @search_hash)
+    end
+
+    if @organization_estimations.nil? || @organization_estimations.blank?
+      @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
+    end
+
+    # filtre sur la version des estimations
+    if !@filter_version.to_s.in?(['4', ''])
+      @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
+    end
+
+    res = []
+    @organization_estimations.each do |p|
+      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        res << p
+      end
+    end
+
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
+    p @projects
+
+    # if @projects.length <= @object_per_page
+    #   @is_last_page = "true"
+    # else
+    #   @is_last_page = "false"
+    # end
+
+    # session[:sort_column] = @sort_column
+    # session[:sort_order] = @sort_order
+    # session[:sort_action] = @sort_action
+    # session[:is_last_page] = @is_last_page
+    # session[:search_column] = @search_column
+    # session[:search_value] = @search_value
+    #
+    build_footer
+
   end
 
   private def check_for_projects(start_number, desired_size, organization_estimations)

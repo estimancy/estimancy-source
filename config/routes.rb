@@ -427,6 +427,7 @@ Projestimate::Application.routes.draw do
 
   get 'dashboard/:project_id/' => 'projects#dashboard', :as => 'dashboard'
   get 'search' => 'projects#search', :as => 'search'
+  post 'projects_list_search' => 'projects#projects_list_search', :as => 'projects_list_search'
   get 'append_pemodule' => 'projects#append_pemodule'
   get 'select_categories' => 'projects#select_categories', :as => 'select_categories'
   post 'raw_data_extraction' => 'projects#raw_data_extraction', :as => 'raw_data_extraction'
