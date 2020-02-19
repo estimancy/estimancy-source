@@ -12,8 +12,8 @@
     </div>
     <% selected_inline_columns = update_selected_inline_columns(Project) %>
     <%= form_tag projects_list_search_path, remote: true do %>
-      <%= submit_tag %>
-        <table class="estimation-table main-estimation-table">
+      <%= submit_tag "Rechercher", class: "hide" %>
+      <table class="estimation-table main-estimation-table">
         <thead>
           <tr style="background-color: #FFFFFF">
             <% selected_inline_columns.each do |column| %>
