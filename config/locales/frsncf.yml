@@ -2580,3 +2580,5 @@ frsncf:
   selected_application: "Application sélectionnée"
   show_coefficient_label: "Afficher le libellé du coefficient"
   show_coefficient_application_label: "Afficher le libellé de l'application"
+
+  recalculate_all: "Tout recalculer"
