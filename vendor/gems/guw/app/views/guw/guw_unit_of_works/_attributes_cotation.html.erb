@@ -58,12 +58,20 @@
         <th></th>
       </tr>
 
-      <% guow.guw_unit_of_work_attributes.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
-        <% gat = Guw::GuwAttributeType.where(organization_id: organization_id, guw_model_id: @guw_model.id,
-                                             guw_attribute_id: uowa.guw_attribute_id, guw_type_id: guw_type.id).first_or_create %>
+      <% guow.guw_unit_of_work_attributes.where(organization_id: organization_id,
+                                                guw_model_id: @guw_model.id,
+                                                guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
+
+          <% gat = Guw::GuwAttributeType.where(organization_id: organization_id,
+                                             guw_model_id: @guw_model.id,
+                                             guw_attribute_id: uowa.guw_attribute_id,
+                                             guw_type_id: guw_type.id).first_or_create %>
+
           <tr>
             <% unless guw_type.nil? %>
-              <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
+              <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(organization_id: organization_id,
+                                                                                 guw_model_id: @guw_model.id,
+                                                                                 guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
             <% end %>
             <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
               <td class="span3">
@@ -77,11 +85,6 @@
                               class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value.to_i  %>
                 <% end %>
               </td>
-              <%# if @guw_model.three_points_estimation == true %>
-                <!--<td class="span1">-->
-                  <%# text_field_tag "low[#{guow.id}][#{uowa.id}]", uowa.low, class: "input-mini", readonly: !can?(:execute_estimation_plan, @project) %>
-                <!--</td>-->
-              <%# end %>
 
               <td class="span1">
                 <% if guw_type.mandatory_comments == true %>

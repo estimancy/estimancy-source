@@ -255,6 +255,31 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def load_cotations
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_model = @guw_unit_of_work.guw_model
+
+    Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+                                      low: nil,
+                                      most_likely: nil,
+                                      high: nil).delete_all
+
+    @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id,
+                                    guw_model_id: @guw_model.id).all.each do |gac|
+
+      sum_range = gac.guw_attribute_complexities.where(organization_id: @guw_model.organization_id,
+                                                       guw_model_id: @guw_model.id,
+                                                       guw_type_id: @guw_unit_of_work.guw_type_id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
+
+      unless sum_range.nil? || sum_range.blank? || sum_range == 0
+        finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+                                                   guw_model_id: @guw_model.id,
+                                                   guw_attribute_id: gac.id,
+                                                   guw_type_id: @guw_unit_of_work.guw_type_id,
+                                                   project_id: @guw_unit_of_work.project_id,
+                                                   module_project_id: @guw_unit_of_work.module_project_id,
+                                                   guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
+        finder.save
+      end
+    end
+
   end
 
   def load_name
@@ -751,12 +776,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                    project_id: @guw_unit_of_work.project_id,
                                                    module_project_id: @guw_unit_of_work.module_project_id,
                                                    guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
-        finder.save
+        finder.save # Guw::GuwUnitOfWorkAttribute.where(low: nil, most_likely: nil, high: nil).delete_all
       end
-
-
-      # technology = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq.first
-      # @guw_unit_of_work.organization_technology_id = technology.nil? ? nil : technology.id
 
       @guw_unit_of_work.guw_type_id = @guw_type.id
       @guw_unit_of_work.effort = nil
@@ -767,38 +788,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     
       @guw_unit_of_work.save
 
-      #Changer le libelle du popup avec la description du nouveau type d'UO sélectionne
-      # @guw_types = @guw_model.guw_types.includes(:guw_complexities)
-      # @new_popup_title = (@guw_type.description.blank? ? @guw_type.name : @guw_type.description)
     end
-    #
-    # respond_to do |format|
-    #   format.html { redirect_to main_app.dashboard_path(@project,
-    #                                                     mgli: @guw_unit_of_work.id,
-    #                                                     anchor: "guw_type_#{@guw_unit_of_work.id}") and return }
-    #
-    #   format.js { render :js => "window.location.replace(main_app.dashboard_path(#{@project}, mgli: #{@guw_unit_of_work.id},
-    #                                                     anchor: guw_type_#{@guw_unit_of_work.id}\"));"}
-    # end
+
   end
-
-  # def change_work_unit
-  #   authorize! :execute_estimation_plan, @project
-  #
-  #   @guw_model = current_module_project.guw_model
-  #   @guw_work_unit = Guw::GuwWorkUnit.find(params[:guw_work_unit_id])
-  #   @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-  #   @guw_unit_of_work.guw_work_unit_id = @guw_work_unit.id
-  #   @guw_unit_of_work.save
-  # end
-
-  # def change_technology_form
-  #   authorize! :execute_estimation_plan, @project
-  #
-  #   @guw_model = current_module_project.guw_model
-  #   @guw_type = Guw::GuwType.find(params[:guw_type_id])
-  #   @technologies = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq
-  # end
 
   # Voir utlisation de la Vue
   def change_selected_state_save
@@ -1948,7 +1940,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       if @oc.nil?
         @final_value = (@oci.nil? ? 0 : @oci.init_value.to_f)
       else
-        @final_value = (@guw_unit_of_work.off_line? ? nil : (array_pert.empty? ? nil : array_pert.sum.to_f)) + (@oci.nil? ? 0 : @oci.init_value.to_f)
+        @final_value = (@guw_unit_of_work.off_line? ? 0 : (array_pert.empty? ? 0 : array_pert.sum.to_f)) + (@oci.nil? ? 0 : @oci.init_value.to_f)
       end
 
       coeffs = []
