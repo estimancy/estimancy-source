@@ -17,10 +17,8 @@
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
 </td>
 
-<td class="text_field_text_overflow span3 guw-cell-ajustment">
-  <span class="pull-left">
-    <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.comments, method: "post", remote: true %>
-  </span>
+<td class="text_field_text_overflow guw-cell-ajustment w-25">
+  <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.comments, method: "post", remote: true %>
 </td>
 
 <td class="guw-cell-ajustment">
