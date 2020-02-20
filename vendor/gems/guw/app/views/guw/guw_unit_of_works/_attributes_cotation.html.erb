@@ -60,7 +60,8 @@
 
       <% guow.guw_unit_of_work_attributes.where(organization_id: organization_id,
                                                 guw_model_id: @guw_model.id,
-                                                guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
+                                                guw_type_id: guw_type.id,
+                                                project_id: @project.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
 
           <% gat = Guw::GuwAttributeType.where(organization_id: organization_id,
                                              guw_model_id: @guw_model.id,
