@@ -66,7 +66,7 @@
                        id="adv_search"
                        type="text"
                        name="advanced_search"
-                       placeholder="<%= params[:item_title].blank? ? I18n.t('estimation_name, version_number, author...') : params[:item_title] %>"
+                       placeholder="<%= params[:item_title].blank? ? I18n.t('estimation_name, version_number, author...') : I18n.t(params[:item_title]) %>"
                        class="form-control global-search-bar-input"
                        aria-label="search" aria-describedby="search-icon">
 
