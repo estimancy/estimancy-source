@@ -3441,7 +3441,6 @@ public
       end
     end
 
-    ###@current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
   end
 
   #Set the checkout version
@@ -3643,11 +3642,6 @@ public
            i += 1
          end
        end
-
-       # if nb_total >= 12100
-       #   puts "Test"
-       #   puts "nb_total = #{nb_total}"
-       # end
 
        if (result.size == desired_size) || (projects.size < desired_size) || last_project.nil?
          return result

@@ -182,8 +182,12 @@ class ApplicationController < ActionController::Base
   end
 
   def current_ability
-    begin
-      if current_user.organization_ids.include?(@current_organization.id)
+    # begin
+    #   if @current_user_organization_ids.nil?
+        @current_user_organization_ids ||= current_user.organization_ids
+      # end
+
+      if @current_user_organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
           when "async_estimations", "estimations", "sort", "search", "add_filter_on_project_version"
@@ -197,11 +201,10 @@ class ApplicationController < ActionController::Base
       else
         @current_ability = Ability.new(current_user, nil, nil)
       end
-    rescue
-      @current_ability = Ability.new(current_user, nil, nil)
-    end
+    # rescue
+    #   @current_ability = Ability.new(current_user, nil, nil)
+    # end
   end
-
 
   def update_activity_time
     if current_user
