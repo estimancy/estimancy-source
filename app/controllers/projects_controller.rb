@@ -594,24 +594,17 @@ class ProjectsController < ApplicationController
   def dashboard
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
-      redirect_to organization_estimations_path(@current_organization) and return
+      begin
+        redirect_to organization_estimations_path(@current_organization) and return
+      rescue
+        redirect_to all_organizations_path and return
+      end
     else
       if (params[:from_current_dashboard] && params[:organization_id]) && (@project.organization_id != params[:organization_id].to_i)
         flash[:warning] = I18n.t(:current_estimation_does_not_exists)
         redirect_to organization_estimations_path(organization_id: params[:organization_id]) and return
       end
     end
-
-
-    # @project.guw_unit_of_works.each do |uo|
-    #   @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.comments } )
-    #   JSON.parse(@http.body_str)
-    # end
-    #
-    # if user_signed_in?
-    #   project_name = @project.title
-    #   Monitoring.create(user: User.current, action: "Accéder au dashboard de l'estimation #{project_name}", action_at: Time.now + 3600)
-    # end
 
     @current_organization = @project.organization
     @pbs_project_element = current_component
