@@ -763,7 +763,7 @@ module ViewsWidgetsHelper
 
     ############################ Get the view_widget size  ############################
 
-    if view_widget.estimation_value.pe_attribute.nil?
+    if view_widget.estimation_value.nil? || view_widget.estimation_value.pe_attribute.nil?
       value_to_show = {}
       return value_to_show
     end

@@ -3425,14 +3425,21 @@ public
     @search_value = session[:search_value]
     @search_hash = session[:search_hash]
 
-    organization_projects = @organization.projects.where(:is_model => [nil, false])
-    if params[:archive].present?
-      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-      @projects = organization_projects.where(estimation_status_id: esids)
+    #organization_projects = @organization.projects.where(:is_model => [nil, false])
+    # if params[:archive].present?
+    #   esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+    #   @projects = organization_projects.where(estimation_status_id: esids)
+    # else
+    #   esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+    #   @projects = organization_projects.where.not(estimation_status_id: esids)
+    # end
+
+    if params[:historized].present? && params[:historized] == "1"
+      @projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: true)
     else
-      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-      @projects = organization_projects.where.not(estimation_status_id: esids)
+      @projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: [nil, false])
     end
+
 
     organization_projects = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
     @search_string = session[:search_string] || ""
@@ -3538,15 +3545,21 @@ public
 
     else
 
-      @organization_projects = Project.where(organization_id: @current_organization.id, is_model: false)
+      #@organization_projects = Project.where(organization_id: @current_organization.id, is_model: false)
+      # if params[:archive].present?
+      #   esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+      #   @organization_projects = @organization_projects.where(estimation_status_id: esids)
+      # else
+      #   esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+      #   @organization_projects = @organization_projects.where.not(estimation_status_id: esids)
+      # end
 
-      if params[:archive].present?
-        esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-        @organization_projects = @organization_projects.where(estimation_status_id: esids)
+      if params[:historized].present? && params[:historized] == "1"
+        @organization_projects = OrganizationEstimation.where(organization_id: @current_organization.id, :is_model => [nil, false]).where(is_historized: true)
       else
-        esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-        @organization_projects = @organization_projects.where.not(estimation_status_id: esids)
+        @organization_projects = OrganizationEstimation.where(organization_id: @current_organization.id, :is_model => [nil, false]).where(is_historized: [nil, false])
       end
+
 
       @results = {}
       @object_per_page = (current_user.object_per_page || 10)
@@ -3596,7 +3609,8 @@ public
             end
           end
         end
-        @projects = Project.where(id: @project_ids.uniq)
+        #@projects = Project.where(id: @project_ids.uniq)
+        @projects = OrganizationEstimation.where(id: @project_ids.uniq)
       end
 
       res = []
@@ -3607,7 +3621,7 @@ public
       end
 
       @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
-      @projects = @projects.reverse
+      #@projects = @projects.reverse
 
       @fields_coefficients = {}
       @pfs = {}

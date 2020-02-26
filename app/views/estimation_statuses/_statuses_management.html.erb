@@ -9,6 +9,8 @@
         <th><%= I18n.t(:archive_status) %></th>
         <th><%= I18n.t(:new_status) %></th>
         <th><%= I18n.t(:create_new_version_when_status_changed) %></th>
+        <th><%= I18n.t(:is_historization_status) %></th>
+        <th><%= I18n.t(:nb_day_before_historization) %></th>
         <th><%= I18n.t(:status_color) %></th>
         <th><%= I18n.t(:description) %></th>
         <th>Change if correction</th>
@@ -32,6 +34,11 @@
             <td class="center">
               <%= check_box_tag("create_new_version_when_changing_status_[#{estimation_status.id}]", estimation_status.id, estimation_status.create_new_version_when_changing_status, :disabled => true ) %>
             </td>
+
+            <td class="center">
+              <%= check_box_tag("is_historization_status[#{estimation_status.id}]", estimation_status.id, estimation_status.is_historization_status, :disabled => true ) %>
+            </td>
+            <td><%= estimation_status.nb_day_before_historization.nil? ? "-" : "#{estimation_status.nb_day_before_historization} #{I18n.t(:unit_days)}" %></td>
 
             <td style='width: 9%; background-color: <%= "##{estimation_status.status_color}" %>'></td>
             <td><%= estimation_status.description %></td>

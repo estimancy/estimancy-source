@@ -25,7 +25,7 @@ class Project < ActiveRecord::Base
                   :start_date, :is_model, :organization_id, :project_area_id, :project_category_id,
                   :acquisition_category_id, :platform_category_id, :parent_id, :application_id, :creator_id,
                   :private, :provider_id, :request_number, :use_automatic_quotation_number, :business_need, :transaction_id,
-                  :allow_export_pdf, :is_locked, :demand_id, :urgent_project, :is_valid
+                  :allow_export_pdf, :is_locked, :demand_id, :urgent_project, :is_valid, :historization_time, :is_historized
 
   attr_accessor :project_organization_statuses, :new_status_comment, :available_inline_columns
 
@@ -133,16 +133,29 @@ class Project < ActiveRecord::Base
   class_attribute :default_selected_columns
   self.default_selected_columns = ["application", "version_number", "start_date", "status_name", "description"]
 
+  before_save :update_historization_time
   after_save :reload_cache_archived
+
+  def update_historization_time
+    project_estimation_status = self.estimation_status
+
+    # On met à jour la date d'historisation de l'estimation
+    if project_estimation_status.is_historization_status == true
+      self.historization_time = project_estimation_status.nb_day_before_historization.to_f.days.from_now
+    end
+  end
+
+
   def reload_cache_archived
     key = "not_archived_#{self.organization_id}"
-    archived_status = EstimationStatus.where(is_archive_status: true,
-                                             organization_id: self.organization_id).first
+    #archived_status = EstimationStatus.where(is_archive_status: true, organization_id: self.organization_id).first
+    #historization_status = EstimationStatus.where(is_historization_status: true, organization_id: self.organization_id).first
 
     Rails.cache.fetch(key, force: true) do
       # Project.get_unarchived_project_ids(archived_status, self.organization_id)
     end
   end
+
 
   def self.get_unarchived_project_ids(archived_status, organization_id)
 

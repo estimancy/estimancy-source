@@ -40,6 +40,12 @@
 #  rake "projestimate:purge_audit_history_data"
 #end
 
+# Tâche quotidienne qui recherche toutes les estimations dans un statuts d'historisation et les historise en fonction de la date d'historisation
+
+every 1.day, :at => '1:00 pm' do
+  runner "Organization.update_historized_estimations"
+end
+
 
 # Example:
 #

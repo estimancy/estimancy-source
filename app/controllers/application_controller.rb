@@ -611,7 +611,230 @@ class ApplicationController < ActionController::Base
 
 
   # effectue une recherche multiple
-  def get_multiple_search_results(organization_id, projects, search_elements={})
+  def get_multiple_search_results(organization_id, organization_estimations, search_elements={})
+
+    search_hash = session[:search_hash] || {}
+    search_string = ""
+    final_results = []
+
+    if search_elements.blank?
+      search_elements = (params['search'].blank? ? session[:search_hash] : params['search'])
+    end
+
+    if search_elements.blank?
+      #organization_projects = projects
+      #organization_projects = @organization.organization_estimations.where(project_id: projects.all.map(&:id))
+      organization_projects = organization_estimations
+    else
+      search_elements.each do |column_name, val|
+        #val = search_elements[column_name]
+
+        search_column = column_name
+        search_value = val
+
+        search_hash[column_name] = val
+        search_string << "&search[#{column_name}]=#{val}"
+
+        results = get_search_results(@organization.id, organization_estimations, column_name, val).all.map(&:id)
+
+        a = results.flatten
+        b = final_results.flatten
+
+        if b.blank?
+          final_results << a
+        else
+          final_results << a & b
+        end
+      end
+
+      #organization_projects = @organization.organization_estimations.where(project_id: final_results.inject(&:&))
+      organization_projects = organization_estimations.where(project_id: final_results.inject(&:&))
+    end
+
+    session[:search_hash] = search_hash
+    session[:search_string] = search_string
+
+    organization_projects
+  end
+
+
+  # effectue une recherche avec nom de la colonne et sa valeur
+  def get_search_results(organization_id, organization_estimations, search_column, search_value)
+
+    k = search_column
+    val = search_value
+
+    if search_column.blank? || search_value.blank?
+      results = organization_estimations
+    else
+      case k
+        when "title"
+          results = organization_estimations.where("title LIKE ?", "%#{val}%")
+        when "creator"
+          creator_ids = User.where("first_name LIKE ? OR last_name liKE ?", "%#{val}%", "%#{val}%").map(&:id)
+          results = organization_estimations.where(creator_id: creator_ids)
+        when "version_number"
+          results = organization_estimations.where("version_number LIKE ?", "%#{val}%")
+        when "business_need"
+          results = organization_estimations.where("business_need LIKE ?", "%#{val}%")
+        when "application"
+          ids = Application.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = organization_estimations.where(application_id: ids)
+        when "description"
+          results = organization_estimations.where("description LIKE ?", "%#{val}%")
+        when "status_name"
+          ids = EstimationStatus.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = organization_estimations.where(estimation_status_id: ids, organization_id: organization_id)
+        when "start_date"
+          results = organization_estimations.where("start_date LIKE ?", "%#{val}%")
+        when "created_at"
+          results = organization_estimations.where("created_at LIKE ?", "%#{val}%")
+        when "updated_at"
+          results = organization_estimations.where("updated_at LIKE ?", "%#{val}%")
+        when "project_area"
+          ids = ProjectArea.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = organization_estimations.where(project_area_id: ids, organization_id: organization_id)
+        when "project_category"
+          ids = ProjectCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = organization_estimations.where(project_category_id: ids, organization_id: organization_id)
+        when "platform_category"
+          ids = PlatformCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = organization_estimations.where(platform_category_id: ids, organization_id: organization_id)
+        when "acquisition_category"
+          ids = AcquisitionCategory.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = organization_estimations.where(acquisition_category_id: ids, organization_id: organization_id)
+        when "provider"
+          ids = Provider.where("name LIKE ?", "%#{val}%").all.map(&:id)
+          results = organization_estimations.where(provider_id: ids, organization_id: organization_id)
+        when "original_model"
+          ids = Project.where("title LIKE ?", "%#{val}%").all.map(&:id)
+          results = organization_estimations.where(original_model_id: ids, organization_id: organization_id)
+        when "private"
+          results = organization_estimations.where("private LIKE ?", "%#{val}%")
+        when "request_number"
+          results = organization_estimations.where("request_number LIKE ?", "%#{val}%")
+        else
+          #options[k] = v
+          results = organization_estimations
+      end
+    end
+
+    results
+  end
+
+
+  def get_sorted_estimations(organization_id, organization_estimations, sort_column, sort_order, search_hash={})
+    # @projects = @organization.organization_estimations
+
+    organization = Organization.where(id: organization_id).first
+    k = sort_column #params[:f]
+    s = sort_order  #params[:s]
+
+    # Execution de la recherche avant le Tri
+    #unless search_column.blank? || search_value.blank? || search_hash.blank?
+    unless search_hash.blank?
+      ###projects = get_search_results(organization_id, projects, search_column, search_value)
+      organization_projects = get_multiple_search_results(organization_id, organization_estimations, search_hash)
+      #projects = Project.where(organization_id: organization_id, id: organization_projects.map(&:id))
+      organization_estimations = organization_projects
+    end
+
+    project_ids = organization_estimations.map(&:id)
+
+    if k.blank?
+      #projects =  projects.reorder("start_date desc").order('created_at desc').order('created_at desc')
+
+      project_selected_columns = organization.project_selected_columns
+      default_sort_column = organization.default_estimations_sort_column rescue nil
+      default_sort_order = organization.default_estimations_sort_order rescue nil
+
+      if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
+        k = default_sort_column
+        s = default_sort_order
+      else
+        k = "created_at"  #"title"
+        s = "desc"  #"asc"
+      end
+    end
+
+
+    case k
+      when  "start_date", "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"
+        organization_estimations = organization_estimations.reorder("#{k} #{s}, created_at DESC") #projects.reorder(k + ' ' + s)
+      when "application"
+        organization_estimations = OrganizationEstimation.unscoped
+                        .joins("LEFT JOIN applications ON projects.application_id = applications.id")
+                        .where(organization_id: organization_id, id: project_ids)
+                        .order("applications.name #{s}, created_at DESC")
+
+      when "original_model"
+        #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
+        #projects = Project.joins(:original_model).merge(Project.order(title: :desc))
+        #projects = Project.unscoped
+        #                 .includes(:original_model)
+        #                 .joins("LEFT JOIN projects ON projects.original_model_id = original_model_id")
+        #                 .where(organization_id: organization_id)
+        #                 .order("original_model.title #{s}")
+      when "project_area"
+        organization_estimations = OrganizationEstimation.unscoped
+                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                        .where(organization_id: organization_id, id: project_ids)
+                        .order("project_areas.name #{s}, created_at DESC")
+      when "project_category"
+        organization_estimations = OrganizationEstimation.unscoped
+                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                        .where(organization_id: organization_id, id: project_ids)
+                        .order("project_categories.name #{s}, created_at DESC")
+      when "platform_category"
+        organization_estimations = OrganizationEstimation.unscoped
+                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                        .where(organization_id: organization_id, id: project_ids)
+                        .order("platform_categories.name #{s}, created_at DESC")
+      when "acquisition_category"
+        organization_estimations = OrganizationEstimation.unscoped
+                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                        .where(organization_id: organization_id, id: project_ids)
+                        .order("acquisition_categories.name #{s}, created_at DESC")
+      when "status_name"
+        organization_estimations = OrganizationEstimation.unscoped
+                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                        .where(organization_id: organization.id, id: project_ids)
+                        .order("estimation_statuses.name #{s}, created_at DESC")
+      when "creator"
+        organization_estimations = OrganizationEstimation.unscoped
+                        .joins("LEFT JOIN users ON projects.creator_id = users.id")
+                        .where(organization_id: organization_id, id: project_ids)
+                        .order("users.first_name #{s}, users.last_name #{s}, created_at DESC")
+      when "provider"
+        organization_estimations = OrganizationEstimation.unscoped
+                       .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
+                       .where(organization_id: organization_id, id: project_ids)
+                       .order("providers.name #{s}, created_at DESC")
+      else
+        organization_estimations = organization_estimations.order("#{k} #{s}, created_at DESC")
+    end
+
+    organization_estimations = organization_estimations.where(:is_model => [nil, false])
+
+    #projects
+    #organization_estimations = @organization.organization_estimations.where(project_id: projects.all.map(&:id))
+    # sort_project_ids = projects.all.map(&:id)
+    # @organization.organization_estimations.find(sort_project_ids).index_by(&:id).values_at(*sort_project_ids)
+
+    organization_estimations
+
+    # res = []
+    # projects.each do |p|
+    #   if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+    #     res << p
+    #   end
+    # end
+    # res
+  end
+
+
+  # Ces 3 fonctions suivantes sont à supprimer lorsque la liste des estimations marchera correctement avec les Vues
+  def get_multiple_search_results_SAVE(organization_id, projects, search_elements={})
 
     search_hash = session[:search_hash] || {}
     search_string = ""
@@ -655,9 +878,8 @@ class ApplicationController < ActionController::Base
     organization_projects
   end
 
-
   # effectue une recherche avec nom de la colonne et sa valeur
-  def get_search_results(organization_id, projects, search_column, search_value)
+  def get_search_results_SAVE(organization_id, projects, search_column, search_value)
 
     k = search_column
     val = search_value
@@ -720,8 +942,7 @@ class ApplicationController < ActionController::Base
     results
   end
 
-
-  def get_sorted_estimations(organization_id, projects, sort_column, sort_order, search_hash={})
+  def get_sorted_estimations_SAVE(organization_id, projects, sort_column, sort_order, search_hash={})
     # @projects = @organization.organization_estimations
 
     organization = Organization.where(id: organization_id).first
@@ -760,9 +981,9 @@ class ApplicationController < ActionController::Base
         projects = projects.reorder("#{k} #{s}, created_at DESC") #projects.reorder(k + ' ' + s)
       when "application"
         projects = Project.unscoped
-                        .joins("LEFT JOIN applications ON projects.application_id = applications.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("applications.name #{s}, created_at DESC")
+                       .joins("LEFT JOIN applications ON projects.application_id = applications.id")
+                       .where(organization_id: organization_id, id: project_ids)
+                       .order("applications.name #{s}, created_at DESC")
 
       when "original_model"
         #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
@@ -774,34 +995,34 @@ class ApplicationController < ActionController::Base
         #                 .order("original_model.title #{s}")
       when "project_area"
         projects = Project.unscoped
-                        .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("project_areas.name #{s}, created_at DESC")
+                       .joins("LEFT JOIN project_areas ON projects.project_area_id = project_areas.id")
+                       .where(organization_id: organization_id, id: project_ids)
+                       .order("project_areas.name #{s}, created_at DESC")
       when "project_category"
         projects = Project.unscoped
-                        .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("project_categories.name #{s}, created_at DESC")
+                       .joins("LEFT JOIN project_categories ON projects.project_category_id = project_categories.id")
+                       .where(organization_id: organization_id, id: project_ids)
+                       .order("project_categories.name #{s}, created_at DESC")
       when "platform_category"
         projects = Project.unscoped
-                        .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("platform_categories.name #{s}, created_at DESC")
+                       .joins("LEFT JOIN platform_categories ON projects.platform_category_id = platform_categories.id")
+                       .where(organization_id: organization_id, id: project_ids)
+                       .order("platform_categories.name #{s}, created_at DESC")
       when "acquisition_category"
         projects = Project.unscoped
-                        .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("acquisition_categories.name #{s}, created_at DESC")
+                       .joins("LEFT JOIN acquisition_categories ON projects.acquisition_category_id = acquisition_categories.id")
+                       .where(organization_id: organization_id, id: project_ids)
+                       .order("acquisition_categories.name #{s}, created_at DESC")
       when "status_name"
         projects = Project.unscoped
-                        .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
-                        .where(organization_id: organization.id, id: project_ids)
-                        .order("estimation_statuses.name #{s}, created_at DESC")
+                       .joins("LEFT JOIN estimation_statuses ON projects.estimation_status_id = estimation_statuses.id")
+                       .where(organization_id: organization.id, id: project_ids)
+                       .order("estimation_statuses.name #{s}, created_at DESC")
       when "creator"
         projects = Project.unscoped
-                        .joins("LEFT JOIN users ON projects.creator_id = users.id")
-                        .where(organization_id: organization_id, id: project_ids)
-                        .order("users.first_name #{s}, users.last_name #{s}, created_at DESC")
+                       .joins("LEFT JOIN users ON projects.creator_id = users.id")
+                       .where(organization_id: organization_id, id: project_ids)
+                       .order("users.first_name #{s}, users.last_name #{s}, created_at DESC")
       when "provider"
         projects = Project.unscoped
                        .joins("LEFT JOIN providers ON projects.provider_id = providers.id")
@@ -828,7 +1049,7 @@ class ApplicationController < ActionController::Base
     # end
     # res
   end
-
+  # FIN Ces 3 fonctions suivantes sont à supprimer lorsque la liste des estimations marchera correctement avec les Vues
 
   # Filter estimations according to the selection
   def filter_estimation_versions(projects_list, selected_filter_version)
@@ -855,3 +1076,4 @@ class ApplicationController < ActionController::Base
 
 
 end
+

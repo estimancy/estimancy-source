@@ -1759,3 +1759,10 @@ de:
 
   unit_of_work_types: "Unit of Work Types"
   weight_b: "Ordinate at origin"
+  is_historization_status: "Is historization status"
+  nb_day_before_historization: "Nb days in this status before historization"
+  is_historized: "Is historized"
+  notification_emails: "Email for notifications"
+  historized_estimations: "Historized estimations"
+  display_historized: "Display historized"
+  hide_historized: "Hide historized"

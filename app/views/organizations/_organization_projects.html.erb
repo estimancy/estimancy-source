@@ -1,9 +1,8 @@
 <table  class="table table-list">
-
   <tr>
     <% selected_inline_columns = update_selected_inline_columns(Project) %>
     <% selected_inline_columns.each do |column| %>
-      <%= column_header(column) %>
+        <%= column_header(column) %>
     <% end %>
 
     <th class="action">
@@ -12,48 +11,48 @@
   </tr>
 
   <% ["sort_action", "sort_column", "sort_order", "min", "max"].each do |sort_param| %>
-    <%= hidden_field_tag sort_param, params[sort_param]  %>
+      <%= hidden_field_tag sort_param, params[sort_param]  %>
   <% end %>
 
   <tr style="background-color: #eeeeee;">
     <% selected_inline_columns.each do |column| %>
-      <td>
-        <% params[column.name] %>
-        <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) || (session['search_hash'].keys.include?(column.name.to_s)) %>
-            <% search_value = (params[column.name] || params['search'][column.name.to_s]) rescue "" %>
-            <%# search_value = search_value.blank? ? session['search_value'] : search_value %>
-            <% search_value = search_value.blank? ? session['search_hash'][column.name.to_s] : search_value %>
-        <% else %>
-            <% search_value = params[column.name] %>
-        <% end %>
+        <td>
+          <% params[column.name] %>
+          <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) || (session['search_hash'].keys.include?(column.name.to_s)) %>
+              <% search_value = (params[column.name] || params['search'][column.name.to_s]) rescue "" %>
+              <%# search_value = search_value.blank? ? session['search_value'] : search_value %>
+              <% search_value = search_value.blank? ? session['search_hash'][column.name.to_s] : search_value %>
+          <% else %>
+              <% search_value = params[column.name] %>
+          <% end %>
 
-        <%= text_field_tag column.name, search_value, style: "width: 85%; height: 13px;", disabled: (!column.field_id.nil? || column.name.to_s=="description") %>
-      </td>
-      <% end %>
+          <%= text_field_tag column.name, search_value, style: "width: 85%; height: 13px;", disabled: (!column.field_id.nil? || column.name.to_s=="description") %>
+        </td>
+    <% end %>
     <td></td>
   </tr>
 
   <% @projects.each_with_index do |project, index| %>
       <tr>
         <% selected_inline_columns.each do |column| %>
-          <%= column_content(@pfs, column, project, @fields_coefficients) %>
+            <%= column_content(@pfs, column, project, @fields_coefficients) %>
         <% end %>
 
         <td style="min-width: 145px;">
           <% if can_show_estimation?(project) %>
-            <%= link_to('', edit_project_path(project, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
-            <%= link_to '', export_dashboard_path(format: "pdf", project_id: project.id), class: 'fa fa-file-pdf-o pull-left', style: "color: black; margin-top:4px;", :title => 'Exporter en PDF', target: "_blank", method: "POST" %>
-            <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "icon-comment pull-left", style: "color: black; margin-top:-1px;", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %> <!-- Link to comment the estimation status change add_comment_on_status_change -->
+              <%= link_to('', edit_project_path(project, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties'), :class => 'fa fa-pencil pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('edit')) %>
+              <%= link_to '', export_dashboard_path(format: "pdf", project_id: project.id), class: 'fa fa-file-pdf-o pull-left', style: "color: black; margin-top:4px;", :title => 'Exporter en PDF', target: "_blank", method: "POST" %>
+              <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "icon-comment pull-left", style: "color: black; margin-top:-1px;", :title => "#{I18n.t(:label_add_status_change_comment)}" , :remote => true) %> <!-- Link to comment the estimation status change add_comment_on_status_change -->
           <% end %>
 
           <% if project.private == false || current_user.super_admin == true || can?(:manage, project, estimation_status_id: project.estimation_status_id) %>
-            <% if can_alter_estimation?(project) && can?(:alter_estimation_status, project) %>
-              <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "fa fa-share pull-left", style: "color: black; margin-top:4px;", :title => "#{I18n.t(:button_commit_project)}" , :remote => true) %>
-            <% end %>
+              <% if can_alter_estimation?(project) && can?(:alter_estimation_status, project) %>
+                  <%= link_to('', main_app.add_comment_on_status_change_path(:project_id => project.id), :class => "fa fa-share pull-left", style: "color: black; margin-top:4px;", :title => "#{I18n.t(:button_commit_project)}" , :remote => true) %>
+              <% end %>
           <% end %>
 
           <% if can?(:commit_project, project) %>
-            <%= link_to('', set_checkout_version_path(:project_id => project.id), :class => 'fa fa-code-fork pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout) if project.has_children?)) %>
+              <%= link_to('', set_checkout_version_path(:project_id => project.id), :class => 'fa fa-code-fork pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('button_checkout_project'), remote: true, :confirm => (I18n.t(:confirm_new_branch_project_checkout) if project.has_children?)) %>
           <% end %>
 
           <%= link_to('', edit_project_path(project, tabs_name: 'tabs_history', anchor: 'tabs-history'), :class => 'fa fa-film pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('label_project_history')) %>
@@ -61,21 +60,21 @@
           <%# link_to('', {:controller => 'projects', :action => 'find_use_project', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'fa fa-map-marker pull-left', style: "color: black; margin-top:4px;", :id => 'find_use_projects', :title => I18n.t('button_find_use')) %>
 
           <% if can? :copy_project, project %>
-            <%= link_to('',
-                        main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"),
-                        :class => 'icon-copy pull-left',
-                        :title => I18n.t('button_duplicate_project'),
-                        :method => "POST") %>
+              <%= link_to('',
+                          main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"),
+                          :class => 'icon-copy pull-left',
+                          :title => I18n.t('button_duplicate_project'),
+                          :method => "POST") %>
           <% end %>
 
           <% if (can? :delete_project, project) || (can? :manage, project) %>
-            <% if can_delete_estimation?(project) %>
-              <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
-            <% end %>
+              <% if can_delete_estimation?(project) %>
+                  <%= link_to('', confirm_deletion_path(project_id: project.id), :class => 'icon-trash pull-left', :title => I18n.t('delete')) %>
+              <% end %>
           <% end %>
         </td>
       </tr>
-    <% end %>
+  <% end %>
 
   <tr>
     <% sort_column = sort_column.blank? ? params[:sort_column] : sort_column %>
@@ -87,16 +86,16 @@
 
     <th colspan="100" class="pager form-horizontal">
       <% if @min == 0 %>
-        <%= link_to "", "#", class: "btn btn-md fa fa-fast-backward disabled prev_next" %>
-        <%= link_to(I18n.t(:previous), "#", class: "btn btn-sm disabled prev_next") %>
+          <%= link_to "", "#", class: "btn btn-md fa fa-fast-backward disabled prev_next" %>
+          <%= link_to(I18n.t(:previous), "#", class: "btn btn-sm disabled prev_next") %>
       <% else %>
-        <% if params[:sort_action] == "true"  || params[:action] == "sort" %>
-            <%= link_to "", sort_path(f: sort_column, s: sort_order, min: 0, max: @object_per_page, previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-md fa fa-fast-backward prev_next" %>
-            <%= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-sm prev_next" %>
-        <% else %>
-            <%= link_to "", organization_estimations_path(@organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-md fa fa-fast-backward prev_next" %>
-            <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-sm prev_next" %>
-        <% end %>
+          <% if params[:sort_action] == "true"  || params[:action] == "sort" %>
+              <%= link_to "", sort_path(f: sort_column, s: sort_order, min: 0, max: @object_per_page, previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-md fa fa-fast-backward prev_next" %>
+              <%= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-sm prev_next" %>
+          <% else %>
+              <%= link_to "", organization_estimations_path(@organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-md fa fa-fast-backward prev_next" %>
+              <%= link_to I18n.t(:previous), organization_estimations_path(@organization.id, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-sm prev_next" %>
+          <% end %>
       <% end %>
 
       <%# if @max <= @organization.organization_estimations.size.to_f %>
@@ -115,7 +114,5 @@
 
     </th>
   </tr>
-
 </table>
-
 

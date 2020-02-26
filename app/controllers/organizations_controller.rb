@@ -1175,6 +1175,7 @@ class OrganizationsController < ApplicationController
   def report_management
   end
 
+
   #Calculate Mixed Profiles
   def calculate_mixed_profiles
     @organization = Organization.where(id: params[:organization_id]).first
@@ -3426,7 +3427,7 @@ class OrganizationsController < ApplicationController
     # render :partial => 'organizations/organization_projects', object: [@organization, @projects]
   end
 
-  def estimations
+  def estimations_SAVE_v41
     @organization = Organization.find(params[:organization_id])
 
     check_if_organization_is_image(@organization)
@@ -3498,14 +3499,153 @@ class OrganizationsController < ApplicationController
 
     organization_projects = @organization.projects.where(:is_model => [nil, false])
     if params[:archive].present?
-      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+      esids = EstimationStatus.where(organization_id: @organization.id, name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
       @all_projects = organization_projects.where(estimation_status_id: esids)
     else
-      esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+      esids = EstimationStatus.where(organization_id: @organization.id, name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
       @all_projects = organization_projects.where.not(estimation_status_id: esids)
     end
 
     organization_projects = get_sorted_estimations(@organization.id, @all_projects, @sort_column, @sort_order, @search_hash)
+
+    res = []
+    organization_projects.each do |p|
+      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        res << p
+      end
+    end
+
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = @sort_action
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
+    session[:search_hash] = @search_hash
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @organization.fields
+    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
+      begin
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            if pf.project_id == pf.views_widget.module_project.project_id
+
+              if pf.field.name.to_s.in?(["Max. Staff.", "Staff. max."])
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = (pf.value.blank? ? nil : pf.value.to_f.round_up_by_step(0.1).round(1))
+              else
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+              end
+            else
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+        else
+          pf.delete
+        end
+
+      rescue
+        #puts "erreur"
+      end
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
+
+    # if user_signed_in?
+    #   Monitoring.create(user: User.current, action: "Accéder à la liste des devis de l'organisation #{@organization.name}", action_at: Time.now+3600)
+    # end
+
+  end
+
+
+  # Get estimations from Ordered View
+  def estimations
+    @organization = Organization.find(params[:organization_id])
+
+    check_if_organization_is_image(@organization)
+
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
+
+    if params[:filter_version].present?
+      @filter_version = params[:filter_version]
+    else
+      @filter_version = '4'
+    end
+
+    @object_per_page = (current_user.object_per_page || 10)
+
+    if params[:min].present? && params[:max].present?
+      @min = params[:min].to_i
+      @max = params[:max].to_i
+    else
+      @min = 0
+      @max = @object_per_page
+    end
+
+    if session[:sort_action].blank?
+      session[:sort_action] = "true"
+    end
+
+    if session[:sort_column].blank?
+      #session[:sort_column] = "start_date"
+      project_selected_columns = @organization.project_selected_columns
+      default_sort_column = @organization.default_estimations_sort_column rescue nil
+      default_sort_order = @organization.default_estimations_sort_order rescue nil
+
+      if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
+        session[:sort_column] = default_sort_column
+        session[:sort_order] = default_sort_order
+      else
+        session[:sort_column] = "created_at"
+        session[:sort_order] = "desc"
+      end
+    end
+
+    if session[:sort_order].blank?
+      if session[:sort_column].in?(["start_date", "created_at"])
+        session[:sort_order] ="desc"
+      end
+    end
+
+    @sort_action = params[:sort_action].blank? ? session[:sort_action] : params[:sort_action]
+    @sort_column = params[:sort_column].blank? ? session[:sort_column] : params[:sort_column]
+    @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
+    @search_hash = nil
+
+    if params[:historized].present? && params[:historized] == "1"
+      @all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: true)
+    else
+      @all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: [nil, false])
+    end
+
+    # if params[:archive].present?
+    #   esids = EstimationStatus.where(organization_id: @organization.id, name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+    #   @all_projects = organization_projects.where(estimation_status_id: esids)
+    # else
+    #   esids = EstimationStatus.where(organization_id: @organization.id, name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
+    #   @all_projects = organization_projects.where.not(estimation_status_id: esids)
+    # end
+
+     organization_projects = get_sorted_estimations(@organization.id, @all_projects, @sort_column, @sort_order, @search_hash)
 
     res = []
     organization_projects.each do |p|

@@ -19,47 +19,62 @@
               <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :status_number, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
+                <%= f.input :status_number, label: false, input_html: {:class => 'mdl-textfield__input form-control'}  %>
                 <label class="mdl-textfield__label" for="status_number"><%= I18n.t(:status_number) %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :name, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
+                <%= f.input :name, label: false, input_html: {:class => 'mdl-textfield__input form-control'}  %>
                 <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :status_alias, label: false, input_html: {:class => 'form-control', :rows => 5}  %>
+                <%= f.input :status_alias, label: false, input_html: {:class => 'mdl-textfield__input form-control'}  %>
                 <label class="mdl-textfield__label" for="status_alias"><%= I18n.t(:alias) %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :allow_correction_before_change, label: I18n.t(:allow_correction_before_change), input_html: {:class => 'form-control', :rows => 5}  %>
-
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :is_archive_status, label: I18n.t(:is_archive_status), input_html: {:class => 'form-control', :rows => 5}  %>
+                <%= f.input :allow_correction_before_change, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="allow_correction_before_change" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('allow_correction_before_change') %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :is_new_status, label: I18n.t(:is_new_status), input_html: {:class => 'form-control', :rows => 5}  %>
+                <%= f.input :is_archive_status, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="is_archive_status" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_archive_status') %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :create_new_version_when_changing_status, label: I18n.t(:create_new_version_when_status_changed), input_html: {:class => 'form-control', :rows => 5}  %>
+                <%= f.input :is_new_status, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="is_new_status" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_new_status') %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color form-control'} %>
+                <%= f.input :create_new_version_when_changing_status, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="create_new_version_when_changing_status" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('create_new_version_when_status_changed') %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :description, label: false, input_html: {:class => 'form-control', :rows => 5} %>
+                <%= f.input :is_historization_status, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="is_historization_status" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_historization_status') %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :nb_day_before_historization, label: false, input_html: {:class => 'mdl-textfield__input form-control'}  %> <%= I18n.t(:unit_days) %>
+                <label class="mdl-textfield__label" for="nb_day_before_historization"><%= I18n.t(:nb_day_before_historization) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color mdl-textfield__input form-control'} %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, input_html: {:class => 'mdl-textfield__input form-control', :rows => 5} %>
                 <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
               </div>
 
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                <%= f.input :description, label: false, input_html: {:class => 'form-control', :rows => 5} %>
-                <label class="mdl-textfield__label" for="email"><%= I18n.t(:email) %></label>
+                <%= f.input :notification_emails, label: false, input_html: {:class => 'mdl-textfield__input form-control'} %>
+                <label class="mdl-textfield__label" for="notification_emails"><%= I18n.t(:notification_emails) %></label>
               </div>
 
             </div>

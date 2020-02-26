@@ -3,10 +3,10 @@
     <div class="estimation-list-filter">
       <span><%= @projects.count %> <%= I18n.t(:elements) %></span>
       <span>
-        <% unless params[:archive].present? %>
-          <a href="?archive=1"><%= I18n.t(:display_archives) %></a>
+        <% unless params[:historized].present? %>
+          <a href="?historized=1"><%= I18n.t(:display_historized) %></a>
         <% else %>
-          <a href="<%= url_for(:only_path => false) %>">Hide archives</a>
+          <a href="<%= url_for(:only_path => false) %>"><%= I18n.t(:hide_historized) %></a>
         <% end %>
       </span>
     </div>
