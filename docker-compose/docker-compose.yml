@@ -2,6 +2,7 @@ version: "3.7"
 services:
   estimancy:
     image: estimancy:v4.1
+    container_name: estimancy_v41
     ports:
       - 3000:3000
     links:

@@ -13,7 +13,7 @@ gem 'cookies_eu'
 gem 'bcrypt-ruby', :require => 'bcrypt'
 gem 'useragent'
 
-gem 'mysql2', '~> 0.4.9' #'~> 0.3.21'
+gem 'mysql2', '~> 0.4.10' #'~> 0.3.21'
 
 # Include database gems for the adapters found in the database
 # configuration file
@@ -83,15 +83,15 @@ gem 'uuidtools'
 gem 'amoeba', '~> 3.0.0'
 
 # Required for rspec and rails command
-gem 'rb-readline'
+#gem 'rb-readline'
 
 #Optional gem for monitoring
-group :ic do
-  gem 'newrelic_rpm'
-  gem 'coveralls', :require => false
-  gem "codeclimate-test-reporter", :group => :test, :require => nil
-  gem 'inch'
-end
+# group :ic do
+#   gem 'newrelic_rpm'
+#   gem 'coveralls', :require => false
+#   gem "codeclimate-test-reporter", :group => :test, :require => nil
+#   gem 'inch'
+# end
 
 # spreadsheet files management
 gem 'rubyzip'
@@ -162,13 +162,13 @@ gem 'delocalize'
 
 # Gems used only for assets and not required
 # in production environments by default.
-group :assets do
-  gem 'coffee-rails'
-  gem 'uglifier', '>= 1.0.3'
-  # gem 'jquery-datatables-rails'
-  # gem 'jquery-ui-rails', '5.0.5'
-  gem 'sass'
-end
+# group :assets do
+#   gem 'coffee-rails'
+#   gem 'uglifier', '>= 1.0.3'
+#   # gem 'jquery-datatables-rails'
+#   # gem 'jquery-ui-rails', '5.0.5'
+#   gem 'sass'
+# end
 
 gem 'sass-rails'
 
