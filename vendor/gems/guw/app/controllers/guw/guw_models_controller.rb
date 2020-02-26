@@ -1768,7 +1768,7 @@ class Guw::GuwModelsController < ApplicationController
 
     jj = 18 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
 
-    @guw_unit_of_works.each_with_index do |guow, i|
+    @guw_unit_of_works.order(:display_order).each_with_index do |guow, i|
 
       ind = i + 1
 

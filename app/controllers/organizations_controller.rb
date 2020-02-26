@@ -2887,7 +2887,7 @@ class OrganizationsController < ApplicationController
 
               @wbs_activity.wbs_activity_elements.where(organization_id: @organization.id).select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-                guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Charge RTU (jh)").first
+                guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: ["Charge RTU (jh)", "Charge RTU avec prod. (jh)"]).first
 
                 if guw_output_effort.nil?
                   guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Charge RIS (jh)").first
@@ -3077,7 +3077,7 @@ class OrganizationsController < ApplicationController
 
           jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
-          @guw_unit_of_works.each_with_index do |guow, i|
+          @guw_unit_of_works.order(:display_order).each_with_index do |guow, i|
 
             ind = ind + 1
 
@@ -3180,7 +3180,7 @@ class OrganizationsController < ApplicationController
 
               @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-                guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
+                guw_output_effort = Guw::GuwOutput.where(name: ["Charge RTU (jh)", "Charge RTU avec prod. (jh)"], guw_model_id: @guw_model.id).first
 
                 if guw_output_effort.nil?
                   guw_output_effort = Guw::GuwOutput.where(name: "Charge RIS (jh)", guw_model_id: @guw_model.id).first
