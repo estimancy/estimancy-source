@@ -10,7 +10,6 @@
         <%= I18n.t(:technical_informations) %>
       </a>
     </li>
-    <%# if @organization.name == "CDS DISTRIBUTION TRANSPORTEUR" || @organization.name == "06_DSI Voyage_CdS Distribution Transporteur" %>
     <% if @organization.name.downcase.include?("distribution transporteur") %>
       <li>
         <a href="#tabs-dt">
