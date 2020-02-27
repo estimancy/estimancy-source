@@ -3879,9 +3879,9 @@ public
 
       res = []
       @projects.each do |p|
-        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        # if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
           res << p
-        end
+        # end
       end
 
       @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
@@ -3981,18 +3981,19 @@ public
     end
 
     # filtre sur la version des estimations
-    if !@filter_version.to_s.in?(['4', ''])
-      @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
-    end
+    # if !@filter_version.to_s.in?(['4', ''])
+    #   @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
+    # end
 
     res = []
     @organization_estimations.each do |p|
-      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+    #   if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
         res << p
-      end
+    #   end
     end
 
-    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    # @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    @projects = res
 
     p @projects
 
@@ -4008,7 +4009,7 @@ public
     # session[:is_last_page] = @is_last_page
     # session[:search_column] = @search_column
     # session[:search_value] = @search_value
-    #
+
     build_footer
 
   end
@@ -4049,11 +4050,6 @@ public
            i += 1
          end
        end
-
-       # if nb_total >= 12100
-       #   puts "Test"
-       #   puts "nb_total = #{nb_total}"
-       # end
 
        if (result.size == desired_size) || (projects.size < desired_size) || last_project.nil?
          return result
