@@ -43,18 +43,12 @@ class QueryColumn
     end
   end
 
-  def project_field_value_test(object, fields_coefficients)
+  def project_field_value(pfs, object, fields_coefficients)
     value = '-'
     coefficient = fields_coefficients[self.field_id]
     unless coefficient.nil?
 
-      pfs_hash = HashWithIndifferentAccess.new
-      pfs_array = object.project_fields_result.split(';')
-      pfs_array.each do |pf|
-        pf_key_value = pf.split(':')
-        pfs_hash[pf_key_value[0]] = pf_key_value[1]
-      end
-
+      pfs_hash = object.project_fields_to_h
       v = pfs_hash[self.name]
 
       if v.nil?
@@ -70,7 +64,7 @@ class QueryColumn
   end
 
 
-  def project_field_value(pfs, object, fields_coefficients)
+  def project_field_value_save(pfs, object, fields_coefficients)
     value = '-'
     coefficient = fields_coefficients[self.field_id]
     unless coefficient.nil?

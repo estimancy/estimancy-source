@@ -61,5 +61,17 @@ class OrganizationEstimation < ActiveRecord::Base
   end
 
 
+  def project_fields_to_h(arr_sep=' ; ', key_sep=': ')
+    array = self.project_fields_result.split(arr_sep)
+    hash = HashWithIndifferentAccess.new  #{}
+
+    array.each do |e|
+      key_value = e.split(key_sep)
+      hash[key_value[0]] = key_value[1]
+    end
+
+    return hash
+  end
+
 
 end
