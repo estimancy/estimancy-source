@@ -254,6 +254,8 @@ Projestimate::Application.routes.draw do
 
   resources :organizations do
 
+    get 'cds_data' => 'projects#cds_data'
+
     post 'generate_budget_report' => 'budgets#generate_budget_report', :as => 'generate_budget_report'
 
     get 'estimation_settings' => 'organizations#estimation_settings', as: 'estimation_settings'

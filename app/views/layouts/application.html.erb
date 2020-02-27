@@ -4,7 +4,7 @@
 
     <title><%= @page_title ? @page_title : controller.action_name %></title>
 
-    <%= stylesheet_link_tag 'application', media: 'screen' %>
+    <%= stylesheet_link_tag 'application', media: 'screen', 'data-turbolinks-eval' => 'false' %>
 
     <%= csrf_meta_tag %>
     <%#= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '', 'data-turbolinks-track': 'reload' %>
