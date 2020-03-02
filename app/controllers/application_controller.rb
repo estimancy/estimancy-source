@@ -197,7 +197,8 @@ class ApplicationController < ActionController::Base
 
   def current_ability
     begin
-      if current_user.organization_ids.include?(@current_organization.id)
+      @current_user_organization_ids ||= current_user.organization_ids
+      if @current_user_organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
           when "estimations", "sort", "search"

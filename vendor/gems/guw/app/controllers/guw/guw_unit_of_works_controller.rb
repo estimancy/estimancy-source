@@ -276,6 +276,28 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def load_cotations
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_model = @guw_unit_of_work.guw_model
+
+    Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id, low: nil, most_likely: nil, high: nil).delete_all
+
+    @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id,
+                                    guw_model_id: @guw_model.id).all.each do |gac|
+
+      sum_range = gac.guw_attribute_complexities.where(organization_id: @guw_model.organization_id,
+                                                       guw_model_id: @guw_model.id,
+                                                       guw_type_id: @guw_unit_of_work.guw_type_id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
+
+      unless sum_range.nil? || sum_range.blank? || sum_range == 0
+        finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+                                                   guw_model_id: @guw_model.id,
+                                                   guw_attribute_id: gac.id,
+                                                   guw_type_id: @guw_unit_of_work.guw_type_id,
+                                                   project_id: @guw_unit_of_work.project_id,
+                                                   module_project_id: @guw_unit_of_work.module_project_id,
+                                                   guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
+
+        finder.save
+      end
+    end
   end
 
   def load_name
