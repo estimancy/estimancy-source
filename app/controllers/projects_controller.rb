@@ -3094,11 +3094,16 @@ public
 
             # Update the group unit of works and attributes
             guw_group.guw_unit_of_works.each do |guw_uow|
-              new_uow_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first #find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+
+              new_uow_mp = ModuleProject.where(organization_id: @organization.id,
+                                               project_id: new_prj.id,
+                                               copy_id: guw_uow.module_project_id).first
+
               new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
 
               new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
               new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
+
               guw_uow.update_attributes(module_project_id: new_uow_mp_id,
                                         pbs_project_element_id: new_pbs_id,
                                         organization_id: new_prj.organization_id,
@@ -3114,7 +3119,39 @@ public
                   new_guw_coeff_elt_uow.save
                 end
               end
-              #====
+
+
+              # Correction duplication critères attribute
+              # old_mp.guw_unit_of_works.each do |old_guw|
+              #
+              #   old_guw_guw_model = old_guw.guw_model
+              #   old_guw_guw_model.guw_attributes.where( organization_id: old_guw_guw_model.organization_id,
+              #                                           guw_model_id: old_guw_guw_model.id).all.each do |gac|
+              #
+              #     guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: old_guw_guw_model.organization_id,
+              #                                               guw_model_id: old_guw.guw_model_id,
+              #                                               guw_attribute_id: gac.id,
+              #                                               guw_type_id: old_guw.guw_type_id,
+              #                                               project_id: old_mp.project_id,
+              #                                               module_project_id: old_guw.module_project_id,
+              #                                               guw_unit_of_work_id: old_guw.id).first
+              #
+              #     unless guowa.nil?
+              #
+              #       new_guowa = guowa.dup
+              #
+              #       new_guowa.guw_unit_of_work_id = guw_uow.id
+              #       new_guowa.guw_model_id = guw_uow.guw_model_id
+              #       new_guowa.project_id = guw_uow.project_id
+              #       new_guowa.module_project_id = guw_uow.module_project_id
+              #       new_guowa.guw_unit_of_work_id = old_guw.module_project_id
+              #
+              #       new_guowa.save
+              #
+              #     end
+              #
+              #   end
+              # end
             end
           end
 
