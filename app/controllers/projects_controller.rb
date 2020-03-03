@@ -4838,49 +4838,56 @@ public
   private def simulate_ai(project, uo)
     model = Project.where(id: uo.project.original_model_id).first
 
-    if model.title == "IFPUG Sourcing"
-      if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
-        if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-          display = false
-        elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-          display = false
-        else
-          display = true
-        end
-      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
-        if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
-          display = false
-        else
-          display = true
-        end
-      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
-        if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-          display = false
-        elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-          display = false
-        elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
-          display = false
-        else
-          display = true
-        end
-      elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
-        if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
-          display = false
-        else
-          display = true
-        end
-      else
-        display = true
-      end
-    end
-
-    if project.is_valid == true || display == false
-      project.is_valid = !display
-      project.save(validate: false)
-    end
+    # if model.title == "IFPUG Sourcing"
+    #   if uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR01"
+    #     if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+    #       display = false
+    #     elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+    #       display = false
+    #     else
+    #       display = true
+    #     end
+    #   elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR02"
+    #     if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Average" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Create"
+    #       display = false
+    #     else
+    #       display = true
+    #     end
+    #   elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR03"
+    #     if uo.guw_type.name == "EI" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+    #       display = false
+    #     elsif uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+    #       display = false
+    #     elsif uo.guw_type.name == "ILF" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Modify"
+    #       display = false
+    #     else
+    #       display = true
+    #     end
+    #   elsif uo.name.gsub(/[^0-9A-Za-z]/, '') == "EFR04"
+    #     if uo.guw_type.name == "EQ" && uo.guw_complexity.name == "Low" && uo.guw_coefficient_element_unit_of_works.map(&:guw_coefficient_element).map(&:name).first == "Delete"
+    #       display = false
+    #     else
+    #       display = true
+    #     end
+    #   else
+    #     display = true
+    #   end
+    # end
+    #
+    # if project.is_valid == true || display == false
+    #   project.is_valid = !display
+    #   project.save(validate: false)
+    # end
 
     # @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.description } )
-    # JSON.parse(@http.body_str)
+    #
+    # results = JSON.parse(@http.body_str)
+    #
+    # results.each do |result|
+    #   if uo.guw_type.name == result
+    #
+    #   end
+    # end
 
   end
 
