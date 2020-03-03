@@ -1207,11 +1207,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         #guw_unit_of_work.save
 
         array_pert = Array.new
-        if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
-          guw_unit_of_work.selected = true
-        else
-          # guw_unit_of_work.selected = false
-        end
+
+        # if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
+        #   guw_unit_of_work.selected = true
+        # else
+        #   guw_unit_of_work.selected = false
+        # end
 
         #reorder to keep good order
         #reorder guw_unit_of_work.guw_unit_of_work_group
