@@ -20,7 +20,7 @@ def ia_based_sizing_control():
 ##########################################################################################
 def ia_based_sizing_control (userStory):
     ### path to be modified for the use in the server
-    csvFile="./simulation_DB.csv"
+    csvFile="/home/estimancy_design41/data_identification/simulation_DB.csv"
     with open(csvFile, "rt") as csvfile:
         data = csv.DictReader(csvfile, delimiter=',', quotechar='\"')
         #  Read file
