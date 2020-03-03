@@ -1768,7 +1768,7 @@ class Guw::GuwModelsController < ApplicationController
 
     jj = 18 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
 
-    @guw_unit_of_works.each_with_index do |guow, i|
+    @guw_unit_of_works.order(:display_order).each_with_index do |guow, i|
 
       ind = i + 1
 
@@ -1877,7 +1877,7 @@ class Guw::GuwModelsController < ApplicationController
         @wbs_activity.wbs_activity_elements.where(organization_id: organization_id).select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
           guw_output_effort = Guw::GuwOutput.where(organization_id: organization_id, guw_model_id: @guw_model.id,
-                                                   name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg", "Charge RTU Avec Dégr."]).first
+                                                   name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg", "Charge RTU Avec Dégr.", "Charge RTU avec prod. (jh)"]).first
 
           guw_output_test = Guw::GuwOutput.where(organization_id: organization_id, guw_model_id: @guw_model.id,
                                                  name: ["Assiette Test", "Assiette Test (jh)", "Charges T (jh)", "UC Test Dg"]).first
