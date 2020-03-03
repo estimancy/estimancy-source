@@ -1784,21 +1784,28 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: comments } )
 
-      results = JSON.parse(@http.body_str)
+      results = JSON.parse(@http.body_str).split('-')
 
       unless results.empty?
+
         results.each do |result|
+
+          data = result.split('/')
 
           @new_guw_unit_of_work = @guw_unit_of_work.dup
           @new_guw_unit_of_work.save
 
           guw_type = Guw::GuwType.where(organization_id: @guw_unit_of_work.organization_id,
                                         guw_model_id: @guw_unit_of_work.guw_model_id,
-                                        name: result).first
+                                        name: data[0]).first
 
+          guw_complexity = Guw::GuwComplexity.where(organization_id: @guw_unit_of_work.organization_id,
+                                                    guw_model_id: @guw_unit_of_work.guw_model_id,
+                                                    name: 'Moyen').first
 
 
           @new_guw_unit_of_work.guw_type_id = guw_type.id
+          @new_guw_unit_of_work.guw_complexity_id = guw_complexity.id
 
           @new_guw_unit_of_work.save
         end
@@ -1807,7 +1814,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_unit_of_work.delete
 
-    redirect_to :back
+    redirect_to main_app.dashboard_path(@new_guw_unit_of_work.project)
   end
 
   # PFs AI control
@@ -1834,22 +1841,22 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           guw_complexity = Guw::GuwComplexity.where(organization_id: @guw_unit_of_work.organization_id,
                                                     guw_model_id: @guw_unit_of_work.guw_model_id,
-                                                    name: data[1].gsub(' ', '')).first
+                                                    name: 'Moyen').first
 
 
           @new_guw_unit_of_work.guw_type_id = guw_type.id
           @new_guw_unit_of_work.guw_complexity_id = guw_complexity.id
 
-          guw_coefficient_element = Guw::GuwCoefficientElement.where(organization_id: @guw_unit_of_work.organization_id,
-                                                                     guw_model_id: @guw_unit_of_work.guw_model_id,
-                                                                     name: data[2].gsub(' ', '')).first
-
-          @new_guw_unit_of_work.guw_coefficient_element_unit_of_works.each_with_index do |gceuow, j|
-            if i == j
-              gceuow.guw_coefficient_element_id = guw_coefficient_element.id
-              gceuow.save
-            end
-          end
+          # guw_coefficient_element = Guw::GuwCoefficientElement.where(organization_id: @guw_unit_of_work.organization_id,
+          #                                                            guw_model_id: @guw_unit_of_work.guw_model_id,
+          #                                                            name: data[2].gsub(' ', '')).first
+          #
+          # @new_guw_unit_of_work.guw_coefficient_element_unit_of_works.each_with_index do |gceuow, j|
+          #   if i == j
+          #     gceuow.guw_coefficient_element_id = guw_coefficient_element.id
+          #     gceuow.save
+          #   end
+          # end
 
           @new_guw_unit_of_work.guw_unit_of_work_id = @guw_unit_of_work.id
 
@@ -1858,7 +1865,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
-    redirect_to :back
+    redirect_to main_app.dashboard_path(@guw_unit_of_work.project)
+
   end
 
   def extract_from_url
