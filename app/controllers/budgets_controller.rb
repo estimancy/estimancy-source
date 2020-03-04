@@ -238,18 +238,19 @@ class BudgetsController < ApplicationController
 
   def generate_budget_report
     @organization = Organization.find(params[:organization_id])
-    @budget = Budget.find(params[:budget_id])
-    @application = Application.find(params[:application_id])
-
-    redirect_to organization_report_path(@organization, application_id: @application.id, budget_id: @budget.id, :anchor => 'tabs-budget-report')
+    @budget = Budget.where(id: params[:budget_id]).first
+    @application = Application.where(id: params[:application_id]).first
+    if @budget.nil? || @application.nil?
+      flash[:notice] = "Choisissez un élément"
+    end
+    redirect_to organization_report_path(@organization, :partial_name => "tabs_report_budget_report", application_id: params[:application_id], budget_id: params[:budget_id], :anchor => 'tabs-budget_report')
   end
 
-  def generate_report_excel
+  def generate_budget_report_excel
     organization = Organization.find(params[:organization_id])
-    budget = Budget.find(params[:budget_id])
-    application = Application.find(params[:application_id])
-
-    data = Budget::fetch_project_field_data(organization, budget , application)
+    budget = Budget.where(id: params[:budget_id]).first
+    application = organization.applications.where(id: params[:application_id]).first
+    data = Budget::fetch_project_field_data(organization, budget, application)
 
     workbook = RubyXL::Workbook.new
     worksheet = workbook.worksheets[0]
@@ -261,7 +262,7 @@ class BudgetsController < ApplicationController
       i = i + 1
     end
 
-    send_data(workbook.stream.string, filename: "#{@budget.name}-#{@application.name}.xlsx" , type: "application/vnd.ms-excel")
+    send_data(workbook.stream.string, filename: "#{budget.name}-#{application.name}.xlsx" , type: "application/vnd.ms-excel")
   end
 
   def save_budget

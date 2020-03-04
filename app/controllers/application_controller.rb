@@ -598,7 +598,6 @@ class ApplicationController < ActionController::Base
   end
 
   def show
-
     respond_to do |format|
       format.html {render :show}
       format.pdf do
@@ -608,11 +607,8 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
-
   # effectue une recherche multiple
   def get_multiple_search_results(organization_id, projects, search_elements={})
-
     search_hash = session[:search_hash] || {}
     search_string = ""
     final_results = []

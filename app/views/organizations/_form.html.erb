@@ -326,20 +326,21 @@
 
               <div class="edition-bloc-content">
                 <div class="edition-bloc-form">
-                  <% @reports_list.each do |report| %>
-                    <div class="form-row">
-                      <div class="col-5">
-                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                            <%= check_box_tag "show_reports[#{report}]", @organization.show_reports[report], @organization_show_reports_keys.include?(report) %>
-                          <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
-                            <%= I18n.t("#{report}") %>
-                          </label>
+                  <% unless @reports_list.nil? %>
+                    <% @reports_list.each do |report| %>
+                        <div class="form-row">
+                          <div class="col-5">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <%= check_box_tag "show_reports[#{report}]", @organization.show_reports[report], @organization_show_reports_keys.include?(report) %>
+                              <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
+                                <%= I18n.t("#{report}") %>
+                              </label>
 
+                            </div>
+                          </div>
                         </div>
-                      </div>
-                    </div>
+                      <% end %>
                   <% end %>
-
                 </div>
               </div>
 

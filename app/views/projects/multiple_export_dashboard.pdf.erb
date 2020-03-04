@@ -13,8 +13,15 @@
     }
   </script>
 
-  <%# wicked_pdf_stylesheet_link_tag "application", media: "all" %>
-  <%= stylesheet_link_tag wicked_pdf_asset_base64("pdf") %>
+  <%= wicked_pdf_stylesheet_link_tag "application", media: "all" %>
+
+  <%#= stylesheet_link_tag wicked_pdf_asset_base64("pdf") %>
+
+  <%= wicked_pdf_stylesheet_link_tag('application', media: :print) %>
+  <%#= javascript_include_tag wicked_pdf_asset_base64("number_pages") %>
+  <%= wicked_pdf_stylesheet_link_tag "pdf" -%>
+  <%#= wicked_pdf_javascript_include_tag "number_pages" %>
+
   <%= csrf_meta_tag %>
 
   <style>
@@ -97,18 +104,18 @@
     <% pps.each do |project| %>
       <%
          current_organization = project.organization
-         pbs_project_element = current_component
          module_projects = project.module_projects.where(organization_id: current_organization.id)
 
          module_projects.each do |module_project|
+           pbs_project_element = module_project.pbs_project_elements.first
            view_widgets = ViewsWidget.where(module_project_id: module_project.id).all
            view_widgets.select{|view_widget| view_widget.widget_type == "text" }.each do |view_widget|
              unless view_widget.estimation_value.nil?
                begin
                  if view_widget.estimation_value.pe_attribute.alias == "cost"
-                   total_cost << view_widget.estimation_value.string_data_probable[current_component.id][module_project.wbs_activity.root_element.id][:value].to_f
+                   total_cost << view_widget.estimation_value.string_data_probable[pbs_project_element.id][module_project.wbs_activity.root_element.id][:value].to_f
                  else
-                   total_effort << view_widget.estimation_value.string_data_probable[current_component.id][module_project.wbs_activity.root_element.id][:value].to_f
+                   total_effort << view_widget.estimation_value.string_data_probable[pbs_project_element.id][module_project.wbs_activity.root_element.id][:value].to_f
                  end
                rescue
                end

@@ -235,7 +235,7 @@ if File.exists?(local_gemfile)
   instance_eval File.read(local_gemfile)
 end
 
-# gem 'wicked_pdf'
+gem 'wicked_pdf'
 gem 'wkhtmltopdf-binary'
 
 gem 'prawn', '~> 1.2.1'
