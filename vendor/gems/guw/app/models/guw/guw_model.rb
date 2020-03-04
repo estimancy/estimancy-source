@@ -198,18 +198,25 @@ module Guw
           end
         end
 
+        guw_model_guw_types = guw_model.guw_types
+        guw_model_guw_attributes = guw_model.guw_attributes
+
         #Guw UnitOfWorkAttributes && Guw UnitOfWorks AJUSTED_SIZE and SIZE update if is_organization_copy=true
-        guw_type.guw_unit_of_works.where(organization_id: guw_model_organization.id, guw_model_id: guw_model.id).each do |guw_unit_of_work|
+        guw_type.guw_unit_of_works.where(organization_id: guw_model_organization.id,
+                                         guw_model_id: guw_model.id).each do |guw_unit_of_work|
 
           guw_unit_of_work.guw_unit_of_work_attributes.where(organization_id: guw_model_organization.id,
                                                              guw_model_id: guw_model.id).each do |guw_uow_attr|
-            new_guw_type = guw_model.guw_types.where(organization_id: guw_model_organization.id,
+
+            new_guw_type = guw_model_guw_types.where(organization_id: guw_model_organization.id,
                                                      copy_id: guw_uow_attr.guw_type_id).first
+
             new_guw_type_id = new_guw_type.nil? ? nil : new_guw_type.id
 
-            new_guw_attribute = guw_model.guw_attributes.where(organization_id: guw_model_organization.id,
+            new_guw_attribute = guw_model_guw_attributes.where(organization_id: guw_model_organization.id,
                                                                guw_model_id: guw_model.id,
                                                                copy_id: guw_uow_attr.guw_attribute_id).first
+
             new_guw_attribute_id = new_guw_attribute.nil? ? nil : new_guw_attribute.id
 
             guw_uow_attr.update_attributes(organization_id: guw_model_organization.id,
