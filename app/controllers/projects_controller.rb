@@ -4241,6 +4241,98 @@ public
     end
   end
 
+  # def yolo
+  #
+  #   results = []
+  #
+  #   organization = Organization.where(id: 64).first
+  #   guw_models = organization.guw_models
+  #
+  #   guw_models.each do |guw_model|
+  #
+  #     coef_jut = guw_model.guw_coefficients.where(name: "Coef. J UT").first
+  #
+  #     unless coef_jut.nil?
+  #       guw_coefficient_element = coef_jut.guw_coefficient_elements.first
+  #     end
+  #
+  #     uc_dev = guw_model.guw_outputs.where(name: "UC Dév. (UC)").first
+  #     uc_test = guw_model.guw_outputs.where(name: "UC Test (UC)").first
+  #
+  #     deg_abaque = guw_model.guw_coefficient_elements.where(name: "Dégressivité Abaque").first
+  #     deg_service = guw_model.guw_coefficient_elements.where(name: "Dégressivité Abaque").first
+  #     deg_mco = guw_model.guw_coefficient_elements.where(name: "Dégressivité Abaque").first
+  #
+  #       guw_model.guw_types.each do |guw_type|
+  #
+  #         guw_complexity = guw_type.guw_complexities.first
+  #
+  #         unless uc_dev.nil?
+  #           gcce_dev = Guw::GuwComplexityCoefficientElement.where(guw_model_id: guw_model.id,
+  #                                                                 guw_complexity_id: guw_complexity.id,
+  #                                                                 guw_coefficient_element_id: guw_coefficient_element.id,
+  #                                                                 guw_output_id: uc_dev.id,
+  #                                                                 guw_type_id: guw_type.id).first
+  #         end
+  #
+  #
+  #         unless uc_test.nil?
+  #           gcce_test = Guw::GuwComplexityCoefficientElement.where(guw_model_id: guw_model.id,
+  #                                                                  guw_complexity_id: guw_complexity.id,
+  #                                                                  guw_coefficient_element_id: guw_coefficient_element.id,
+  #                                                                  guw_output_id: uc_test.id,
+  #                                                                  guw_type_id: guw_type.id).first
+  #         end
+  #
+  #         unless deg_abaque.nil?
+  #           gcce_deg_abaque = Guw::GuwComplexityCoefficientElement.where(guw_model_id: guw_model.id,
+  #                                                                        guw_complexity_id: guw_complexity.id,
+  #                                                                        guw_coefficient_element_id: guw_coefficient_element.id,
+  #                                                                        guw_output_id: deg_abaque.id,
+  #                                                                        guw_type_id: guw_type.id,
+  #                                                                        value: 1.000).first
+  #         end
+  #
+  #         unless deg_service.nil?
+  #           gcce_deg_service = Guw::GuwComplexityCoefficientElement.where( guw_model_id: guw_model.id,
+  #                                                                          guw_complexity_id: guw_complexity.id,
+  #                                                                          guw_coefficient_element_id: guw_coefficient_element.id,
+  #                                                                          guw_output_id: deg_service.id,
+  #                                                                          guw_type_id: guw_type.id,
+  #                                                                          value: 1.000).first
+  #         end
+  #
+  #         unless deg_mco.nil?
+  #           gcce_deg_mco = Guw::GuwComplexityCoefficientElement.where(guw_model_id: guw_model.id,
+  #                                                                     guw_complexity_id: guw_complexity.id,
+  #                                                                     guw_coefficient_element_id: guw_coefficient_element.id,
+  #                                                                     guw_output_id: deg_mco.id,
+  #                                                                     guw_type_id: guw_type.id,
+  #                                                                     value: 1.000).first
+  #         end
+  #
+  #         results << [
+  #             guw_model.name,
+  #             guw_type.name,
+  #             gcce_dev.nil? ? '-' : gcce_dev.value,
+  #             gcce_test.nil? ? '-' : gcce_test.value,
+  #             gcce_deg_abaque.nil? ? '-' : gcce_deg_abaque.guw_coefficient_element.value,
+  #             gcce_deg_service.nil? ? '-' : gcce_deg_service.guw_coefficient_element.value,
+  #             gcce_deg_mco.nil? ? '-' : gcce_deg_mco.guw_coefficient_element.value
+  #         ]
+  #     end
+  #
+  #     require "csv"
+  #
+  #     CSV.open("result_jut_dev.csv", "wb") do |csv|
+  #       results.each do |result|
+  #         csv << result
+  #       end
+  #     end
+  #   end
+  #
+  # end
+
   private
   def generate_dashboard
     authorize! :show_project, @project

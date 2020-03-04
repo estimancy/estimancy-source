@@ -23,6 +23,7 @@
 
 Projestimate::Application.routes.draw do
 
+  # get 'yolo' => 'projects#yolo', as: "yolo"
 
   resources :autorization_log_events
 
