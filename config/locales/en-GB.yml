@@ -2015,3 +2015,13 @@ en-gb:
   show_coefficient_label: "Show coefficient label"
   show_coefficient_application_label: "Show application label"
 
+
+  horizontal_axis_label: "Horizontal axis label"
+  Y_axis_label: "Y axis label"
+  projects_stability_indicators: "Projects stability indicators"
+  prj_per_appli: "Estimates per appli"
+  proj_bad_stability: "Estimates with bad stability"
+  choose_an_application: "Please choose an application"
+  sum_create: "Sum of Create"
+  sum_modify: "Sum of Modify"
+  sum_delete: "Sum of Delete"

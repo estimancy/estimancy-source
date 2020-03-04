@@ -1,23 +1,50 @@
-<h2><%= I18n.t(:label_change_your_password) %></h2>
-<hr>
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+    <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+      <%= f.error_notification %>
+        <div class="edition-bloc-left">
+          <div class="edition-bloc-title">
+            <h2>
+              <%= I18n.t(:label_change_your_password) %>
+            </h2>
+          </div>
+        </div>
 
-<%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= f.error_notification %>
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
 
-  <%= f.input :reset_password_token, as: :hidden %>
-  <%= f.full_error :reset_password_token %>
+              <%= f.input :reset_password_token, as: :hidden %>
+              <%= f.full_error :reset_password_token %>
 
-  <div class="form-inputs">
-    <%= f.input :password, label: I18n.t(:new_password), required: true, autofocus: true %>
-    <%= f.input :password_confirmation, label: I18n.t(:confirm_new_password), required: true %>
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :password, label: false, required: true, autofocus: true, :input_html => {:class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:new_password) %></label>
+              </div>
+
+              <br>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :password_confirmation, label: false, required: true, autofocus: true, :input_html => {:class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:confirm_new_password) %></label>
+              </div>
+
+              <br>
+
+              <div>
+                <%= f.button :submit, I18n.t(:label_change_my_password), class: 'btn btn-primary' %>
+              </div>
+            <% end %>
+
+            <br>
+
+            <%= render "devise/shared/links" %>
+            <div class="login_page"></div>
+
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-
-  <div>
-    <%= f.button :submit, I18n.t(:label_change_my_password) %>
-  </div>
-<% end %>
-
-<%= render "devise/shared/links" %>
-
-<div class="login_page">
-</div>
+</section>

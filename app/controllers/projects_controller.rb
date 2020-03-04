@@ -227,9 +227,9 @@ class ProjectsController < ApplicationController
                                                                     "Charge sans prod. (jh)",
                                                                     "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
 
-            guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first
+            guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first #guw_charge_ss_prod_coefficient, guw_output_charge_ss_prod, guw_output_cost : nil
 
-            pf = project.project_fields.select{ |i| i.field_id == field.id }.first
+            pf = project.project_fields.select{ |i| i.field_id == field.id }.first #sort
 
             project_application = project.application.nil? ? nil : project.application.name
             project_project_area = project.project_area.nil? ? nil : project.project_area.name

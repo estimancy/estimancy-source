@@ -1,107 +1,180 @@
-<div class="tabs">
-  <ul>
-    <li>
-      <a href="#tabs-1">
-        <%= I18n.t(:knowledge_base) %>
-      </a>
-    </li>
-    <% if action_name.in?(["edit", "update"]) %>
-      <li>
-        <a href="#tabs-2">
-          <%= I18n.t(:data) %>
-        </a>
-      </li>
-    <% end %>
-  </ul>
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
 
-  <div id="tabs-1">
-
-    <% if controller.action_name == "new" %>
-      <div class="pull-right">
-        <%= form_tag skb.import_skb_model_path, :multipart => true, method: "post", :class => 'simple_form' do %>
-          <label style="color: #808080">
-            <%= I18n.t(:import_generic_effort_model) %>
-          </label>
-          <br>
-          <%= hidden_field_tag :organization_id, @organization.id %>
-          <%= file_field_tag :file %>
-          <%= hidden_field_tag :skb_model_id, nil %>
-          <%= submit_tag I18n.t(:import_instance_model), :class => 'btn' %>
-          <hr>
+      <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link show active"  data-toggle="pill" id="tabs-1_tab" href="#tabs-1" role="tab" aria-selected="true"><%= I18n.t(:knowledge_base) %></a>
+        </li>
+        <% if action_name.in?(["edit", "update"]) %>
+          <li class="nav-item">
+            <a class="nav-link"  data-toggle="pill" id="tabs-2_tab" href="#tabs-2" role="tab" aria-selected="false"><%= I18n.t(:data) %></a>
+          </li>
         <% end %>
-      </div>
-    <% end %>
+      </ul>
 
-    <%= simple_form_for(@skb_model) do |f| %>
+      <br/>
+
+      <div id="tabs-1">
+      <% if controller.action_name == "new" %>
+        <div class="pull-right">
+          <%= form_tag skb.import_skb_model_path, :multipart => true, method: "post", :class => 'simple_form' do %>
+            <label style="color: #808080">
+              <%= I18n.t(:import_generic_effort_model) %>
+            </label>
+            <br>
+            <%= hidden_field_tag :organization_id, @organization.id %>
+            <%= file_field_tag :file %>
+            <%= hidden_field_tag :skb_model_id, nil %>
+            <%= submit_tag I18n.t(:import_instance_model), :class => 'btn' %>
+
+          <% end %>
+        </div>
+      <% end %>
+
+      <%= simple_form_for(@skb_model) do |f| %>
 
       <%= f.error_notification %>
 
       <%= hidden_field_tag :organization_id, @current_organization.id %>
 
-      <div class="form-inputs">
-        <%= f.input :name, label: I18n.t(:name)  %>
-        <%= f.input :description, label: I18n.t(:description), input_html: { class: "input-xxlarge", rows: "5"}  %>
-        <%= f.input :label_x, label: "Libellé de l'axe des abscisses"  %>
-        <%= f.input :label_y, label: "Libellé de l'axe des ordonnées" %>
-        <%= f.input :three_points_estimation, label: I18n.t(:three_points_estimation) %>
-        <%= f.input :enabled_input, label: I18n.t(:modification_of_the_input_value_allow) %>
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
 
-
-        <%= f.input :date_min, label: I18n.t(:start_date) do %>
-          <% if @skb_model.date_min.nil? %>
-            <%= text_field_tag "skb_model[date_min]", "", class: "date-picker" %>
-          <% else %>
-            <%= text_field_tag "skb_model[date_min]", I18n.l(@skb_model.date_min), class: "date-picker" %>
-          <% end %>
-        <% end %>
-
-        <%= f.input :date_max, label: I18n.t(:end_date) do %>
-          <% if @skb_model.date_max.nil? %>
-            <%= text_field_tag "skb_model[date_max]", "", class: "date-picker" %>
-          <% else %>
-            <%= text_field_tag "skb_model[date_max]", I18n.l(@skb_model.date_max), class: "date-picker" %>
-          <% end %>
-        <% end %>
-
-        <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-        <script type="text/javascript">
-          //$(document).ready(function () {
-          $(document).ready(function() {
-            $(".date-picker").datepicker({
-              language: '<%= set_user_language_for_datepicker %>',
-              autoclose: true,
-              todayHighlight: true,
-              todayBtn: true
-            });
-          });
-        </script>
-
-        <%= f.input :n_max, label: "N derniers projets" %>
-
-        <%= f.input :size_unit, label: I18n.t(:size_unit) %>
-
-        <% unless @skb_model.skb_datas.empty? %>
-          <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
-
-            <div class="input boolean optional sskb_model_selected_attributes<%= k %>">
-              <label class="boolean optional control-label checkbox" for="selected_attributes<%= k %>">
-                <input class="boolean optional" id="skb_model_selected_attributes<%= k %>" name="selected_attributes[<%= k %>]" type="checkbox" <%= @skb_model.selected_attributes.include?(k.to_s) ? 'checked=checked' : '' %>">
-                <%= k %>
-              </label>
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="name" required><%= I18n.t(:name) %></label>
+              </div>
             </div>
-          <% end %>
-        <% end %>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 3 } %>
+                <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :label_x, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="label_x" required><%= I18n.t(:horizontal_axis_label) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :label_y, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="label_y" required><%= I18n.t(:Y_axis_label) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :three_points_estimation, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="three_points_estimation" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:three_points_estimation) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :enabled_input, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="enabled_input" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:modification_of_the_input_value_allow) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-4">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :date_min, label: I18n.t(:start_date) do %>
+                  <% if @skb_model.date_min.nil? %>
+                    <%= text_field_tag "skb_model[date_min]", :class => 'form-control date-picker' %>
+                    <label class="mdl-textfield__label" for="user_subs_end_date" style="margin-top: -30px;"><%= "" %></label>
+                  <% else %>
+                    <%= text_field_tag "skb_model[date_min]", :class => 'form-control date-picker' %>
+                    <label class="mdl-textfield__label" for="user_subs_end_date" style="margin-top: -30px;"><%= I18n.l(@skb_model.date_min) %></label>
+                  <% end %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+
+
+
+          </div>
+        </div>
       </div>
-      <div class="actions-tabs">
-        <% if can? :manage_modules_instances, ModuleProject %>
-          <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
-        <% end %>
-        <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn btn-secondary" %>
-      </div>
+
+            <div class="form-inputs">
+
+
+              <%= f.input :date_min, label: I18n.t(:start_date) do %>
+                <% if @skb_model.date_min.nil? %>
+                  <%= text_field_tag "skb_model[date_min]", "", class: "date-picker" %>
+                <% else %>
+                  <%= text_field_tag "skb_model[date_min]", I18n.l(@skb_model.date_min), class: "date-picker" %>
+                <% end %>
+              <% end %>
+
+              <%= f.input :date_max, label: I18n.t(:end_date) do %>
+                <% if @skb_model.date_max.nil? %>
+                  <%= text_field_tag "skb_model[date_max]", "", class: "date-picker" %>
+                <% else %>
+                  <%= text_field_tag "skb_model[date_max]", I18n.l(@skb_model.date_max), class: "date-picker" %>
+                <% end %>
+              <% end %>
+
+              <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+              <script type="text/javascript">
+                //$(document).ready(function () {
+                $(document).ready(function() {
+                  $(".date-picker").datepicker({
+                    language: '<%= set_user_language_for_datepicker %>',
+                    autoclose: true,
+                    todayHighlight: true,
+                    todayBtn: true
+                  });
+                });
+              </script>
+
+              <%= f.input :n_max, label: "N derniers projets" %>
+
+              <%= f.input :size_unit, label: I18n.t(:size_unit) %>
+
+              <% unless @skb_model.skb_datas.empty? %>
+                <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
+
+                  <div class="input boolean optional sskb_model_selected_attributes<%= k %>">
+                    <label class="boolean optional control-label checkbox" for="selected_attributes<%= k %>">
+                      <input class="boolean optional" id="skb_model_selected_attributes<%= k %>" name="selected_attributes[<%= k %>]" type="checkbox" <%= @skb_model.selected_attributes.include?(k.to_s) ? 'checked=checked' : '' %>">
+                      <%= k %>
+                    </label>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+            <div class="actions-tabs">
+              <% if can? :manage_modules_instances, ModuleProject %>
+                <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+              <% end %>
+              <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn btn-secondary" %>
+            </div>
     <% end %>
   </div>
 
-  <% if action_name.in?(["edit", "update"]) %>
+      <% if action_name.in?(["edit", "update"]) %>
     <div id="tabs-2">
       <div class="row-fluid">
         <div class="span3">
@@ -180,4 +253,7 @@
       </div>
     </div>
   <% end %>
-</div>
+
+    </div>
+  </div>
+</section>

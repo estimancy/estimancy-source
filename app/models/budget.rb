@@ -18,9 +18,10 @@ class Budget < ActiveRecord::Base
     bt_sum = Hash.new
 
     #BudgetTypeStatus.where(application_id: application.id, organization_id: organization.id).all.each do |bts|
+
     ApplicationBudgetType.where(organization_id: organization.id, application_id: application.id, budget_id: budget.id).all.each do |bts|
 
-      projects = Project.where(organization_id: organization.id, application_id: application.id ,  estimation_status_id: bts.estimation_status_id, is_model: false).all
+      projects = Project.where(organization_id: organization.id, application_id: application.id, estimation_status_id: bts.estimation_status_id, is_model: false).all
       projects_sum = 0
 
       projects.each do |project|

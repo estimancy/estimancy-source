@@ -2995,7 +2995,7 @@ class OrganizationsController < ApplicationController
 
       unless module_project.nil?
         @guw_model = module_project.guw_model
-        @wbs_activity_module_project = module_project.nexts.first
+        @wbs_activity_module_project = module_project.nexts.where.not(wbs_activity_id: nil).first
         unless @wbs_activity_module_project.nil?
           @wbs_activity = @wbs_activity_module_project.wbs_activity
         end
@@ -3196,6 +3196,7 @@ class OrganizationsController < ApplicationController
     end
 
     send_data(workbook.stream.string, filename: "#{@organization.name}-#{@guw_model.name}-#{Time.now.strftime('%Y-%m-%d-%H-%M')}.xlsx", type: "application/vnd.ms-excel")
+
   end
 
   def report
@@ -3204,12 +3205,12 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => organization_estimations_path(@organization), I18n.t(:report) => ""
     check_if_organization_is_image(@organization)
     @projects = @current_organization.projects.where(is_model: false)
-    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "budget_report", "raw_data_extract", "budget_excel_report"]
+    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "raw_data_extract", "budget_report", "budget_excel_report"]
     @organization_show_reports_keys = @organization.show_reports.keys
     @partial_name = params[:partial_name]
     @item_title = params[:item_title]
 
-    unless params[:budget_id].nil? || params[:application_id].nil?
+    unless params[:budget_id].blank? || params[:application_id].blank?
       @application = Application.find(params[:application_id])
       @budget = Budget.find(params[:budget_id])
     end
@@ -4673,8 +4674,8 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
     @groups = @organization.groups
-    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "budget_report", "raw_data_extract", "budget_excel_report"]
-    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi"]
+    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report",  "raw_data_extract", "budget_report", "budget_excel_report"]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators"]
     @organization_show_reports_keys = []
     @organization_show_kpi_keys = []
   end
@@ -4699,8 +4700,8 @@ class OrganizationsController < ApplicationController
     @organization_profiles = @organization.organization_profiles
     @work_element_types = @organization.work_element_types
 
-    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "budget_report", "raw_data_extract", "budget_excel_report"]
-    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi"]
+    @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "raw_data_extract", "budget_report", "budget_excel_report"]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators"]
 
     @organization_show_reports_keys = @organization.show_reports.keys
     @organization_show_kpi_keys = @organization.show_kpi.keys
@@ -4756,38 +4757,23 @@ class OrganizationsController < ApplicationController
       @data_for_global_budget << budget_values
     end
 
-  end
+    #toutes applications
 
-  def budget_details
-    @organization = Organization.find(params[:organization_id])
+    # @data_actions_all_applis = []
+    #
+    # @create_all_applis_tab = ["Create", create_all_applis, '#76A7FA']
+    # @modify_all_applis_tab = ["Modify", modify_all_applis, '#b87333']
+    # @delete_all_applis_tab = ["Delete", delete_all_applis, 'silver']
+    #
+    # @data_actions_all_applis << @create_all_applis_tab
+    # @data_actions_all_applis << @modify_all_applis_tab
+    # @data_actions_all_applis << @modify_all_applis_tab
+    #
+    # #per application
+    # selected_appli = params['application']
+    # @data_actions_per_appli = projects_per_application_stability_indicators(selected_appli)
 
-    # @organization.budgets.each do |budget|
-    #   budget_values = ["#{budget.name}"]
-    #   budget_values_per_bt = { }
-    #
-    #   organization_budget_types.each do |budget_type|
-    #     budget_values_per_bt["#{budget_type.name}"] = 0
-    #
-    #     budget_budget_type = BudgetBudgetType.where(organization_id: @organization.id, budget_id: budget.id, budget_type_id: budget_type.id).first
-    #
-    #     if budget_budget_type
-    #       budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
-    #
-    #       budget_used_applications.each do |application|
-    #         data = Budget::fetch_project_field_data(@organization, budget, application)
-    #         @data << data
-    #         BudgetTypeStatus.where(application_id: application.id, organization_id: @organization.id).all.each do |bts|
-    #           unless bts.budget_type.nil?
-    #             bt_colors[bts.budget_type.name] = bts.budget_type.color
-    #           end
-    #         end
-    #       end
-    #     else
-    #       budget_values << 0
-    #     end
-    #   end
-    # end
-    # Fin Budget global
+
   end
 
 
@@ -5509,7 +5495,7 @@ class OrganizationsController < ApplicationController
       budget_header = ["Budgets"]
       organization_budget_types = @organization.budget_types
       @nb_series = organization_budget_types.all.size
-      @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi"]
+      @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators"]
       @organization_show_kpi_keys = @organization.show_kpi.keys
       @partial_name = params[:partial_name]
       @item_title = params[:item_title]
@@ -5553,6 +5539,16 @@ class OrganizationsController < ApplicationController
         #budget_values << ''
         @data_for_global_budget << budget_values
       end
+
+
+      #toutes appplications
+      @projects_orga = @organization.projects
+      @stability_ind = projects_stability_indicators(@projects_orga)
+
+      #per application
+      #selected_appli = params['application']
+      #@data_actions_per_appli = projects_per_application_stability_indicators(selected_appli)
+
   end
 
   def save_show_reports
@@ -5573,6 +5569,73 @@ class OrganizationsController < ApplicationController
     @show_kpi["allow_fp_delivered_number_img"] = 1
     @show_kpi["allow_global_budget"] = 1
     @show_kpi["allow_estimations_total"] = 1
+    @show_kpi["allow_stability_indicators"] = 1
+  end
+
+
+  def projects_per_application_stability_indicators(application)
+    application_projects = @current_organization.projects.where(application_id: application.id)
+    projects_stability_indicators(application_projects)
+  end
+
+
+  def get_projects_stability_indicators
+    stability_id = params[:stability_id]
+    application_id = params[:application_id]
+    @stability_ind = []
+    case stability_id
+    when 'all_projects'
+      @stability_ind = projects_stability_indicators(@current_organization.projects)
+    when 'prj_per_appli'
+      if application_id.blank?
+        @stability_ind = projects_stability_indicators(@current_organization.projects)
+      else
+        application = @current_organization.applications.where(id: application_id).first
+        @stability_ind = projects_per_application_stability_indicators(application)
+      end
+    when 'proj_bad_stability'
+
+    end
+    @stability_ind
+  end
+
+  def projects_stability_indicators(projects)
+    @guw_coeffs = ["Work Type", "Activité", "Travail", "Actions", "Action", "Operation"]
+    @creations = ["Créer", "Création", "Create"]
+    @modifs = ["Modifier", "Modif", "Modification", "Modify"]
+    @deletions = ["Supprim.", "Supp.", "Suppression", "Delete"]
+
+    create = 0
+    modification = 0
+    delete = 0
+
+    projects.each do |project|
+      module_projects = project.module_projects.where.not(guw_model_id: nil)
+      module_projects.each do |module_project|
+        @guw_model = module_project.guw_model #module_project belongs_to :guw_model
+        @guows = module_project.guw_unit_of_works #module_project has_many :guw_unit_of_works
+        @guows.each do |guow|
+          @guw_coefficient_element_unit_of_works = guow.guw_coefficient_element_unit_of_works
+          @guw_coefficient_element_unit_of_works.each do |guw_coefficient_element_unit_of_work|
+            @guw_coefficient_element = guw_coefficient_element_unit_of_work.guw_coefficient_element
+            if @guw_coefficient_element
+              if @guw_coefficient_element.name.in? (@creations)
+                create += 1
+              elsif @guw_coefficient_element.name.in? (@modifs)
+                modification += 1
+              elsif @guw_coefficient_element.name.in? (@deletions)
+                delete += 1
+              end
+            end
+          end
+        end
+      end
+    end
+
+    @res = []
+    @res << ['Element', I18n.t(:sum_create), I18n.t(:sum_modify), I18n.t(:sum_delete)]
+    @res << ['Total', create, modification, delete]
+    @res
   end
 
   #########   END Organization settings pages  ###################

@@ -1,25 +1,21 @@
-<div id="tabs-detailed_excel_report" ><span><h2><%= I18n.t('detailed_excel_report') %></h2></span></div>
-  <div class="card-body" style="margin-left: 1rem;">
+<div id="tabs-detailed_excel_report">
+  <span><h2>
+  <%= I18n.t('detailed_excel_report') %></h2>
+  </span>
+</div>
+<div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    <div class="card-body">
 
-    <%= form_tag generate_report_excel_path, method: "post" do %>
+      <%= form_tag "generate_report_excel_detail", method: "post" do %>
+        <h4><%= I18n.t(:generate_excel_report_all_quotations) %></h4>
+        <p>
+          <%= I18n.t(:Abaque_Wbs_quotation_export) %>
 
-      <%= hidden_field_tag "organization_id", params[:organization_id] %>
+        </p>
+        <br>
+        <%= hidden_field_tag "organization_id", params[:organization_id] %>
+        <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary btn-estimancy' %>
 
-      <div class="span3">
-        <%= label_tag "Budgets" %>
-        <%= select_tag "budget_id", options_for_select(@organization.budgets.map{|i| [i.name, i.id]}, selected: params[:budget_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
-      </div>
-
-      </br>
-
-      <div class="span3">
-        <%= label_tag "Applications" %>
-        <%= select_tag "application_id", options_for_select(@organization.applications.map{|i| [i.name, i.id]}, selected: params[:application_id]), prompt: I18n.t(:Indifferent), class: "form-control" %>
-      </div>
-
-      <div class="container-fluid" style="margin-top: 1rem;margin-left: -1rem;">
-        <%= submit_tag I18n.t(:validate), :class => 'btn btn-primary' %>
-      </div>
-    <% end %>
-
-  </div>
+      <% end %>
+    </div>
+</div>

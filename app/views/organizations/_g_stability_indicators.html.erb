@@ -1,0 +1,18 @@
+<script type="text/javascript">
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+        var imported_data = <%= r_data.to_json.html_safe %>;
+        var data_array = google.visualization.arrayToDataTable(imported_data);
+
+        var view = new google.visualization.DataView(data_array);
+
+        var options = {
+            width: 800,
+            chartArea: { width: 500, left: 100 }
+        };
+        var chart = new google.visualization.ColumnChart(document.getElementById("columnchart_material"));
+        chart.draw(view, options);
+    }
+</script>
+<div id="columnchart_material" style="width: 700px; height: 400px;"></div>
