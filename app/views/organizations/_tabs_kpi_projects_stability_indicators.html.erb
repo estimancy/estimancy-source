@@ -1,0 +1,47 @@
+<div class="edition-bloc-left">
+  <div class="edition-bloc-title">
+    <h2>
+      <%= I18n.t(:projects_stability_indicators) %>
+    </h2>
+  </div>
+  <br>
+  <br>
+    <button id='all_projects' class='btn btn-primary stability'><%= I18n.t(:all_projects) %></button>
+    <button id='proj_bad_stability' class='btn btn-primary stability'><%= I18n.t(:proj_bad_stability) %></button>
+  <br>
+  <br>
+  <div>
+    <%= select_tag "application_id", options_for_select(@current_organization.applications.map{|i| [i.name, i.id] }),
+                   :prompt => I18n.t(:choose_an_application) , :class => 'btn btn-secondary' %>
+    <button id='prj_per_appli' class='btn btn-primary stability'><%= I18n.t(:prj_per_appli) %></button>
+  </div>
+</div>
+
+<br>
+<br>
+
+<div id="tabs_stability_indicator" class="card card-widget card-indicator card-indicator-with-module">
+  <div class="card-body">
+    <div class="span4">
+      <%= render :partial => 'g_stability_indicators',
+                 :locals => { :r_data => @stability_ind } %>
+    </div>
+  </div>
+
+</div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    $("button.stability").click(function(){
+        var btn_id = $(this).attr('id');
+        var application_id = $("#application_id").val();
+        $.ajax({
+            url: "<%= organization_get_projects_stability_indicators_path %>",
+            method: "GET",
+            data: {
+                stability_id: btn_id,
+                application_id: $('#application_id option:selected').val()
+            }
+        });
+    });
+</script>

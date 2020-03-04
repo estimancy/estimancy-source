@@ -9,7 +9,7 @@
                   <h4><%= I18n.t('please_return_check_report_type')%></h4>
                 <% else %>
                   <% if @partial_name.blank? %>
-                    <%= render :partial => "organizations/tabs_report_filtered_excel_report" %>
+                    <%= render :partial => "organizations/tabs_report_raw_data_extract" %>
                   <% else %>
                     <%= render :partial => "organizations/#{@partial_name}" %>
                   <% end %>

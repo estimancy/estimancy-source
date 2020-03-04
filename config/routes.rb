@@ -131,7 +131,7 @@ Projestimate::Application.routes.draw do
   get '/support' => redirect("https://estimancy-themes.com/en/support/")
 
 
-  get 'multiple_export_dashboard' => 'projects#multiple_export_dashboard', :as => 'multiple_export_dashboard'
+  post 'multiple_export_dashboard' => 'projects#multiple_export_dashboard', :as => 'multiple_export_dashboard'
   post 'export_dashboard' => 'projects#export_dashboard', :as => 'export_dashboard'
   get 'users/:id/unlock_user' => 'users#unlock_user', :as => 'unlock_user'
   get 'display_states' => 'users#display_states', :as => 'display_states'
@@ -253,10 +253,15 @@ Projestimate::Application.routes.draw do
   resources :currencies
 
   resources :organizations do
+    get 'projects_stability_indicators' => 'organizations#projects_stability_indicators'
+    get 'get_projects_stability_indicators' => 'organizations#get_projects_stability_indicators'
 
     get 'cds_data' => 'projects#cds_data'
 
     post 'generate_budget_report' => 'budgets#generate_budget_report', :as => 'generate_budget_report'
+    post 'generate_budget_report_excel' => 'budgets#generate_budget_report_excel', :as => 'generate_budget_report_excel'
+
+    get 'guw_coeff_actions' => 'organizations#guw_coeff_actions'
 
     get 'estimation_settings' => 'organizations#estimation_settings', as: 'estimation_settings'
 
