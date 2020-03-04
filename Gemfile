@@ -13,31 +13,33 @@ gem 'cookies_eu'
 gem 'bcrypt-ruby', :require => 'bcrypt'
 gem 'useragent'
 
+gem 'mysql2', '~> 0.4.9' #'~> 0.3.21'
+
 # Include database gems for the adapters found in the database
 # configuration file
-require 'erb'
-require 'yaml'
-database_file = File.join(File.dirname(__FILE__), 'config/database.yml')
-if File.exist?(database_file)
-  database_config = YAML::load(ERB.new(IO.read(database_file)).result)
-  adapters = database_config.values.map { |c| c['adapter'] }.compact.uniq
-  if adapters.any?
-    adapters.each do |adapter|
-      case adapter
-        when 'mysql2'
-          gem 'mysql2', '~> 0.3.21' #'~> 0.3.11'
-        when /postgres/
-          gem 'pg'
-        else
-          # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
-      end
-    end
-  else
-    warn('No adapter found in config/database.yml, please configure it first')
-  end
-else
-  warn('Please configure your config/database.yml first')
-end
+# require 'erb'
+# require 'yaml'
+# database_file = File.join(File.dirname(__FILE__), 'config/database.yml')
+# if File.exist?(database_file)
+#   database_config = YAML::load(ERB.new(IO.read(database_file)).result)
+#   adapters = database_config.values.map { |c| c['adapter'] }.compact.uniq
+#   if adapters.any?
+#     adapters.each do |adapter|
+#       case adapter
+#         when 'mysql2'
+#           gem 'mysql2', '~> 0.3.21' #'~> 0.3.11'
+#         when /postgres/
+#           gem 'pg'
+#         else
+#           # warn("Unknown database adapter `#{adapter}` found in config/database.yml, use Gemfile.local to load your own database gems")
+#       end
+#     end
+#   else
+#     warn('No adapter found in config/database.yml, please configure it first')
+#   end
+# else
+#   warn('Please configure your config/database.yml first')
+# end
 
 #For PostgreSQL database
 #gem 'pg'
@@ -82,15 +84,6 @@ gem 'amoeba', '~> 3.0.0'
 
 # Required for rspec and rails command
 gem 'rb-readline'
-
-#Cache management
-# gem 'cache_digests'
-
-#Databases data translations
-gem 'globalize'
-
-#Dumping and restoring data :
-gem 'yaml_db'
 
 #Optional gem for monitoring
 group :ic do
@@ -152,7 +145,6 @@ gem 'sinatra', :require => false
 gem 'slim'
 
 # For chart generation
-gem 'chartkick'
 gem 'highcharts-rails'
 gem 'groupdate'
 
@@ -164,7 +156,7 @@ gem 'dentaku', '~> 2.0', '>= 2.0.9'
 #gem 'faker'
 
 gem 'passenger'
-# gem 'turbolinks'
+gem 'turbolinks'
 
 gem 'delocalize'
 
@@ -258,16 +250,11 @@ gem "rails-observers", "0.1.5"
 
 gem 'biz'
 
-gem 'carrierwave', '~> 0.11.2'
 gem 'bootstrap-sass', '~> 3.3.7'
 
 gem 'rack-cors', require: 'rack/cors'
 
 gem 'chartkick'
-
-#AppSignal
-# gem 'appsignal'
-gem 'carrierwave', '~> 0.11.2'
 
 gem 'jquery-number-rails'
 
@@ -279,3 +266,7 @@ gem 'jscolor-rails'
 gem 'selectize-rails'
 
 gem 'order_as_specified'
+
+gem 'prometheus-client'
+
+gem 'jquery-tablesorter'

@@ -46,7 +46,7 @@ class Guw::GuwAttributesController < ApplicationController
   def update
     @guw_attribute = Guw::GuwAttribute.find(params[:id])
     @guw_attribute.update_attributes(params[:guw_attribute])
-    redirect_to guw.edit_guw_model_path(@guw_attribute.guw_model, organization_id: @guw_attribute.guw_model.organization.id)
+    redirect_to guw.guw_type_path(@guw_type)
   end
 
   def destroy

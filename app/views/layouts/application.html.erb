@@ -4,7 +4,7 @@
 
     <title><%= @page_title ? @page_title : controller.action_name %></title>
 
-    <%= stylesheet_link_tag 'application', media: 'screen' %>
+    <%= stylesheet_link_tag 'application', media: 'screen', 'data-turbolinks-eval' => 'false' %>
 
     <%= csrf_meta_tag %>
     <%#= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '', 'data-turbolinks-track': 'reload' %>
@@ -51,15 +51,7 @@
 
           <% unless controller.action_name == "all_organizations" %>
 
-            <% if action_name.include?("user") || (controller_name == "users" && action_name == "index") %>
-              <% form_name = main_app.user_search_path %>
-              <% placeholder = "Users search" %>
-            <% else %>
-              <% form_name = main_app.advanced_search_path %>
-              <% placeholder = I18n.t ('estimation_name, version_number, author...') %>
-            <% end %>
-
-            <%= form_tag form_name, method: "GET", class: "form-inline my-2 my-lg-0" , id: "adv_search_form" do %>
+            <%= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" , id: "adv_search_form" do %>
 
               <%= hidden_field_tag :item_title, params[:item_title] %>
 
@@ -74,7 +66,7 @@
                        id="adv_search"
                        type="text"
                        name="advanced_search"
-                       placeholder="<%= placeholder.blank? ?  params[:item_title] : placeholder %>"
+                       placeholder="<%= params[:item_title].blank? ? I18n.t('estimation_name, version_number, author...') : I18n.t(params[:item_title]) %>"
                        class="form-control global-search-bar-input"
                        aria-label="search" aria-describedby="search-icon">
 
@@ -220,7 +212,10 @@
 
         <div class="page-header page-edition-header row">
           <!--<div class="container text-center" style="justify-content: flex-start;">-->
-            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
+            <div class="col-2 pr-0">
+              <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 8.7rem;">
+                <i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
+            </div>
             <div class="col-10">
               <h2>
                 <%= @project.to_s %>
@@ -246,7 +241,7 @@
 
         <div class="page-header page-edition-header row">
           <!--<div class="container text-center" style="justify-content: flex-start;">-->
-            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 7rem; top: 0em;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
+            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 8.7rem; top: 0em;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
             <div class="col-8">
               <h2>
                 <%= @project.to_s %>
@@ -307,16 +302,16 @@
         </div>
 
       <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard", "index"])) || controller.action_name.in?(["estimations"]) || controller_name.in?(["demands"]) %>
-        <ul class="nav nav-pills global-nav">
-          <li class="nav-item">
-            <a class="nav-link <%= (controller_name == "demands") ? nil : "active" %>" href="<%= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>
-          </li>
-          <% if @current_organization.allow_demand %>
-              <li class="nav-item">
-                <a class="nav-link <%= (controller_name == "demands") ? "active" : nil %>" href="<%= main_app.organization_demands_path(@current_organization) %>"><%= I18n.t :demands %></a>
-              </li>
-          <% end %>
-        </ul>
+<!--        <ul class="nav nav-pills global-nav">-->
+<!--          <li class="nav-item">-->
+<!--            <a class="nav-link <%#= (controller_name == "demands") ? nil : "active" %>" href="<%#= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>-->
+<!--          </li>-->
+          <%# if @current_organization.allow_demand %>
+<!--              <li class="nav-item">-->
+<!--                <a class="nav-link <%#= (controller_name == "demands") ? "active" : nil %>" href="<%#= main_app.organization_demands_path(@current_organization) %>"><%#= I18n.t :demands %></a>-->
+<!--              </li>-->
+          <%# end %>
+<!--        </ul>-->
       <% end %>
     <% end %>
 

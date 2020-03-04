@@ -219,6 +219,7 @@ class Project < ActiveRecord::Base
       estimation_statuses = estimation_statuses.uniq
       # estimation_statuses.uniq.sort{|s1, s2| s1 <=> s2 }
     end
+
   end
 
   def get_project_organization_statuses
@@ -300,7 +301,7 @@ class Project < ActiveRecord::Base
   end
 
 
-  def create_new_version_when_changing_status(next_status, new_version_number=nil)
+  def create_new_version_when_changing_status(next_status, new_version_number=nil, new_comments="")
     current_user = User.find(User.current) rescue nil
     last_estimation_status_name = self.estimation_status_id.nil? ? "" : self.estimation_status.name
 
@@ -320,7 +321,7 @@ class Project < ActiveRecord::Base
     new_estimation_status_name = next_status.nil? ? "" : next_status.name
 
     # Puis on lui change de statut
-    new_comments_for_version = "#{I18n.l(Time.now)} : #{I18n.t(:text_automatic_created_version)}  \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + self.status_comment
+    new_comments_for_version = "#{I18n.l(Time.now)} : #{I18n.t(:text_automatic_created_version)}  \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + new_comments + self.status_comment
     new_project_version.update_attributes(estimation_status_id: next_status.id, status_comment: new_comments_for_version)
     new_project_version
   end
@@ -851,5 +852,327 @@ class Project < ActiveRecord::Base
   #   ApplicationController.helpers.save_associations_event_changes(self)
   #   #puts self.changed?
   # end
+
+
+  ###   APPEND PEMODULE
+  #Allow o add or append a pemodule to a estimation process
+  def self.append_pemodule(project_id, pbs_project_element_id, module_selected)
+
+    @project = Project.find(project_id)
+    @organization = @project.organization
+    @pemodule = Pemodule.find(module_selected.split(',').last.to_i)
+
+    # if @project.is_model
+    #   authorize! :manage_estimation_models, Project
+    # else
+    #   authorize! :alter_estimation_plan, @project
+    # end
+
+    @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.where(organization_id: @organization.id, pemodule_id: @initialization_module.id).first #.find_by_pemodule_id(@initialization_module.id)
+
+    if pbs_project_element_id && pbs_project_element_id != ''
+      @pbs_project_element = PbsProjectElement.find(pbs_project_element_id)
+    else
+      @pbs_project_element = @project.root_component
+    end
+
+    my_module_project = nil
+
+    unless @pemodule.nil? || @project.nil?
+      @array_modules = Pemodule.all
+      @pemodules ||= Pemodule.all
+
+      #Max pos or 1
+      @module_positions = ModuleProject.where(organization_id: @organization.id, :project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+      @module_positions_x = ModuleProject.where(organization_id: @organization.id, :project_id => @project.id).all.map(&:position_x).uniq.max
+
+      # Get the module_project creation order : for this, we have to count the number of MP with same pemodule in this project
+      mp_creation_order = @project.module_projects.where(organization_id: @organization.id, pemodule_id: @pemodule.id).all.map(&:creation_order).max
+
+      #When adding a module in the "timeline", it creates an entry in the table ModuleProject for the current project, at position 2 (the one being reserved for the input module).
+      my_module_project = ModuleProject.new(:project_id => @project.id, :organization_id => @organization.id, :pemodule_id => @pemodule.id,
+                                            :position_y => 1, :position_x => @module_positions_x.to_i + 1,
+                                            :top_position => 100, :left_position => 600, :creation_order => mp_creation_order.to_i+1)
+      my_module_project.save
+
+      #si le module est un module generic on l'associe le module project
+      if @pemodule.alias == "guw"
+        my_module_project.guw_model_id = module_selected.split(',').first
+      elsif @pemodule.alias == "kb"
+        kb_model_id = module_selected.split(',').first.to_i
+        my_module_project.kb_model_id = kb_model_id
+        Kb::KbInput.create( organization_id: @current_organization.id,
+                            module_project_id: my_module_project.id,
+                            kb_model_id: kb_model_id)
+      elsif @pemodule.alias == "skb"
+        skb_model_id = module_selected.split(',').first.to_i
+        my_module_project.skb_model_id = skb_model_id
+        Skb::SkbInput.create( organization_id: @current_organization.id,
+                              module_project_id: my_module_project.id,
+                              skb_model_id: skb_model_id)
+      elsif @pemodule.alias == "ge"
+        my_module_project.ge_model_id = module_selected.split(',').first
+
+      elsif @pemodule.alias == "operation"
+        my_module_project.operation_model_id = module_selected.split(',').first
+
+      elsif @pemodule.alias == "staffing"
+        staffing_model_id = module_selected.split(',').first.to_i
+        my_module_project.staffing_model_id = staffing_model_id
+        staffing_model = Staffing::StaffingModel.find(staffing_model_id)
+        #Then create an staffing_custom_data object for current module_project
+        Staffing::StaffingCustomDatum.create( staffing_model_id: staffing_model_id,
+                                              module_project_id: my_module_project.id,
+                                              pbs_project_element_id: @pbs_project_element.id,
+                                              staffing_method: 'trapeze',
+                                              period_unit: 'week',
+                                              global_effort_type: 'probable',
+                                              mc_donell_coef: 6,
+                                              puissance_n: 0.33,
+                                              trapeze_parameter_values: staffing_model.trapeze_default_values)
+
+      elsif @pemodule.alias == "effort_breakdown"
+        wbs_id = module_selected.split(',').first.to_i
+        my_module_project.wbs_activity_id = wbs_id
+
+        my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
+          ratio_wai = WbsActivityInput.new(module_project_id: my_module_project.id,
+                                           wbs_activity_id: wbs_id, wbs_activity_ratio_id: ratio.id,
+                                           pbs_project_element_id: @pbs_project_element.id)
+          ratio_wai.save
+        end
+
+
+        my_module_project.wbs_activity_inputs.first
+
+        #create module_project ratio elements
+        my_module_project.wbs_activity.wbs_activity_ratios.each do |ratio|
+
+          # create the module_project_ratio_variable
+          ratio.wbs_activity_ratio_variables.each do |ratio_variable|
+            mp_ratio_variable = ModuleProjectRatioVariable.new(pbs_project_element_id: @pbs_project_element.id, module_project_id: my_module_project.id,
+                                                               organization_id: @organization.id, wbs_activity_id: my_module_project.wbs_activity_id,
+                                                               wbs_activity_ratio_id: ratio.id, wbs_activity_ratio_variable_id: ratio_variable.id,
+                                                               name: ratio_variable.name, description: ratio_variable.description,
+                                                               percentage_of_input: ratio_variable.percentage_of_input, is_modifiable: ratio_variable.is_modifiable,
+                                                               is_used_in_ratio_calculation: ratio_variable.is_used_in_ratio_calculation)
+            mp_ratio_variable.save
+          end
+
+
+          # create the module_project_ratio_elements
+          ratio.wbs_activity_ratio_elements.each do |ratio_element|
+            mp_ratio_element = ModuleProjectRatioElement.new(organization_id: @organization.id,
+                                                             wbs_activity_id: my_module_project.wbs_activity_id,
+                                                             pbs_project_element_id: @pbs_project_element.id,
+                                                             module_project_id: my_module_project.id,
+                                                             wbs_activity_ratio_id: ratio.id,
+                                                             wbs_activity_ratio_element_id: ratio_element.id,
+                                                             wbs_activity_element_id: ratio_element.wbs_activity_element_id,
+                                                             multiple_references: ratio_element.multiple_references, name: ratio_element.wbs_activity_element.name,
+                                                             description: ratio_element.wbs_activity_element.description, selected: true, is_optional: ratio_element.is_optional,
+                                                             ratio_value: ratio_element.ratio_value, position: ratio_element.wbs_activity_element.position)
+            mp_ratio_element.save
+          end
+          #Update module_project_ratio_element ancestry
+          #current_ratio_mp_ratio_elements = my_module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio.id, pbs_project_element_id: @pbs_project_element.id)
+          current_ratio_mp_ratio_elements = my_module_project.module_project_ratio_elements.where(wbs_activity_ratio_id: ratio.id)
+          my_module_project.wbs_activity.wbs_activity_elements.each do |activity_elt|
+            activity_elt_ancestor_ids = activity_elt.ancestor_ids
+            unless activity_elt.is_root?
+              new_ancestor_ids_list = []
+              activity_elt_ancestor_ids.each do |ancestor_id|
+                ancestor = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: ancestor_id).first
+                unless ancestor.nil?
+                  new_ancestor_ids_list.push(ancestor.id)
+                end
+              end
+              new_ancestry = new_ancestor_ids_list.join('/')
+              mp_ratio_elements = current_ratio_mp_ratio_elements.where(wbs_activity_element_id: activity_elt.id)
+              unless mp_ratio_elements.nil?
+                mp_ratio_elements.update_all(ancestry: new_ancestry)
+              end
+            end
+          end
+        end
+
+      elsif @pemodule.alias == "expert_judgement"
+        eji_id = module_selected.split(',').first
+        my_module_project.expert_judgement_instance_id = eji_id.to_i
+      end
+
+      my_module_project.save
+
+
+      @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).uniq.max || 1
+      @module_positions_x = ModuleProject.where(:project_id => @project.id).all.map(&:position_x).uniq.max
+
+      if @pemodule.alias.in?(["guw", "operation"])
+        #guw_model = Guw::GuwModel.find(my_module_project.guw_model_id)
+        #guw_outputs = guw_model.guw_outputs
+
+        all_attribute_modules = my_module_project.pemodule.attribute_modules
+
+        case @pemodule.alias
+          when "guw"
+            attribute_modules = all_attribute_modules.where(guw_model_id: my_module_project.guw_model_id)
+          when "operation"
+            attribute_modules = all_attribute_modules.where(operation_model_id: my_module_project.operation_model_id)
+          else
+            attribute_modules = all_attribute_modules
+        end
+
+        #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
+        attribute_modules.each do |am|
+
+          unless am.pe_attribute.nil?
+            if am.in_out == 'both'
+              ['input', 'output'].each do |in_out|
+                EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                       :organization_id => @organization.id,
+                                       :module_project_id => my_module_project.id,
+                                       :in_out => in_out,
+                                       :is_mandatory => am.is_mandatory,
+                                       :description => am.description,
+                                       :display_order => am.display_order,
+                                       :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                       :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                       :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                       :custom_attribute => am.custom_attribute,
+                                       :project_value => am.project_value)
+
+              end
+            elsif am.in_out != nil
+              EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                     :organization_id => @organization.id,
+                                     :module_project_id => my_module_project.id,
+                                     :in_out => am.in_out,
+                                     :is_mandatory => am.is_mandatory,
+                                     :display_order => am.display_order,
+                                     :description => am.description,
+                                     :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                     :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                     :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                     :custom_attribute => am.custom_attribute,
+                                     :project_value => am.project_value)
+            end
+          end
+        end
+
+      else
+        #For each attribute of this new ModuleProject, it copy in the table ModuleAttributeProject, the attributes of modules.
+        my_module_project.pemodule.attribute_modules.each do |am|
+          unless am.pe_attribute.nil?
+
+            if am.in_out == 'both'
+              ['input', 'output'].each do |in_out|
+                EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                       :organization_id => @organization.id,
+                                       :module_project_id => my_module_project.id,
+                                       :in_out => in_out,
+                                       :is_mandatory => am.is_mandatory,
+                                       :description => am.description,
+                                       :display_order => am.display_order,
+                                       :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                       :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                       :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                       :custom_attribute => am.custom_attribute,
+                                       :project_value => am.project_value)
+              end
+            else
+              EstimationValue.create(:pe_attribute_id => am.pe_attribute.id,
+                                     :organization_id => @organization.id,
+                                     :module_project_id => my_module_project.id,
+                                     :in_out => am.in_out,
+                                     :is_mandatory => am.is_mandatory,
+                                     :display_order => am.display_order,
+                                     :description => am.description,
+                                     :string_data_low => {:pe_attribute_name => am.pe_attribute.name, :default_low => am.default_low},
+                                     :string_data_most_likely => {:pe_attribute_name => am.pe_attribute.name, :default_most_likely => am.default_most_likely},
+                                     :string_data_high => {:pe_attribute_name => am.pe_attribute.name, :default_high => am.default_high},
+                                     :custom_attribute => am.custom_attribute,
+                                     :project_value => am.project_value)
+            end
+          end
+        end
+      end
+
+      #Link initialization module to other modules
+      unless @initialization_module.nil?
+        my_module_project.update_attribute('associated_module_project_ids', @initialization_module_project.id) unless @initialization_module_project.nil?
+      end
+
+      #======
+      #Select the default view for module_project
+      default_view = View.where("organization_id = ? AND pemodule_id = ? AND is_default_view = ?",  @project.organization_id, @pemodule.id, true).first
+      new_copied_view = View.new(name: "#{@project} - #{my_module_project} view", description: "", pemodule_id: my_module_project.pemodule_id, organization_id: @organization.id)
+
+      #Then copy the default view widgets in the new created view
+      if new_copied_view.save
+        unless default_view.nil?
+          #Then copy the widgets of the dafult view
+          #new_copied_view = View.new(name: "#{@project} - #{my_module_project} view", description: "", pemodule_id: my_module_project.pemodule_id, organization_id: @organization.id, initial_view_id: default_view.id)
+          new_copied_view.update_attributes(initial_view_id: default_view.id)
+          default_view.views_widgets.each do |view_widget|
+            widget_est_val = view_widget.estimation_value
+            in_out = widget_est_val.nil? ? "output" : widget_est_val.in_out
+            estimation_value = my_module_project.estimation_values.where(:organization_id => @organization.id, pe_attribute_id: view_widget.estimation_value.pe_attribute_id, in_out: in_out).last
+            estimation_value_id = estimation_value.nil? ? nil : estimation_value.id
+            widget_copy = ViewsWidget.new(view_id: new_copied_view.id, module_project_id: my_module_project.id,
+                                          estimation_value_id: estimation_value_id,
+                                          name: view_widget.name, show_name: view_widget.show_name,
+                                          show_tjm: view_widget.show_tjm,
+                                          equation: view_widget.equation,
+                                          comment: view_widget.comment,
+                                          is_label_widget: view_widget.is_label_widget,
+                                          is_kpi_widget: view_widget.is_kpi_widget,
+                                          kpi_unit: view_widget.kpi_unit,
+                                          use_organization_effort_unit: view_widget.use_organization_effort_unit,
+                                          is_project_data_widget: view_widget.is_project_data_widget,
+                                          project_attribute_name: view_widget.project_attribute_name,
+                                          icon_class: view_widget.icon_class, color: view_widget.color, show_min_max: view_widget.show_min_max,
+                                          width: view_widget.width, height: view_widget.height, widget_type: view_widget.widget_type,
+                                          position: view_widget.position, position_x: view_widget.position_x, position_y: view_widget.position_y,
+                                          min_value: view_widget.min_value,
+                                          max_value: view_widget.max_value,
+                                          validation_text: view_widget.validation_text)
+            #Save and copy project_fields
+            if widget_copy.save
+              unless view_widget.project_fields.empty?
+                project_field = view_widget.project_fields.last
+
+                #Get project_field value
+                @value = 0
+                if widget_copy.estimation_value.module_project.pemodule.alias == "effort_breakdown"
+                  begin
+                    @value = widget_copy.estimation_value.string_data_probable[current_component.id][widget_copy.estimation_value.module_project.wbs_activity.wbs_activity_elements.first.root.id][:value]
+                  rescue
+                    begin
+                      @value = widget_copy.estimation_value.string_data_probable[current_component.id]
+                    rescue
+                      @value = 0
+                    end
+                  end
+                else
+                  @value = widget_copy.estimation_value.string_data_probable[current_component.id]
+                end
+
+                #create the new project_field
+                ProjectField.create(project_id: @project.id, field_id: project_field.field_id, views_widget_id: widget_copy.id, value: @value)
+              end
+            end
+          end
+        end
+
+        my_module_project.view_id = new_copied_view.id
+        my_module_project.save
+      end
+      #======
+    end
+
+    puts "ModuleProject : #{my_module_project}"
+    my_module_project
+  end
+  ### END APPEND PEMODULE
 
 end

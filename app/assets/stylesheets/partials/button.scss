@@ -71,11 +71,12 @@
 
 // Boutons statut
 .btn-status {
-  width: 120px;
+  //width: 120px;
   height: 30px;
   font-size: 13px;
   padding: 0;
   text-align: center;
+  white-space: nowrap;
 }
 
 //.btn-encours {

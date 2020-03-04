@@ -43,8 +43,13 @@
 
           <div class="row-fluid">
             <div class="span6">
+              <% if @project.organization.name.downcase.include?("distribution transporteur") %>
+                  <% platform_category_name = "TM" %>
+              <% else %>
+                  <% platform_category_name = I18n.t(:platform_category) %>
+              <% end %>
               <%= f.input :project_attribute_name, as: :select, label: I18n.t(:project_attribute_name),
-                          :collection => [ [I18n.t(:application), 'application_id'], [I18n.t(:project_areas), 'project_area_id'], [I18n.t(:project_category), 'project_category_id'], ['TM', 'platform_category_id'], [I18n.t(:acquisition_category), 'acquisition_category_id'], [I18n.t(:provider), 'provider_id'] ],
+                          :collection => [ [I18n.t(:application), 'application_id'], [I18n.t(:project_areas), 'project_area_id'], [I18n.t(:project_category), 'project_category_id'], ["#{platform_category_name}", 'platform_category_id'], [I18n.t(:acquisition_category), 'acquisition_category_id'], [I18n.t(:provider), 'provider_id'] ],
                           input_html: { class: "input-xlarge", include_blank: false } %>
             </div>
 

@@ -31,6 +31,12 @@
           Restitution
         </a>
       </li>
+
+      <li class="nav-item">
+        <a class="nav-link"  data-toggle="pill" id="pills-prix-tab" href="#pills-prix" role="tab" aria-selected="false">
+          MaJ des prix (CDS DT)
+        </a>
+      </li>
     </ul>
 
     <%= simple_form_for(@organization) do |f| %>
@@ -304,6 +310,16 @@
                   <h5>
                     <strong>#5</strong>
                     <%= link_to "Mettre à jour les TJM Petites Evolutions", maj_pe_path %>
+                  </h5>
+
+                  <h5>
+                    <strong>#6</strong>
+                    <%= link_to "Mettre à jour la valeur du taux au niveau du paramétrage de l'organisation (platform_category)", organization_setting_path(@organization, anchor: "tabs-platform-categories"), target: "_blank" %>
+                  </h5>
+
+                  <h5>
+                    <strong>#7</strong>
+                    <%= "Mettre à jour les modèles pour sélectionner le bon taux dans le champ TM (Taux moyen de délocalisation)" %>
                   </h5>
                   
                 </div>

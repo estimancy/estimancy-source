@@ -1,49 +1,81 @@
 <div class="col-10" style="margin-top: 20px">
+  <div class="row pb-5">
+    <div id="estimation_content" class="col-10">
+      <% if @partial_name.blank? %>
+        <%= render :partial => "projects/tabs_global_properties", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
+      <% else %>
+          <%= render :partial => "projects/#{@partial_name}", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
+      <% end %>
+      <br>
+      <br>
+    </div>
 
-    <div class="row pb-5">
+    <div class="col-2">
+      <div id="edition-sidebar">
+        <% if controller.action_name == "edit" || controller.action_name == "update" %>
+            <h4 class="mb-0">Navigation</h4>
+            <ul class="nav flex-column">
+              <li class="nav-item">
+                <!--<a class="nav-link group" href="#global1"><span><%#= I18n.t("global_properties") %></span></a>-->
+                <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties') %>"><span><%= I18n.t("global_properties") %></span></a>
+              </li>
 
-      <div id="estimation_content" class="col-10">
+              <li class="nav-item">
+                  <!--<a class="nav-link group" href="#plan"><span><%#= I18n.t("estimation_plan") %></span></a>-->
+                  <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan') %>"><span><%= I18n.t("estimation_plan") %></span></a>
+              </li>
 
-        <% if @partial_name.blank? %>
-          <%= render :partial => "projects/tabs_global_properties", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
-        <% else %>
-            <%= render :partial => "projects/#{@partial_name}", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
+              <li class="nav-item">
+                  <!--<a class="nav-link group" href="#security"><span><%#= I18n.t("securities") %></span></a>-->
+                  <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_securities', anchor: 'tabs-securities') %>"><span><%= I18n.t("securities") %></span></a>
+              </li>
+
+              <li class="nav-item">
+                <!--<a class="nav-link group" href="#history"><span><%#= I18n.t("label_project_history") %></span></a>-->
+                <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_history', anchor: 'tabs-history') %>"><span><%= I18n.t("label_project_history") %></span></a>
+              </li>
+            </ul>
         <% end %>
-        <br>
-        <br>
-      </div>
 
-      <div class="col-2">
-        <div id="edition-sidebar">
-          <% if controller.action_name == "edit" || controller.action_name == "update" %>
-              <h4 class="mb-0">Navigation</h4>
-              <ul class="nav flex-column">
-                <li class="nav-item">
-                  <!--<a class="nav-link group" href="#global1"><span><%#= I18n.t("global_properties") %></span></a>-->
-                  <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties') %>"><span><%= I18n.t("global_properties") %></span></a>
-                </li>
+        <hr>
 
-                <li class="nav-item">
-                    <!--<a class="nav-link group" href="#plan"><span><%#= I18n.t("estimation_plan") %></span></a>-->
-                    <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan') %>"><span><%= I18n.t("estimation_plan") %></span></a>
-                </li>
+        <% if controller.action_name == 'new' %>
+          <% if params[:is_model] == "true" && current_user.super_admin %>
+            <div style="margin-bottom: 35px; margin-top: -24px;">
+              <%= link_to I18n.t(:import_estimation_model), "#import_estimation_model", class: "pull-right btn btn-primary", title: I18n.t(:import_estimation_model), "data-toggle" => "modal" %>
+            </div>
 
-                <li class="nav-item">
-                    <!--<a class="nav-link group" href="#security"><span><%#= I18n.t("securities") %></span></a>-->
-                    <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_securities', anchor: 'tabs-securities') %>"><span><%= I18n.t("securities") %></span></a>
-                </li>
-
-                <li class="nav-item">
-                  <!--<a class="nav-link group" href="#history"><span><%#= I18n.t("label_project_history") %></span></a>-->
-                  <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_history', anchor: 'tabs-history') %>"><span><%= I18n.t("label_project_history") %></span></a>
-                </li>
-              </ul>
+            <div id="import_estimation_model" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <%= form_tag organization_import_estimation_model_path(organization_id: @organization.id), :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                <div class="modal-header modal-drag">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <h3 id="myModalLabel"> <%= I18n.t(:import_estimation_model) %></h3>
+                </div>
+                <div class="modal-body">
+                  <%= hidden_field_tag "organization_id", @organization.id %>
+                  <%= hidden_field_tag "is_model", true %>
+                  <%= file_field_tag :file %>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                  <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                </div>
+                <div class="loading span11 hide">
+                  <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
+                </div>
+              <% end %>
+            </div>
           <% end %>
-        </div>
+        <% else %>
+          <% if @project.is_model == true && current_user.super_admin == true %>
+            <%= link_to I18n.t(:export), organization_export_estimation_model_path(organization_id: @organization.id, project_id: @project.id), :method => 'get', class: "float-right btn btn-primary", title: I18n.t(:export) %>
+          <% end %>
+        <% end %>
       </div>
     </div>
-    <br>
-    <br>
+  </div>
+  <br>
+  <br>
 
   <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
   <script>

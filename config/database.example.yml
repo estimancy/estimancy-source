@@ -1,0 +1,23 @@
+development:
+  adapter: <%= ENV['DATABASE_ADAPTER'].blank? ? "mysql2" : ENV['DATABASE_ADAPTER'] %>
+  host: <%= ENV['DATABASE_HOST'].blank? ? "localhost" : ENV['DATABASE_HOST'] %>
+  database: <%= ENV['DATABASE_DB'].blank? ? "estimancy" : ENV['DATABASE_DB'] %>
+  username: <%= ENV['DATABASE_USERNAME'].blank? ? "estimancy" : ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'].blank? ? "password" : ENV['DATABASE_PASSWORD'] %>
+  encoding: <%= ENV['DATABASE_ENCODING'].blank? ? "utf8" : ENV['DATABASE_ENCODING'] %>
+
+test:
+  adapter: <%= ENV['DATABASE_ADAPTER'].blank? ? "mysql2" : ENV['DATABASE_ADAPTER'] %>
+  host: <%= ENV['DATABASE_HOST'].blank? ? "localhost" : ENV['DATABASE_HOST'] %>
+  database: <%= ENV['DATABASE_DB'].blank? ? "estimancy" : ENV['DATABASE_DB'] %>
+  username: <%= ENV['DATABASE_USERNAME'].blank? ? "estimancy" : ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'].blank? ? "password" : ENV['DATABASE_PASSWORD'] %>
+  encoding: <%= ENV['DATABASE_ENCODING'].blank? ? "utf8" : ENV['DATABASE_ENCODING'] %>
+
+production:
+  adapter: <%= ENV['DATABASE_ADAPTER'].blank? ? "mysql2" : ENV['DATABASE_ADAPTER'] %>
+  host: <%= ENV['DATABASE_HOST'].blank? ? "localhost" : ENV['DATABASE_HOST'] %>
+  database: <%= ENV['DATABASE_DB'].blank? ? "estimancy" : ENV['DATABASE_DB'] %>
+  username: <%= ENV['DATABASE_USERNAME'].blank? ? "estimancy" : ENV['DATABASE_USERNAME'] %>
+  password: <%= ENV['DATABASE_PASSWORD'].blank? ? "password" : ENV['DATABASE_PASSWORD'] %>
+  encoding: <%= ENV['DATABASE_ENCODING'].blank? ? "utf8" : ENV['DATABASE_ENCODING'] %>

@@ -1,4 +1,7 @@
-<!--<table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">-->
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.min.js" integrity="sha256-WX1A5tGpPfZZ48PgoZX2vpOojjCXsytpCvgPcRPnFKU=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.default.min.css" integrity="sha256-5sgExNTnkN8NcApKIU73/aqgZmqq/zJp9+9zXf9aSEw=" crossorigin="anonymous" />
+
 <table class="table tablesorter table-list table-sm">
 
   <thead>
@@ -60,3 +63,14 @@
   </tbody>
 </table>
 
+<script>
+    $(function() {
+        $(".tablesorter").tablesorter({
+            theme: 'blue',
+            widgets: ['zebra', 'filter'],
+            widgetOptions: {
+                filter_reset: '.reset'
+            }
+        });
+    });
+</script>

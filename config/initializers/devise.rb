@@ -279,7 +279,7 @@ MIIDFDCCAfygAwIBAgIEVLPsKDANBgkqhkiG9w0BAQ0FADBMMQswCQYDVQQGEwJGUjENMAsGA1UE Cgw
 -----END CERTIFICATE-----
 CERTIFICATE
 
-  OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+  # OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
   config.omniauth :google_oauth2, "504921486051-vb2gi8tfaff5hqgnnosamjto3sv5gabp.apps.googleusercontent.com", "wLnNbhyZGrdkcjnxWe95SRr7", { access_type: "offline", approval_prompt: I18n.t(:text_ask_connect_to_estimancy_via_google) }
   config.omniauth :saml,

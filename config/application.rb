@@ -117,6 +117,8 @@ module Projestimate
       g.fixture_replacement :factory_girl, :dir => 'spec/factories'
     end
 
+    config.active_record.raise_in_transactional_callbacks = true
+
     # Global constante declaration
     ALPHABETICAL = %w(A B C D E F G H I J K L M N O P Q R S T U V W X Y Z)
     INITIALIZATION = "initialization"

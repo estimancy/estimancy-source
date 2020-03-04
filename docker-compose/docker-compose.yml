@@ -1,0 +1,35 @@
+version: "3.7"
+services:
+  estimancy:
+    image: estimancy:v4.1
+    ports:
+      - 3000:3000
+    links:
+      - mysql
+    environment:
+      RAILS_ENV: development
+      DATABASE_HOST: mysql
+    command:
+      - -e development
+  
+  mysql:
+    image: mysql:5.7
+    environment:
+      MYSQL_USER: estimancy
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: estimancy
+    command:
+      - "--character-set-server=utf8"
+    volumes:
+      - ./data/mysql:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    ports:
+      - 8080:80
+    links:
+      - mysql
+    environment:
+      PMA_HOST: mysql
+      MYSQL_ROOT_PASSWORD: password

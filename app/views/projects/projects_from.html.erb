@@ -1,5 +1,4 @@
-<div style="margin-top: 100px"></div>
-<div class="page-edition-content pt-6">
+<div class="page-edition-content pt-6 mt-5">
   <div class="d-flex align-items-center mt-4">
     <%#= 1. Sélectionnez le modèle de votre choix %>
     <h2><%= I18n.t :select_the_model_of_your_choix  %></h2>
@@ -29,8 +28,8 @@
         <tr>
           <th class="text-left"><%= I18n.t(:label_model_name) %></th>
           <th class="text-left">Vers.</th>
-          <th class="text-left" style="width: 25%;"><%= I18n.t(:created_at) %></th>
-          <th class="text-left"><%= I18n.t(:project_area) %></th>
+          <th class="text-left">Description</th>
+          <th class="text-left" style="width: 25%;"><%= I18n.t(:updated_at) %></th>
           <th class="text-left"></th>
         </tr>
       </thead>
@@ -45,7 +44,7 @@
                                                                              organization_id: project.organization_id,
                                                                              demand_id: params[:demand_id],
                                                                              action_name: "create_project_from_template"),
-                              title: I18n.t('button_duplicate_model'),
+                              title: project.description,
                               remote: true) %>
                 <% else %>
                   <% if can_show_estimation?(project) %>
@@ -56,26 +55,19 @@
                 <% end %>
               </td>
               <td><%= project.version_number %></td>
-              <td><%= I18n.l(project.created_at) %></td>
-              <td class="text-left"><%= project.project_area %></td>
+              <td><%= project.description.to_s.truncate(100) %></td>
+              <td><%= I18n.l(project.updated_at) %></td>
               <td>
                 <div class="tools" style="float: right;">
-                  <a href="<%= edit_project_path(project) %>"></a>
-                  <% if can? :manage_estimation_models, Project %>
-                    <%= link_to(raw("<i class='material-icons'>copy</i>"),
-                                main_app.duplicate_path(project, organization_id: @organization, action_name: 'duplication_model'),
-                                :title => I18n.t('button_duplicate_project'),
-                                :method => :post) %>
-                  <% end %>
-
                   <% if can_show_estimation?(project) %>
-                    <%= link_to(raw("<i class='material-icons'>map</i>"), {:controller => 'projects', :action => 'find_use_estimation_model', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'icon icon-map-marker pull-left', :id => 'find_use_estimation_model', :title => I18n.t('button_find_use')) %>
                     <%= link_to(raw("<i class='material-icons'>edit</i>"), edit_project_path(project, is_model: true), :title => I18n.t('edit')) %>
+                    <%= link_to(raw("<i class='material-icons'>map</i>"), {:controller => 'projects', :action => 'find_use_estimation_model', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'icon icon-map-marker', :id => 'find_use_estimation_model', :title => I18n.t('button_find_use')) %>
                   <% end %>
 
                   <% if can? :manage_estimation_models, Project %>
                     <%= link_to(raw("<i class='material-icons'>clear</i>"), confirm_deletion_path(project_id: project.id), :title => I18n.t('delete')) %>
                   <% end %>
+
                 </div>
               </td>
             </tr>

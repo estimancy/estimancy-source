@@ -17,10 +17,8 @@
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
 </td>
 
-<td class="text_field_text_overflow span3 guw-cell-ajustment">
-  <span class="pull-left">
-    <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.comments, method: "post", remote: true %>
-  </span>
+<td class="text_field_text_overflow guw-cell-ajustment w-25">
+  <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.comments, method: "post", remote: true %>
 </td>
 
 <td class="guw-cell-ajustment">
@@ -162,10 +160,20 @@
                                include_blank: false,
                                disabled: !@guw_type.allow_complexity %>
               <% else %>
-                <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id,
-                               class: "guw_complexity form-control form-control-sm",
-                               include_blank: false,
-                               disabled: !@guw_type.allow_complexity %>
+                <% if !@guw_type.allow_complexity %>
+                  <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
+                                 guw: guow.id,
+                                 class: "guw_complexity form-control form-control-sm",
+                                 include_blank: false,
+                                 disabled: !@guw_type.allow_complexity %>
+                  <%= hidden_field_tag "guw_complexity_#{guow.id}", guow.guw_complexity_id %>
+                <% else %>
+                  <%= select_tag "guw_complexity_#{guow.id}", options_for_select(@guw_complexities.map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id),
+                                 guw: guow.id,
+                                 class: "guw_complexity form-control form-control-sm",
+                                 include_blank: false,
+                                 disabled: !@guw_type.allow_complexity %>
+                <% end %>
               <% end %>
             <% else %>
               <% if guow.off_line == true %>
@@ -187,13 +195,15 @@
                                          class: "complexity_weight-#{uowg.id} guw-#{guow.id} form-control form-control-sm",
                                          guw: guow.id,
                                          title: guow.cplx_comments,
-                                         readonly: !(@guw_type.allow_retained == true) %>
+                                         readonly: !(@guw_type.allow_retained == true),
+                                         title: guow.cplx_comments.blank? ? @guw_type.description : guow.cplx_comments,
+                                         readonly: true %>
                     <% if @guw_type.allow_complexity %>
                       <%= number_field_tag "complexity_coeff_ajusted[#{guow.id}]", guow.intermediate_weight.to_f.round(3),
                                            style: "background-color: ##{color}; text-align: right; ",
                                            class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} retained-gp-#{uowg.id} guw-#{guow.id} retained form-control form-control-sm",
                                            guw: guow.id,
-                                           title: guow.cplx_comments,
+                                           title: guow.cplx_comments.blank? ? @guw_type.description : guow.cplx_comments,
                                            step: 0.001 %>
                       <script>
                         //$(document).ready(function(){
@@ -284,6 +294,13 @@
                        color = "background-color: ##{default.color_code}"
                      end
                    end
+
+                   if @guw_coefficient.math_set == "N" || @guw_coefficient.math_set == "Z"
+                     step = 1
+                   else
+                     step = 0.001
+                   end
+
                 %>
                 <% ddv = results.first.default_display_value %>
                 <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
@@ -291,19 +308,19 @@
                                      style: "#{color}; text-align: right; ",
                                      class: "complexity_weight-#{uowg.id} form-control form-control-sm guw-#{guow.id} coeff_#{guow.id}_#{@guw_coefficient.id}_#{results.first.id}",
                                      readonly: (@guw_coefficient.allow_intermediate_value == true),
-                                     step: 1,
+                                     step: step,
                                      guw: guow.id,
                                      coeff_id: @guw_coefficient.nil? ? nil : @guw_coefficient.id,
                                      coeff_element_id: results.first.id,
-                                     title: ceuw.nil? ? "" : ceuw.comments %>
+                                     title: ceuw.nil? ? @guw_type.description : (ceuw.comments.blank? ? @guw_type.description : ceuw.comments) %>
 
                 <% if @guw_coefficient.allow_intermediate_value == true %>
                   <%= number_field_tag "guw_coefficient_percent[#{guow.id}][#{@guw_coefficient.id}]",
                                        ceuw.nil? ? (ddv.nil? ? nil : ddv.to_f.round(2)) : ceuw.percent.to_f.round(2),
-                                       style: "text-align: right; ",
-                                       class: "complexity_weight-#{uowg.id} form-control form-control-sm retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
-                                       step: 1,
-                                       title: ceuw.nil? ? "" : ceuw.comments %>
+                                       style: "width: 60%; text-align: right;",
+                                       class: "complexity_weight-#{uowg.id} retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} retained",
+                                       step: step,
+                                       title: ceuw.nil? ? @guw_type.description : (ceuw.comments.blank? ? @guw_type.description : ceuw.comments) %>
                 <% end %>
               </td>
               <% if @guw_coefficient.allow_comments == true %>
@@ -371,12 +388,19 @@
                 <% unless @guw_type.nil? %>
                   <% results = @guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements.where(guw_type_id: @guw_type.id).select{|ct| ct.value != nil }.flatten.map{|i| i.guw_coefficient_element }.flatten.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
                   <% unless results.empty? %>
-                    <%#= ici les coeff.elements of 000348 - 1.0 , 000347 -1.1 Materiel%>
-                    <%= select_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
-                                                                                                             selected: ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id),
-                                   class: "guw_coefficient guw-#{guow.id} form-control form-control-sm",
-                                   guw: guow.id,
-                                   readonly: !can?(:execute_estimation_plan, @project) %>
+                    <% if results.size == 1 %>
+                      <%= select_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
+                                                                                                               selected: ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id),
+                                     class: "guw_coefficient guw-#{guow.id} form-control form-control-sm",
+                                     guw: guow.id,
+                                     readonly: true %>
+                    <% else %>
+                      <%= select_tag "guw_coefficient[#{guow.id}][#{@guw_coefficient.id}]", options_for_select(results.map{|i| [i.name, i.id]},
+                                                                                                               selected: ceuw.nil? ? (default.nil? ? (results.first.nil? ? nil : results.first.value) : default.value) : ceuw.guw_coefficient_element_id),
+                                     class: "guw_coefficient guw-#{guow.id} form-control form-control-sm",
+                                     guw: guow.id,
+                                     readonly: !can?(:execute_estimation_plan, @project) %>
+                    <% end %>
                   <% end %>
                 <% end %>
               </td>
@@ -558,10 +582,15 @@
             <% rescue %>
             <% end %>
 
+            <%= link_to raw("<i class='material-icons'>memory</i> AI Count"), guw.ai_auto_sizing_path(guw_unit_of_work_id: guow.id), method: "post", class: "dropdown-item" %>
+            <%= link_to raw("<i class='material-icons'>memory</i> AI Control"), guw.ai_control_path(guw_unit_of_work_id: guow.id), method: "post", class: "dropdown-item" %>
+
           <% else %>
             <%= link_to raw("<i class='material-icons'>check</i> Accept"), guw.guw_unit_of_work_accept_correction_path(guow), method: "post", class: "dropdown-item" %>
           <% end %>
+
           <div class="dropdown-divider"></div>
+
           <%= link_to raw("<i class='material-icons'>delete</i>") + I18n.t(:delete), guw.guw_unit_of_work_path(guow), method: :delete, remote: true, class: "dropdown-item" %>
         </div>
       </div>
