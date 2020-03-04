@@ -16,11 +16,13 @@ class CreateOrganizationEstimationsView < ActiveRecord::Migration
       INNER JOIN organizations o ON o.id = p.organization_id
       INNER JOIN fields f ON f.id = pf.field_id
 
-      WHERE p.is_model IS NOT TRUE
+      WHERE p.is_model IS NOT TRUE AND p.is_historicized IS NOT TRUE
 
       GROUP BY pf.project_id
 
-      ORDER BY current_organization_id, project_created_date DESC, p.is_historicized
+      ORDER BY current_organization_id, project_created_date DESC;
+
+
     SQL
 
   end

@@ -1,7 +1,6 @@
 
 class OrganizationEstimation < ActiveRecord::Base
   self.primary_key = 'project_id'
-
   has_ancestry  # For the Ancestry gem
 
   #### Nexts and Previous by date DESC
@@ -33,7 +32,6 @@ class OrganizationEstimation < ActiveRecord::Base
   has_many :pe_wbs_projects
   has_many :pbs_project_elements, :through => :pe_wbs_projects
   has_many :wbs_project_elements, :through => :pe_wbs_projects
-
 
   # Next ones by Created_at DESC
   def next_ones_by_date(n)

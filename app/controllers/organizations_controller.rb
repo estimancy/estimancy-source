@@ -3576,6 +3576,20 @@ class OrganizationsController < ApplicationController
   end
 
 
+  def estimations_save
+    @organization = Organization.find(params[:organization_id])
+    organization_projects = OrganizationEstimation.where(organization_id: @organization.id)
+    get_estimations(organization_projects)
+  end
+
+  # Get Historized estimations
+  def historized_estimations
+    @organization = Organization.find(params[:organization_id])
+    organization_projects = @organization.projects.where(:is_model => [nil, false])
+    get_estimations(organization_projects)
+  end
+
+
   # Get estimations from Ordered View
   def estimations
     @organization = Organization.find(params[:organization_id])
@@ -3632,20 +3646,14 @@ class OrganizationsController < ApplicationController
     @search_hash = nil
 
     if params[:historized].present? && params[:historized] == "1"
-      @all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: true)
+      #@all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: true)
+      @all_projects = Project.where(:is_model => [nil, false], organization_id: @organization.id)
     else
-      @all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: [nil, false])
+      #@all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: [nil, false])
+      @all_projects = OrganizationEstimation.where(organization_id: @organization.id)
     end
 
-    # if params[:archive].present?
-    #   esids = EstimationStatus.where(organization_id: @organization.id, name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-    #   @all_projects = organization_projects.where(estimation_status_id: esids)
-    # else
-    #   esids = EstimationStatus.where(organization_id: @organization.id, name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-    #   @all_projects = organization_projects.where.not(estimation_status_id: esids)
-    # end
-
-     organization_projects = get_sorted_estimations(@organization.id, @all_projects, @sort_column, @sort_order, @search_hash)
+    organization_projects = get_sorted_estimations(@organization.id, organization_projects, @sort_column, @sort_order, @search_hash)
 
     res = []
     organization_projects.each do |p|
@@ -3711,8 +3719,8 @@ class OrganizationsController < ApplicationController
     # if user_signed_in?
     #   Monitoring.create(user: User.current, action: "Accéder à la liste des devis de l'organisation #{@organization.name}", action_at: Time.now+3600)
     # end
-
   end
+
 
   private def check_for_projects(start_number, desired_size)
 
