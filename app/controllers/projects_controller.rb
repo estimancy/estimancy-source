@@ -4241,14 +4241,19 @@ public
     end
   end
 
-  # def yolo
+  # def export_data_cds_rh
   #
-  #   results = []
+  #   require "csv"
   #
-  #   organization = Organization.where(id: 64).first
-  #   guw_models = organization.guw_models
+  #   results_prix_services = []
+  #   results_jut = []
+  #
+  #   organization = Organization.where(id: 66).first
+  #   guw_models = organization.guw_models.where(id: [715, 699, 700, 701, 702, 703, 704])
   #
   #   guw_models.each do |guw_model|
+  #
+  #     localisation_coefficient = guw_model.guw_coefficients.where(name: "Localisation").first
   #
   #     coef_jut = guw_model.guw_coefficients.where(name: "Coef. J UT").first
   #
@@ -4258,10 +4263,11 @@ public
   #
   #     uc_dev = guw_model.guw_outputs.where(name: "UC Dév. (UC)").first
   #     uc_test = guw_model.guw_outputs.where(name: "UC Test (UC)").first
+  #     cout_service = guw_model.guw_outputs.where(name: "Coût Services (€)").first
   #
-  #     deg_abaque = guw_model.guw_coefficient_elements.where(name: "Dégressivité Abaque").first
-  #     deg_service = guw_model.guw_coefficient_elements.where(name: "Dégressivité Abaque").first
-  #     deg_mco = guw_model.guw_coefficient_elements.where(name: "Dégressivité Abaque").first
+  #     deg_abaque_coefficient = guw_model.guw_coefficients.where(name: "Dégressivité Abaque").first
+  #     deg_service_coefficient = guw_model.guw_coefficients.where(name: "Dégressivité Services").first
+  #     deg_mco_coefficient = guw_model.guw_coefficients.where(name: "Dégressivité MCO").first
   #
   #       guw_model.guw_types.each do |guw_type|
   #
@@ -4284,53 +4290,101 @@ public
   #                                                                  guw_type_id: guw_type.id).first
   #         end
   #
-  #         unless deg_abaque.nil?
-  #           gcce_deg_abaque = Guw::GuwComplexityCoefficientElement.where(guw_model_id: guw_model.id,
-  #                                                                        guw_complexity_id: guw_complexity.id,
-  #                                                                        guw_coefficient_element_id: guw_coefficient_element.id,
-  #                                                                        guw_output_id: deg_abaque.id,
-  #                                                                        guw_type_id: guw_type.id,
-  #                                                                        value: 1.000).first
+  #         unless deg_abaque_coefficient.nil?
+  #           deg_abaque_coeffcient_element = deg_abaque_coefficient.guw_coefficient_elements.where(default: true).first
   #         end
   #
-  #         unless deg_service.nil?
-  #           gcce_deg_service = Guw::GuwComplexityCoefficientElement.where( guw_model_id: guw_model.id,
-  #                                                                          guw_complexity_id: guw_complexity.id,
-  #                                                                          guw_coefficient_element_id: guw_coefficient_element.id,
-  #                                                                          guw_output_id: deg_service.id,
-  #                                                                          guw_type_id: guw_type.id,
-  #                                                                          value: 1.000).first
+  #         unless deg_service_coefficient.nil?
+  #           deg_service_coeffcient_element = deg_service_coefficient.guw_coefficient_elements.where(default: true).first
   #         end
   #
-  #         unless deg_mco.nil?
-  #           gcce_deg_mco = Guw::GuwComplexityCoefficientElement.where(guw_model_id: guw_model.id,
-  #                                                                     guw_complexity_id: guw_complexity.id,
-  #                                                                     guw_coefficient_element_id: guw_coefficient_element.id,
-  #                                                                     guw_output_id: deg_mco.id,
-  #                                                                     guw_type_id: guw_type.id,
-  #                                                                     value: 1.000).first
+  #         unless deg_mco_coefficient.nil?
+  #           deg_mco_coeffcient_element = deg_mco_coefficient.guw_coefficient_elements.where(default: true).first
   #         end
   #
-  #         results << [
-  #             guw_model.name,
-  #             guw_type.name,
-  #             gcce_dev.nil? ? '-' : gcce_dev.value,
-  #             gcce_test.nil? ? '-' : gcce_test.value,
-  #             gcce_deg_abaque.nil? ? '-' : gcce_deg_abaque.guw_coefficient_element.value,
-  #             gcce_deg_service.nil? ? '-' : gcce_deg_service.guw_coefficient_element.value,
-  #             gcce_deg_mco.nil? ? '-' : gcce_deg_mco.guw_coefficient_element.value
-  #         ]
-  #     end
+  #         if guw_type.name.include?("SRV")
+  #           unless localisation_coefficient.nil?
+  #             localisation_coefficient.guw_coefficient_elements.each do |loc_gce|
+  #               loc_values = loc_gce.guw_complexity_coefficient_elements.where(guw_model_id: guw_model.id,
+  #                                                                              guw_complexity_id: guw_complexity.id,
+  #                                                                              guw_output_id: cout_service.id,
+  #                                                                              guw_type_id: guw_type.id)
   #
-  #     require "csv"
+  #               loc_values.each do |loc_value|
+  #                 results_prix_services << [
+  #                     guw_model.name,
+  #                     guw_type.name,
+  #                     loc_value.guw_coefficient_element.nil? ? nil : loc_value.guw_coefficient_element.name,
+  #                     loc_value.value.to_f
+  #                 ]
+  #               end
   #
-  #     CSV.open("result_jut_dev.csv", "wb") do |csv|
-  #       results.each do |result|
-  #         csv << result
+  #             end
+  #           end
+  #         end
+  #
+  #         if guw_type.name.include?("MCO")
+  #           unless localisation_coefficient.nil?
+  #
+  #             guw_complexity = guw_type.guw_complexities.first
+  #
+  #             results_prix_services << [
+  #                 guw_model.name,
+  #                 guw_type.name,
+  #                 '-',
+  #                 guw_complexity.weight.to_f
+  #             ]
+  #           end
+  #         end
+  #
+  #         if guw_type.name.include?("MCO")
+  #           results_jut << [
+  #               guw_model.name,
+  #               guw_type.name,
+  #               gcce_dev.nil? ? '-' : gcce_dev.value.to_f,
+  #               gcce_test.nil? ? '-' : gcce_test.value.to_f,
+  #               '-',
+  #               '-',
+  #               deg_mco_coeffcient_element.nil? ? '-' : deg_mco_coeffcient_element.value.to_f
+  #           ]
+  #         elsif guw_type.name.include?("SRV")
+  #           results_jut << [
+  #               guw_model.name,
+  #               guw_type.name,
+  #               gcce_dev.nil? ? '-' : gcce_dev.value.to_f,
+  #               gcce_test.nil? ? '-' : gcce_test.value.to_f,
+  #               '-',
+  #               deg_service_coeffcient_element.nil? ? '-' : deg_service_coeffcient_element.value.to_f,
+  #               '-'
+  #           ]
+  #         else
+  #           results_jut << [
+  #               guw_model.name,
+  #               guw_type.name,
+  #               gcce_dev.nil? ? '-' : gcce_dev.value.to_f,
+  #               gcce_test.nil? ? '-' : gcce_test.value.to_f,
+  #               deg_abaque_coeffcient_element.nil? ? '-' : deg_abaque_coeffcient_element.value.to_f,
+  #               '-',
+  #               '-'
+  #           ]
+  #         end
   #       end
+  #
+  #   end
+  #
+  #   CSV.open("prix_services.csv", "wb") do |csv|
+  #     csv << ["Modèle", "TYPE UO", "Localisation", "Prix"]
+  #     results_prix_services.each do |result|
+  #       csv << result
   #     end
   #   end
   #
+  #   CSV.open("results_jut.csv", "wb") do |csv|
+  #     csv << ["Modèle", "TYPE UO", "J UT DEV", "J UT TEST", "Degressivité Abaque", "Degressivité Service", "Degressivité MCO"]
+  #     results_jut.each do |result|
+  #       csv << result
+  #     end
+  #   end
   # end
 
   private

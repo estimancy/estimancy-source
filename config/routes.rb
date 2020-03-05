@@ -23,7 +23,7 @@
 
 Projestimate::Application.routes.draw do
 
-  # get 'yolo' => 'projects#yolo', as: "yolo"
+  get 'export_data_cds_rh' => 'projects#export_data_cds_rh', as: "export_data_cds_rh"
 
   resources :autorization_log_events
 
