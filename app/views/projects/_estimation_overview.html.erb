@@ -2,13 +2,13 @@
   <div class="estimation-list">
     <div class="estimation-list-filter">
       <span><%= @projects.count %> <%= I18n.t(:elements) %></span>
-      <span>
-        <% unless params[:archive].present? %>
-          <a href="?archive=1"><%= I18n.t(:display_archives) %></a>
-        <% else %>
-          <a href="<%= url_for(:only_path => false) %>">Hide archives</a>
-        <% end %>
-      </span>
+      <!--<span>-->
+        <!--<%# unless params[:archive].present? %>-->
+          <!--<a href="?archive=1"><%#= I18n.t(:display_archives) %></a>-->
+        <!--<%# else %>-->
+          <!--<a href="<%#= url_for(:only_path => false) %>">Hide archives</a>-->
+        <!--<%# end %>-->
+      <!--</span>-->
     </div>
     <% selected_inline_columns = update_selected_inline_columns(Project) %>
     <%= form_tag projects_list_search_path, remote: true do %>
