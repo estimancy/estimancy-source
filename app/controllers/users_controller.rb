@@ -327,7 +327,7 @@ public
               GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
             else
               new_organizations_array << organization_id
-              specific_message = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: organization.id).join(', ')})"
+              specific_message = "#{organization.name} : L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: organization.id).join(', ')})"
             end
           end
         end
@@ -393,13 +393,13 @@ public
                              @user.update_without_password(params[:user])
                            end
 
+    unless specific_message.blank?
+      flash[:warning] = specific_message
+    end
+
     if successfully_updated
       set_user_language
       flash[:notice] = I18n.t (:notice_account_successful_updated)
-
-      unless specific_message.blank?
-        flash[:error] = specific_message
-      end
 
       @user_current_password = nil
       @user_password = nil
