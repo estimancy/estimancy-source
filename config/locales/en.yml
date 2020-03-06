@@ -2551,3 +2551,8 @@ en:
   sum_create: "Sum of Create"
   sum_modify: "Sum of Modify"
   sum_delete: "Sum of Delete"
+
+  use_slider: "Use the slider to adjust costs and deadlines."
+  use_slider_comments: "Plus le délai souhaité est court, plus l'équipe est grande, plus le projet est cher et inversement."
+  past_projects_effort: "Effort from past projects"
+
