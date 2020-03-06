@@ -2606,3 +2606,8 @@ fr:
 
   use_slider: "Use the slider to adjust costs and deadlines."
   use_slider_comments: "Plus le délai souhaité est court, plus l'équipe est grande, plus le projet est cher et inversement."
+  effort_revised: "Effort révisé (j.h)"
+  optimal_effort: "Effort optimal (m.d)"
+  optimal_duration_in_week: "Durée optimale (semaine)"
+  initial_date: "Date Initial"
+  trapeze_staffing: "Staffing Trapeze (pers.)"

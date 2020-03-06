@@ -1847,7 +1847,7 @@ en:
   new_acquisition_type: "New acquisition type"
   prohibited_datum: "prohibited this staffing_custom_datum from being saved:"
   calculate_duration_and_size: "Calculation of the duration and the team size"
-  duration_in_week: "Duration(week)"
+  duration_in_week: "Duration (week)"
   initialize_restraint: "Initialize restraint"
   graphical_output: "Graphical output"
   Staffing_distribution: "Staffing distribution"
@@ -2553,6 +2553,11 @@ en:
   sum_delete: "Sum of Delete"
 
   use_slider: "Use the slider to adjust costs and deadlines."
-  use_slider_comments: "Plus le délai souhaité est court, plus l'équipe est grande, plus le projet est cher et inversement."
+  use_slider_comments: "The shorter the deadline, the larger the team, the more expensive the project and vice versa."
   past_projects_effort: "Effort from past projects"
+  effort_revised: "Ajusted Effort (m.d)"
+  optimal_effort: "Optimal Effort (m.d)"
+  optimal_duration_in_week: "Optimal Duration (week)"
+  initial_date: "Initial Date"
+  trapeze_staffing: "Staffing Trapeze (pers.)"
 

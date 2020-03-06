@@ -206,7 +206,7 @@
           <div class="row w-100">
             <div class="col-4">
               <div class="timecost-indicator">
-                <div class="indicator-title">Effort révisé (j.h) </div>
+                <div class="indicator-title"><%= I18n.t :revised_effort %></div>
                 <div class="indicator-value">
                   <span class="effort">
                     <% unless @staffing_custom_data.global_effort_value.nil? %>
@@ -219,7 +219,7 @@
                     <% end %> %
                   </span>
                 </div>
-                <div class="indicator-optimal">Effort optimal</div>
+                <div class="indicator-optimal"><%= I18n.t :optimal_effort %></div>
                 <div class="indicator-optimal-value">
                   <span class="reference_effort">
                     <% unless effort.nil? %>
@@ -231,7 +231,7 @@
             </div>
             <div class="col-4">
               <div class="timecost-indicator">
-                <div class="indicator-title">Durée (semaines) </div>
+                <div class="indicator-title"><%= I18n.t :duration_in_week %></div>
                 <div class="indicator-value">
                   <span class="duration">
                     <% unless @staffing_custom_data.duration.nil? %>
@@ -244,7 +244,7 @@
                    <% end %> %
                   </span>
                 </div>
-                <div class="indicator-optimal">Durée sem. optimale</div>
+                <div class="indicator-optimal"><%= I18n.t :optimal_duration_in_week %></div>
                 <div class="indicator-optimal-value">
                   <span class="reference_duration">
                     <% unless @md_duration.nil? %>
@@ -257,7 +257,7 @@
 
             <div class="col-4">
               <div class="timecost-indicator">
-                <div class="indicator-title">Date de fin </div>
+                <div class="indicator-title"><%= I18n.t :end_date %></div>
                 <div class="indicator-value">
                   <span class="end_date">
                     <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
@@ -265,7 +265,9 @@
                     <% end %>
                   </span>
                 </div>
-                <div class="indicator-optimal">Date initiale</div>
+                <div class="indicator-optimal">
+                  <%= I18n.t :initial_date %>
+                </div>
                 <div class="indicator-optimal-value">
                   <span>
                     <% unless @md_duration.nil? %>
@@ -281,7 +283,9 @@
           <div class="row w-100">
             <div class="col-4">
               <div class="timecost-indicator">
-                <div class="indicator-title">Staffing Trapeze (pers.) </div>
+                <div class="indicator-title">
+                  <%= I18n.t :trapeze_staffing %>
+                </div>
                 <div class="indicator-value">
                   <span class="staffing_trapeze">
                     <% unless @staffing_custom_data.max_staffing.nil? %>
@@ -306,7 +310,7 @@
             </div>
             <div class="col-4">
               <div class="timecost-indicator">
-                <div class="indicator-title">Staffing Relayeigh (pers.) </div>
+                <div class="indicator-title">Staffing Releigh (pers.) </div>
                 <div class="indicator-value">
                   <span class="staffing_rayleigh">
                     <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
