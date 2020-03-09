@@ -106,8 +106,6 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
-
-          # .joins(:user).where(:user => { :is_super_admin => false })
         else
           @organization_projects = @organization.projects
                                        .where(is_model: false)
@@ -115,8 +113,6 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
-
-          # .joins(:user).where(:user => { :is_super_admin => false })
         end
 
         # @organization_projects = [Project.where(id: 15297).first]
@@ -225,7 +221,9 @@ class ProjectsController < ApplicationController
 
             guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first
 
-            pf = project.project_fields.select{ |i| i.field_id == field.id }.first
+            unless field.nil?
+              pf = project.project_fields.select{ |i| i.field_id == field.id }.first
+            end
 
             project_application = project.application.nil? ? nil : project.application.name
             project_project_area = project.project_area.nil? ? nil : project.project_area.name
@@ -584,11 +582,13 @@ class ProjectsController < ApplicationController
               worksheet_wbs.add_cell(wbs_iii, 4, project_project_area.nil? ? '' : project_project_area)
               worksheet_wbs.add_cell(wbs_iii, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
-              pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
-
               unless field.nil?
-                value = pf.nil? ? nil : pf.value
-                worksheet_wbs.add_cell(wbs_iii, 6, value)
+                pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
+
+                unless field.nil?
+                  value = pf.nil? ? nil : pf.value
+                  worksheet_wbs.add_cell(wbs_iii, 6, value)
+                end
               end
 
               worksheet_wbs.add_cell(wbs_iii, 7, project_platform_category.nil? ? '' : project_platform_category)
@@ -640,10 +640,10 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(0, 5, "Service")
         worksheet_synt.add_cell(0, 6, "Localisation WBS")
 
-        unless @organization.name == "CDS VOYAGEURS"
-          worksheet_synt.add_cell(0, 7, "Localisation Modèle")
-        else
+        if @organization.name == "CDS VOYAGEURS"
           worksheet_synt.add_cell(0, 7, "Urgence Devis")
+        else
+          worksheet_synt.add_cell(0, 7, "Localisation Modèle")
         end
 
         worksheet_synt.add_cell(0, 8, "Catégorie")
@@ -675,9 +675,8 @@ class ProjectsController < ApplicationController
             worksheet_synt.add_cell(pi, 4, project_project_area)
             worksheet_synt.add_cell(pi, 5, project_acquisition_category)
 
-            pf = project.project_fields.select{ |i| i.field_id == field.id }.first
-
             unless field.nil?
+              pf = project.project_fields.select{ |i| i.field_id == field.id }.first
               value = pf.nil? ? nil : pf.value
               worksheet_synt.add_cell(pi, 6, value)
             end
@@ -4201,7 +4200,9 @@ public
         render pdf: @project.to_s,
                encoding: "UTF-8",
                page_size: 'A4',
-               orientation: :landscape
+               orientation: :landscape,
+               zoom: 1.2,
+               lowquality: true
       end
     end
   end
