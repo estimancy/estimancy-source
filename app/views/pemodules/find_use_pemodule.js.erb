@@ -6,7 +6,7 @@ $("#myModalLabel").html("<%= I18n.t(:text_finduse_pemodule, :value => @pemodule_
 
 $("#edit_component").modal({
     keyboard: false,
-    backdrop: "static"
+    backdrop: false
 });
 
 $("#notifications").html("<%= j(render 'layouts/notifications') %>");

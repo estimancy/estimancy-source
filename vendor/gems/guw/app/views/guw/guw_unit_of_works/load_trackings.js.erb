@@ -1,5 +1,5 @@
 $("#modal_trackings_content").html("<%= j(render 'guw/guw_unit_of_works/trackings_modal', { :guow => @guw_unit_of_work })%>")
 $("#modal_trackings").modal({
   keyboard: false,
-  backdrop: "static"
+  backdrop: false
 });

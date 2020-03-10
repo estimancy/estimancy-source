@@ -50,7 +50,7 @@
   <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
 <% end %>
 
-$("#new_guw").modal('toggle');
+$("#new_guw").modal('toggle', {backdrop: false});
 
 <% @guw_unit_of_work_guw_unit_of_work_group = @guw_unit_of_work.guw_unit_of_work_group %>
 <% if @position.blank? %>

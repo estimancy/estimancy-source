@@ -1,5 +1,5 @@
 $("#modal_comments_content").html("<%= j(render 'guw/guw_unit_of_works/comments_modal', { :guow => @guw_unit_of_work })%>")
 $("#modal_comments").modal({
   keyboard: false,
-  backdrop: "static"
+  backdrop: false
 });
