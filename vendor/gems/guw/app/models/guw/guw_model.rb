@@ -236,6 +236,8 @@ module Guw
           unless new_guw_type.nil?
 
             new_guw_type_complexity = new_guw_type.guw_type_complexities.where(copy_id: guw_attr_complexity.guw_type_complexity_id).first
+            new_guw_type_complexity.guw_model_id = guw_model.id
+            new_guw_type_complexity.save(validate: false)
 
             guw_attr_complexity.organization_id = guw_model_organization.id
             guw_attr_complexity.guw_model_id = guw_model.id
