@@ -297,7 +297,7 @@ class Project < ActiveRecord::Base
   end
 
 
-  def create_new_version_when_changing_status(next_status, new_version_number=nil)
+  def create_new_version_when_changing_status(next_status, new_version_number=nil, new_comments="")
     current_user = User.find(User.current) rescue nil
     last_estimation_status_name = self.estimation_status_id.nil? ? "" : self.estimation_status.name
 
@@ -317,7 +317,7 @@ class Project < ActiveRecord::Base
     new_estimation_status_name = next_status.nil? ? "" : next_status.name
 
     # Puis on lui change de statut
-    new_comments_for_version = "#{I18n.l(Time.now)} : #{I18n.t(:text_automatic_created_version)}  \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + self.status_comment
+    new_comments_for_version = "#{I18n.l(Time.now)} : #{I18n.t(:text_automatic_created_version)}  \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + new_comments + self.status_comment
     new_project_version.update_attributes(estimation_status_id: next_status.id, status_comment: new_comments_for_version)
     new_project_version
   end
