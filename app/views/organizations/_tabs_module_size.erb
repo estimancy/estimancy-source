@@ -5,7 +5,6 @@
   </div>
   <% if can? :manage_modules_instances, ModuleProject %>
     <%= link_to I18n.t(:create_button), guw.new_guw_model_path(organization_id: @organization.id), :class => 'btn btn-primary float-md-right' %>
-
   <% end %>
 </div>
 
@@ -55,9 +54,9 @@
 
   <% if can? :show_modules_instances, ModuleProject %>
     <% if can? :manage_modules_instances, ModuleProject %>
-      <%= link_to I18n.t(:create_button), skb.new_skb_model_path(organization_id: @organization.id), :class => 'btn btn-primary' %>
+      <%= link_to I18n.t(:create_button), skb.new_skb_model_path(organization_id: @organization.id), :class => 'btn btn-primary float-md-right' %>
     <% end %>
-    <hr>
+    <br><br>
 
     <table class="table table-list">
       <tr>

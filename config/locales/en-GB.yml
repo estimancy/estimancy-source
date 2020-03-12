@@ -2022,3 +2022,13 @@ en-gb:
   display_historized: "Display historized"
   hide_historized: "Hide historized"
 
+
+  horizontal_axis_label: "Horizontal axis label"
+  Y_axis_label: "Y axis label"
+  projects_stability_indicators: "Projects stability indicators"
+  prj_per_appli: "Estimates per appli"
+  proj_bad_stability: "Estimates with bad stability"
+  choose_an_application: "Please choose an application"
+  sum_create: "Sum of Create"
+  sum_modify: "Sum of Modify"
+  sum_delete: "Sum of Delete"

@@ -57,8 +57,6 @@
 
           <%= link_to('', edit_project_path(project, tabs_name: 'tabs_history', anchor: 'tabs-history'), :class => 'fa fa-film pull-left', style: "color: black; margin-top:4px;", :title => I18n.t('label_project_history')) %>
 
-          <%# link_to('', {:controller => 'projects', :action => 'find_use_project', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'fa fa-map-marker pull-left', style: "color: black; margin-top:4px;", :id => 'find_use_projects', :title => I18n.t('button_find_use')) %>
-
           <% if can? :copy_project, project %>
               <%= link_to('',
                           main_app.duplicate_path(project, organization_id: @organization, action_name: "duplication"),

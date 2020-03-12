@@ -276,6 +276,28 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   def load_cotations
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_model = @guw_unit_of_work.guw_model
+
+    Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id, low: nil, most_likely: nil, high: nil).delete_all
+
+    @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id,
+                                    guw_model_id: @guw_model.id).all.each do |gac|
+
+      sum_range = gac.guw_attribute_complexities.where(organization_id: @guw_model.organization_id,
+                                                       guw_model_id: @guw_model.id,
+                                                       guw_type_id: @guw_unit_of_work.guw_type_id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
+
+      unless sum_range.nil? || sum_range.blank? || sum_range == 0
+        finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+                                                   guw_model_id: @guw_model.id,
+                                                   guw_attribute_id: gac.id,
+                                                   guw_type_id: @guw_unit_of_work.guw_type_id,
+                                                   project_id: @guw_unit_of_work.project_id,
+                                                   module_project_id: @guw_unit_of_work.module_project_id,
+                                                   guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
+
+        finder.save
+      end
+    end
   end
 
   def load_name
@@ -1396,7 +1418,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.cost = {}
 
     begin
-      guw_type = Guw::GuwType.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_type]["#{guw_unit_of_work.id}"]).first #.find(params[:guw_type]["#{guw_unit_of_work.id}"])
+      guw_type = Guw::GuwType.where(organization_id: @organization.id,
+                                    guw_model_id: @guw_model.id,
+                                    id: params[:guw_type]["#{guw_unit_of_work.id}"]).first #.find(params[:guw_type]["#{guw_unit_of_work.id}"])
     rescue
       guw_type = @guw_unit_of_work.guw_type
     end
@@ -1749,6 +1773,100 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
 
     # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
+  end
+
+  # Comptage automatique des PFs
+  def ai_auto_sizing
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+    comments = @guw_unit_of_work.comments
+
+    unless comments.blank?
+
+      @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: comments } )
+
+      results = JSON.parse(@http.body_str).split('-')
+
+      unless results.empty?
+
+        results.each do |result|
+
+          data = result.split('/')
+
+          @new_guw_unit_of_work = @guw_unit_of_work.dup
+          @new_guw_unit_of_work.save
+
+          guw_type = Guw::GuwType.where(organization_id: @guw_unit_of_work.organization_id,
+                                        guw_model_id: @guw_unit_of_work.guw_model_id,
+                                        name: data[0]).first
+
+          guw_complexity = Guw::GuwComplexity.where(organization_id: @guw_unit_of_work.organization_id,
+                                                    guw_model_id: @guw_unit_of_work.guw_model_id,
+                                                    name: 'Moyen').first
+
+
+          @new_guw_unit_of_work.guw_type_id = guw_type.id
+          @new_guw_unit_of_work.guw_complexity_id = guw_complexity.id
+
+          @new_guw_unit_of_work.save
+        end
+      end
+    end
+
+    @guw_unit_of_work.delete
+
+    redirect_to main_app.dashboard_path(@new_guw_unit_of_work.project)
+  end
+
+  # PFs AI control
+  def ai_control
+    @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
+
+    unless @guw_unit_of_work.nil?
+      @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: @guw_unit_of_work.comments } )
+
+      results = JSON.parse(@http.body_str).split('-')
+
+      unless results.empty?
+        results.each_with_index do |result, i|
+          data = result.split('/')
+
+          @new_guw_unit_of_work = @guw_unit_of_work.dup
+          @new_guw_unit_of_work.save
+
+          @new_guw_unit_of_work.name = "#{@guw_unit_of_work.name} (controled)"
+
+          guw_type = Guw::GuwType.where(organization_id: @guw_unit_of_work.organization_id,
+                                        guw_model_id: @guw_unit_of_work.guw_model_id,
+                                        name: data[0].gsub(' ', '')).first
+
+          guw_complexity = Guw::GuwComplexity.where(organization_id: @guw_unit_of_work.organization_id,
+                                                    guw_model_id: @guw_unit_of_work.guw_model_id,
+                                                    name: 'Moyen').first
+
+
+          @new_guw_unit_of_work.guw_type_id = guw_type.id
+          @new_guw_unit_of_work.guw_complexity_id = guw_complexity.id
+
+          # guw_coefficient_element = Guw::GuwCoefficientElement.where(organization_id: @guw_unit_of_work.organization_id,
+          #                                                            guw_model_id: @guw_unit_of_work.guw_model_id,
+          #                                                            name: data[2].gsub(' ', '')).first
+          #
+          # @new_guw_unit_of_work.guw_coefficient_element_unit_of_works.each_with_index do |gceuow, j|
+          #   if i == j
+          #     gceuow.guw_coefficient_element_id = guw_coefficient_element.id
+          #     gceuow.save
+          #   end
+          # end
+
+          @new_guw_unit_of_work.guw_unit_of_work_id = @guw_unit_of_work.id
+
+          @new_guw_unit_of_work.save
+        end
+      end
+    end
+
+    redirect_to main_app.dashboard_path(@guw_unit_of_work.project)
+
   end
 
   def extract_from_url

@@ -1,13 +1,12 @@
-<div class="edition-bloc-left">
-  <div class="edition-bloc-title">
-    <h4>
-      <%= params[:action_to_do].eql?("update_password_first_connexion") ? I18n.t(:update_password_first_connexion) : I18n.t(:update_email_login_password) %></h2>
-    </h4>
-  </div>
-</div>
-
-
 <section class="card card-content-bloc estimancy-form">
+  <div class="edition-bloc-left">
+    <div class="edition-bloc-title">
+      <h3>
+        <%= params[:action_to_do].eql?("update_password_first_connexion") ? I18n.t(:update_password_first_connexion) : I18n.t(:update_email_login_password) %></h2>
+      </h3>
+    </div>
+  </div>
+
   <div class="mb-5">
 
   <%= simple_form_for(resource, as: resource_name, url: update_user_registration_path, html: { method: :put }) do |f| %>
@@ -80,7 +79,7 @@
           </div>
         </div>
       </div>
-  <% end %>
-</div>
+    <% end %>
+  </div>
 </section>
 

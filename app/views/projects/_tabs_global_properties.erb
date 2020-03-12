@@ -41,7 +41,7 @@
               <%= f.input :estimation_status_id,
                           label: false,
                           as: :select,
-                          collection: @project.project_estimation_statuses(@organization),
+                          collection: (current_user.super_admin ? @organization.estimation_statuses : @project.project_estimation_statuses(@organization)),
                           disabled: !((can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || can_alter_model) || @project.private,
                           input_html: { :class => 'form-control' },
                           include_blank: false %>

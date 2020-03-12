@@ -6,7 +6,7 @@ $("#myModalLabel").html("<%= I18n.t(:text_find_use_estimation_model, :model_name
 
 $("#edit_component").modal({
     keyboard: false,
-    backdrop: "static"
+    backdrop: false
 });
 
 $("#notifications").html("<%= j(render 'layouts/notifications') %>");

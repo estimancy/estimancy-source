@@ -1,5 +1,5 @@
 $("#form_modal_content").html("<%= j(render 'form_modal', { :mp_ratio_element => @module_project_ratio_element })%>")
-$("#form_modal").modal{
+$("#form_modal").modal({
     keyboard: false,
-    backdrop: "static"
+    backdrop: false
 });

@@ -25,7 +25,5 @@
 # If you change this key, all old signed cookies will become invalid!
 # Make sure the secret is at least 30 characters and all random,
 # no regular words or you'll be exposed to dictionary attacks.
-#Try to generate a token with : rand(36**100).to_s(36)
-
-#Projestimate::Application.config.secret_token = "3bi27707gil3j4n1n4f04svu6igg7py2jmi1u2y9wa1iw1bbwldl2lq2tmjgnunpl0nbg9vuwj5bb5eccq4itexxooifhsbzmmxj"
-Projestimate::Application.config.secret_token = SETTINGS['SECRET_TOKEN']
+# Try to generate a token with : rand(36**100).to_s(36)
+Projestimate::Application.config.secret_token = SETTINGS["SECRET_TOKEN"]

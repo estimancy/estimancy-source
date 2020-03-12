@@ -10,7 +10,7 @@ $("#myModalLabel").html('<%= I18n.t(:button_checkout_project) %>');
 
 $("#edit_component").modal({
     keyboard: false,
-    backdrop: "static"
+    backdrop: false
 });
 
 $("#notifications").html("<%= j(render "layouts/notifications") %>");

@@ -12,7 +12,7 @@ app = Flask(__name__)
 
 @app.route("/ia_based_sizing_control", methods=['GET', 'POST'])
 def ia_based_sizing_control():
-    res = ia_based_sizing_control("Update an employee")
+    res = ia_based_sizing_control(request.form['us'])
     return json.dumps(res)
 
 ##########################################################################################
@@ -20,19 +20,17 @@ def ia_based_sizing_control():
 ##########################################################################################
 def ia_based_sizing_control (userStory):
     ### path to be modified for the use in the server
-    csvFile="/Users/nicolasrenard/Estimancy/estimancy/data_identification/simulation_DB.csv"
+    csvFile="/home/estimancy_design41/data_identification/simulation_DB.csv"
     with open(csvFile, "rt") as csvfile:
         data = csv.DictReader(csvfile, delimiter=',', quotechar='\"')
         #  Read file
-        data = list(data)
-        print(data)
+        data = list(data)    
         i=0
-        UOs="UNKNOWN".split(' ')
+        UOs = "UNKNOWN"
         for line in data :
-            if (line['Functional requirement']!='' and line['UO type'] !=''):
-                if line['Functional requirement']==userStory:
-                    print ("found")
-                    UOs=line['UO type'].strip("()").split(' ')
+            if (line['FR']!='' and line['UOT']!=''):
+                if line['FR'] == userStory:                
+                    UOs = line['UOT']
     return (UOs)
 
 if __name__ == "__main__":

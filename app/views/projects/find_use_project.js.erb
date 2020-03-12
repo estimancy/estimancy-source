@@ -7,10 +7,8 @@ $("#myModalLabel").html("<%= I18n.t(:text_finduse_project, :value => @project.ti
 
 $("#edit_component").modal({
     keyboard: false,
-    backdrop: "static"
+    backdrop: false
 });
 
 $("#notifications").html("<%= j(render 'layouts/notifications') %>");
-
-
 

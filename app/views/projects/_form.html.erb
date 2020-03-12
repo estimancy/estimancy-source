@@ -1,40 +1,6 @@
 <div class="col-10" style="margin-top: 20px">
   <div class="row pb-5">
-    <% if controller.action_name == 'new' %>
-        <% if params[:is_model] == "true" && current_user.super_admin %>
-            <div style="margin-bottom: 35px; margin-top: -24px;">
-                <%= link_to I18n.t(:import_estimation_model), "#import_estimation_model", class: "pull-right btn btn-primary", title: I18n.t(:import_estimation_model), "data-toggle" => "modal" %>
-            </div>
-
-            <div id="import_estimation_model" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-              <%= form_tag organization_import_estimation_model_path(organization_id: @organization.id), :method => 'post', :multipart => true, :class => 'simple_form' do %>
-                  <div class="modal-header modal-drag">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                    <h3 id="myModalLabel"> <%= I18n.t(:import_estimation_model) %></h3>
-                  </div>
-                  <div class="modal-body">
-                    <%= hidden_field_tag "organization_id", @organization.id %>
-                    <%= hidden_field_tag "is_model", true %>
-                    <%= file_field_tag :file %>
-                  </div>
-                  <div class="modal-footer">
-                    <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-                    <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-                  </div>
-                  <div class="loading span11 hide">
-                    <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
-                  </div>
-              <% end %>
-            </div>
-        <% end %>
-    <% else %>
-      <% if @project.is_model == true && current_user.super_admin == true %>
-        <%= link_to I18n.t(:export), organization_export_estimation_model_path(organization_id: @organization.id, project_id: @project.id), :method => 'get', class: "pull-right btn btn-primary button_margin_right", title: I18n.t(:export) %>
-      <% end %>
-    <% end %>
-
     <div id="estimation_content" class="col-10">
-
       <% if @partial_name.blank? %>
         <%= render :partial => "projects/tabs_global_properties", object: [@project, @organization, @project_areas, @platform_categories, @acquisition_categories, @project_categories, @providers, @demand] %>
       <% else %>
@@ -69,6 +35,41 @@
                 <a class="nav-link group" href="<%= edit_project_path(@project, tabs_name: 'tabs_history', anchor: 'tabs-history') %>"><span><%= I18n.t("label_project_history") %></span></a>
               </li>
             </ul>
+        <% end %>
+
+        <hr>
+
+        <% if controller.action_name == 'new' %>
+          <% if params[:is_model] == "true" && current_user.super_admin %>
+            <div style="margin-bottom: 35px; margin-top: -24px;">
+              <%= link_to I18n.t(:import_estimation_model), "#import_estimation_model", class: "pull-right btn btn-primary", title: I18n.t(:import_estimation_model), "data-toggle" => "modal" %>
+            </div>
+
+            <div id="import_estimation_model" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+              <%= form_tag organization_import_estimation_model_path(organization_id: @organization.id), :method => 'post', :multipart => true, :class => 'simple_form' do %>
+                <div class="modal-header modal-drag">
+                  <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                  <h3 id="myModalLabel"> <%= I18n.t(:import_estimation_model) %></h3>
+                </div>
+                <div class="modal-body">
+                  <%= hidden_field_tag "organization_id", @organization.id %>
+                  <%= hidden_field_tag "is_model", true %>
+                  <%= file_field_tag :file %>
+                </div>
+                <div class="modal-footer">
+                  <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+                  <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+                </div>
+                <div class="loading span11 hide">
+                  <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        <% else %>
+          <% if @project.is_model == true && current_user.super_admin == true %>
+            <%= link_to I18n.t(:export), organization_export_estimation_model_path(organization_id: @organization.id, project_id: @project.id), :method => 'get', class: "float-right btn btn-primary", title: I18n.t(:export) %>
+          <% end %>
         <% end %>
       </div>
     </div>

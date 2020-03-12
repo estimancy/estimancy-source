@@ -17,10 +17,8 @@
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
 </td>
 
-<td class="text_field_text_overflow span3 guw-cell-ajustment">
-  <span class="pull-left">
-    <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.comments, method: "post", remote: true %>
-  </span>
+<td class="text_field_text_overflow guw-cell-ajustment w-25">
+  <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.comments, method: "post", remote: true %>
 </td>
 
 <td class="guw-cell-ajustment">
@@ -584,10 +582,15 @@
             <% rescue %>
             <% end %>
 
+            <%= link_to raw("<i class='material-icons'>memory</i> AI Count"), guw.ai_auto_sizing_path(guw_unit_of_work_id: guow.id), method: "post", class: "dropdown-item" %>
+            <%= link_to raw("<i class='material-icons'>memory</i> AI Control"), guw.ai_control_path(guw_unit_of_work_id: guow.id), method: "post", class: "dropdown-item" %>
+
           <% else %>
             <%= link_to raw("<i class='material-icons'>check</i> Accept"), guw.guw_unit_of_work_accept_correction_path(guow), method: "post", class: "dropdown-item" %>
           <% end %>
+
           <div class="dropdown-divider"></div>
+
           <%= link_to raw("<i class='material-icons'>delete</i>") + I18n.t(:delete), guw.guw_unit_of_work_path(guow), method: :delete, remote: true, class: "dropdown-item" %>
         </div>
       </div>

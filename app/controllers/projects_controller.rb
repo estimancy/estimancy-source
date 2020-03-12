@@ -227,9 +227,9 @@ class ProjectsController < ApplicationController
                                                                     "Charge sans prod. (jh)",
                                                                     "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
 
-            guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first
+            guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first #guw_charge_ss_prod_coefficient, guw_output_charge_ss_prod, guw_output_cost : nil
 
-            pf = project.project_fields.select{ |i| i.field_id == field.id }.first
+            pf = project.project_fields.select{ |i| i.field_id == field.id }.first #sort
 
             project_application = project.application.nil? ? nil : project.application.name
             project_project_area = project.project_area.nil? ? nil : project.project_area.name
@@ -573,6 +573,291 @@ class ProjectsController < ApplicationController
 
   end
 
+
+
+  def cds_data
+
+    @organization = Organization.where(id: params[:organization_id]).first
+    @projects_contents = {}
+    @results = Hash.new { |hash, key| hash[key] = Array.new }
+
+    if params[:date_min].present? && params[:date_min].present?
+      @organization_projects = @organization.projects
+                                   .where(is_model: false)
+                                   .where(created_at: Time.parse(params[:date_min])..Time.parse(params[:date_max]))
+                                   .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
+                                             :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
+                                             :guw_types, :guw_unit_of_works, :module_projects,
+                                             :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+
+      # .joins(:user).where(:user => { :is_super_admin => false })
+    else
+      @organization_projects = @organization.projects
+                                   .where(is_model: false)
+                                   .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
+                                             :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
+                                             :guw_types, :guw_unit_of_works, :module_projects,
+                                             :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+
+      # .joins(:user).where(:user => { :is_super_admin => false })
+    end
+
+    # @organization_projects = [Project.where(id: 3307).first]
+    #
+    #
+    # i = 1
+    #
+    # @total_cost = Hash.new {|h,k| h[k] = [] }
+    # @total_effort = Hash.new {|h,k| h[k] = [] }
+    # @pfs = Hash.new {|h,k| h[k] = [] }
+    # @pf_hash = Hash.new
+    # @app_hash = Hash.new
+    # @ac_hash = Hash.new
+    # @pa_hash = Hash.new
+    # @plc_hash = Hash.new
+    # @a_hash = Hash.new
+    # @p_hash = Hash.new
+    # @pf_hash_2 = Hash.new
+    # @statuses_hash = Hash.new
+    # @guw_hash = Hash.new {|h,k| h[k] = [] }
+    # @max_guw_model_attributes_size = 1
+
+    field = Field.where(organization_id: @organization.id, name: "Localisation").first
+
+    # @organization_projects.each do |project|
+    #
+    #   project.project_fields.each do |pf|
+    #     @pfs["#{pf.project_id}_#{pf.field_id}"] << pf
+    #   end
+    #
+    #   #on calcule la taille maximale des attributs de tous les projets
+    #   pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
+    #   unless pmp.nil?
+    #     guw_model = pmp.guw_model
+    #     guw_model_attributes_size = guw_model.guw_attributes.all.size
+    #     if guw_model_attributes_size > @max_guw_model_attributes_size
+    #       @max_guw_model_attributes_size = guw_model_attributes_size
+    #     end
+    #   end
+    # end
+
+    @organization_projects.each do |project|
+      #@organization_projects.where(id: 3021).each do |project|
+
+      # pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
+      #
+      # unless pmp.nil?
+      #   @guw_model = pmp.guw_model
+      #
+      #   @guow_guw_coefficient_element_unit_of_works_with_coefficients = {}
+      #
+      #   coeff_elt_uow = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+      #                                                              guw_model_id: @guw_model.id,
+      #                                                              project_id: project.id,
+      #                                                              module_project_id: pmp.id)
+      #
+      #   coeff_elt_uow.order("updated_at ASC").each do |gceuw|
+      #     @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw
+      #   end
+      #
+      #   @guw_model_guw_attributes = @guw_model.guw_attributes
+      #   @guw_coefficients = @guw_model.guw_coefficients.includes(:guw_coefficient_elements)
+      #   @guw_coefficient_elements = @guw_coefficients.flat_map(&:guw_coefficient_elements)
+      #   guw_charge_ss_prod_coefficient = @guw_coefficients.where(coefficient_type: "Coefficient", name: ["Charge Services (jh)", "Charge ss prod. (jh)", "Charge ss productivité (jh)", "Charge (jh)", "Charge sans prod. (jh)", "Charge sans productivité (jh)"]).first
+      #
+      #   guw_output_effort = Guw::GuwOutput.where(name: ["Charges T (jh)", "Charge Services (jh)", "Charge (jh)"], guw_model_id: @guw_model.id).first
+      #
+      #   guw_output_charge_ss_prod = Guw::GuwOutput.where(output_type: "Effort",
+      #                                                    name: ["Charge Services (jh)",
+      #                                                           "Charge ss prod. (jh)",
+      #                                                           "Charge ss productivité (jh)",
+      #                                                           "Charge (jh)",
+      #                                                           "Charge sans prod. (jh)",
+      #                                                           "Charge sans productivité (jh)"], guw_model_id: @guw_model.id).first
+      #
+      #   guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first
+
+        unless field.nil?
+          pf = project.project_fields.select{ |i| i.field_id == field.id }.first
+        end
+
+        project_application = project.application.nil? ? nil : project.application.name
+        project_project_area = project.project_area.nil? ? nil : project.project_area.name
+        project_acquisition_category = project.acquisition_category.nil? ? nil : project.acquisition_category.name
+        project_project_category = project.project_category.nil? ? nil : project.project_category.name
+        project_platform_category = project.platform_category.nil? ? nil : project.platform_category.name
+        project_provider = project.provider.nil? ? nil : project.provider.name
+        project_estimation_status = project.estimation_status.nil? ? nil : project.estimation_status.name
+      #
+      #   @guow_guw_types = Hash.new
+
+        #project.guw_unit_of_works.order("display_order ASC").each do |guow|
+        project.guw_unit_of_works.each do |guow|
+
+          tmp = []
+
+          tmp << guow.name
+          tmp << project_application.to_s
+
+          # tmp["Composant"] << guow.name
+          # tmp["Application"] << project_application.to_s
+          # tmp["Business Need"] << project.business_need
+          # tmp["request_number"] << project.request_number.to_s
+          # tmp["project_project_area"] << project_project_area.to_s
+          # tmp["project_acquisition_category"] << project_acquisition_category.to_s
+          #
+          # unless field.nil?
+          #   value = pf.nil? ? nil : pf.value
+          #   tmp["?????"] = value
+          # end
+          #
+          # tmp["project_platform_category"] << project_platform_category.to_s
+          # tmp["project_project_category"] << project_project_category.to_s
+          # tmp["project_provider"] << project_provider.to_s
+          # tmp["project.start_date"] << project.start_date.to_s
+          # tmp["project_estimation_status"] << project_estimation_status.to_s
+          # tmp["guow.name"] << guow.name
+
+          @projects_contents[project.title] = tmp
+
+          # worksheet_cf.add_cell(i, 1, project_application.to_s)
+          # worksheet_cf.add_cell(i, 2, project.business_need)
+          # worksheet_cf.add_cell(i, 3, project.request_number)
+          # worksheet_cf.add_cell(i, 4, project_project_area.to_s)
+          # worksheet_cf.add_cell(i, 5, project_acquisition_category.to_s)
+          #
+          # unless field.nil?
+          #   value = pf.nil? ? nil : pf.value
+          #   worksheet_cf.add_cell(i, 6, value)
+          # end
+          #
+          # worksheet_cf.add_cell(i, 7, project_platform_category.to_s)
+          #
+          # worksheet_cf.add_cell(i, 8, project_project_category.to_s)
+          # worksheet_cf.add_cell(i, 9, project_provider.to_s)
+          # worksheet_cf.add_cell(i, 10, project.start_date.to_s)
+          # worksheet_cf.add_cell(i, 11, project_estimation_status.to_s)
+          # worksheet_cf.add_cell(i, 12, guow.name)
+          #
+          # worksheet_cf.add_cell(i, 13, guow.guw_type.nil? ? nil : guow.guw_type.name)
+          #
+          #
+          # if guow.intermediate_percent.nil? && guow.intermediate_weight.nil?
+          #   @guw_coefficients.each do |gc|
+          #     if gc.coefficient_type == "Liste" && gc.name == "Taille"
+          #       ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id && i.module_project_id == guow.module_project_id && i.guw_unit_of_work_id == guow.id }.last
+          #       unless ceuw.nil?
+          #         guw_coefficient_element_name = ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name
+          #       end
+          #
+          #       worksheet_cf.add_cell(i, 14, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
+          #       worksheet_cf.add_cell(i, 15, guw_coefficient_element_name.blank? ? '--' : guw_coefficient_element_name)
+          #     end
+          #   end
+          # else
+          #   worksheet_cf.add_cell(i, 14, guow.intermediate_percent)
+          #   worksheet_cf.add_cell(i, 15, guow.intermediate_weight)
+          # end
+          #
+          # j = 0
+          # @guw_coefficients.each do |gc|
+          #   if gc.coefficient_type == "Pourcentage"
+          #     unless guow.guw_type.nil?
+          #       unless guow.guw_type.name.include?("SRV") || guow.guw_type.name.include?("MCO")
+          #
+          #         default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
+          #         ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+          #         worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
+          #         worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
+          #         j = j + 2
+          #       end
+          #     end
+          #
+          #     # Charge sans prod en colonne AI
+          #   elsif guw_charge_ss_prod_coefficient
+          #     if gc.id == guw_charge_ss_prod_coefficient.id
+          #       #=== Test ====
+          #       #results = []
+          #       #results = @guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+          #       # .includes(:guw_coefficient_element)
+          #       # .where(organization_id: @organization.id, guw_model_id: @guw_model.id, guw_type_id: guow.guw_type_id)
+          #       # .select{|ct| ct.value != nil }
+          #       # .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+          #       #=== Test ====
+          #
+          #       #unless results.empty?
+          #       begin
+          #         ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{gc.id}"]
+          #       rescue
+          #         ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+          #                                                           guw_model_id: @guw_model.id,
+          #                                                           guw_coefficient_id: gc.id,
+          #                                                           project_id: project.id,
+          #                                                           module_project_id: pmp.id,
+          #                                                           guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+          #       end
+          #       # project = Project.find(2077)
+          #       # project.guw_coefficient_element_unit_of_works.where(guw_model_id: 494, module_project_id: 5053, guw_unit_of_work_id: 18606, guw_coefficient_id: 637).first
+          #       #####################
+          #       worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent))  # « Charge ss prod. (jh) » en colonne AI
+          #       #end
+          #     end
+          #   end
+          # end
+          #
+          # guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
+          #   worksheet_cf.add_cell(i, 20 + j, uowa.most_likely)
+          # end
+          #
+          # @guw_model_guw_attributes.each_with_index do |guw_attribute, ii|
+          #   worksheet_cf.add_cell(0, 20+ii, guw_attribute.name)
+          # end
+          #
+          #
+          # worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size, "Charge ss prod. (jh)")
+          # worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 1, "Charge avec prod. (jh)")
+          # worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 2, "Coût Services (€)")
+          #
+          #
+          # #On recuperer les sorties "Charge ss prod. (jh)"
+          # unless guw_output_charge_ss_prod.nil?
+          #   guw_output_charge_ss_prod_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_ss_prod.id}"])
+          #   guw_output_charge_ss_prod_value = (guw_output_charge_ss_prod_value_tmp.blank? ? nil : guw_output_charge_ss_prod_value_tmp.to_f)
+          #   guw_output_charge_ss_prod_value_rounded = (guw_output_charge_ss_prod_value.nil? || guw_output_charge_ss_prod_value == 0) ? nil : guw_output_charge_ss_prod_value.round(2)
+          #   worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, guw_output_charge_ss_prod_value_rounded)  # « Charge ss prod. (jh) » en colonne AI
+          #
+          # end
+          #
+          # #On recuperer les sorties avec "Charge (jh)" avec productivité
+          # unless guw_output_effort.nil?
+          #   guw_output_effort_value_tmp = guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"])
+          #   guw_output_effort_value = (guw_output_effort_value_tmp.blank? ? nil : guw_output_effort_value_tmp.to_f)
+          #   guw_output_charge_ss_prod_value_rounded = (guw_output_effort_value.nil? || guw_output_effort_value == 0) ? nil : guw_output_effort_value.round(2)
+          # end
+          #
+          # #On recuperer les sorties avec " Coût Services (€) "
+          # unless guw_output_cost.nil?
+          #   guw_output_cost_value_tmp = guow.ajusted_size.nil? ? nil : guow.ajusted_size["#{guw_output_cost.id}"]#.to_f.round(2)
+          #   guw_output_cost_value = (guw_output_cost_value_tmp.blank? ? nil : guw_output_cost_value_tmp.to_f)
+          #   guw_output_cost_value_rounded = ((guw_output_cost_value.nil? || guw_output_cost_value == 0) ? nil : guw_output_cost_value.round(2))
+          # end
+          #
+          # worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 1, guw_output_effort_value)  # « Charge avec prod. (jh) » en colonne AJ
+          # worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 2, guw_output_cost_value_rounded)  # « Coût Services (€) » en colonne AK
+          #
+          # i = i + 1
+          #
+          # @total_effort[project.id] << guw_output_effort_value.to_f
+          # @total_cost[project.id] << guw_output_cost_value.to_f
+        end
+      end
+    # end
+
+    @results[@organization.id] = @projects_contents
+
+  end
+
+
   def download
     @organization = Organization.find(params[:organization_id])
     send_file(
@@ -594,24 +879,17 @@ class ProjectsController < ApplicationController
   def dashboard
     if @project.nil?
       flash[:error] = I18n.t(:project_not_found)
-      redirect_to organization_estimations_path(@current_organization) and return
+      begin
+        redirect_to organization_estimations_path(@current_organization) and return
+      rescue
+        redirect_to all_organizations_path and return
+      end
     else
       if (params[:from_current_dashboard] && params[:organization_id]) && (@project.organization_id != params[:organization_id].to_i)
         flash[:warning] = I18n.t(:current_estimation_does_not_exists)
         redirect_to organization_estimations_path(organization_id: params[:organization_id]) and return
       end
     end
-
-
-    # @project.guw_unit_of_works.each do |uo|
-    #   @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.comments } )
-    #   JSON.parse(@http.body_str)
-    # end
-    #
-    # if user_signed_in?
-    #   project_name = @project.title
-    #   Monitoring.create(user: User.current, action: "Accéder au dashboard de l'estimation #{project_name}", action_at: Time.now + 3600)
-    # end
 
     @current_organization = @project.organization
     @pbs_project_element = current_component
@@ -3070,6 +3348,38 @@ public
                   new_guw_coeff_elt_uow.save
                 end
               end
+
+              # Correction duplication critères attribute
+              old_mp.guw_unit_of_works.each do |old_guw|
+
+                old_guw_guw_model = old_guw.guw_model
+                old_guw_guw_model.guw_attributes.where( organization_id: old_guw_guw_model.organization_id,
+                                                        guw_model_id: old_guw_guw_model.id).all.each do |gac|
+
+                  guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: old_guw_guw_model.organization_id,
+                                                            guw_model_id: old_guw.guw_model_id,
+                                                            guw_attribute_id: gac.id,
+                                                            guw_type_id: old_guw.guw_type_id,
+                                                            project_id: old_mp.project_id,
+                                                            module_project_id: old_guw.module_project_id,
+                                                            guw_unit_of_work_id: old_guw.id).first
+
+                  unless guowa.nil?
+
+                    new_guowa = guowa.dup
+
+                    new_guowa.guw_unit_of_work_id = guw_uow.id
+                    new_guowa.guw_model_id = guw_uow.guw_model_id
+                    new_guowa.project_id = guw_uow.project_id
+                    new_guowa.module_project_id = guw_uow.module_project_id
+
+                    new_guowa.save
+
+                  end
+
+                end
+              end
+
               #====
             end
           end
@@ -3561,47 +3871,47 @@ public
 
 
   def search
-    if params[:item_title] == "Applications"
+    if params[:item_title] == "applications"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_applications',
                                             item_title: 'Applications',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Project areas"
+    elsif params[:item_title] == "project_areas"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_project_areas',
                                             item_title: 'Project areas',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Project categories"
+    elsif params[:item_title] == "project_categories"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_project_categories',
                                             item_title: 'Project categories',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Business value"
+    elsif params[:item_title] == "platform_categories"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_platform_categories',
                                             item_title: 'Business values',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Providers"
+    elsif params[:item_title] == "providers"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_providers',
                                             item_title: 'Providers',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Profiles"
+    elsif params[:item_title] == "profiles"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_profiles',
                                             item_title: 'Profiles',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Estimation models"
+    elsif params[:item_title] == "estimation_models"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_estimation_models',
                                             item_title: 'Estimation models',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Estimation models"
+    elsif params[:item_title] == "estimation_models"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_estimation_models',
                                             item_title: 'Estimation models',
                                             advanced_search: params[:advanced_search])
-    elsif params[:item_title] == "Custom fields"
+    elsif params[:item_title] == "custom_fields"
       redirect_to organization_setting_path(@current_organization,
                                             partial_name: 'tabs_fields',
                                             item_title: 'Custom fields',
@@ -3664,9 +3974,9 @@ public
 
       res = []
       @projects.each do |p|
-        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        # if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
           res << p
-        end
+        # end
       end
 
       @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
@@ -3712,6 +4022,93 @@ public
     search
   end
 
+  def projects_list_search
+
+    @organization = @current_organization
+
+    @object_per_page = (current_user.object_per_page || 10)
+    @min = 0
+    @max = @object_per_page
+    @sort_column = (params[:sort_column].blank? ? session[:sort_column] : params[:sort_column])
+    @sort_order = (params[:sort_order].blank? ? session[:sort_order] : params[:sort_order])
+    @sort_action = (params[:sort_action].blank? ? session[:sort_action] : params[:sort_action])
+    @search_hash = {}
+    @search_string = ""
+    @search_column = ""
+    @search_value = ""
+
+    # filtre sur les versions
+    @filter_version = params[:filter_organization_projects_version]
+
+    params.delete("utf8")
+    params.delete("commit")
+    params.delete("action")
+    params.delete("controller")
+    params.delete("filter_organization_projects_version")
+    params.delete("sort_action")
+    params.delete("sort_column")
+    params.delete("sort_order")
+    params.delete("min")
+    params.delete("max")
+    params.delete_if { |k, v| v.nil? || v.blank? }
+
+    @search_hash = params
+    unless @search_hash.blank?
+      @search_hash.each do |k, v|
+        @search_string << "&search[#{k}]=#{v}"
+      end
+    end
+
+    session[:search_string] = @search_string
+    session[:search_hash] = @search_hash
+
+    # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
+    @projects = @organization.projects.where(:is_model => [nil, false]).order("start_date desc")
+
+    if @sort_action.to_s == "true" && @sort_column != "" && @sort_order != ""
+      @organization_estimations = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
+    else
+      @organization_estimations = get_multiple_search_results(@organization.id, @projects, @search_hash)
+    end
+
+    if @organization_estimations.nil? || @organization_estimations.blank?
+      @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
+    end
+
+    # filtre sur la version des estimations
+    # if !@filter_version.to_s.in?(['4', ''])
+    #   @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
+    # end
+
+    res = []
+    @organization_estimations.each do |p|
+    #   if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        res << p
+    #   end
+    end
+
+    # @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    @projects = res
+
+    p @projects
+
+    # if @projects.length <= @object_per_page
+    #   @is_last_page = "true"
+    # else
+    #   @is_last_page = "false"
+    # end
+
+    # session[:sort_column] = @sort_column
+    # session[:sort_order] = @sort_order
+    # session[:sort_action] = @sort_action
+    # session[:is_last_page] = @is_last_page
+    # session[:search_column] = @search_column
+    # session[:search_value] = @search_value
+
+    build_footer
+
+  end
+
   private def check_for_projects(start_number, desired_size, organization_estimations)
      if start_number == 0
        projects = organization_estimations.take(desired_size)
@@ -3748,11 +4145,6 @@ public
            i += 1
          end
        end
-
-       # if nb_total >= 12100
-       #   puts "Test"
-       #   puts "nb_total = #{nb_total}"
-       # end
 
        if (result.size == desired_size) || (projects.size < desired_size) || last_project.nil?
          return result
@@ -4157,10 +4549,12 @@ public
       # end
 
       new_comments = ""
+      new_comments_for_automatic = ""
       auto_updated_comments = ""
       # Add and update comments on estimation status change
       if params["project"]["new_status_comment"] and !params["project"]["new_status_comment"].empty?
         new_comments << show_status_change_comments(params["project"]["new_status_comment"])
+        new_comments_for_automatic = new_comments
       end
 
       # Before saving project, update the project comment when the status has changed
@@ -4178,7 +4572,7 @@ public
           if !next_status.nil? && next_status.create_new_version_when_changing_status == true
 
             new_version_number = set_project_version(@project)
-            new_project = @project.create_new_version_when_changing_status(next_status, new_version_number)
+            new_project = @project.create_new_version_when_changing_status(next_status, new_version_number, new_comments_for_automatic)
 
             if new_project
               new_status_name = EstimationStatus.find(new_status_id).name rescue ""
@@ -4539,6 +4933,7 @@ public
   end
 
   private def simulate_ai(project, uo)
+
     model = Project.where(id: uo.project.original_model_id).first
 
     if model.title == "IFPUG Sourcing"
@@ -4582,8 +4977,15 @@ public
       project.save(validate: false)
     end
 
-    @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.description } )
-    JSON.parse(@http.body_str)
+    # @http = Curl.post("http://localhost:5001/ia_based_sizing_control", { us: uo.description } )
+    #
+    # results = JSON.parse(@http.body_str)
+    #
+    # results.each do |result|
+    #   if uo.guw_type.name == result
+    #
+    #   end
+    # end
 
   end
 

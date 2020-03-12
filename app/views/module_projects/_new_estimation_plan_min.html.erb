@@ -1,7 +1,6 @@
 <div class="col-2 pr-0">
   <% module_projects = @project.module_projects.includes(:pemodule, :inverse_associated_module_projects).reject{ |mp| mp.id == @initialization_module_project.id } %>
   <% sorted_module_projects =  module_projects.sort_by { |i| i.display_order.to_i } %>
-  <%# first_module_project =  sorted_module_projects.first %>
 
   <div id="modules-sidebar" class="py-6">
 
@@ -52,7 +51,7 @@
                   <% description = description.nil? ? "" : " : #{description}"  %>
                   <li class="nav-item" title='<%= "#{pmod.to_s} #{description}" %>'>
                     <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">
-                      <span style="text-transform: none;"><%= pmod.to_s.truncate(22) %></span>
+                      <span style="text-transform: none;"><%= pmod.to_s.truncate(40) %></span>
                       <i class="material-icons">arrow_left</i></a>
                   </li>
                 <% end %>

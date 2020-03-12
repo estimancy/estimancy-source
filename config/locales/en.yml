@@ -1847,7 +1847,7 @@ en:
   new_acquisition_type: "New acquisition type"
   prohibited_datum: "prohibited this staffing_custom_datum from being saved:"
   calculate_duration_and_size: "Calculation of the duration and the team size"
-  duration_in_week: "Duration(week)"
+  duration_in_week: "Duration (week)"
   initialize_restraint: "Initialize restraint"
   graphical_output: "Graphical output"
   Staffing_distribution: "Staffing distribution"
@@ -2547,4 +2547,24 @@ en:
   historized_estimations: "Historized estimations"
   display_historized: "Display historized"
   hide_historized: "Hide historized"
+
+
+  horizontal_axis_label: "Horizontal axis label"
+  Y_axis_label: "Y axis label"
+  projects_stability_indicators: "Projects stability indicators"
+  prj_per_appli: "Estimates per appli"
+  proj_bad_stability: "Estimates with bad stability"
+  choose_an_application: "Please choose an application"
+  sum_create: "Sum of Create"
+  sum_modify: "Sum of Modify"
+  sum_delete: "Sum of Delete"
+
+  use_slider: "Use the slider to adjust costs and deadlines."
+  use_slider_comments: "The shorter the deadline, the larger the team, the more expensive the project and vice versa."
+  past_projects_effort: "Effort from past projects"
+  effort_revised: "Ajusted Effort (m.d)"
+  optimal_effort: "Optimal Effort (m.d)"
+  optimal_duration_in_week: "Optimal Duration (week)"
+  initial_date: "Initial Date"
+  trapeze_staffing: "Staffing Trapeze (pers.)"
 

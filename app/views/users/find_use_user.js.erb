@@ -7,7 +7,7 @@ $("#myModalLabel").html("<%= I18n.t(:text_finduse_user, :value => @user.name) %>
 
 $("#edit_component").modal({
   keyboard: false,
-  backdrop: "static"
+  backdrop: false
 });
 
 $("#notifications").html("<%= j(render 'layouts/notifications') %>");

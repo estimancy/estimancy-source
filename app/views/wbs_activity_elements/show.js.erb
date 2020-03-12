@@ -5,7 +5,7 @@ $("#myModalLabel").html("Wbs activity element: <%= @wbs_activity_element.name %>
 
 $("#edit_component").modal({
   keyboard: false,
-  backdrop: "static"
+  backdrop: false
 });
 
 $("#notifications").html("<%= j(render "layouts/notifications") %>");

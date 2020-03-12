@@ -1,23 +1,43 @@
-<h2><%= I18n.t(:label_change_your_password) %></h2>
-<hr>
+<%= render 'layouts/notifications' %>
 
-<%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
-  <%= f.error_notification %>
-
-  <%= f.input :reset_password_token, as: :hidden %>
-  <%= f.full_error :reset_password_token %>
-
-  <div class="form-inputs">
-    <%= f.input :password, label: I18n.t(:new_password), required: true, autofocus: true %>
-    <%= f.input :password_confirmation, label: I18n.t(:confirm_new_password), required: true %>
+<div class="login-page vh-100 d-flex flex-column justify-content-between align-items-center">
+  <div class="logo-container">
+    <img class="logo" width="400" src="/assets/Estimancy_Logo_Base-Line_RVB.png" id="exifviewer-img-1" exifid="-752947365" oldsrc="https://arnaud-devui.bitbucket.io/images/logo.png">
   </div>
+  <section class="login-form text-left">
 
-  <div>
-    <%= f.button :submit, I18n.t(:label_change_my_password) %>
-  </div>
-<% end %>
+    <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put }) do |f| %>
+      <%= f.error_notification %>
+      <h1 style="white-space: nowrap"><%= I18n.t(:label_change_your_password) %></h1>
 
-<%= render "devise/shared/links" %>
+      <%= f.input :reset_password_token, as: :hidden %>
+      <%= f.full_error :reset_password_token %>
 
-<div class="login_page">
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded">
+        <%= f.input :password, label: false, required: true, autofocus: true, :input_html => {:class => 'mdl-textfield__input'} %>
+        <label class="mdl-textfield__label" for="password"><%= I18n.t(:new_password) %></label>
+      </div>
+
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label  is-upgraded">
+        <%= f.input :password_confirmation, label: false, required: true, autofocus: true, :input_html => {:class => 'mdl-textfield__input'} %>
+        <label class="mdl-textfield__label" for="name"><%= I18n.t(:confirm_new_password) %></label>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-login mt-5 mb-4"><img class="brand-icon" src="/assets/logo_arrows_white_small.svg">
+        <%= I18n.t('label_change_my_password') %>
+      </button>
+    <% end %>
+
+    <%#= render "devise/shared/links" %>
+    <%= link_to I18n.t('connect_me'), new_session_path(resource_name), class: "login-form-link" %>
+    <%= link_to I18n.t(:call_support), "mailto:support@estimancy.com", class: "login-form-link" %>
+    <%= link_to "Retour", :back, class: "login-form-link" %>
+
+    <%#- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+        <%#= link_to I18n.t('button_forgotten_password'), new_password_path(resource_name), class: "login-form-link" %>
+    <%# end -%>
+    <%#- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
+        <%#= link_to I18n.t('devise.confirmations.not_receive_confirmation_instructions'), new_confirmation_path(resource_name), class: "login-form-link" %>
+    <%# end -%>
+  </section>
 </div>
