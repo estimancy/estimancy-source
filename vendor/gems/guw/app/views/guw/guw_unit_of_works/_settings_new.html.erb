@@ -185,6 +185,7 @@
                                                                 guw_model_id: @guw_model.id,
                                                                 project_id: project_id,
                                                                 module_project_id: @module_project.id).order("display_order ASC") %>
+
       <% @selected_uowg_guw_unit_of_works = @uowg_guw_unit_of_works.where(selected: true) %>
       <%# @uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
       <%# @uowg_guw_unit_of_works = uowg.guw_unit_of_work_lines %>

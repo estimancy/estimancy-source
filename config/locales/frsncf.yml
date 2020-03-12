@@ -1534,7 +1534,7 @@ frsncf:
   end_date_organizations: "Date de fin"
   Platform_Categorie_organization: "Localisation"
   Project_Category: "Catégorie de projets"
-  Category_acquistion: "Services"
+  Category_acquistion: "Service"
   Estimating_Status: "Statut des devis"
   with_header: "Avec en-tête"
   Generate_Report: "Générer le rapport"

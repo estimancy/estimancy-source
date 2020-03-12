@@ -13,6 +13,7 @@ if Rails.env == "production"
     # Path to the wkhtmltopdf executable: This usually isn't needed if using
     # one of the wkhtmltopdf-binary family of gems.
     exe_path: '/usr/local/rvm/gems/ruby-2.5.3/bin/wkhtmltopdf',
+    # exe_path: Gem.bin_path('wkhtmltopdf-binary', 'wkhtmltopdf')
     #   or
     # exe_path: Gem.bin_path('wkhtmltopdf-binary', 'wkhtmltopdf')
     #exe_path: "/usr/local/rvm/gems/ruby-2.3.3/bin/wkhtmltopdf"

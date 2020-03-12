@@ -106,8 +106,6 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
-
-          # .joins(:user).where(:user => { :is_super_admin => false })
         else
           @organization_projects = @organization.projects
                                        .where(is_model: false)
@@ -115,8 +113,6 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
-
-          # .joins(:user).where(:user => { :is_super_admin => false })
         end
 
         # @organization_projects = [Project.where(id: 15297).first]
@@ -225,7 +221,9 @@ class ProjectsController < ApplicationController
 
             guw_output_cost = Guw::GuwOutput.where(name: ["Coût Services (€)", "Coût (€)"], guw_model_id: @guw_model.id).first
 
-            pf = project.project_fields.select{ |i| i.field_id == field.id }.first
+            unless field.nil?
+              pf = project.project_fields.select{ |i| i.field_id == field.id }.first
+            end
 
             project_application = project.application.nil? ? nil : project.application.name
             project_project_area = project.project_area.nil? ? nil : project.project_area.name
@@ -584,11 +582,13 @@ class ProjectsController < ApplicationController
               worksheet_wbs.add_cell(wbs_iii, 4, project_project_area.nil? ? '' : project_project_area)
               worksheet_wbs.add_cell(wbs_iii, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
 
-              pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
-
               unless field.nil?
-                value = pf.nil? ? nil : pf.value
-                worksheet_wbs.add_cell(wbs_iii, 6, value)
+                pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
+
+                unless field.nil?
+                  value = pf.nil? ? nil : pf.value
+                  worksheet_wbs.add_cell(wbs_iii, 6, value)
+                end
               end
 
               worksheet_wbs.add_cell(wbs_iii, 7, project_platform_category.nil? ? '' : project_platform_category)
@@ -640,10 +640,10 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(0, 5, "Service")
         worksheet_synt.add_cell(0, 6, "Localisation WBS")
 
-        unless @organization.name == "CDS VOYAGEURS"
-          worksheet_synt.add_cell(0, 7, "Localisation Modèle")
-        else
+        if @organization.name == "CDS VOYAGEURS"
           worksheet_synt.add_cell(0, 7, "Urgence Devis")
+        else
+          worksheet_synt.add_cell(0, 7, "Localisation Modèle")
         end
 
         worksheet_synt.add_cell(0, 8, "Catégorie")
@@ -675,9 +675,8 @@ class ProjectsController < ApplicationController
             worksheet_synt.add_cell(pi, 4, project_project_area)
             worksheet_synt.add_cell(pi, 5, project_acquisition_category)
 
-            pf = project.project_fields.select{ |i| i.field_id == field.id }.first
-
             unless field.nil?
+              pf = project.project_fields.select{ |i| i.field_id == field.id }.first
               value = pf.nil? ? nil : pf.value
               worksheet_synt.add_cell(pi, 6, value)
             end
@@ -3094,11 +3093,16 @@ public
 
             # Update the group unit of works and attributes
             guw_group.guw_unit_of_works.each do |guw_uow|
-              new_uow_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: guw_uow.module_project_id).first #find_by_project_id_and_copy_id(new_prj.id, guw_uow.module_project_id)
+
+              new_uow_mp = ModuleProject.where(organization_id: @organization.id,
+                                               project_id: new_prj.id,
+                                               copy_id: guw_uow.module_project_id).first
+
               new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
 
               new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
               new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
+
               guw_uow.update_attributes(module_project_id: new_uow_mp_id,
                                         pbs_project_element_id: new_pbs_id,
                                         organization_id: new_prj.organization_id,
@@ -3114,7 +3118,39 @@ public
                   new_guw_coeff_elt_uow.save
                 end
               end
-              #====
+
+
+              # Correction duplication critères attribute
+              old_mp.guw_unit_of_works.each do |old_guw|
+
+                old_guw_guw_model = old_guw.guw_model
+                old_guw_guw_model.guw_attributes.where( organization_id: old_guw_guw_model.organization_id,
+                                                        guw_model_id: old_guw_guw_model.id).all.each do |gac|
+
+                  guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: old_guw_guw_model.organization_id,
+                                                            guw_model_id: old_guw.guw_model_id,
+                                                            guw_attribute_id: gac.id,
+                                                            guw_type_id: old_guw.guw_type_id,
+                                                            project_id: old_mp.project_id,
+                                                            module_project_id: old_guw.module_project_id,
+                                                            guw_unit_of_work_id: old_guw.id).first
+
+                  unless guowa.nil?
+
+                    new_guowa = guowa.dup
+
+                    new_guowa.guw_unit_of_work_id = guw_uow.id
+                    new_guowa.guw_model_id = guw_uow.guw_model_id
+                    new_guowa.project_id = guw_uow.project_id
+                    new_guowa.module_project_id = guw_uow.module_project_id
+
+                    new_guowa.save
+
+                  end
+
+                end
+              end
+
             end
           end
 
@@ -4166,7 +4202,9 @@ public
         render pdf: @project.to_s,
                encoding: "UTF-8",
                page_size: 'A4',
-               orientation: :landscape
+               orientation: :landscape,
+               zoom: 1.2,
+               lowquality: true
       end
     end
   end
@@ -4205,6 +4243,152 @@ public
       end
     end
   end
+
+  # def export_data_cds_rh
+  #
+  #   require "csv"
+  #
+  #   results_prix_services = []
+  #   results_jut = []
+  #
+  #   organization = Organization.where(id: 66).first
+  #   guw_models = organization.guw_models.where(id: [715, 699, 700, 701, 702, 703, 704])
+  #
+  #   guw_models.each do |guw_model|
+  #
+  #     localisation_coefficient = guw_model.guw_coefficients.where(name: "Localisation").first
+  #
+  #     coef_jut = guw_model.guw_coefficients.where(name: "Coef. J UT").first
+  #
+  #     unless coef_jut.nil?
+  #       guw_coefficient_element = coef_jut.guw_coefficient_elements.first
+  #     end
+  #
+  #     uc_dev = guw_model.guw_outputs.where(name: "UC Dév. (UC)").first
+  #     uc_test = guw_model.guw_outputs.where(name: "UC Test (UC)").first
+  #     cout_service = guw_model.guw_outputs.where(name: "Coût Services (€)").first
+  #
+  #     deg_abaque_coefficient = guw_model.guw_coefficients.where(name: "Dégressivité Abaque").first
+  #     deg_service_coefficient = guw_model.guw_coefficients.where(name: "Dégressivité Services").first
+  #     deg_mco_coefficient = guw_model.guw_coefficients.where(name: "Dégressivité MCO").first
+  #
+  #       guw_model.guw_types.each do |guw_type|
+  #
+  #         guw_complexity = guw_type.guw_complexities.first
+  #
+  #         unless uc_dev.nil?
+  #           gcce_dev = Guw::GuwComplexityCoefficientElement.where(guw_model_id: guw_model.id,
+  #                                                                 guw_complexity_id: guw_complexity.id,
+  #                                                                 guw_coefficient_element_id: guw_coefficient_element.id,
+  #                                                                 guw_output_id: uc_dev.id,
+  #                                                                 guw_type_id: guw_type.id).first
+  #         end
+  #
+  #
+  #         unless uc_test.nil?
+  #           gcce_test = Guw::GuwComplexityCoefficientElement.where(guw_model_id: guw_model.id,
+  #                                                                  guw_complexity_id: guw_complexity.id,
+  #                                                                  guw_coefficient_element_id: guw_coefficient_element.id,
+  #                                                                  guw_output_id: uc_test.id,
+  #                                                                  guw_type_id: guw_type.id).first
+  #         end
+  #
+  #         unless deg_abaque_coefficient.nil?
+  #           deg_abaque_coeffcient_element = deg_abaque_coefficient.guw_coefficient_elements.where(default: true).first
+  #         end
+  #
+  #         unless deg_service_coefficient.nil?
+  #           deg_service_coeffcient_element = deg_service_coefficient.guw_coefficient_elements.where(default: true).first
+  #         end
+  #
+  #         unless deg_mco_coefficient.nil?
+  #           deg_mco_coeffcient_element = deg_mco_coefficient.guw_coefficient_elements.where(default: true).first
+  #         end
+  #
+  #         if guw_type.name.include?("SRV")
+  #           unless localisation_coefficient.nil?
+  #             localisation_coefficient.guw_coefficient_elements.each do |loc_gce|
+  #               loc_values = loc_gce.guw_complexity_coefficient_elements.where(guw_model_id: guw_model.id,
+  #                                                                              guw_complexity_id: guw_complexity.id,
+  #                                                                              guw_output_id: cout_service.id,
+  #                                                                              guw_type_id: guw_type.id)
+  #
+  #               loc_values.each do |loc_value|
+  #                 results_prix_services << [
+  #                     guw_model.name,
+  #                     guw_type.name,
+  #                     loc_value.guw_coefficient_element.nil? ? nil : loc_value.guw_coefficient_element.name,
+  #                     loc_value.value.to_f
+  #                 ]
+  #               end
+  #
+  #             end
+  #           end
+  #         end
+  #
+  #         if guw_type.name.include?("MCO")
+  #           unless localisation_coefficient.nil?
+  #
+  #             guw_complexity = guw_type.guw_complexities.first
+  #
+  #             results_prix_services << [
+  #                 guw_model.name,
+  #                 guw_type.name,
+  #                 '-',
+  #                 guw_complexity.weight.to_f
+  #             ]
+  #           end
+  #         end
+  #
+  #         if guw_type.name.include?("MCO")
+  #           results_jut << [
+  #               guw_model.name,
+  #               guw_type.name,
+  #               gcce_dev.nil? ? '-' : gcce_dev.value.to_f,
+  #               gcce_test.nil? ? '-' : gcce_test.value.to_f,
+  #               '-',
+  #               '-',
+  #               deg_mco_coeffcient_element.nil? ? '-' : deg_mco_coeffcient_element.value.to_f
+  #           ]
+  #         elsif guw_type.name.include?("SRV")
+  #           results_jut << [
+  #               guw_model.name,
+  #               guw_type.name,
+  #               gcce_dev.nil? ? '-' : gcce_dev.value.to_f,
+  #               gcce_test.nil? ? '-' : gcce_test.value.to_f,
+  #               '-',
+  #               deg_service_coeffcient_element.nil? ? '-' : deg_service_coeffcient_element.value.to_f,
+  #               '-'
+  #           ]
+  #         else
+  #           results_jut << [
+  #               guw_model.name,
+  #               guw_type.name,
+  #               gcce_dev.nil? ? '-' : gcce_dev.value.to_f,
+  #               gcce_test.nil? ? '-' : gcce_test.value.to_f,
+  #               deg_abaque_coeffcient_element.nil? ? '-' : deg_abaque_coeffcient_element.value.to_f,
+  #               '-',
+  #               '-'
+  #           ]
+  #         end
+  #       end
+  #
+  #   end
+  #
+  #   CSV.open("prix_services.csv", "wb") do |csv|
+  #     csv << ["Modèle", "TYPE UO", "Localisation", "Prix"]
+  #     results_prix_services.each do |result|
+  #       csv << result
+  #     end
+  #   end
+  #
+  #   CSV.open("results_jut.csv", "wb") do |csv|
+  #     csv << ["Modèle", "TYPE UO", "J UT DEV", "J UT TEST", "Degressivité Abaque", "Degressivité Service", "Degressivité MCO"]
+  #     results_jut.each do |result|
+  #       csv << result
+  #     end
+  #   end
+  # end
 
   private
   def generate_dashboard

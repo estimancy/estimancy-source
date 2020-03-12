@@ -3,9 +3,6 @@
   <% organization_id = @project.organization_id %>
   <% guw_type = @guw_type.nil? ? guow.guw_type : @guw_type %>
   <%= hidden_field_tag "guw_unit_of_work_id", guow.id %>
-  <%# hidden_field_tag "guw_work_unit_id", guow.guw_work_unit_id %>
-  <%# hidden_field_tag "guw_weighting_id", guow.guw_weighting_id %>
-  <%# hidden_field_tag "guw_factor_id", guow.guw_factor_id %>
   <%= hidden_field_tag "hidden_ajusted_size[#{guow.id}]", "" %>
   <%= hidden_field_tag "hidden_quantity[#{guow.id}]", guow.quantity %>
   <%= hidden_field_tag "hidden_technology[#{guow.id}]", guow.organization_technology %>
