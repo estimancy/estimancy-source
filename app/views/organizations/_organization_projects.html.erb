@@ -18,7 +18,7 @@
     <% selected_inline_columns.each do |column| %>
         <td>
           <% params[column.name] %>
-          <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) || (session['search_hash'].keys.include?(column.name.to_s)) %>
+          <% if (column.name.to_s == params['search_column']) || (column.name.to_s == session['search_column']) || (!session['search_hash'].blank? && session['search_hash'].keys.include?(column.name.to_s)) %>
               <% search_value = (params[column.name] || params['search'][column.name.to_s]) rescue "" %>
               <%# search_value = search_value.blank? ? session['search_value'] : search_value %>
               <% search_value = search_value.blank? ? session['search_hash'][column.name.to_s] : search_value %>
@@ -35,7 +35,7 @@
   <% @projects.each_with_index do |project, index| %>
       <tr>
         <% selected_inline_columns.each do |column| %>
-            <%= column_content(@pfs, column, project, @fields_coefficients) %>
+            <%= column_content(@pfs, column, project, @fields_coefficients, params[:historized]) %>
         <% end %>
 
         <td style="min-width: 145px;">

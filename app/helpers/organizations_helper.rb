@@ -72,6 +72,7 @@ module OrganizationsHelper
 
     sort_column = params[:f] || params[:sort_column]
     sort_order = params[:s] || params[:sort_order]
+    historized = params[:historized]
     #filter_version = params[:filter_version] || '4'
     filter_version = @filter_version.blank? ? params[:filter_version] : @filter_version
     filter_version = filter_version.blank? ? '4' : filter_version
@@ -115,7 +116,6 @@ module OrganizationsHelper
         end
     end
 
-    ###if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && params[:f].blank? && params[:sort_column].blank?)
     if(column.name.to_s == params[:f]) || (column.name.to_s == sort_column) || (column.name.to_s == "start_date" && sort_column.blank?)
       column_chevron_icon = ""
       case sort_order
@@ -125,7 +125,8 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "asc"), class: '', remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "asc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
+          #lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "asc", historized: historized, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
+          lk = link_to(raw("#{I18n.t(column.caption)}"), organization_estimations_path(@organization.id, historized: historized, sort_column: column.name, sort_order: "asc", min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "estimancy #{bold_class} #{order_class}")
 
         when "asc"
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -133,7 +134,8 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), class: '', remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
+          #lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", historized: historized, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
+          lk = link_to(raw("#{I18n.t(column.caption)}"), organization_estimations_path(@organization.id, historized: historized, sort_column: column.name, sort_order: "desc", min: 0, max: @object_per_page, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
 
         else
           # lk_text = content_tag(:span, I18n.t(column.caption))
@@ -141,14 +143,16 @@ module OrganizationsHelper
           # lk = link_to(lk_text, sort_path(f: column.name, s: "desc"), remote: true)
           # lk = content_tag(:span, I18n.t(column.caption))
 
-          lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
+          #lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: "desc", historized: historized, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
+          lk = link_to(raw("#{I18n.t(column.caption)}"), organization_estimations_path(@organization.id, historized: historized, sort_column: column.name, sort_order: "desc", min: 0, max: @object_per_page, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
 
       end
 
     else
       #lk = link_to(I18n.t(column.caption), sort_path(f: column.name, s: column_sort_order), remote: true)
 
-      lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: column_sort_order, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
+      #lk = link_to(raw("#{I18n.t(column.caption)}"), sort_path(f: column.name, s: column_sort_order, historized: historized, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
+      lk = link_to(raw("#{I18n.t(column.caption)}"), organization_estimations_path(@organization.id, historized: historized, sort_column: column.name, sort_order: column_sort_order, min: 0, max: @object_per_page, filter_version: filter_version, advanced_search: params[:advanced_search]), class: "estimancy #{bold_class} #{order_class}")
     end
 
 
@@ -170,9 +174,13 @@ module OrganizationsHelper
     end
   end
 
-  def column_content(pfs, column, project, fields_coefficients)
+  def column_content(pfs, column, project, fields_coefficients, historized=0)
     if column.field_id
-      value = column.project_field_value(pfs, project, fields_coefficients)
+      if historized == "1"  # Project
+        value = column.project_field_value(pfs, project, fields_coefficients)
+      else  #OrganizationEstimation
+        value = column.view_project_field_value(pfs, project, fields_coefficients)
+      end
     else
       value = column.value_object(project)
     end
@@ -189,9 +197,13 @@ module OrganizationsHelper
     end
   end
 
-  def column_content_without_content_tag(pfs, column, project, fields_coefficients)
+  def column_content_without_content_tag(pfs, column, project, fields_coefficients, historized=0)
     if column.field_id
-      value = column.project_field_value(pfs, project, fields_coefficients)
+      if historized == "1"  #Project
+        value = column.project_field_value(pfs, project, fields_coefficients)
+      else  #OrsganizationEstimation
+        value = column.view_project_field_value(pfs, project, fields_coefficients)
+      end
     else
       value = column.value_object(project)
     end

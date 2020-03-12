@@ -43,7 +43,7 @@ class QueryColumn
     end
   end
 
-  def project_field_value(pfs, object, fields_coefficients)
+  def view_project_field_value(pfs, object, fields_coefficients)
     value = '-'
     coefficient = fields_coefficients[self.field_id]
     unless coefficient.nil?
@@ -64,7 +64,7 @@ class QueryColumn
   end
 
 
-  def project_field_value_save(pfs, object, fields_coefficients)
+  def project_field_value(pfs, object, fields_coefficients)
     value = '-'
     coefficient = fields_coefficients[self.field_id]
     unless coefficient.nil?

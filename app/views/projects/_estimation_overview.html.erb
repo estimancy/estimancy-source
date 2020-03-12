@@ -35,7 +35,7 @@
             <tr data-project_id="<%= project.id %>">
 
               <% selected_inline_columns.each do |column| %>
-                <%= column_content(@pfs, column, project, @fields_coefficients) %>
+                <%= column_content(@pfs, column, project, @fields_coefficients, @historized) %>
               <% end %>
 
               <% @project_module_projects = project.module_projects %>
@@ -85,22 +85,29 @@
                 <%= link_to "<<", "#", class: "btn btn-primary" %>
                 <%= link_to(I18n.t(:previous), "#", class: "btn btn-primary") %>
               <% else %>
-                <% if params[:sort_action] == "true"  || params[:action] == "sort" %>
-                  <%= link_to "<<", sort_path(f: sort_column, s: sort_order, min: 0, max: @object_per_page, previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
-                  <%= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
-                <% else %>
-                  <%= link_to "<<", organization_estimations_path(@current_organization.id, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
-                  <%= link_to I18n.t(:previous), organization_estimations_path(@current_organization.id, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
-                <% end %>
-              <% end %>
+                <%# if params[:sort_action] == "true"  || params[:action] == "sort" %>
+                  <%#= link_to "<<", sort_path(f: sort_column, s: sort_order, historized: @historized, min: 0, max: @object_per_page, previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
+                  <%#= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, historized: @historized, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
+                <%# else %>
+                  <%#= link_to "<<", organization_estimations_path(@current_organization.id, historized: @historized, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+                  <%#= link_to I18n.t(:previous), organization_estimations_path(@current_organization.id, historized: @historized, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+                <%# end %>
 
-              <% if params[:sort_action] == "true" || params[:action] == "sort" %>
-                <%= link_to I18n.t(:next), sort_path(f: sort_column, s: sort_order, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), previous_next_action: true, is_last_page: is_last_page, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
-                <%= link_to ">>", sort_path(f: sort_column, s: sort_order, min: @last_page_min, max: @last_page_max, previous_next_action: true, is_last_page: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
-              <% else %>
-                <%= link_to I18n.t(:next), organization_estimations_path(@current_organization.id, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-primary btn-sm" %>
-                <%= link_to ">>", organization_estimations_path(@current_organization.id, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-primary btn-sm" %>
-              <% end %>
+                  <%= link_to "<<", organization_estimations_path(@current_organization.id, historized: @historized, sort_column: @sort_column, sort_order: @sort_order, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+                  <%= link_to I18n.t(:previous), organization_estimations_path(@current_organization.id, historized: @historized, sort_column: @sort_column, sort_order: @sort_order, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+            <% end %>
+
+              <%# if params[:sort_action] == "true" || params[:action] == "sort" %>
+                <%#= link_to I18n.t(:next), sort_path(f: sort_column, s: sort_order, historized: @historized, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), previous_next_action: true, is_last_page: is_last_page, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
+                <%#= link_to ">>", sort_path(f: sort_column, s: sort_order, historized: @historized, min: @last_page_min, max: @last_page_max, previous_next_action: true, is_last_page: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
+              <%# else %>
+                <%#= link_to I18n.t(:next), organization_estimations_path(@current_organization.id, historized: @historized, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-primary btn-sm" %>
+                <%#= link_to ">>", organization_estimations_path(@current_organization.id, historized: @historized, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-primary btn-sm" %>
+              <%# end %>
+
+              <%= link_to I18n.t(:next), organization_estimations_path(@current_organization.id, historized: @historized, sort_column: @sort_column, sort_order: @sort_order, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-primary btn-sm" %>
+              <%= link_to ">>", organization_estimations_path(@current_organization.id, historized: @historized, sort_column: @sort_column, sort_order: @sort_order, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-primary btn-sm" %>
+
             </td>
           </tr>
         </tfoot>

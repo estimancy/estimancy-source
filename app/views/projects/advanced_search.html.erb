@@ -1,56 +1,5 @@
-<div class="d-flex align-items-center mt-4">
-  <div style="flex: 1">
-    <h1><%= I18n.t("projects_list") %></h1>
-  </div>
-  <a href="<%= projects_from_path(organization_id: @current_organization.id) %>">
-    <button type="button" class="btn btn-primary">
-      <%= I18n.t("create_project") %>
-    </button>
-  </a>
-  <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
-    <%# link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
-  <% end %>
-</div>
+<%= render :partial => 'organizations/estimations', object: [@current_organization, @projects] %>
 
-<%= render partial: "projects/estimation_overview" %>
-
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-<script>
-    // Quand l'utilisateur scroll, on passe l'overview en sticky si besoin
-    window.onscroll = function() {setOverviewSticky()};
-
-    function setOverviewSticky(pOverview) {
-        var overview;
-        if (pOverview) {
-            overview = pOverview;
-        } else {
-            overview = $(".estimation-overview:visible");
-        }
-        var table = $(".estimation-table");
-        var tableTop = table[0].offsetTop + 58;
-        var tableBottom = table[0].offsetTop + table[0].offsetHeight;
-
-        if(overview.length) {
-            if (window.pageYOffset > tableTop && (window.pageYOffset + window.innerHeight) < tableBottom) {
-                overview.removeClass('sticky-bottom').addClass("sticky");
-                overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
-                overview.children('.card-body').css("min-height", "900px");
-            } else if(window.pageYOffset > tableTop) {
-                if((overview.children('.card-body')[0].offsetHeight > tableBottom - window.pageYOffset)) {
-                    overview.addClass("sticky").addClass("sticky-bottom");
-                } else {
-                    overview.removeClass('sticky-bottom').addClass("sticky")
-                }
-                overview.children('.card-body').css("width", ((table.width() * 55 / 100) - 42) + "px");
-                overview.children('.card-body').css("min-height", "900px");
-            } else {
-                overview.removeClass("sticky").removeClass("sticky-bottom");
-                // overview.children('.card-body').removeAttr("style");
-            }
-        }
-    }
-
-</script>
 
 
 

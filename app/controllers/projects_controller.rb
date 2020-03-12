@@ -3408,7 +3408,7 @@ public
   end
 
 
-  def sort
+  def sort_SAVE
 
     search
 
@@ -3420,28 +3420,15 @@ public
 
     @sort_column = k
     @sort_order = s
+    @historized = params[:historized]
 
     @search_column = session[:search_column]
     @search_value = session[:search_value]
     @search_hash = session[:search_hash]
 
-    #organization_projects = @organization.projects.where(:is_model => [nil, false])
-    # if params[:archive].present?
-    #   esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-    #   @projects = organization_projects.where(estimation_status_id: esids)
-    # else
-    #   esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-    #   @projects = organization_projects.where.not(estimation_status_id: esids)
-    # end
-
-    if params[:historized].present? && params[:historized] == "1"
-      @projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: true)
-    else
-      @projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: [nil, false])
-    end
-
-
+    @projects = Organization.organization_projects_list(@organization.id, @historized)
     organization_projects = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
+
     @search_string = session[:search_string] || ""
 
     res = []
@@ -3496,6 +3483,83 @@ public
     build_footer
   end
 
+
+  def sort
+
+    search
+
+    @organization = @current_organization
+    # @projects = @organization.projects.where(:is_model => [nil, false])
+
+    k = params[:f]
+    s = params[:s]
+
+    @sort_column = k
+    @sort_order = s
+    @historized = params[:historized]
+
+    @search_column = session[:search_column]
+    @search_value = session[:search_value]
+    @search_hash = session[:search_hash]
+
+    @projects = Organization.organization_projects_list(@organization.id, @historized)
+    organization_projects = get_sorted_estimations(@organization.id, @projects, @sort_column, @sort_order, @search_hash)
+
+    @search_string = session[:search_string] || ""
+
+    res = []
+    organization_projects.each do |p|
+      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        res << p
+      end
+    end
+
+    # Filtre sur les versions des estimations
+    if !params[:filter_version].in?(['4', ''])
+      res = filter_estimation_versions(res, params[:filter_version])
+    end
+
+    @object_per_page = (current_user.object_per_page || 10)
+    if params['previous_next_action'] == "true"
+      @min = params['min'].to_i
+      @max = params['max'].to_i
+    else
+      @min = 0
+      @max = @object_per_page
+    end
+
+    @projects = res[@min..@max-1].nil? ? [] : res[@min..@max-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @projects = res.paginate(:page => last_page, :per_page => @object_per_page)
+
+      @min = (last_page.to_i-1) * @object_per_page
+      @max = @min + @object_per_page
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    session[:object_per_page] = @object_per_page
+    session[:last_page_min] = @last_page_min
+    session[:last_page_max] = @last_page_max
+
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = true
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
+
+    build_footer
+  end
+
+
   def search
     if params[:item_title] == "Applications"
       redirect_to organization_setting_path(@current_organization,
@@ -3542,24 +3606,9 @@ public
                                             partial_name: 'tabs_fields',
                                             item_title: 'Custom fields',
                                             advanced_search: params[:advanced_search])
-
     else
 
-      #@organization_projects = Project.where(organization_id: @current_organization.id, is_model: false)
-      # if params[:archive].present?
-      #   esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-      #   @organization_projects = @organization_projects.where(estimation_status_id: esids)
-      # else
-      #   esids = EstimationStatus.where(name: ["Archivé", "Rejeté", "Abandonnée", "Archived", "Rejected"]).map(&:id)
-      #   @organization_projects = @organization_projects.where.not(estimation_status_id: esids)
-      # end
-
-      if params[:historized].present? && params[:historized] == "1"
-        @organization_projects = OrganizationEstimation.where(organization_id: @current_organization.id, :is_model => [nil, false]).where(is_historized: true)
-      else
-        @organization_projects = OrganizationEstimation.where(organization_id: @current_organization.id, :is_model => [nil, false]).where(is_historized: [nil, false])
-      end
-
+      @organization_projects = Organization.organization_projects_list(@current_organization.id, params[:historized])
 
       @results = {}
       @object_per_page = (current_user.object_per_page || 10)

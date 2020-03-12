@@ -608,8 +608,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
-
   # effectue une recherche multiple
   def get_multiple_search_results(organization_id, organization_estimations, search_elements={})
 
@@ -622,13 +620,9 @@ class ApplicationController < ActionController::Base
     end
 
     if search_elements.blank?
-      #organization_projects = projects
-      #organization_projects = @organization.organization_estimations.where(project_id: projects.all.map(&:id))
       organization_projects = organization_estimations
     else
       search_elements.each do |column_name, val|
-        #val = search_elements[column_name]
-
         search_column = column_name
         search_value = val
 
@@ -648,7 +642,8 @@ class ApplicationController < ActionController::Base
       end
 
       #organization_projects = @organization.organization_estimations.where(project_id: final_results.inject(&:&))
-      organization_projects = organization_estimations.where(project_id: final_results.inject(&:&))
+      #organization_projects = organization_estimations.where(project_id: final_results.inject(&:&))
+      organization_projects = organization_estimations.where(id: final_results.inject(&:&))
     end
 
     session[:search_hash] = search_hash
@@ -724,6 +719,97 @@ class ApplicationController < ActionController::Base
 
 
   def get_sorted_estimations(organization_id, organization_estimations, sort_column, sort_order, search_hash={})
+
+    organization = Organization.where(id: organization_id).first
+    k = sort_column #params[:f]
+    s = sort_order  #params[:s]
+
+    class_name = Object.const_get('OrganizationEstimation')
+    object_name = "organization_estimations"
+    if params[:historized].present? && params[:historized] == "1"
+      class_name = Object.const_get('Project')
+      object_name = "projects"
+    end
+
+    # Execution de la recherche avant le Tri
+    #unless search_column.blank? || search_value.blank? || search_hash.blank?
+    unless search_hash.blank?
+      ###projects = get_search_results(organization_id, projects, search_column, search_value)
+      organization_projects = get_multiple_search_results(organization_id, organization_estimations, search_hash)
+      #projects = Project.where(organization_id: organization_id, id: organization_projects.map(&:id))
+      organization_estimations = organization_projects
+    end
+
+    project_ids = organization_estimations.map(&:id)
+
+    if k.blank?
+      #projects =  projects.reorder("start_date desc").order('created_at desc').order('created_at desc')
+      project_selected_columns = organization.project_selected_columns
+      default_sort_column = organization.default_estimations_sort_column rescue nil
+      default_sort_order = organization.default_estimations_sort_order rescue nil
+
+      if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
+        k = default_sort_column
+        s = default_sort_order
+      else
+        k = "created_at"  #"title"
+        s = "desc"  #"asc"
+      end
+    end
+
+    case k
+      when  "start_date", "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"
+        organization_estimations = organization_estimations.reorder("#{k} #{s}, created_at DESC") #projects.reorder(k + ' ' + s)
+      when "application"
+        organization_estimations = organization_estimations
+                                       .joins("LEFT JOIN applications ON #{object_name}.application_id = applications.id")
+                                       .order("applications.name #{s}, created_at DESC")
+
+      when "original_model"
+        #projects = Project.unscoped.joins(:original_model).order("original_model.title #{s}")
+        #projects = Project.joins(:original_model).merge(Project.order(title: :desc))
+        #projects = Project.unscoped
+        #                 .includes(:original_model)
+        #                 .joins("LEFT JOIN projects ON projects.original_model_id = original_model_id")
+        #                 .where(organization_id: organization_id)
+        #                 .order("original_model.title #{s}")
+      when "project_area"
+        organization_estimations = organization_estimations
+                                       .joins("LEFT JOIN project_areas ON #{object_name}.project_area_id = project_areas.id")
+                                       .order("project_areas.name #{s}, created_at DESC")
+      when "project_category"
+        organization_estimations = organization_estimations
+                                       .joins("LEFT JOIN project_categories ON #{object_name}.project_category_id = project_categories.id")
+                                       .order("project_categories.name #{s}, created_at DESC")
+      when "platform_category"
+        organization_estimations = organization_estimations
+                                       .joins("LEFT JOIN platform_categories ON #{object_name}.platform_category_id = platform_categories.id")
+                                       .order("platform_categories.name #{s}, created_at DESC")
+      when "acquisition_category"
+        organization_estimations = organization_estimations
+                                       .joins("LEFT JOIN acquisition_categories ON #{object_name}.acquisition_category_id = acquisition_categories.id")
+                                       .order("acquisition_categories.name #{s}, created_at DESC")
+      when "status_name"
+        organization_estimations = organization_estimations
+                                       .joins("LEFT JOIN estimation_statuses ON #{object_name}.estimation_status_id = estimation_statuses.id")
+                                       .order("estimation_statuses.name #{s}, created_at DESC")
+      when "creator"
+        organization_estimations = organization_estimations
+                                       .joins("LEFT JOIN users ON #{object_name}.creator_id = users.id")
+                                       .order("users.first_name #{s}, users.last_name #{s}, created_at DESC")
+      when "provider"
+        organization_estimations = organization_estimations
+                                       .joins("LEFT JOIN providers ON #{object_name}.provider_id = providers.id")
+                                       .order("providers.name #{s}, created_at DESC")
+      else
+        organization_estimations = organization_estimations.order("#{k} #{s}, created_at DESC")
+    end
+
+    organization_estimations
+  end
+
+
+  def get_sorted_estimations_SAVE(organization_id, organization_estimations, sort_column, sort_order, search_hash={})
     # @projects = @organization.organization_estimations
 
     organization = Organization.where(id: organization_id).first
@@ -743,7 +829,6 @@ class ApplicationController < ActionController::Base
 
     if k.blank?
       #projects =  projects.reorder("start_date desc").order('created_at desc').order('created_at desc')
-
       project_selected_columns = organization.project_selected_columns
       default_sort_column = organization.default_estimations_sort_column rescue nil
       default_sort_order = organization.default_estimations_sort_order rescue nil
@@ -756,7 +841,6 @@ class ApplicationController < ActionController::Base
         s = "desc"  #"asc"
       end
     end
-
 
     case k
       when  "start_date", "title" , "request_number", "business_need", "version_number", "description", "private", "updated_at", "created_at"
@@ -831,7 +915,6 @@ class ApplicationController < ActionController::Base
     # end
     # res
   end
-
 
   # Ces 3 fonctions suivantes sont à supprimer lorsque la liste des estimations marchera correctement avec les Vues
   def get_multiple_search_results_SAVE(organization_id, projects, search_elements={})

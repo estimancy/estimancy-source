@@ -3574,23 +3574,9 @@ class OrganizationsController < ApplicationController
     # end
 
   end
-
-
-  def estimations_save
-    @organization = Organization.find(params[:organization_id])
-    organization_projects = OrganizationEstimation.where(organization_id: @organization.id)
-    get_estimations(organization_projects)
-  end
-
-  # Get Historized estimations
-  def historized_estimations
-    @organization = Organization.find(params[:organization_id])
-    organization_projects = @organization.projects.where(:is_model => [nil, false])
-    get_estimations(organization_projects)
-  end
-
-
   # Get estimations from Ordered View
+
+
   def estimations
     @organization = Organization.find(params[:organization_id])
 
@@ -3604,6 +3590,7 @@ class OrganizationsController < ApplicationController
     else
       @filter_version = '4'
     end
+    @historized  = params[:historized]
 
     @object_per_page = (current_user.object_per_page || 10)
 
@@ -3645,15 +3632,8 @@ class OrganizationsController < ApplicationController
     @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
     @search_hash = nil
 
-    if params[:historized].present? && params[:historized] == "1"
-      #@all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: true)
-      @all_projects = Project.where(:is_model => [nil, false], organization_id: @organization.id)
-    else
-      #@all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: [nil, false])
-      @all_projects = OrganizationEstimation.where(organization_id: @organization.id)
-    end
-
-    organization_projects = get_sorted_estimations(@organization.id, organization_projects, @sort_column, @sort_order, @search_hash)
+    all_projects = Organization.organization_projects_list(@organization.id, @historized)
+    organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
 
     res = []
     organization_projects.each do |p|

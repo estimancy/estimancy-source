@@ -208,6 +208,23 @@ class Organization < ActiveRecord::Base
     end
   end
 
+
+  #Renvoie la liste des estimations d'une organization (OrganizationEstimation (liste principale) / Project (les avec les archives))
+  def self.organization_projects_list(organization_id, historized)
+
+    if historized.present? && historized == "1"
+      #@all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: true)
+      #class_name = Object.const_get('Project')
+      all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: organization_id)
+    else
+      #@all_projects = OrganizationEstimation.where(:is_model => [nil, false], organization_id: @organization.id).where(is_historized: [nil, false])
+      #class_name = Object.const_get('OrganizationEstimation')
+      all_projects = OrganizationEstimation.unscoped.where(organization_id: organization_id)
+    end
+
+    all_projects
+  end
+
 end
 
 
