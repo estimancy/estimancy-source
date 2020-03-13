@@ -570,14 +570,14 @@
 
             <% begin %>
               <% unless guow.display_order.to_i <= uowg.guw_unit_of_works.map(&:display_order).min.to_i %>
-                <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", class: "dropdown-item" %>
+                <%= link_to raw("<i class='material-icons'>keyboard_arrow_up</i> Up"), guw.guw_unit_of_work_up_path(guow), method: "post", class: "dropdown-item", remote: true %>
               <% end %>
             <% rescue %>
             <% end %>
 
             <% begin %>
               <% unless guow.display_order.to_i >= uowg.guw_unit_of_works.map(&:display_order).max.to_i %>
-                <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", class: "dropdown-item" %>
+                <%= link_to raw("<i class='material-icons'>keyboard_arrow_down</i> Down"), guw.guw_unit_of_work_down_path(guow), method: "post", class: "dropdown-item", remote: true %>
               <% end %>
             <% rescue %>
             <% end %>
