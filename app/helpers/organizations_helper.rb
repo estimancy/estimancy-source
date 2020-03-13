@@ -239,7 +239,7 @@ module OrganizationsHelper
       when :version_number
         value
       when :request_number
-        if project.demand_id.nil?
+        if project.demand.nil?
           value
         else
           project.demand
@@ -307,7 +307,7 @@ module OrganizationsHelper
       when :version_number
         content_tag("td class='center'", value)
       when :request_number
-        if project.demand_id.nil?
+        if project.demand.nil?
           content_tag("td", value)
         else
           demand = project.demand

@@ -20,6 +20,9 @@ class OrganizationEstimation < ActiveRecord::Base
   belongs_to :project
   belongs_to :provider
 
+  belongs_to :demand
+  belongs_to :project_fields_result
+
   has_many :module_projects, :dependent => :destroy
   has_many :pemodules, :through => :module_projects
   has_many :project_securities, :dependent => :destroy
