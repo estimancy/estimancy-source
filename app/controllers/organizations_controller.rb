@@ -2562,8 +2562,9 @@ class OrganizationsController < ApplicationController
           else
             app.organization_id = @organization.id
             app.is_ignored = row[1].nil? ? nil : row[1].value
-            app.coefficient = row[2].nil? ? nil : row[2].value
-            app.coefficient_label = row[3].nil? ? nil : row[3].value
+            app.criticality = row[2].nil? ? nil : row[2].value
+            app.coefficient = row[3].nil? ? nil : row[3].value
+            app.coefficient_label = row[4].nil? ? nil : row[4].value
             app.save
           end
         end
@@ -2591,14 +2592,16 @@ class OrganizationsController < ApplicationController
 
     worksheet.add_cell(0, 0, I18n.t(:name))
     worksheet.add_cell(0, 1, I18n.t(:is_ignored))
-    worksheet.add_cell(0, 2, I18n.t(:coefficient_value))
-    worksheet.add_cell(0, 3, I18n.t(:coefficient_label))
+    worksheet.add_cell(0, 2, I18n.t(:criticality))
+    worksheet.add_cell(0, 3, I18n.t(:coefficient_value))
+    worksheet.add_cell(0, 4, I18n.t(:coefficient_label))
 
     organization_appli.each_with_index do |appli, index|
       worksheet.add_cell(index + 1, 0, appli.name)
       worksheet.add_cell(index + 1, 1, appli.is_ignored ? 1 : 0)
-      worksheet.add_cell(index + 1, 2, appli.coefficient)
-      worksheet.add_cell(index + 1, 3, appli.coefficient_label)
+      worksheet.add_cell(index + 1, 2, appli.criticality)
+      worksheet.add_cell(index + 1, 3, appli.coefficient)
+      worksheet.add_cell(index + 1, 4, appli.coefficient_label)
     end
     send_data(workbook.stream.string, filename: "#{@organization.name[0..4]}-Applications-#{Time.now.strftime("%m-%d-%Y_%H-%M")}.xlsx", type: "application/vnd.ms-excel")
   end
@@ -2860,7 +2863,7 @@ class OrganizationsController < ApplicationController
 
               @wbs_activity.wbs_activity_elements.where(organization_id: @organization.id).select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-                guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Charge RTU (jh)").first
+                guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: ["Charge RTU (jh)", "Charge RTU avec prod. (jh)"]).first
 
                 if guw_output_effort.nil?
                   guw_output_effort = Guw::GuwOutput.where(organization_id: @organization.id, guw_model_id: @guw_model.id, name: "Charge RIS (jh)").first
@@ -3050,7 +3053,7 @@ class OrganizationsController < ApplicationController
 
           jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
-          @guw_unit_of_works.each_with_index do |guow, i|
+          @guw_unit_of_works.order(:display_order).each_with_index do |guow, i|
 
             ind = ind + 1
 
@@ -3153,7 +3156,7 @@ class OrganizationsController < ApplicationController
 
               @wbs_activity.wbs_activity_elements.select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-                guw_output_effort = Guw::GuwOutput.where(name: "Charge RTU (jh)", guw_model_id: @guw_model.id).first
+                guw_output_effort = Guw::GuwOutput.where(name: ["Charge RTU (jh)", "Charge RTU avec prod. (jh)"], guw_model_id: @guw_model.id).first
 
                 if guw_output_effort.nil?
                   guw_output_effort = Guw::GuwOutput.where(name: "Charge RIS (jh)", guw_model_id: @guw_model.id).first
@@ -4716,7 +4719,9 @@ class OrganizationsController < ApplicationController
                 end
               end
 
-
+              # Update all the new organization module_project's ge_model with the current ge_model
+              ge_copy_id = ge_model.copy_id
+              new_organization.module_projects.where(ge_model_id: ge_copy_id).update_all(ge_model_id: ge_model.id)
             end
 
             # Update the modules's KB Models instances

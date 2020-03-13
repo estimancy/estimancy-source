@@ -168,38 +168,6 @@ module Guw
 
         # Copy the complexities technologies
         guw_type.guw_complexities.each do |guw_complexity|
-          # Copy the complexities technologie
-          # guw_complexity.guw_complexity_technologies.each do |guw_complexity_technology|
-          #   new_organization_technology = guw_model_organization.organization_technologies.where(copy_id: guw_complexity_technology.organization_technology_id).first
-          #   unless new_organization_technology.nil?
-          #     guw_complexity_technology.update_attribute(:organization_technology_id, new_organization_technology.id)
-          #   end
-          #   guw_complexity_technology.update_attribute(:guw_type_id, guw_type.id)
-          # end
-          #
-          # Copy the complexities units of works
-          # guw_complexity.guw_complexity_work_units.each do |guw_complexity_work_unit|
-          #   new_guw_work_unit = guw_model.guw_work_units.where(copy_id: guw_complexity_work_unit.guw_work_unit_id).first
-          #   unless new_guw_work_unit.nil?
-          #     guw_complexity_work_unit.update_attribute(:guw_work_unit_id, new_guw_work_unit.id)
-          #   end
-          # end
-          #
-          # # Copy the complexities units of works
-          # guw_complexity.guw_complexity_weightings.each do |guw_complexity_weighting|
-          #   new_guw_weighting = guw_model.guw_weightings.where(copy_id: guw_complexity_weighting.guw_weighting_id).first
-          #   unless new_guw_weighting.nil?
-          #     guw_complexity_weighting.update_attribute(:guw_weighting_id, new_guw_weighting.id)
-          #   end
-          # end
-          #
-          # # Copy the complexities units of works
-          # guw_complexity.guw_complexity_factors.each do |guw_complexity_factor|
-          #   new_guw_factor = guw_model.guw_factors.where(copy_id: guw_complexity_factor.guw_factor_id).first
-          #   unless new_guw_factor.nil?
-          #     guw_complexity_factor.update_attribute(:guw_factor_id, new_guw_factor.id)
-          #   end
-          # end
 
           #puts "\nGuwComplexity"
           guw_complexity.guw_model_id = guw_model.id
@@ -309,6 +277,8 @@ module Guw
           unless new_guw_type.nil?
 
             new_guw_type_complexity = new_guw_type.guw_type_complexities.where(copy_id: guw_attr_complexity.guw_type_complexity_id).first
+            new_guw_type_complexity.guw_model_id = guw_model.id
+            new_guw_type_complexity.save(validate: false)
 
             #puts "\nGuwAttributeComplexity"
             guw_attr_complexity.organization_id = guw_model_organization.id

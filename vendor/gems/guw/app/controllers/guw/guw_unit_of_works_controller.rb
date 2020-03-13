@@ -438,14 +438,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   #   @technologies = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq
   # end
 
-  def change_technology_form
-    authorize! :execute_estimation_plan, @project
-
-    @guw_model = current_module_project.guw_model
-    @guw_type = Guw::GuwType.find(params[:guw_type_id])
-    @technologies = @guw_type.guw_complexity_technologies.select{|ct| ct.coefficient != nil }.map{|i| i.organization_technology }.uniq
-  end
-
   def change_selected_state
     # authorize! :execute_estimation_plan, @project
 
@@ -797,11 +789,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         #guw_unit_of_work.save
 
         array_pert = Array.new
-        if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
-          guw_unit_of_work.selected = true
-        else
-          # guw_unit_of_work.selected = false
-        end
+        # if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
+        #   guw_unit_of_work.selected = true
+        # else
+        #   guw_unit_of_work.selected = false
+        # end
 
         #reorder to keep good order
         # reorder guw_unit_of_work.guw_unit_of_work_group
@@ -1670,7 +1662,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                              guw_model_id: @guw_model.id,
                                                              guw_output_id: guw_output.id,
                                                              guw_complexity_id: @guw_unit_of_work.guw_complexity_id,
-                                                             guw_coefficient_element_id: ce.id).first_or_create!
+                                                             guw_coefficient_element_id: ce.id).first
 
             ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                               guw_model_id: @guw_model.id,
