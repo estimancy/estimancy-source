@@ -1,0 +1,9 @@
+<% unless @old_display_order==@min_display_order || @old_display_order==@max_display_order %>
+
+    var thisRow = $('#<%= @guw_unit_of_work.id %>').closest('tr');
+    var nextRow = thisRow.next();
+    if (nextRow.length) {
+        nextRow.after(thisRow);
+    }
+
+<% end %>
