@@ -4218,7 +4218,7 @@ public
 
     #if !can_modify_estimation?(project)
     if !(can_alter_estimation?(old_prj) && can?(:commit_project, old_prj))
-      redirect_to(organization_estimations_path(@current_organization), flash: {warning: I18n.t(:warning_checkout_unauthorized_action)}) and return
+      redirect_to(organization_estimations_path(@current_organization), flash: { warning: I18n.t(:warning_checkout_unauthorized_action)}) and return
     end
 
     # If project is not childless, a new branch need to be created

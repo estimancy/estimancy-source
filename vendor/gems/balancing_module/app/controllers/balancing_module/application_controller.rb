@@ -37,7 +37,7 @@ module BalancingModule
       @module_projects = @project.module_projects
       @pbs_project_element = current_component
 
-      #Get the initialization module_project
+      # Get the initialization module_project
       @initialization_module_project ||= ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first  unless @initialization_module.nil?
 
       # Get the max X and Y positions of modules
