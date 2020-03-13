@@ -148,35 +148,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
   def up
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-
-    display_order = @guw_unit_of_work.display_order.to_i
-
-    @guw_unit_of_work.display_order = display_order - 1
-    @guw_unit_of_work.save
-
-    reorder @guw_unit_of_work.guw_unit_of_work_group
-
-    @module_project = @guw_unit_of_work.module_project
-    @project = @module_project.project
-    @guw_model = @module_project.guw_model
-    @component = current_component
-    @organization = @guw_model.organization
+    # Gestion Up & Down
+    reorder_up_down(@guw_unit_of_work, "up")
   end
 
   def down
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
-
-    @guw_unit_of_work.display_order = @guw_unit_of_work.display_order.to_i + 1
-    @guw_unit_of_work.save
-
-    reorder @guw_unit_of_work.guw_unit_of_work_group
-
-    @module_project = @guw_unit_of_work.module_project
-    @project = @module_project.project
-    @guw_model = @module_project.guw_model
-    @component = current_component
-    @organization = @guw_model.organization
+    # Gestion Up & Down
+    reorder_up_down(@guw_unit_of_work, "down")
   end
+
 
   def load_cplx_comments
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
@@ -3413,6 +3394,34 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   end
 
   private
+
+  def reorder_up_down(guw_unit_of_work, up_or_down)
+    @old_display_order = guw_unit_of_work.display_order.to_i
+    new_display_order = @old_display_order
+    guw_group = guw_unit_of_work.guw_unit_of_work_group
+    guw_group_unit_of_works = guw_group.guw_unit_of_works
+    all_display_order = guw_group_unit_of_works.all.map(&:display_order)
+    @min_display_order = all_display_order.min
+    @max_display_order = all_display_order.max
+
+    unless @old_display_order==@min_display_order || @old_display_order==@max_display_order
+      case up_or_down
+        when "up"
+          new_display_order = @old_display_order - 1
+        when "down"
+          new_display_order = @old_display_order + 1
+      end
+
+      guw_unit_of_work.display_order = new_display_order
+      if guw_unit_of_work.save
+        guw_group_unit_of_works.where.not(id: guw_unit_of_work.id).where(display_order: new_display_order).all.each do |uow|
+          uow.display_order = @old_display_order
+          uow.save
+        end
+      end
+    end
+  end
+
 
   def reorder(group)
     group.guw_unit_of_works.order("display_order ASC").each_with_index do |u, i|

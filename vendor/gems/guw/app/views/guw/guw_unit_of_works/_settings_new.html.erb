@@ -184,7 +184,7 @@
       <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.where(organization_id: organization_id,
                                                                 guw_model_id: @guw_model.id,
                                                                 project_id: project_id,
-                                                                module_project_id: @module_project.id).order("display_order ASC") %>
+                                                                module_project_id: @module_project.id)#.order("display_order ASC") %>
 
       <% @selected_uowg_guw_unit_of_works = @uowg_guw_unit_of_works.where(selected: true) %>
       <%# @uowg_guw_unit_of_works = uowg.module_project_guw_unit_of_works %>
@@ -267,7 +267,7 @@
               <% end %>
             <% end %>
 
-            <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity, :guw_complexity).each_with_index do |guow, i| %>
+            <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity, :guw_complexity).order("display_order ASC").each_with_index do |guow, i| %>
               <% @guw_type = guow.guw_type %>
               <% unless @guw_type.nil? %>
                 <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
@@ -276,8 +276,8 @@
               <tr id="<%= guow.id %>" data-guw-id="<%= guow.id %>" class="movable">
                 <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
               </tr>
+            <% end %>
 
-           <% end %>
           </table>
           <% if can? :execute_estimation_plan, @project %>
             <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
