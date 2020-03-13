@@ -3396,26 +3396,33 @@ class Guw::GuwUnitOfWorksController < ApplicationController
   private
 
   def reorder_up_down(guw_unit_of_work, up_or_down)
-    @old_display_order = guw_unit_of_work.display_order.to_i
-    new_display_order = @old_display_order
+    old_display_order = guw_unit_of_work.display_order.to_i
+    new_display_order = old_display_order
     guw_group = guw_unit_of_work.guw_unit_of_work_group
     guw_group_unit_of_works = guw_group.guw_unit_of_works
     all_display_order = guw_group_unit_of_works.all.map(&:display_order)
-    @min_display_order = all_display_order.min
-    @max_display_order = all_display_order.max
+    min_display_order = all_display_order.min
+    max_display_order = all_display_order.max
+    @can_be_moved = true
 
-    unless @old_display_order==@min_display_order || @old_display_order==@max_display_order
-      case up_or_down
-        when "up"
-          new_display_order = @old_display_order - 1
-        when "down"
-          new_display_order = @old_display_order + 1
-      end
+    case up_or_down
+      when "up"
+        new_display_order = old_display_order - 1
+        if old_display_order==min_display_order
+          @can_be_moved = false
+        end
+      when "down"
+        new_display_order = old_display_order + 1
+        if old_display_order==max_display_order
+          @can_be_moved = false
+        end
+    end
 
+    if @can_be_moved == true
       guw_unit_of_work.display_order = new_display_order
       if guw_unit_of_work.save
         guw_group_unit_of_works.where.not(id: guw_unit_of_work.id).where(display_order: new_display_order).all.each do |uow|
-          uow.display_order = @old_display_order
+          uow.display_order = old_display_order
           uow.save
         end
       end
