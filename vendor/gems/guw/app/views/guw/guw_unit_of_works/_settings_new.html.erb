@@ -236,7 +236,7 @@
               <% end %>
 
               <%# @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity, :guw_unit_of_work_attributes).each_with_index do |guow, i| %>
-              <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).each_with_index do |guow, i| %>
+              <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC").each_with_index do |guow, i| %>
                 <% @guw_type = guow.guw_type %>
                 <% unless @guw_type.nil? %>
                   <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
