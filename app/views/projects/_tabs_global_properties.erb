@@ -322,6 +322,27 @@
               </div>
             </div>
 
+
+            <div class="form-row">
+              <div class="col-8">
+                <%#= f.input :is_historized, disabled: !(can?(:alter_historization_data, @project) || can_alter_model), label: raw("&nbsp; #{I18n.t("is_historized")}"), class: "mdl-textfield__input custom-control-input" %>
+                <%= f.input :is_historized, disabled: !(@current_user.super_admin?), label: raw("&nbsp; #{I18n.t("is_historized")}"), class: "mdl-textfield__input custom-control-input" %>
+              </div>
+            </div>
+
+          <div class="form-row">
+            <div class="col-12">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :historization_time, as: :string, :label => false,
+                            :input_html => { :class => 'date-picker mdl-textfield__input', :value => (@project.historization_time.blank? ? "-" : I18n.l(@project.historization_time)) },
+                            :disabled => !@current_user.super_admin?
+                    #:disabled => !(can?(:alter_request_number, @project) || can_alter_model)
+                %>
+                <label class="mdl-textfield__label"><%= I18n.t('historization_time') %></label>
+              </div>
+            </div>
+          </div>
+
             <div class="actions">
                 <% if action_name.in?(['edit', 'update', 'duplicate']) %>
                     <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) ||

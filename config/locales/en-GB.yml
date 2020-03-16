@@ -2017,6 +2017,7 @@ en-gb:
   is_historization_status: "Is historization status"
   nb_day_before_historization: "Nb days in this status before historization"
   is_historized: "Is historized"
+  historization_time: "Historization date"
   notification_emails: "Email for notifications"
   historized_estimations: "Historized estimations"
   display_historized: "Display historized"

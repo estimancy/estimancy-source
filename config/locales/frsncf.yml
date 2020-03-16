@@ -2594,6 +2594,7 @@ frsncf:
   is_historization_status: "Est un statut d'historisation"
   nb_day_before_historization: "Nb de jours dans ce statut avant historisation"
   is_historized: "Est historisé"
+  historization_time: "Date d'historisation"
   notification_emails: "Email de notifications"
   historized_estimations: "Devis historisés"
   display_historized: "Afficher les historisés"
