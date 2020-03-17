@@ -18,8 +18,9 @@
       </section>
     </div>
 
+  <% if action_name.in?(%w(edit update)) %>
     <div class="col-2">
       <%= render partial: "guw/guw_types/general_guw_types_menu", locals: {guw_model: @guw_model} %>
     </div>
-
+  <% end %>
   </div>
