@@ -101,6 +101,12 @@ class ViewsWidget < ActiveRecord::Base
 
 
   def self.update_field(module_project, organization, project, component, set_to_nil = false)
+
+    # if @current_module_project.id == module_project.id
+    #   module_project.done = true
+    #   module_project.save
+    # end
+
     organization_fields = organization.fields
 
     ###module_project.views_widgets.each do |view_widget|
