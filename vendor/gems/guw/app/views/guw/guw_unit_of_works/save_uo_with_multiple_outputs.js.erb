@@ -54,8 +54,9 @@
   $("tr#<%= @guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %>");
 
   $("#dashboard_right_panel").html("<%= j(render 'module_projects/dashboard_right_panel') %>");
+  $("#dashboard_left_panel").html("<%= j(render 'module_projects/new_estimation_plan_min') %>");
 
-  var my_array = [];
+var my_array = [];
   $(document).ready(function () {
 
     $("input#name").val("");

@@ -501,8 +501,11 @@ class Kb::KbModelsController < ApplicationController
     end
 
     @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, "most_likely", current_component.id)
-    eff = effort_current_ev.send("string_data_probable")[current_component.id].to_f
-    @effort = eff.to_f / @kb_model.standard_unit_coefficient.to_i
+
+    unless effort_current_ev.nil?
+      eff = effort_current_ev.send("string_data_probable")[current_component.id].to_f
+      @effort = eff.to_f / @kb_model.standard_unit_coefficient.to_i
+    end
 
     redirect_to main_app.dashboard_path(@project, anchor: "effort")
 
