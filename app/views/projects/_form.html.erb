@@ -44,7 +44,7 @@
             <div style="margin-bottom: 35px; margin-top: -24px;">
               <%#= link_to I18n.t(:import_estimation_model), "#import_estimation_model", class: "pull-right btn btn-primary", title: I18n.t(:import_estimation_model), "data-toggle" => "modal" %>
               <%= form_tag organization_import_estimation_model_path(organization_id: @organization.id), :method => 'post', :multipart => true, :class => 'simple_form' do %>
-                  <div>
+                 <div>
                     <%= hidden_field_tag "organization_id", @organization.id %>
                     <%= hidden_field_tag "is_model", true %>
                     <%= file_field_tag :file %>
