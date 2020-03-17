@@ -318,9 +318,7 @@
 
     <% if controller.action_name == "dashboard" || (controller_name == "projects" && controller.action_name == "edit") %>
       <div class="page-edition-content row justify-content-start">
-        <div id="dashboard_left_panel">
-          <%= render 'module_projects/new_estimation_plan_min' %>
-        </div>
+        <%= render 'module_projects/new_estimation_plan_min' %>
         <%= yield %>
         <% unless current_module_project.pemodule.alias == "initialization" %>
           <% if current_module_project.show_results_view && controller.action_name == "dashboard" %>
