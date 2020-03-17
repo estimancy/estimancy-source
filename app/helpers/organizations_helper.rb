@@ -186,14 +186,14 @@ module OrganizationsHelper
     end
 
     if value.is_a?(Array)
-      val = value.collect {|v| column_value(column, project, v)}.compact.join(', ')
+      val = value.collect {|v| column_value(column, project, v, historized)}.compact.join(', ')
       if val.nil?
         ''
       else
         val.to_s.html_safe
       end
     else
-      column_value(column, project, value)
+      column_value(column, project, value, historized)
     end
   end
 
@@ -209,7 +209,7 @@ module OrganizationsHelper
     end
 
     if value.is_a?(Array)
-      val = value.collect {|v| column_value(column, project, v)}.compact.join(', ')
+      val = value.collect {|v| column_value(column, project, v, historized)}.compact.join(', ')
       if val.nil?
         ''
       else
@@ -278,8 +278,10 @@ module OrganizationsHelper
   end
 
   def column_value(column, project, value, historized="0")
-    project_object = project
-    if historized != "1"
+
+    if historized == "1"
+      project_object = project
+    else
       project_object = project.project
     end
 
