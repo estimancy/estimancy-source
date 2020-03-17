@@ -387,18 +387,18 @@ class Kb::KbModelsController < ApplicationController
         else
           size = params[:"retained_size_most_likely"].to_f
         end
-
-
-        if am.pe_attribute.alias == "effort"
-          effort = (coef_10.to_f * params[:size].to_f ** pente.to_f) * @kb_model.standard_unit_coefficient.to_i
-          ev.send("string_data_#{level}")[current_component.id] = effort
-          ev.save
-          tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
-        elsif am.pe_attribute.alias == "retained_size"
-          ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => module_project.id, :pe_attribute_id => am.pe_attribute.id).first
-          ev.send("string_data_#{level}")[current_component.id] = params[:size].to_f
-          ev.save
-          tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+        unless ev.nil?
+          if am.pe_attribute.alias == "effort"
+            effort = (coef_10.to_f * params[:size].to_f ** pente.to_f) * @kb_model.standard_unit_coefficient.to_i
+            ev.send("string_data_#{level}")[current_component.id] = effort
+            ev.save
+            tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+          elsif am.pe_attribute.alias == "retained_size"
+            ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => module_project.id, :pe_attribute_id => am.pe_attribute.id).first
+            ev.send("string_data_#{level}")[current_component.id] = params[:size].to_f
+            ev.save
+            tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+          end
         end
       end
 
@@ -419,7 +419,9 @@ class Kb::KbModelsController < ApplicationController
     effort_attribute = module_project.pemodule.pe_attributes.where(alias: "effort").first
     unless effort_attribute.nil?
       input_effort = params[:previous_effort].to_f
-      input_effort_ev = EstimationValue.where(:organization_id => organization_id, module_project_id: module_project.id, pe_attribute_id: effort_attribute.id, in_out: "input").first
+      input_effort_ev = EstimationValue.where(organization_id: organization_id,
+                                              module_project_id: module_project.id,
+                                              pe_attribute_id: effort_attribute.id, in_out: "input").first
       unless input_effort_ev.nil?
         ["low", "most_likely", "high", "probable"].each do |level|
           input_effort_ev.send("string_data_#{level}")[current_component.id] = input_effort
@@ -439,12 +441,15 @@ class Kb::KbModelsController < ApplicationController
     unless ecart_pe_attribute.nil?
       begin
         ###ecart_percent = ((output_effort.to_f - input_effort.to_f)/output_effort.to_f) * 100
-        ecart_percent = ((input_effort.to_f - output_effort.to_f)/output_effort.to_f) * 100
+        ecart_percent = ((input_effort.to_f - output_effort.to_f) / output_effort.to_f) * 100
       rescue
         ecart_percent = nil
       end
 
-      ecart_ev = EstimationValue.where(:organization_id => organization_id, module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
+      ecart_ev = EstimationValue.where(oganization_id: organization_id,
+                                       module_project_id: module_project.id,
+                                       pe_attribute_id: ecart_pe_attribute.id,
+                                       in_out: "output").first
       unless ecart_ev.nil?
         ["low", "most_likely", "high", "probable"].each do |level|
           ecart_ev.send("string_data_#{level}")[current_component.id] = ecart_percent
