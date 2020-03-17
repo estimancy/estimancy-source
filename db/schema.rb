@@ -1514,7 +1514,6 @@ ActiveRecord::Schema.define(version: 20200316133814) do
     t.boolean  "is_valid",                                     default: true
     t.datetime "historization_time"
     t.boolean  "is_historized"
-    t.text     "project_fields_result",          limit: 65535
   end
 
   create_table "organization_labor_categories", force: :cascade do |t|

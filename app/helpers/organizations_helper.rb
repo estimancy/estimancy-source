@@ -176,11 +176,11 @@ module OrganizationsHelper
 
   def column_content(pfs, column, project, fields_coefficients, historized=0)
     if column.field_id
-      if historized == "1"  # Project
+      # if historized == "1"  # Project
         value = column.project_field_value(pfs, project, fields_coefficients)
-      else  #OrganizationEstimation
-        value = column.view_project_field_value(pfs, project, fields_coefficients)
-      end
+      # else  #OrganizationEstimation
+      #   value = column.view_project_field_value(pfs, project, fields_coefficients)
+      # end
     else
       value = column.value_object(project)
     end
