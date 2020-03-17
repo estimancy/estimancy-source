@@ -446,7 +446,7 @@ class Kb::KbModelsController < ApplicationController
         ecart_percent = nil
       end
 
-      ecart_ev = EstimationValue.where(oganization_id: organization_id,
+      ecart_ev = EstimationValue.where(organization_id: organization_id,
                                        module_project_id: module_project.id,
                                        pe_attribute_id: ecart_pe_attribute.id,
                                        in_out: "output").first
