@@ -61,6 +61,9 @@
                       <div class="card-indicator-type"></div>
                       <div class="card-indicator-text">
                         <%= k %>
+                        <% unless view_widget.project_fields.empty? %>
+                         *
+                        <% end %>
                         <!-- Show the selected Ratio name -->
                         <% if view_widget.show_wbs_activity_ratio %>
                             <% wa_input = WbsActivityInput.where(wbs_activity_id: view_widget.module_project.wbs_activity,
