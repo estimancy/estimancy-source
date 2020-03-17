@@ -186,14 +186,14 @@ module OrganizationsHelper
     end
 
     if value.is_a?(Array)
-      val = value.collect {|v| column_value(column, project, v)}.compact.join(', ')
+      val = value.collect {|v| column_value(column, project, v, historized)}.compact.join(', ')
       if val.nil?
         ''
       else
         val.to_s.html_safe
       end
     else
-      column_value(column, project, value)
+      column_value(column, project, value, historized)
     end
   end
 
@@ -209,7 +209,7 @@ module OrganizationsHelper
     end
 
     if value.is_a?(Array)
-      val = value.collect {|v| column_value(column, project, v)}.compact.join(', ')
+      val = value.collect {|v| column_value(column, project, v, historized)}.compact.join(', ')
       if val.nil?
         ''
       else
@@ -277,7 +277,14 @@ module OrganizationsHelper
     end
   end
 
-  def column_value(column, project, value)
+  def column_value(column, project, value, historized="0")
+
+    if historized == "1"
+      project_object = project
+    else
+      project_object = project.project
+    end
+
     case column.name
       when :urgent_project
         content_tag("td class='text-left'", project.urgent_project)
@@ -292,12 +299,13 @@ module OrganizationsHelper
           end
         end
       when :title
-        content_tag('td', can_show_estimation?(project) ?
+        #content_tag('td', can_show_estimation?(project) ?
+        content_tag('td', can_show_estimation?(project_object) ?
                               link_to(value, dashboard_path(project), :class => 'estimancy hide_overview') : value)
       when :original_model
         begin
           if project.original_model
-            content_tag('td', can_show_estimation?(project.original_model) ? link_to(value, dashboard_path(project.original_model), :class => 'button_attribute_tooltip pull-left') : value)
+            content_tag('td', can_show_estimation?(project_object.original_model) ? link_to(value, dashboard_path(project.original_model), :class => 'button_attribute_tooltip pull-left') : value)
           else
             content_tag("td class='text-left'", value)
           end
@@ -321,7 +329,7 @@ module OrganizationsHelper
       when :business_need
         content_tag("td", value)
       when :status_name
-        if can_show_estimation?(project) || project.private == false || current_user.super_admin == true || can?(:manage, project)
+        if can_show_estimation?(project_object) || project.private == false || current_user.super_admin == true || can?(:manage, project_object)
           content_tag("td class='text-left'") do
             link_to project.status_name, main_app.add_comment_on_status_change_path(project_id: project.id),
                     remote: true,

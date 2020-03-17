@@ -3640,9 +3640,17 @@ class OrganizationsController < ApplicationController
     organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
 
     res = []
-    organization_projects.each do |p|
-      if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
-        res << p
+    if @historized
+      organization_projects.each do |p|
+        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+          res << p
+        end
+      end
+    else
+      organization_projects.each do |p|
+        if can?(:see_project, p.project, estimation_status_id: p.estimation_status_id)
+          res << p
+        end
       end
     end
 

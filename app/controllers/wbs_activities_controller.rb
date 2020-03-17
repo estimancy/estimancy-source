@@ -1190,7 +1190,6 @@ class WbsActivitiesController < ApplicationController
       format.js {}
     end
 
-
   end
 
 
