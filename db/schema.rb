@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200122142616) do
+ActiveRecord::Schema.define(version: 20200316133814) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1419,6 +1419,7 @@ ActiveRecord::Schema.define(version: 20200122142616) do
     t.integer  "operation_model_id",           limit: 4
     t.integer  "skb_model_id",                 limit: 4
     t.integer  "display_order",                limit: 4
+    t.boolean  "done"
   end
 
   add_index "module_projects", ["organization_id", "pemodule_id", "project_id"], name: "organization_module_projects", using: :btree
