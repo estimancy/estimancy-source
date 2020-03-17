@@ -51,19 +51,35 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton">
     <!--                  <a class="dropdown-item" href="<%#= export_dashboard_path(format: "pdf", project_id: project.id) %>"><i class="material-icons">picture_as_pdf</i><%#= I18n.t(:export_pdf) %></a>-->
-                      <% if can? :copy_project, project %>
-                        <a class="dropdown-item" href="<%= main_app.duplicate_path(project, organization_id: @current_organization, action_name: "duplication") %>"><i class="material-icons">file_copy</i><%= I18n.t(:duplicate_estimation) %></a>
-                      <% end %>
-                      <% if can?(:commit_project, project) %>
-                        <a class="dropdown-item" data-remote="true" href="<%= set_checkout_version_path(:project_id => project.id) %>" data-remote="true" method="GET"><i class="material-icons">call_split</i><%= I18n.t(:create_new_version) %></a>
-                      <% end %>
-                      <div class="dropdown-divider"></div>
-                      <% if (can? :delete_project, project) || (can? :manage, project) %>
-                        <% if can_delete_estimation?(project) %>
-                          <a class="dropdown-item" href="<%= confirm_deletion_path(project_id: project.id) %>"><i class="material-icons">delete</i><%= I18n.t(:delete) %></a>
-                        <% end %>
-                      <% end %>
+                      <% if @historized == "1" %>
+                          <% if can? :copy_project, project %>
+                            <a class="dropdown-item" href="<%= main_app.duplicate_path(project, organization_id: @current_organization, action_name: "duplication") %>"><i class="material-icons">file_copy</i><%= I18n.t(:duplicate_estimation) %></a>
+                          <% end %>
+                          <% if can?(:commit_project, project) %>
+                            <a class="dropdown-item" data-remote="true" href="<%= set_checkout_version_path(:project_id => project.id) %>" data-remote="true" method="GET"><i class="material-icons">call_split</i><%= I18n.t(:create_new_version) %></a>
+                          <% end %>
+                          <div class="dropdown-divider"></div>
+                          <% if (can? :delete_project, project) || (can? :manage, project) %>
+                            <% if can_delete_estimation?(project) %>
+                              <a class="dropdown-item" href="<%= confirm_deletion_path(project_id: project.id) %>"><i class="material-icons">delete</i><%= I18n.t(:delete) %></a>
+                            <% end %>
+                          <% end %>
 
+                      <% else %>
+                          <% if can? :copy_project, project.project %>
+                              <a class="dropdown-item" href="<%= main_app.duplicate_path(project, organization_id: @current_organization, action_name: "duplication") %>"><i class="material-icons">file_copy</i><%= I18n.t(:duplicate_estimation) %></a>
+                          <% end %>
+                          <% if can?(:commit_project, project.project) %>
+                              <a class="dropdown-item" data-remote="true" href="<%= set_checkout_version_path(:project_id => project.id) %>" data-remote="true" method="GET"><i class="material-icons">call_split</i><%= I18n.t(:create_new_version) %></a>
+                          <% end %>
+                          <div class="dropdown-divider"></div>
+                          <% if (can? :delete_project, project.project) || (can? :manage, project.project) %>
+                              <% if can_delete_estimation?(project.project) %>
+                                  <a class="dropdown-item" href="<%= confirm_deletion_path(project_id: project.id) %>"><i class="material-icons">delete</i><%= I18n.t(:delete) %></a>
+                              <% end %>
+                          <% end %>
+
+                      <% end %>
                     </div>
                   </div>
                 </div>
