@@ -179,6 +179,11 @@ class ModuleProject < ActiveRecord::Base
     mp = self
     mp.done = true
     mp.save
+
+    self.nexts.each do |mp|
+      mp.done = false
+      mp.save
+    end
   end
 
   # Return all the module_project relations links (next and previous)

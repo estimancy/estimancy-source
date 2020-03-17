@@ -107,7 +107,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
   def save_data
     authorize! :execute_estimation_plan, @project
 
-    # begin
+    current_module_project.toggle_done
 
     @component = current_component
     @module_project = current_module_project
@@ -134,8 +134,6 @@ class Staffing::StaffingCustomDataController < ApplicationController
       @staffing_custom_data.percent = nil
 
       @staffing_custom_data.save
-
-      current_module_project.toggle_done
 
       update_staffing_estimation_values
 
