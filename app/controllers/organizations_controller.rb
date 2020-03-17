@@ -400,7 +400,7 @@ class OrganizationsController < ApplicationController
               estimation_status_alias = worksheet_properties[17][1].value rescue nil
               estimation_status_name = worksheet_properties[18][1].value rescue nil
               unless estimation_status_name.blank?
-                selected_status = EstimationStatus.where(organization_id: organization_id, status_alias: estimation_status_alias).first_or_create(name: selected_application_name)
+                selected_status = EstimationStatus.where(organization_id: organization_id, status_alias: estimation_status_alias).first_or_create(organization_id: organization_id, status_alias: estimation_status_alias, name: estimation_status_alias, status_number: 100)
                 @project.estimation_status_id = selected_status.id rescue nil
               end
               @project.status_comment = worksheet_properties[19][1].value rescue nil
