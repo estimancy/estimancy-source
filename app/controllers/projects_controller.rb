@@ -4076,12 +4076,14 @@ public
     #                        gap: gap)
     # end
 
-    new_comments = ""
-    auto_updated_comments = ""
-    # Add and update comments on estimation status change
-    if params["project"]["new_status_comment"] and !params["project"]["new_status_comment"].empty?
-      new_comments << show_status_change_comments(params["project"]["new_status_comment"])
-    end
+      new_comments = ""
+      new_comments_for_automatic = ""
+      auto_updated_comments = ""
+      # Add and update comments on estimation status change
+      if params["project"]["new_status_comment"] and !params["project"]["new_status_comment"].empty?
+        new_comments << show_status_change_comments(params["project"]["new_status_comment"])
+        new_comments_for_automatic = new_comments
+      end
 
     # Before saving project, update the project comment when the status has changed
     if params[:project][:estimation_status_id]
@@ -4096,8 +4098,8 @@ public
         next_status = EstimationStatus.find(params["project"]["estimation_status_id"]) rescue nil
         if !next_status.nil? && next_status.create_new_version_when_changing_status == true
 
-          new_version_number = set_project_version(@project)
-          new_project = @project.create_new_version_when_changing_status(next_status, new_version_number)
+            new_version_number = set_project_version(@project)
+            new_project = @project.create_new_version_when_changing_status(next_status, new_version_number, new_comments_for_automatic)
 
           if new_project
             new_status_name = EstimationStatus.find(new_status_id).name rescue ""

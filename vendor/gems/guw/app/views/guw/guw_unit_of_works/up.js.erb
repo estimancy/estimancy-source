@@ -1,0 +1,9 @@
+<% if @can_be_moved == true %>
+
+    var thisRow = $('#<%= @guw_unit_of_work.id %>').closest('tr');
+    var prevRow = thisRow.prev();
+    if (prevRow.length) {
+        prevRow.before(thisRow);
+    }
+
+<% end %>
