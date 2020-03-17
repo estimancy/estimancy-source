@@ -135,12 +135,12 @@ class Staffing::StaffingCustomDataController < ApplicationController
 
       @staffing_custom_data.save
 
+      current_module_project.toggle_done
+
       update_staffing_estimation_values
 
       @module_project = current_module_project
       @project = @module_project.project
-
-      current_module_project.toggle_done
 
       ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
 
