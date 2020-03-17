@@ -53,13 +53,14 @@
                     <a class="nav-link module_project <%= ((current_module_project.id == pmod.id) && (session[:active_nav_link] == "activate_module_project")) ? 'active' : '' %>" href="<%= activate_module_project_path(pmod) %>">
                       <span style="text-transform: none;">
                         <%= pmod.to_s.truncate(40) %>
-                        <% if @module_project.done == true %>
-                          (passé)
-                        <% else %>
-                          (en attente)
-                        <% end %>
                       </span>
-                      <i class="material-icons">arrow_left</i>
+
+                      <% if pmod.done == true %>
+                        <i class="material-icons" style="color: green; font-size: 50px;">arrow_left</i>
+                      <% else %>
+                        <i class="material-icons" style="color: red; font-size: 50px;">arrow_left</i>
+                      <% end %>
+
                     </a>
                   </li>
                 <% end %>

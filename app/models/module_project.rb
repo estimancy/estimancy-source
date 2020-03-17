@@ -175,6 +175,12 @@ class ModuleProject < ActiveRecord::Base
     self.associated_module_projects
   end
 
+  def toggle_done
+    mp = self
+    mp.done = true
+    mp.save
+  end
+
   # Return all the module_project relations links (next and previous)
   def next_and_previous
     results = self.associated_module_projects + self.inverse_associated_module_projects

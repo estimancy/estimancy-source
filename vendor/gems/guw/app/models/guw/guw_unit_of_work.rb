@@ -270,6 +270,8 @@ module Guw
         end
       end
 
+      current_module_project.toggle_done
+
       # Reset all view_widget results
       ViewsWidget.reset_nexts_mp_estimation_values(@module_project, component)
     end

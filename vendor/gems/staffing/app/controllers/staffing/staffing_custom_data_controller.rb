@@ -140,6 +140,8 @@ class Staffing::StaffingCustomDataController < ApplicationController
       @module_project = current_module_project
       @project = @module_project.project
 
+      current_module_project.toggle_done
+
       ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
 
       # Reset all view_widget results
@@ -147,6 +149,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
       @module_project.all_nexts_mp_with_links.each do |module_project|
         ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
       end
+
       redirect_to :back and return
     end
 

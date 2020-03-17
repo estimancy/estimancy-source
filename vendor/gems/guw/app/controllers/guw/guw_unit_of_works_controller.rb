@@ -1354,8 +1354,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
       end
 
-      # update_estimation_values
-      # update_view_widgets_and_project_fields
+      current_module_project.toggle_done
+
       Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
       Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
 
@@ -1734,6 +1734,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     # update_view_widgets_and_project_fields
     Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
     Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
+
+    current_module_project.toggle_done
 
     # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end

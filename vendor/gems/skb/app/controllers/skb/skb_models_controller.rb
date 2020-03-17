@@ -389,6 +389,7 @@ class Skb::SkbModelsController < ApplicationController
       end
     end
 
+    current_module_project.toggle_done
 
     ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
 

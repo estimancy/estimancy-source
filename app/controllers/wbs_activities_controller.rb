@@ -1171,6 +1171,7 @@ class WbsActivitiesController < ApplicationController
       end
     end
 
+    current_module_project.toggle_done
 
     ViewsWidget::update_field(@module_project, @current_organization, @project, @pbs_project_element)
 
@@ -1180,7 +1181,6 @@ class WbsActivitiesController < ApplicationController
     @module_project.all_nexts_mp_with_links.each do |module_project|
       ViewsWidget::update_field(module_project, @current_organization, @project, @pbs_project_element, true)
     end
-
 
     @wbs_activity_ratio = @ratio_reference
     # redirect_to dashboard_path(@project, ratio: @ratio_reference.id, anchor: 'save_effort_breakdown_form')

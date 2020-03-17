@@ -454,6 +454,9 @@ class Kb::KbModelsController < ApplicationController
     end
 
     @project = module_project.project
+
+    current_module_project.toggle_done
+
     ViewsWidget::update_field(module_project, @current_organization, @project, current_component)
 
     # Reset all view_widget results
