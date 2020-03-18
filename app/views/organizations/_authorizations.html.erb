@@ -12,9 +12,9 @@
         <div class="effort-bloc">
           <div id="settings_content" class="card-body">
             <% if @partial_name.blank? %>
-                <%= render :partial => "tabs_authorization_groups" %>
+              <%= render :partial => "tabs_authorization_groups" %>
             <% else %>
-                <%= render :partial => "organizations/#{@partial_name}" %>
+              <%= render :partial => "organizations/#{@partial_name}" %>
             <% end %>
           </div>
         </div>

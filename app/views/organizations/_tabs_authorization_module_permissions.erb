@@ -1,61 +1,62 @@
+<%= form_tag(set_rights_path, :method => 'post', :class => 'simple_form') do %>
+  <div class="card card-content-bloc estimation-edition">
+    <div class="card-body">
+      <div class="edition-bloc-title">
+        <%= I18n.t('modules_permissions') %>
+      </div>
+      <% if can? :show_modules_permissions, Permission %>
 
-<div class="card card-content-bloc estimation-edition">
-  <div class="card-body">
-    <div class="edition-bloc-title">
-      <%= I18n.t('modules_permissions') %>
-    </div>
-    <% if can? :show_modules_permissions, Permission %>
-
-        <table class=" table table-list">
-          <tr>
-            <th style="text-align:left;"><%= I18n.t(:groups_and_roles) %></th>
-            <% @groups.each do |group| %>
-                <th style="text-align:center;">
-                  <%= link_to group.name, "#", title: group.description %>
-                  &nbsp;
-                  <%= link_to '', '#', :id => "cols_select_all_master_#{group.id}", 'data-group_master_id' => group.id, 'data-rows_or_cols_master' => 'cols', :remote => true, :class => 'fa fa-check-square-o', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'group_master_id', 'permission_master_id', 'master');" %>
-                </th>
-            <% end %>
-          </tr>
-
-          <% @permissions_classes_modules.each do |cla| %>
-              <tr>
-                <th style="text-align:left; vertical-align:middle;">
-                  <%= cla.blank? ? '' : cla %>
-                </th>
-                <% @groups.each do |group| %>
-                    <th style="text-align:center; font-style:italic; vertical-align:bottom; font-size: 85%; color: #999; border-left: 0;">
-                      <%= group.name %>
-                    </th>
-                <% end %>
-              </tr>
-              <% @modules_permissions.each do |perm| %>
-                  <tr>
-                    <% if perm.category.to_s == cla %>
-                        <td>
-                          &nbsp;
-                          <%= link_to '', '#', :id => "lines_select_all_global_#{perm.id}", 'data-permission_global_id' => perm.id, 'data-rows_or_cols_global' => 'rows', :remote => true, :class => 'fa-check-square-o fa', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'group_global_id', 'permission_global_id', 'global');" %>
-                          &nbsp;
-                          <%= link_to perm.name, edit_permission_path(perm), title: perm.description %>
-                        </td>
-                        <% @groups.each do |group| %>
-                            <td style="text-align: center;">
-                              <%= check_box_tag("permissions[#{group.id}][]", perm.id, (group.permissions.map(&:id).include? perm.id), :id => nil, :class => "group_master_id_#{group.id} permission_master_id_#{perm.id}") %>
-                            </td>
-                        <% end %>
-                    <% end %>
-                  </tr>
+          <table class=" table table-list">
+            <tr>
+              <th style="text-align:left;"><%= I18n.t(:groups_and_roles) %></th>
+              <% @groups.each do |group| %>
+                  <th style="text-align:center;">
+                    <%= link_to group.name, "#", title: group.description %>
+                    &nbsp;
+                    <%= link_to '', '#', :id => "cols_select_all_master_#{group.id}", 'data-group_master_id' => group.id, 'data-rows_or_cols_master' => 'cols', :remote => true, :class => 'fa fa-check-square-o', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'group_master_id', 'permission_master_id', 'master');" %>
+                  </th>
               <% end %>
+            </tr>
+
+            <% @permissions_classes_modules.each do |cla| %>
+                <tr>
+                  <th style="text-align:left; vertical-align:middle;">
+                    <%= cla.blank? ? '' : cla %>
+                  </th>
+                  <% @groups.each do |group| %>
+                      <th style="text-align:center; font-style:italic; vertical-align:bottom; font-size: 85%; color: #999; border-left: 0;">
+                        <%= group.name %>
+                      </th>
+                  <% end %>
+                </tr>
+                <% @modules_permissions.each do |perm| %>
+                    <tr>
+                      <% if perm.category.to_s == cla %>
+                          <td>
+                            &nbsp;
+                            <%= link_to '', '#', :id => "lines_select_all_global_#{perm.id}", 'data-permission_global_id' => perm.id, 'data-rows_or_cols_global' => 'rows', :remote => true, :class => 'fa-check-square-o fa', :title => I18n.t('select_unselect_all'), :onclick => "select_or_unselect_all_permissions(this, 'group_global_id', 'permission_global_id', 'global');" %>
+                            &nbsp;
+                            <%= link_to perm.name, edit_permission_path(perm), title: perm.description %>
+                          </td>
+                          <% @groups.each do |group| %>
+                              <td style="text-align: center;">
+                                <%= check_box_tag("permissions[#{group.id}][]", perm.id, (group.permissions.map(&:id).include? perm.id), :id => nil, :class => "group_master_id_#{group.id} permission_master_id_#{perm.id}") %>
+                              </td>
+                          <% end %>
+                      <% end %>
+                    </tr>
+                <% end %>
+            <% end %>
+          </table>
+          <% if can? :manage_modules_permissions, Permission %>
+              <%= submit_tag I18n.t('apply'), name: "modules_permissions", :class => 'btn btn-primary btn-estimancy' %>
           <% end %>
-        </table>
-        <% if can? :manage_modules_permissions, Permission %>
-            <%= submit_tag I18n.t('apply'), name: "modules_permissions", :class => 'btn btn-primary btn-estimancy' %>
-        <% end %>
-        <%= submit_tag I18n.t('cancel'), name: "modules_permissions",  :class => 'btn btn-primary btn-estimancy' %>
-    <% else %>
-        <div class="red_color">
-          <%= I18n.t(:notice_cannot_view_modules_permissions) %>
-        </div>
-    <% end %>
+          <%= submit_tag I18n.t('cancel'), name: "modules_permissions",  :class => 'btn btn-primary btn-estimancy' %>
+      <% else %>
+          <div class="red_color">
+            <%= I18n.t(:notice_cannot_view_modules_permissions) %>
+          </div>
+      <% end %>
+    </div>
   </div>
-</div>
+<% end %>

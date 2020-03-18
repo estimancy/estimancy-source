@@ -5,6 +5,8 @@
       <%= I18n.t('global_permissions') %>
     </div>
     <% if can? :show_global_permissions, Permission %>
+      <%= form_tag(set_rights_path, :method => 'post', :class => 'simple_form') do %>
+
         <table class=" table table-list">
           <tr>
             <th style="text-align:left;"><%= I18n.t(:groups_and_roles) %></th>
@@ -76,6 +78,7 @@
             <%= submit_tag I18n.t('apply'), name: "global_permissions", :class => 'btn btn-primary btn-estimancy' %>
             <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary'%>
         <% end %>
+      <% end %>
 
     <% else %>
         <div class="red_color"><%= I18n.t(:notice_cannot_view_global_permissions) %></div>
