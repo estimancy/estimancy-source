@@ -1671,6 +1671,13 @@ class ProjectsController < ApplicationController
       end
     end
 
+    begin
+      historization_time = Date.strptime(params[:project][:historization_time], I18n.t('date.formats.default'))
+      @project.historization_time = historization_time
+    rescue
+      @project.historization_time = nil
+    end
+
     Project.transaction do
       begin
         @project.add_to_transaction
@@ -2124,6 +2131,14 @@ class ProjectsController < ApplicationController
         rescue
           @project.start_date = Time.now.to_date
         end
+
+        begin
+          historization_time = Date.strptime(params[:project][:historization_time], I18n.t('date.formats.default'))
+          @project.historization_time = historization_time
+        rescue
+          @project.historization_time = nil
+        end
+
 
         # Initialization Module
         unless @initialization_module.nil?

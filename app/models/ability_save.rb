@@ -20,7 +20,7 @@
 #############################################################################
 
 #Ability for role management. See CanCan on github fore more information about Role.
-class AbilityProject
+class AbilitySave
   include CanCan::Ability
 
   #Initialize Ability then load permissions

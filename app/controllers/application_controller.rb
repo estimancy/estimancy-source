@@ -202,23 +202,25 @@ class ApplicationController < ActionController::Base
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
           when "estimations", "sort", "search"
-            @current_ability ||= Ability.new(current_user, @current_organization, @current_organization.projects)
+            #@current_ability ||= Ability.new(current_user, @current_organization, @current_organization.projects)
+            @current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized])
+
           when "projects_from"
             estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
-            @current_ability ||= Ability.new(current_user, @current_organization, estimation_models)
+            @current_ability ||= AbilityProject.new(current_user, @current_organization, estimation_models)
         else
           # A améliorer
           if params[:controller] == "projects" && params[:action] == "edit"
-            @current_ability ||= Ability.new(current_user, @current_organization, [Project.find(params[:id])])
+            @current_ability ||= AbilityProject.new(current_user, @current_organization, [Project.find(params[:id])])
           else
-            @current_ability ||= Ability.new(current_user, @current_organization, [@project])
+            @current_ability ||= AbilityProject.new(current_user, @current_organization, [@project])
           end
         end
       else
-        @current_ability = Ability.new(current_user, nil, nil)
+        @current_ability = AbilityProject.new(current_user, nil, nil)
       end
     rescue
-      @current_ability = Ability.new(current_user, nil, nil)
+      @current_ability = AbilityProject.new(current_user, nil, nil)
     end
   end
 

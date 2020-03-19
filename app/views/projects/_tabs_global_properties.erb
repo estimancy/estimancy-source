@@ -334,14 +334,14 @@
             <div class="col-12">
               <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                 <%= f.input :historization_time, as: :string, :label => false,
-                            :input_html => { :class => 'date-picker mdl-textfield__input', :value => (@project.historization_time.blank? ? "-" : I18n.l(@project.historization_time)) },
+                            :input_html => { :class => 'date-picker mdl-textfield__input', :value => @project.historization_time.nil? ? nil : I18n.l(@project.historization_time) },
                             :disabled => !@current_user.super_admin?
-                    #:disabled => !(can?(:alter_request_number, @project) || can_alter_model)
                 %>
-                <label class="mdl-textfield__label"><%= I18n.t('historization_time') %></label>
+                <label class="mdl-textfield__label" ><%= I18n.t('historization_time') %></label>
               </div>
             </div>
           </div>
+
 
             <div class="actions">
                 <% if action_name.in?(['edit', 'update', 'duplicate']) %>

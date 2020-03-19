@@ -20,7 +20,7 @@
 #############################################################################
 
 #Ability for role management. See CanCan on github fore more information about Role.
-class Ability
+class AbilityView
   include CanCan::Ability
 
   #Initialize Ability then load permissions
@@ -131,7 +131,7 @@ class Ability
                     organization_estimation_statuses.each do |es|
                       prj_scrt_project_security_level_permissions.each do |permission|
                         if permission.alias == "manage" and permission.category == "Project"
-                          can :manage, project, estimation_status_id: es.id
+                          can :manage, project.project, estimation_status_id: es.id
                         else
                           @array_users << [permission.id, project.id, es.id]
                         end
@@ -188,7 +188,7 @@ class Ability
                         organization_estimation_statuses.each do |es|
                           prj_scrt_project_security_level_permissions.each do |permission|
                             if permission.alias == "manage" and permission.category == "Project"
-                              can :manage, project, estimation_status_id: es.id
+                              can :manage, project.project, estimation_status_id: es.id
                             else
                               @array_owners << [permission.id, project.id, es.id]
                             end
@@ -224,7 +224,7 @@ class Ability
                             @array_groups << []
                           else
                             if permission.alias == "manage" and permission.category == "Project"
-                              can :manage, project, estimation_status_id: es.id
+                              can :manage, project.project, estimation_status_id: es.id
                             else
                               @array_groups << [permission.id, project.id, es.id]
                             end
@@ -249,7 +249,7 @@ class Ability
                     organization_projects.each do |op|
                       project = op.is_a?(Project) ? op : op.project
                       if permission.alias == "manage" and permission.category == "Project"
-                        can :manage, project, estimation_status_id: esgr_estimation_status_id
+                        can :manage, project.project, estimation_status_id: esgr_estimation_status_id
                       else
                         unless project.nil?
                           @array_status_groups.push([permission.id, project.id, esgr_estimation_status_id])
@@ -267,7 +267,8 @@ class Ability
             status_global = [status, global].inject(:&)
 
             pe = Permission.where(id: status_global.map{|i| i[0]}.uniq).all
-            pp = Project.where(organization_id: organization.id, id: status_global.map{|i| i[1]}.uniq).all
+            #pp = Project.where(organization_id: organization.id, id: status_global.map{|i| i[1]}.uniq).all
+            pp = OrganizationEstimation.where(organization_id: organization.id, id: status_global.map{|i| i[1]}.uniq).all
             ss = EstimationStatus.where(organization_id: organization.id, id: status_global.map{|i| i[2]}.uniq).all
 
             hash_permission = Hash.new
