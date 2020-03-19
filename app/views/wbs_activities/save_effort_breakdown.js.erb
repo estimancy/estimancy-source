@@ -33,6 +33,7 @@ $("#dashboard_right_panel").html("<%= j(render 'module_projects/dashboard_right_
 
 <% @initialization_module_project = @project.module_projects.first %>
 $("#dashboard_left_panel").html("<%= j(render 'module_projects/dashboard_left_inner') %>");
+$('#module_execution').addClass('show');
 
 //$("#output_data_view_widgets_results").html("<%#=raw j(render(partial: 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x])) %>");
 
