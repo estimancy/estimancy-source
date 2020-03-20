@@ -285,7 +285,6 @@ class Guw::GuwModelsController < ApplicationController
                                             color_priority: tab[0][4].nil? ? nil : tab[0][4].value,
                                             color_code: tab[1][4].nil? ? nil : tab[1][4].value,
                                             allow_line_color: tab[2][4].value == "true" ? true : false,
-                                            maximum: tab[3][4].nil? ? nil : tab[3][4].value,
                                             organization_id: organization_id,
                                             guw_model_id: @guw_model.id)
 
@@ -747,7 +746,7 @@ class Guw::GuwModelsController < ApplicationController
       # UO CPLX VALUES : uo_cplx_line_number
       un_column_number = 2
       cn = 2
-      @guw_complexities.each do |guw_complexity|
+      guw_type.guw_complexities.where(organization_id: @guw_organisation.id, guw_model_id: @guw_model.id).order("display_order asc").each do |guw_complexity|
 
         @guw_outputs.each_with_index do |guw_output, ii|
           oci = Guw::GuwOutputComplexityInitialization.where(organization_id: @guw_organisation.id,
@@ -1312,8 +1311,8 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       @worksheet.add_cell(ind, 0, current_mp.project.organization.name)
-      @worksheet.add_cell(ind, 1, current_mp.project.provider.name rescue nil)
-      @worksheet.add_cell(ind, 2, current_mp.project.application.name rescue nil)
+      @worksheet.add_cell(ind, 1, current_mp.project.provider.nil? ? nil : current_mp.project.provider.name)
+      @worksheet.add_cell(ind, 2, current_mp.project.application.nil? ? nil : current_mp.project.application.name)
       @worksheet.add_cell(ind, 3, current_mp.project.business_need)
       @worksheet.add_cell(ind, 4, current_mp.project.estimation_status.nil? ? nil : current_mp.project.estimation_status.name)
       @worksheet.add_cell(ind, 5, current_mp.project.project_area.nil? ? nil : current_mp.project.project_area.name)
