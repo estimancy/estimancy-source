@@ -1862,6 +1862,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       else
         import!("", "", "", default_group, "Excel", "#")
       end
+
+      @module_project.toggle_done
+
     elsif params[:from] == "Jira"
       (1..5).step(1).each do |i|
         url = "https://issues.apache.org/jira/issues/?filter=-4&startIndex=#{i}"

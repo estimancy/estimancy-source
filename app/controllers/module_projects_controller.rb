@@ -507,7 +507,7 @@ class ModuleProjectsController < ApplicationController
 
         format.js { render :js => "window.location.replace('#{dashboard_path(@project)}');"}
 
-      end   #end respond_to
+      end   # end respond_to
     end
   end
 
