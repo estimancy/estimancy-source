@@ -1312,8 +1312,8 @@ class Guw::GuwModelsController < ApplicationController
       end
 
       @worksheet.add_cell(ind, 0, current_mp.project.organization.name)
-      @worksheet.add_cell(ind, 1, current_mp.project.provider.name)
-      @worksheet.add_cell(ind, 2, current_mp.project.application.name)
+      @worksheet.add_cell(ind, 1, current_mp.project.provider.name rescue nil)
+      @worksheet.add_cell(ind, 2, current_mp.project.application.name rescue nil)
       @worksheet.add_cell(ind, 3, current_mp.project.business_need)
       @worksheet.add_cell(ind, 4, current_mp.project.estimation_status.nil? ? nil : current_mp.project.estimation_status.name)
       @worksheet.add_cell(ind, 5, current_mp.project.project_area.nil? ? nil : current_mp.project.project_area.name)
