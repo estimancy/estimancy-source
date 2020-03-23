@@ -2132,13 +2132,18 @@ class ProjectsController < ApplicationController
           @project.start_date = Time.now.to_date
         end
 
-        begin
-          historization_time = Date.strptime(params[:project][:historization_time], I18n.t('date.formats.default'))
-          @project.historization_time = historization_time
-        rescue
+        #on teste si le statut de destination est un statut d'historisation ou pas
+        if @project.estimation_status.is_historization_status == true
+          begin
+            historization_time = Date.strptime(params[:project][:historization_time], I18n.t('date.formats.default'))
+            @project.historization_time = historization_time
+          rescue
+            @project.historization_time = nil
+          end
+        else
+          @project.is_historized = false
           @project.historization_time = nil
         end
-
 
         # Initialization Module
         unless @initialization_module.nil?
@@ -4776,6 +4781,11 @@ public
           else
             @project.estimation_status_id = params["project"]["estimation_status_id"]
           end
+
+          unless @project.estimation_status.is_historization_status == true
+            @project.is_historized = false
+            @project.historization_time = nil
+          end
         end
       end
 
@@ -4863,7 +4873,7 @@ public
       # Get the project status before updating the value
       last_estimation_status_name = project.estimation_status_id.nil? ? "" : project.estimation_status.name
 
-      # Get changes on the project estimation_status_id after the update (to be compra with the last one)
+      # Get changes on the project estimation_status_id after the update (to be compare with the last one)
       new_estimation_status_name = new_status_id.nil? ? "" : EstimationStatus.find(new_status_id).name
 
       new_comments = "#{I18n.l(Time.now)} : #{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"

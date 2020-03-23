@@ -29,8 +29,23 @@
 # The projestimate crontab name is "projestimate_cron_job"
 # Updating crontab with the following command : << whenever --update-crontab projestimate_cron_job >>
 
+
+# Tâche quotidienne qui recherche toutes les estimations dans un statuts d'historisation et les historise en fonction de la date d'historisation
+
+#env 'MAILTO', 'salimata.gaye@estimancy.com'
+
+#every 1.day, :at => '1:00 pm' do
+#every 1.day, :at => '7:20 pm', mailto: 'salimata.gaye@estimancy.com' do
+# every 5.minutes do
+#   runner "Organization.update_historized_estimations"
+# end
+
+every 5.minutes do
+  rake "projects:update_historized_estimations"
+end
+
 # every 1.day, :at => '4am' do
-  # rake "projestimate:purge_audit_history_data"
+# rake "projestimate:purge_audit_history_data"
 # end
 # every 1.day, :at => '5:14 pm' do
 #   rake "estimancy:check_subscription", environment: "development"
@@ -39,13 +54,6 @@
 #every 5.minutes do
 #  rake "projestimate:purge_audit_history_data"
 #end
-
-# Tâche quotidienne qui recherche toutes les estimations dans un statuts d'historisation et les historise en fonction de la date d'historisation
-
-every 1.day, :at => '1:00 pm' do
-  runner "Organization.update_historized_estimations"
-end
-
 
 # Example:
 #
