@@ -134,7 +134,7 @@ class Project < ActiveRecord::Base
   self.default_selected_columns = ["application", "version_number", "start_date", "status_name", "description"]
 
   before_save :update_historization_time
-  after_save :reload_cache_archived
+  ###after_save :reload_cache_archived
 
   def update_historization_time
     project_estimation_status = self.estimation_status
