@@ -34,14 +34,14 @@
 
 # Tâche quotidienne qui recherche toutes les estimations dans un statuts d'historisation et les historise en fonction de la date d'historisation
 
-set :output, "log/cron.log"
+#set :output, "log/cron.log"
 
 # every 5.minutes do
 #   #utilisation de la fonction "update_historized_estimations" se trouvant dans le modèle Organization
 #   runner "Organization.update_historized_estimations"
 # end
 
-every :day, :at => '11:15 AM' do
+every :day, :at => '10:30 AM' do
   rake "projects:update_historized_estimations"
 end
 
