@@ -24,6 +24,8 @@
 # It's helpful, but not entirely necessary to understand cron before proceeding.
 # http://en.wikipedia.org/wiki/Cron
 
+# whenever --update-crontab --set environment=development
+
 # This task is planned to delete all history data according the the "audit_history_lifetime" parameter
 
 # The projestimate crontab name is "projestimate_cron_job"
@@ -32,15 +34,13 @@
 
 # Tâche quotidienne qui recherche toutes les estimations dans un statuts d'historisation et les historise en fonction de la date d'historisation
 
-#env 'MAILTO', 'salimata.gaye@estimancy.com'
+set :output, "log/cron.log"
 
-#every 1.day, :at => '1:00 pm' do
-#every 1.day, :at => '7:20 pm', mailto: 'salimata.gaye@estimancy.com' do
 # every 5.minutes do
 #   runner "Organization.update_historized_estimations"
 # end
 
-every 1.day, :at => '10:00 pm' do
+every :day, :at => '10:50 AM' do
   rake "projects:update_historized_estimations"
 end
 
