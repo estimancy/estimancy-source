@@ -42,9 +42,9 @@
 # end
 
 #every :day, :at => '10:30 AM' do
-every 5.minutes do
-  #rake "projects:update_historized_estimations"
-  runner "Organization.update_historized_estimations"
+every 15.minutes do
+  #runner "Organization.update_historized_estimations"
+  rake "projects:update_historized_estimations"
 end
 
 # every 1.day, :at => '4am' do
