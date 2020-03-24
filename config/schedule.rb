@@ -41,7 +41,7 @@ set :output, "log/cron.log"
 #   runner "Organization.update_historized_estimations"
 # end
 
-every :day, :at => '10:10 AM' do
+every :day, :at => '11:15 AM' do
   rake "projects:update_historized_estimations"
 end
 
