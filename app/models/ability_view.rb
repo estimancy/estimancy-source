@@ -45,7 +45,8 @@ class AbilityView
           # end
 
           #La gestion des paramètres se fait fait dans ApplicationController ==> current_ability
-          organization_projects = projects.compact
+          #organization_projects = projects.compact
+          organization_projects = projects#.compact
 
           #remettre getsorted pour la liste complete des devis
           # organization_projects = get_sorted_estimations(organization.id, projects, sort_column, sort_order, search_hash, min, max, action)
@@ -126,12 +127,21 @@ class AbilityView
                 prj_scrt_project_security_level = prj_scrt.project_security_level
                 unless prj_scrt_project_security_level.nil?
                   prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
-                  project = prj_scrt.project
+                  #project = prj_scrt.project
+
+                  begin
+                    organization_project = organization_projects.find(prj_scrt.project.id)
+                    project = organization_project.project
+                  rescue
+                    project = nil
+                  end
+
                   unless project.nil?
                     organization_estimation_statuses.each do |es|
                       prj_scrt_project_security_level_permissions.each do |permission|
                         if permission.alias == "manage" and permission.category == "Project"
-                          can :manage, project.project, estimation_status_id: es.id
+                          can :manage, project, estimation_status_id: es.id
+                          can :manage, organization_project, estimation_status_id: es.id
                         else
                           @array_users << [permission.id, project.id, es.id]
                         end
@@ -181,14 +191,22 @@ class AbilityView
 
                   prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
 
-                  project = prj_scrt.project
+                  #project = prj_scrt.project
+                  begin
+                    organization_project = organization_projects.find(prj_scrt.project.id)
+                    project = organization_project.project
+                  rescue
+                    project = nil
+                  end
+
                   unless project.nil?
                     if user.id == project.creator_id
                       unless project.nil?
                         organization_estimation_statuses.each do |es|
                           prj_scrt_project_security_level_permissions.each do |permission|
                             if permission.alias == "manage" and permission.category == "Project"
-                              can :manage, project.project, estimation_status_id: es.id
+                              can :manage, project, estimation_status_id: es.id
+                              can :manage, organization_project, estimation_status_id: es.id
                             else
                               @array_owners << [permission.id, project.id, es.id]
                             end
@@ -211,7 +229,14 @@ class AbilityView
                 prj_scrts.each do |prj_scrt|
 
                   prj_scrt_project_security_level = prj_scrt.project_security_level
-                  project = prj_scrt.project
+                  #project = prj_scrt.project
+
+                  begin
+                    organization_project = organization_projects.find(prj_scrt.project.id)
+                    project = organization_project.project
+                  rescue
+                    project = nil
+                  end
 
                   unless project.nil?
                     unless prj_scrt_project_security_level.nil?
@@ -224,7 +249,8 @@ class AbilityView
                             @array_groups << []
                           else
                             if permission.alias == "manage" and permission.category == "Project"
-                              can :manage, project.project, estimation_status_id: es.id
+                              can :manage, project, estimation_status_id: es.id
+                              can :manage, organization_project, estimation_status_id: es.id
                             else
                               @array_groups << [permission.id, project.id, es.id]
                             end
@@ -249,7 +275,8 @@ class AbilityView
                     organization_projects.each do |op|
                       project = op.is_a?(Project) ? op : op.project
                       if permission.alias == "manage" and permission.category == "Project"
-                        can :manage, project.project, estimation_status_id: esgr_estimation_status_id
+                        can :manage, project, estimation_status_id: esgr_estimation_status_id
+                        can :manage, op, estimation_status_id: esgr_estimation_status_id
                       else
                         unless project.nil?
                           @array_status_groups.push([permission.id, project.id, esgr_estimation_status_id])
@@ -268,7 +295,7 @@ class AbilityView
 
             pe = Permission.where(id: status_global.map{|i| i[0]}.uniq).all
             #pp = Project.where(organization_id: organization.id, id: status_global.map{|i| i[1]}.uniq).all
-            pp = OrganizationEstimation.where(organization_id: organization.id, id: status_global.map{|i| i[1]}.uniq).all
+            pp = organization_projects.where(id: status_global.map{|i| i[1]}.uniq).all
             ss = EstimationStatus.where(organization_id: organization.id, id: status_global.map{|i| i[2]}.uniq).all
 
             hash_permission = Hash.new
@@ -292,6 +319,7 @@ class AbilityView
             status_global.each_with_index do |a, i|
               unless hash_project[a[1]].nil?
                 can hash_permission[a[0]], hash_project[a[1]], estimation_status_id: hash_status[a[2]]
+                can hash_permission[a[0]], hash_project[a[1].project], estimation_status_id: hash_status[a[2]]
               end
             end
           end
