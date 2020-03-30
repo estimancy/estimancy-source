@@ -19,7 +19,7 @@
 
   <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
                                                                                        project_id: project_id,
-                                                                                       module_project_id: current_mp.id).order("created_at ASC") %>
+                                                                                       module_project_id: current_mp.id).order("name ASC") %>
 
   <%# @group_unit_of_works = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @guw_model.organization_id,
                                                                   project_id: project_id,

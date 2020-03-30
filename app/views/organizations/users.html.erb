@@ -55,7 +55,7 @@
 
 
             <div id="organization_users" style="width:100%; overflow:auto; white-space:nowrap;">
-              <table class="table tablesorter table-list table-sm" style="width:100%; overflow:auto;">
+              <table class="table tablesorter table-list table-sm table-users" style="width:100%; display: block; overflow: auto;">
                 <thead>
                   <tr>
                     <th><%= I18n.t(:first_name) %></th>
@@ -70,7 +70,7 @@
                       <th><%= I18n.t(:is_super_admin) %></th>  
                     <% end %>
                     <th><%= I18n.t(:locked_at)%></th>
-                    <th><%= I18n.t(:subscription_end_date)%></th>
+                    <th><%= I18n.t(:subscription_end_date_for_list)%></th>
                     <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
                   </tr>
                 </thead>
