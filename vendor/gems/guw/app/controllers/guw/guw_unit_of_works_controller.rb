@@ -341,16 +341,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_type = @old_guw_unit_of_work.guw_type
     uo_guw_type_size = current_module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size
 
-    if uo_guw_type_size < @old_guw_unit_of_work.guw_type.maximum.to_i
+    # if uo_guw_type_size < @old_guw_unit_of_work.guw_type.maximum.to_i
 
       # La copie des #guw_unit_of_work_attributes sera geree dans le amoeba_dup
       @guw_unit_of_work = @old_guw_unit_of_work.amoeba_dup
 
       @guw_unit_of_work.created_at = @old_guw_unit_of_work.created_at + 0.1.seconds
       @guw_unit_of_work.save
-    else
-      render js: "alert('Vous ne pouvez pas créer plus de #{@guw_type.maximum.to_s} composants pour #{@guw_type.to_s}.')";
-    end
+    # else
+    #   render js: "alert('Vous ne pouvez pas créer plus de #{@guw_type.maximum.to_s} composants pour #{@guw_type.to_s}.')";
+    # end
 
     @guw_model = @old_guw_unit_of_work.guw_model
     @guw_outputs = @guw_model.guw_outputs.where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id)
