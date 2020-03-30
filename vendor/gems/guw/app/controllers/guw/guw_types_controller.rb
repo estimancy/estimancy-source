@@ -41,7 +41,7 @@ class Guw::GuwTypesController < ApplicationController
     set_page_title I18n.t(:add_unit_of_work)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
 
-    @services = @organization.services
+    # @services = @organization.services
   end
 
   def edit
@@ -53,7 +53,7 @@ class Guw::GuwTypesController < ApplicationController
     set_page_title I18n.t(:edit_project_element_name, parameter: @guw_type.name)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:uo_model) => main_app.edit_organization_path(@organization), @organization => ""
 
-    @services = @organization.services
+    # @services = @organization.services
 
   end
 
@@ -75,7 +75,7 @@ class Guw::GuwTypesController < ApplicationController
   def update
     @guw_type = Guw::GuwType.find(params[:id])
     @organization = @guw_type.guw_model.organization
-    @services = @organization.services
+    # @services = @organization.services
     @guw_type.update_attributes(params[:guw_type])
     @guw_model = @guw_type.guw_model
 
