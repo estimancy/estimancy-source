@@ -47,6 +47,7 @@ module Guw
     amoeba do
       enable
       include_association [:guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works]
+      # include_association [:guw_coefficient_element_unit_of_works]
     end
 
     def to_s
