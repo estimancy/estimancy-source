@@ -3138,7 +3138,7 @@ public
 
                   unless guowa.nil?
 
-                    new_guowa = guowa.clone
+                    new_guowa = guowa.dup
 
                     new_guowa.guw_unit_of_work_id = guw_uow.id
                     new_guowa.guw_model_id = guw_uow.guw_model_id

@@ -255,9 +255,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                    guw_type_id: @guw_unit_of_work.guw_type_id,
                                                    project_id: @guw_unit_of_work.project_id,
                                                    module_project_id: @guw_unit_of_work.module_project_id,
-                                                   guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
+                                                   guw_unit_of_work_id: @guw_unit_of_work.id).first
 
-        finder.save
+        if finder.nil?
+          Guw::GuwUnitOfWorkAttribute.create( organization_id: @guw_model.organization_id,
+                                              guw_model_id: @guw_model.id,
+                                              guw_attribute_id: gac.id,
+                                              guw_type_id: @guw_unit_of_work.guw_type_id,
+                                              project_id: @guw_unit_of_work.project_id,
+                                              module_project_id: @guw_unit_of_work.module_project_id,
+                                              guw_unit_of_work_id: @guw_unit_of_work.id)
+        end
       end
     end
 
