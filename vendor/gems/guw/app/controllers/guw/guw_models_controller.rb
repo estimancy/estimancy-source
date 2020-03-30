@@ -1387,8 +1387,8 @@ class Guw::GuwModelsController < ApplicationController
                                               guw_model_id: @guw_model.id,
                                               guw_attribute_id: guowa.guw_attribute_id,
                                               guw_type_id: guw_type.id).first
-            worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
-            worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
+            @worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
+            @worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
           else
             p "GUOWA is nil"
           end
