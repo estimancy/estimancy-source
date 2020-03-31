@@ -68,7 +68,9 @@
     </div>
 <% end %>
 
-<%= render partial: "projects/estimation_overview", object: [@organization, @projects], locals: { sort_column: @sort_column, sort_order: @sort_order, is_last_page: @is_last_page } %>
+<div id="search-estimation-list">
+  <%= render partial: "projects/estimation_overview", object: [@organization, @projects], locals: { sort_column: @sort_column, sort_order: @sort_order, is_last_page: @is_last_page } %>
+</div>
 
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
