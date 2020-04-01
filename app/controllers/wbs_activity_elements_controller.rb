@@ -37,7 +37,7 @@ class WbsActivityElementsController < ApplicationController
 
     @selected_parent ||= WbsActivityElement.find(params[:selected_parent_id])
 
-    @services = @organization.services
+    @services = @organization.services rescue []
   end
 
   def edit
@@ -46,7 +46,7 @@ class WbsActivityElementsController < ApplicationController
     set_page_title I18n.t(:wbs_activity_elements)
     @wbs_activity_element = WbsActivityElement.find(params[:id])
     @organization = @wbs_activity_element.wbs_activity.organization
-    @services = @organization.services
+    @services = @organization.services rescue []
 
     if params[:activity_id]
       @wbs_activity = WbsActivity.find(params[:activity_id])
