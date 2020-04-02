@@ -241,7 +241,7 @@
               <%= f.input :estimation_status_id,
                           label: I18n.t(:estimation_status),
                           as: :select,
-                          collection: @project.estimation_statuses,
+                          collection: @organization.estimation_statuses,
                           input_html: { :class => 'input-xlarge' },
                           include_blank: false %>
             <% else %>
