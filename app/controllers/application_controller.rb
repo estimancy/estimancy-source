@@ -203,7 +203,9 @@ class ApplicationController < ActionController::Base
         case params[:action]
           when "estimations", "sort", "search"
             #@current_ability ||= Ability.new(current_user, @current_organization, @current_organization.projects)
-            @current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized])
+
+            #@current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized])
+            @current_ability ||= AbilityProject.new(current_user, @current_organization, @current_organization.projects)
 
           when "projects_from"
             estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
