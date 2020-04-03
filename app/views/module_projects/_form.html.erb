@@ -113,10 +113,6 @@
                                   </div>
                                 </div>
                               </div>
-
-
-
-
                             </div>
 
                             <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -138,15 +134,14 @@
                             </script>
 
                           <% end %>
-
                         <% end %>
 
                         <br>
-                        <div class="col-5">
-                          <%= submit_tag I18n.t('save'), class: "btn btn-primary" %>
-                          <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan'), class: 'btn btn-secondary' %>
-                        </div>
                       <% end %>
+                      <div class="col-5">
+                        <%= submit_tag I18n.t('save'), class: "btn btn-primary" %>
+                        <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan'), class: 'btn btn-secondary' %>
+                      </div>
                     <% end %>
                   </div>
                 </div>
