@@ -9,6 +9,10 @@
 @import "default/fonts";
 @import "bootstrap/normalize";
 
+:root {
+  --widget-color: $brand-third-color;
+}
+
 .card {
   background: #FFFFFF;
   box-sizing: border-box;/* Z-Index - Strong - Active */
@@ -53,7 +57,10 @@
       width: 15px;
       height: calc(100% - 12px);
       left: -15px;
-      border-left: 2px solid $brand-third-color;
+      //border-left: 2px solid $brand-third-color; // couleur de base
+      border-left: 5px solid $brand-third-color; // couleur de base
+      //border-left: 5px solid; // couleur modifiee avec la valeur de la couleur de la vignette
+      //border-left-color: var(--widget-color);
     }
 
     &:after {
