@@ -9,12 +9,12 @@ namespace :projects do
     Organization.all.each do |organization|
       historized_statuses = organization.estimation_statuses.where(is_historization_status: true)
       historized_status_ids = historized_statuses.map(&:id)
-      organization.projects.where(estimation_status_id: historized_status_ids).each do |project|
+      organization.projects.where(estimation_status_id: historized_status_ids, is_historized: [nil, false]).each do |project|
 
         if project.historization_time.blank?
           project.update_attributes(historization_time: Time.now, is_historized: true)
           puts "#{project.to_s} : historisé sans date d'historisation"
-        elsif project.historization_time >= Time.now
+        elsif project.historization_time <= Time.now
           project.update_attributes(is_historized: true)
           puts project.to_s #3984
         end
