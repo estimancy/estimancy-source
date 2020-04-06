@@ -2148,7 +2148,7 @@ es:
   sum_create: "Sum of Create"
   sum_modify: "Sum of Modify"
   sum_delete: "Sum of Delete"
-  is_historization_status: "Is historization status"
+  is_historization_status: "Status to historicize"
   nb_day_before_historization: "Nb days in this status before historization"
   is_historized: "Is historized"
   historization_time: "Historization date"

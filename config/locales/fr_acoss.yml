@@ -2588,7 +2588,7 @@ fr_acoss:
   sum_modify: "Nombre d'éléments en modification"
   sum_delete: "Nombre d'éléments en suppression"
   choose_kpis_to_show: "Choisissez les indicateurs à afficher"
-  is_historization_status: "Est un statut d'historisation"
+  is_historization_status: "Statut à historiser"
   nb_day_before_historization: "Nb de jours dans ce statut avant historisation"
   is_historized: "Est historisé"
   historization_time: "Date d'historisation"

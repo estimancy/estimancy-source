@@ -1759,7 +1759,7 @@ de:
 
   unit_of_work_types: "Unit of Work Types"
   weight_b: "Ordinate at origin"
-  is_historization_status: "Is historization status"
+  is_historization_status: "Status to historicize"
   nb_day_before_historization: "Nb days in this status before historization"
   is_historized: "Is historized"
   historization_time: "Historization date"

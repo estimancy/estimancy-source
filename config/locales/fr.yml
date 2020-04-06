@@ -2611,7 +2611,7 @@ fr:
   optimal_duration_in_week: "Durée optimale (semaine)"
   initial_date: "Date Initial"
   trapeze_staffing: "Staffing Trapeze (pers.)"
-  is_historization_status: "Est un statut d'historisation"
+  is_historization_status: "Statut à historiser"
   nb_day_before_historization: "Nb de jours dans ce statut avant historisation"
   is_historized: "Est historisé"
   historization_time: "Date d'historisation"

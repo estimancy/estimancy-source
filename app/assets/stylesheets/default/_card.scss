@@ -58,9 +58,9 @@
       height: calc(100% - 12px);
       left: -15px;
       //border-left: 2px solid $brand-third-color; // couleur de base
-      border-left: 5px solid $brand-third-color; // couleur de base
-      //border-left: 5px solid; // couleur modifiee avec la valeur de la couleur de la vignette
-      //border-left-color: var(--widget-color);
+      //border-left: 5px solid $brand-third-color; // couleur de base
+      border-left: 7px solid; // couleur modifiee avec la valeur de la couleur de la vignette
+      border-left-color: var(--widget-color);
     }
 
     &:after {
