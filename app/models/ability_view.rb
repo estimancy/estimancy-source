@@ -319,7 +319,7 @@ class AbilityView
             status_global.each_with_index do |a, i|
               unless hash_project[a[1]].nil?
                 can hash_permission[a[0]], hash_project[a[1]], estimation_status_id: hash_status[a[2]]
-                can hash_permission[a[0]], hash_project[a[1].project], estimation_status_id: hash_status[a[2]]
+                can hash_permission[a[0]], hash_project[a[1]].project, estimation_status_id: hash_status[a[2]]
               end
             end
           end

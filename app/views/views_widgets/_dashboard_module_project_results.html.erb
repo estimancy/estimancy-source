@@ -55,7 +55,7 @@
             <% value = @widgets[k].last %>
             <% unless value.is_a?(Hash) %>
                 <li>
-                  <div class="card card-widget card-indicator card-indicator-with-module">
+                  <div class="card card-widget card-indicator card-indicator-with-module" style="--widget-color: <%= view_widget.color %>;">
                   <!--<div class="card card-widget module-indicator module-indicator-without-module">-->
                     <div class="card-body">
                       <div class="card-indicator-type"></div>

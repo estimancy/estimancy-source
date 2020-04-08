@@ -9,6 +9,10 @@
 //@import "default/fonts";
 //@import "default/normalize";
 
+:root {
+  --widget-text-color: #ECEFF2;
+}
+
 
 .widgets-list {
 
@@ -59,7 +63,8 @@
       }
 
       span {
-        background-color: #ECEFF2;
+        background-color: #ECEFF2;  //Valeur initiale
+        //background-color: var(--widget-text-color);
         padding: 0 1rem;
       }
     }

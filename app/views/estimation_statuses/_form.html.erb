@@ -92,3 +92,36 @@
     <% end %>
   </div>
 </section>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+
+    var nb_day_before = $("#estimation_status_nb_day_before_historization").val();
+    if (nb_day_before == ""){
+        nb_day_before = "1";
+    }
+
+    $("#estimation_status_is_historization_status").change(function(){
+
+        if($(this).is(':checked')){
+            $('#estimation_status_nb_day_before_historization').removeAttr('disabled');
+            $("#estimation_status_nb_day_before_historization").val(nb_day_before);
+            $('#estimation_status_nb_day_before_historization').attr('value', nb_day_before)
+        } else{
+            $('#estimation_status_nb_day_before_historization').attr("disabled", 'disabled');
+            $("#estimation_status_nb_day_before_historization").val("");
+            $('#estimation_status_nb_day_before_historization').attr('value', '')
+        }
+    });
+
+
+    if ($("#estimation_status_is_historization_status").is(':checked')){
+        $('#estimation_status_nb_day_before_historization').removeAttr('disabled');
+    }
+    else {
+        $('#estimation_status_nb_day_before_historization').attr('disabled','disabled');
+        $("#estimation_status_nb_day_before_historization").val('');
+        $('#estimation_status_nb_day_before_historization').attr('value', '')
+    }
+
+</script>
