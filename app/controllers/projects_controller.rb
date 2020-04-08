@@ -1671,12 +1671,12 @@ class ProjectsController < ApplicationController
       end
     end
 
-    begin
-      historization_time = Date.strptime(params[:project][:historization_time], I18n.t('date.formats.default'))
-      @project.historization_time = historization_time
-    rescue
-      @project.historization_time = nil
-    end
+    # begin
+    #   historization_time = Date.strptime(params[:project][:historization_time], I18n.t('date.formats.default'))
+    #   @project.historization_time = historization_time
+    # rescue
+    #   @project.historization_time = nil
+    # end
 
     Project.transaction do
       begin
@@ -2133,14 +2133,19 @@ class ProjectsController < ApplicationController
         end
 
         #on teste si le statut de destination est un statut d'historisation ou pas
-        if @project.estimation_status.is_historization_status == true
-          begin
-            historization_time = Date.strptime(params[:project][:historization_time], I18n.t('date.formats.default'))
-            @project.historization_time = historization_time
-          rescue
-            @project.historization_time = nil
-          end
-        else
+        # if @project.estimation_status.is_historization_status == true
+        #   begin
+        #     historization_time = Date.strptime(params[:project][:historization_time], I18n.t('date.formats.default'))
+        #     @project.historization_time = historization_time
+        #   rescue
+        #     @project.historization_time = nil
+        #   end
+        # else
+        #   @project.is_historized = false
+        #   @project.historization_time = nil
+        # end
+
+        unless @project.estimation_status.is_historization_status == true
           @project.is_historized = false
           @project.historization_time = nil
         end

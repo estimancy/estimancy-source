@@ -2592,9 +2592,10 @@ frsncf:
 
   recalculate_all: "Tout recalculer"  
   is_historization_status: "Statut à historiser"
-  nb_day_before_historization: "Nb de jours dans ce statut avant historisation"
+  nb_day_before_historization: "Nb de jours avant historisation depuis la création du devis"
   is_historized: "Est historisé"
   historization_time: "Date d'historisation"
+  expected_historization_time: "Date prévue d'historisation"
   notification_emails: "Email de notifications"
   historized_estimations: "Devis historisés"
   display_historized: "Afficher les historisés"

@@ -110,6 +110,10 @@ class EstimationStatusesController < ApplicationController
     set_page_title I18n.t(:new_estimation_status)
     set_breadcrumbs I18n.t(:estimations_statuses) => organization_setting_path(@organization, anchor: "tabs-estimations-statuses", partial_name: 'tabs_estimation_statuses'), I18n.t('new_estimation_status') => ""
 
+    if @estimation_status.is_historization_status == false
+      @estimation_status.nb_day_before_historization = nil
+    end
+
     if @estimation_status.save
       @estimation_status.update_attribute(:transaction_id, "#{@estimation_status.id}_1")
 
@@ -134,6 +138,9 @@ class EstimationStatusesController < ApplicationController
 
     if @estimation_status.update_attributes(params[:estimation_status])
       @estimation_status.transaction_id = @estimation_status.transaction_id.nil? ? "#{@estimation_status.id}_1" : @estimation_status.transaction_id.next rescue "#{@estimation_status.id}_1"
+      if @estimation_status.is_historization_status == false
+        @estimation_status.nb_day_before_historization = nil
+      end
       @estimation_status.save
 
       flash[:notice] = I18n.t (:notice_estimation_status_successful_updated)
