@@ -31,7 +31,7 @@
           Restitution
         </a>
       </li>
-      
+
     </ul>
 
     <%= simple_form_for(@organization) do |f| %>
@@ -69,12 +69,12 @@
                       </div>
                     </div>
 
-                    <div class="col-3">
-                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <%= f.input :allow_demand, :label => false, as: :boolean, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__inputs'} %>
-                        <label class="mdl-textfield__label" for="allow_demand" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:demands_list) %></label>
-                      </div>
-                    </div>
+<!--                    <div class="col-3">-->
+<!--                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">-->
+                        <%#= f.input :allow_demand, :label => false, as: :boolean, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__inputs'} %>
+<!--                        <label class="mdl-textfield__label" for="allow_demand" style="padding-left: 20px; margin-top: -7px;"><%#= I18n.t(:demands_list) %></label>-->
+<!--                      </div>-->
+<!--                    </div>-->
                   </div>
 
                   <div class="form-row">
