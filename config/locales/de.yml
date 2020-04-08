@@ -1766,5 +1766,5 @@ de:
   expected_historization_time: "Expected date of historization"
   notification_emails: "Email for notifications"
   historized_estimations: "Historized estimations"
-  display_historized: "Display historized"
+  display_historized: "Display all"
   hide_historized: "Hide historized"

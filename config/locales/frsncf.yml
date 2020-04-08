@@ -2598,5 +2598,5 @@ frsncf:
   expected_historization_time: "Date prévue d'historisation"
   notification_emails: "Email de notifications"
   historized_estimations: "Devis historisés"
-  display_historized: "Afficher les historisés"
+  display_historized: "Afficher tout"
   hide_historized: "Masquer les historisés"

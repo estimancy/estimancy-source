@@ -3,15 +3,23 @@
 <div class="mb-5">
   <div class="estimation-list">
     <div class="estimation-list-filter">
-      <span><%= @projects.count %> <%= I18n.t(:elements) %></span>
+      <span style="padding-top: 0.4%;"><%= @projects.count %> <%= I18n.t(:elements) %></span>
       <span>
         <% unless params[:historized].present? %>
-          <a href="?historized=1"><%= I18n.t(:display_historized) %></a>
+          <a href="?historized=1" style="color: white;">
+            <button type="button" class="btn btn-primary">
+                <%= I18n.t(:display_historized) %>
+            </button>
+          </a>
         <% else %>
-          <a href="<%= url_for(:only_path => false) %>"><%= I18n.t(:hide_historized) %></a>
+          <a href="<%= url_for(:only_path => false) %>" style="color: white; font-weight: 400;">
+            <button type="button" class="btn btn-primary">
+                <%= I18n.t(:hide_historized) %></a>
+            </button>
         <% end %>
       </span>
     </div>
+
     <% selected_inline_columns = update_selected_inline_columns(Project) %>
     <%= form_tag projects_list_search_path, remote: true do %>
       <%= submit_tag "Rechercher", class: "hide" %>

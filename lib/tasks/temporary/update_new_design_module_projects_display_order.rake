@@ -4,7 +4,7 @@
 # rake module_project:update_new_design_module_projects_display_order RAILS_ENV=production
 
 namespace :module_project do
-  desc "Suite au passage au nouveau Design, il faudra mettre à jour les positions des module_projects au niveau du menu de gauche 'MODULE DE CALCUL'"
+  desc "Suite au passage au nouveau Design, il faudra mettre à jour les positions des module_projects (ordonner modules) au niveau du menu de gauche 'MODULE DE CALCUL'"
 
   task update_new_design_module_projects_display_order: :environment do
 
