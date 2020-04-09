@@ -1192,9 +1192,10 @@ class ProjectsController < ApplicationController
 
     elsif @module_project.pemodule.alias == "kb"
       @kb_model = @module_project.kb_model
-      @kb_input = Kb::KbInput.where(organization_id: @project_organization.id,
-                                    kb_model_id: @kb_model.id,
-                                    module_project_id: @module_project.id).first#_or_create
+      @kb_model = @module_project.kb_inputs.last
+      # @kb_input = Kb::KbInput.where(organization_id: @project_organization.id,
+      #                               kb_model_id: @kb_model.id,
+      #                               module_project_id: @module_project.id).first#_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "skb"
@@ -3502,6 +3503,18 @@ public
                                formula: oge_input.formula)
 
             ge.save
+          end
+
+          #For Kb
+          old_mp.kb_inputs.each do |kb_input|
+            kb = Kb::KbInput.new(organization_id: @organization.id,
+                                 module_project_id: new_mp.id,
+                                 formula: kb_input.formula,
+                                 values: kb_input.values,
+                                 regression: kb_input.regression,
+                                 filters: kb_input.filters)
+
+            kb.save
           end
 
           # if the module_project is nil
