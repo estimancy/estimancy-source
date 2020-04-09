@@ -189,7 +189,7 @@
                   <%= I18n.t(:calculate_button) %>
                 </button>
               <% end %>
-              <%= link_to I18n.t(:reset), skb.skb_model_raz_path(@skb_model.id), class: "pull-right btn btn-inverse button_margin_right", method: "post" %>
+              <%= link_to "Reset", skb.skb_model_raz_path(@skb_model.id), class: "btn btn-secondary", method: "post" %>
 
               <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
               <script src="https://code.highcharts.com/highcharts.js"></script>
@@ -219,7 +219,7 @@
                         var y = Math.round(e.yAxis[0].value);
                         var series = this.series[0];
                         // Add it
-                        series.addPoint({x: x, y: y, z: x+y, name: "<%= @project.to_s.truncate(10) %>", description: "<%= simple_format(@project.description.to_s) %>" });
+                        series.addPoint({x: x, y: y, z: x+y, name: "<%= @project.to_s.truncate(10) %>", description: "<%= @project.description.to_s %>" });
                         series.data[0].remove(false, false);
                         $.ajax({
                           url: "<%= skb.skb_model_save_size_path(@skb_model.id) %>",

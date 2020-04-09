@@ -179,20 +179,6 @@ class ModuleProject < ActiveRecord::Base
     mp = self
     mp.done = true
     mp.save
-
-    self.nexts.each do |mp|
-      mp.done = false
-      mp.save
-
-      #c'est moche
-      if mp.nexts.size >= 1
-        mp.nexts.each do |mpp|
-          mpp.done = false
-          mpp.save
-        end
-      end
-
-    end
   end
 
   # Return all the module_project relations links (next and previous)

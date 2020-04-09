@@ -376,6 +376,7 @@ class WbsActivitiesController < ApplicationController
 
     #@module_project = ModuleProject.find(params[:module_project_id])
     @module_project = current_module_project
+    @module_project.toggle_done
 
     @project = @module_project.project
     @organization = @project.organization
@@ -1170,8 +1171,6 @@ class WbsActivitiesController < ApplicationController
         end
       end
     end
-
-    current_module_project.toggle_done
 
     ViewsWidget::update_field(@module_project, @current_organization, @project, @pbs_project_element)
 

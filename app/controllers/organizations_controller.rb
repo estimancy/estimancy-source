@@ -3713,7 +3713,6 @@ class OrganizationsController < ApplicationController
     # end
   end
 
-
   private def check_for_projects(start_number, desired_size)
 
     organization_estimations = @organization.organization_estimations

@@ -3466,15 +3466,23 @@ public
 
           # For SKB-Input
           old_mp.skb_inputs.each do |skbi|
-            Skb::SkbInput.create(data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
-                                 organization_id: @organization.id, module_project_id: new_mp.id)
+            Skb::SkbInput.create(data: skbi.data,
+                                 processing: skbi.processing,
+                                 retained_size: skbi.retained_size,
+                                 filters: skbi.filters,
+                                 organization_id: @organization.id,
+                                 module_project_id: new_mp.id)
           end
 
           #For ge_model_factor_descriptions
           old_mp.ge_model_factor_descriptions.each do |factor_description|
-            Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id, ge_factor_id: factor_description.ge_factor_id,
-                                                factor_alias: factor_description.factor_alias, description: factor_description.description,
-                                                module_project_id: new_mp.id, project_id: new_prj.id, organization_id: @organization.id)
+            Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id,
+                                                ge_factor_id: factor_description.ge_factor_id,
+                                                factor_alias: factor_description.factor_alias,
+                                                description: factor_description.description,
+                                                module_project_id: new_mp.id,
+                                                project_id: new_prj.id,
+                                                organization_id: @organization.id)
           end
 
           # if the module_project is nil
@@ -4260,16 +4268,26 @@ public
       # end
     end
 
-    # @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
-    @projects = res
+    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    # @projects = res
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
 
     # p @projects
 
-    # if @projects.length <= @object_per_page
-    #   @is_last_page = "true"
-    # else
-    #   @is_last_page = "false"
-    # end
+    if @projects.length <= @object_per_page
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
 
     # session[:sort_column] = @sort_column
     # session[:sort_order] = @sort_order

@@ -75,27 +75,30 @@ class ViewsWidget < ActiveRecord::Base
 
     module_project_all_nexts_mp_with_links.each do |mp|
 
-        mp.estimation_values.where(organization_id: organization_id, in_out: "output").each do |ev|
-          ["low", "most_likely", "high"].each do |level|
-            ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
-          end
-          ev.send("string_data_probable=", { pbs_project_element.id => nil })
-          # unless ev.changed?
-          ev.save
-          # end
-        end
+      mp.done = false
+      mp.save
 
-        # reset module_project_ratio_elements for EffortBreakdown module
-        if mp.pemodule.alias == "effort_breakdown"
-          mp.module_project_ratio_elements.where(organization_id: organization_id, pbs_project_element_id: pbs_project_element.id).each do |mp_ratio_elt|
-            ["theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"].each do |attribute|
-              ["low", "most_likely", "high", "probable"].each do |level|
-                mp_ratio_elt.send("#{attribute}_#{level}=", nil)
-              end
-            end
-            mp_ratio_elt.save
-          end
+      mp.estimation_values.where(organization_id: organization_id, in_out: "output").each do |ev|
+        ["low", "most_likely", "high"].each do |level|
+          ev.send("string_data_#{level}=", { pbs_project_element.id => nil })
         end
+        ev.send("string_data_probable=", { pbs_project_element.id => nil })
+        # unless ev.changed?
+        ev.save
+        # end
+      end
+
+      # reset module_project_ratio_elements for EffortBreakdown module
+      if mp.pemodule.alias == "effort_breakdown"
+        mp.module_project_ratio_elements.where(organization_id: organization_id, pbs_project_element_id: pbs_project_element.id).each do |mp_ratio_elt|
+          ["theoretical_effort", "theoretical_cost", "retained_effort", "retained_cost"].each do |attribute|
+            ["low", "most_likely", "high", "probable"].each do |level|
+              mp_ratio_elt.send("#{attribute}_#{level}=", nil)
+            end
+          end
+          mp_ratio_elt.save
+        end
+      end
     end
   end
 
