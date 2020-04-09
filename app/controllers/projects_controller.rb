@@ -1204,11 +1204,11 @@ class ProjectsController < ApplicationController
 
     elsif @module_project.pemodule.alias == "ge"
       @ge_model = @module_project.ge_model
-      @ge_input = @module_project.ge_inputs.last
 
-      # Ge::GeInput.where(organization_id: @project_organization.id,
+      @ge_input = @module_project.ge_inputs.last
+      # @ge_input = Ge::GeInput.where(organization_id: @project_organization.id,
       #                               ge_model_id: @ge_model.id,
-      #                               module_project_id: @module_project.id).first#_or_create
+      #                               module_project_id: @module_project.id).first_or_create
 
       @ge_input_values = @ge_input.values
       @ge_factors = @ge_model.ge_factors
@@ -3488,6 +3488,20 @@ public
                                                 module_project_id: new_mp.id,
                                                 project_id: new_prj.id,
                                                 organization_id: @organization.id)
+          end
+
+          #For Ge inputs
+          old_mp.ge_inputs.each do |oge_input|
+            ge = Ge::GeInput.new(organization_id: @organization.id,
+                               module_project_id: new_mp.id,
+                               project_id: new_prj.id,
+                               values: oge_input.values,
+                               s_factors_value: oge_input.s_factors_value,
+                               p_factors_value: oge_input.p_factors_value,
+                               c_factors_value: oge_input.c_factors_value,
+                               formula: oge_input.formula)
+
+            ge.save
           end
 
           # if the module_project is nil

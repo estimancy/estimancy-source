@@ -26,6 +26,7 @@ module Ge
     serialize :values, Hash  # Hash of Hash  ==> { { :ge_factor_value_id => id, :scale_prod => val, :factor_name =>, :value => val }, {...}, ... }
 
     belongs_to :ge_model
+    belongs_to :module_project
 
   end
 end

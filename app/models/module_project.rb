@@ -65,6 +65,7 @@ class ModuleProject < ActiveRecord::Base
   has_many :module_project_ratio_variables, dependent: :destroy
   has_many :skb_inputs, class_name: "Skb::SkbInput", :dependent => :destroy
   has_many :kb_inputs, class_name: "Kb::KbInput", :dependent => :destroy
+  has_many :ge_inputs, class_name: "Ge::GeInput", :dependent => :destroy
 
   has_many :ej_instance_estimates, class_name: "ExpertJudgement::InstanceEstimate", :dependent => :destroy
   has_many :staffing_custom_data, class_name: "Staffing::StaffingCustomDatum", :dependent => :destroy
