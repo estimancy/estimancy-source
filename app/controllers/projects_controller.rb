@@ -3518,6 +3518,43 @@ public
             kb.save
           end
 
+          #For Staffing
+          old_mp.staffing_custom_data.each do |oscd|
+            staffing = Staffing::Staffing.new(module_project_id: new_mp.id,
+                                              staffing_method: oscd.staffing_method,
+                                              period_unit: oscd.period_unit,
+                                              standard_effort: oscd.standard_effort,
+                                              global_effort_type: oscd.global_effort_type,
+                                              global_effort_value: oscd.global_effort_value,
+                                              staffing_constraint: oscd.staffing_constraint,
+                                              duration: oscd.duration,
+                                              max_staffing: oscd.max_staffing,
+                                              t_max_staffing: oscd.t_max_staffing,
+                                              mc_donell_coef: oscd.mc_donell_coef,
+                                              puissance_n: oscd.puissance_n,
+                                              trapeze_default_values: oscd.trapeze_default_values,
+                                              trapeze_parameter_values: oscd.trapeze_parameter_values,
+                                              form_coef: oscd.form_coef,
+                                              difficulty_coef: oscd.difficulty_coef,
+                                              coef_a: oscd.coef_a,
+                                              coef_b: oscd.coef_b,
+                                              coef_a_prime: oscd.coef_a_prime,
+                                              coef_b_prime: oscd.coef_b_prime,
+                                              calculated_effort: oscd.calculated_effort,
+                                              theoretical_staffing: oscd.theoretical_staffing,
+                                              calculated_staffing: oscd.calculated_staffing,
+                                              chart_actual_coordinates: oscd.chart_actual_coordinates,
+                                              trapeze_chart_theoretical_coordinates: oscd.trapeze_chart_theoretical_coordinates,
+                                              rayleigh_chart_theoretical_coordinates: oscd.rayleigh_chart_theoretical_coordinates,
+                                              rayleigh_duration: oscd.rayleigh_duration,
+                                              actuals_based_on: oscd.actuals_based_on,
+                                              mcdonnell_chart_theorical_coordinates: oscd.mcdonnell_chart_theorical_coordinates,
+                                              max_staffing_rayleigh: oscd.max_staffing_rayleigh,
+                                              percent: oscd.percent)
+
+            staffing.save
+          end
+
           # if the module_project is nil
           unless old_mp.view.nil?
             #Update the new project/estimation views and widgets
