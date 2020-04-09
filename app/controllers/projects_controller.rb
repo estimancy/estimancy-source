@@ -1194,21 +1194,22 @@ class ProjectsController < ApplicationController
       @kb_model = @module_project.kb_model
       @kb_input = Kb::KbInput.where(organization_id: @project_organization.id,
                                     kb_model_id: @kb_model.id,
-                                    module_project_id: @module_project.id).first_or_create
+                                    module_project_id: @module_project.id).first#_or_create
       @project_list = []
 
     elsif @module_project.pemodule.alias == "skb"
       @skb_model = @module_project.skb_model
-      @skb_input = Skb::SkbInput.where(organization_id: @project_organization.id,
-                                       skb_model_id: @skb_model.id,
-                                       module_project_id: @module_project.id).first_or_create
+      @skb_input = @module_project.skb_inputs.last
       @project_list = []
 
     elsif @module_project.pemodule.alias == "ge"
       @ge_model = @module_project.ge_model
-      @ge_input = Ge::GeInput.where(organization_id: @project_organization.id,
-                                    ge_model_id: @ge_model.id,
-                                    module_project_id: @module_project.id).first_or_create
+      @ge_input = @module_project.ge_inputs.last
+
+      # Ge::GeInput.where(organization_id: @project_organization.id,
+      #                               ge_model_id: @ge_model.id,
+      #                               module_project_id: @module_project.id).first#_or_create
+
       @ge_input_values = @ge_input.values
       @ge_factors = @ge_model.ge_factors
       @all_factors_values_hash = Hash.new #hash that contained factor values
@@ -3463,6 +3464,10 @@ public
 
 
           ### End wbs_activity
+
+          # Skb::SkbInput.where(retained_size: nil).each do |skbi|
+          #   skbi.delete
+          # end
 
           # For SKB-Input
           old_mp.skb_inputs.each do |skbi|

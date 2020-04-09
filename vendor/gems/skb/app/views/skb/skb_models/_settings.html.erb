@@ -45,13 +45,13 @@
        @project_list = @project_list.uniq
 
        @project_list.map do |i|
-         @my_skb_datas << { x: i.data, y: i.processing, z: i.data.to_f + i.processing.to_f, name: i.name, description: simple_format(i.description.to_s) }
+         @my_skb_datas << { x: i.data, y: i.processing, z: i.data.to_f + i.processing.to_f, name: i.name, description: i.description.to_s }
        end
        @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
                           y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
                           z: @skb_input.nil? ? 0 : @skb_input.retained_size.to_i,
                           name: @project.to_s,
-                          description: simple_format(@project.description) }
+                          description: @project.description.to_s }
     %>
 
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
@@ -219,7 +219,7 @@
                         var y = Math.round(e.yAxis[0].value);
                         var series = this.series[0];
                         // Add it
-                        series.addPoint({x: x, y: y, z: x+y, name: "<%= @project.to_s.truncate(10) %>", description: "<%= @project.description.to_s %>" });
+                        series.addPoint({x: x, y: y, z: x+y, name: "<%= @project.to_s.truncate(10) %>" });
                         series.data[0].remove(false, false);
                         $.ajax({
                           url: "<%= skb.skb_model_save_size_path(@skb_model.id) %>",
