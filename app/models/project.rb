@@ -670,15 +670,88 @@ class Project < ActiveRecord::Base
 
             # For SKB-Input
             old_mp.skb_inputs.each do |skbi|
-              Skb::SkbInput.create(data: skbi.data, processing: skbi.processing, retained_size: skbi.retained_size,
-                                   organization_id: organization.id, module_project_id: new_mp.id)
+              Skb::SkbInput.create(data: skbi.data,
+                                   processing: skbi.processing,
+                                   retained_size: skbi.retained_size,
+                                   filters: skbi.filters,
+                                   organization_id: @organization.id,
+                                   module_project_id: new_mp.id)
             end
 
             #For ge_model_factor_descriptions
             old_mp.ge_model_factor_descriptions.each do |factor_description|
-              Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id, ge_factor_id: factor_description.ge_factor_id,
-                                                  factor_alias: factor_description.factor_alias, description: factor_description.description,
-                                                  module_project_id: new_mp.id, project_id: new_prj.id, organization_id: organization.id)
+              Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id,
+                                                  ge_factor_id: factor_description.ge_factor_id,
+                                                  factor_alias: factor_description.factor_alias,
+                                                  description: factor_description.description,
+                                                  module_project_id: new_mp.id,
+                                                  project_id: new_prj.id,
+                                                  organization_id: @organization.id)
+            end
+
+            #For Ge inputs
+            old_mp.ge_inputs.each do |oge_input|
+              ge = Ge::GeInput.new(organization_id: @organization.id,
+                                   module_project_id: new_mp.id,
+                                   project_id: new_prj.id,
+                                   values: oge_input.values,
+                                   s_factors_value: oge_input.s_factors_value,
+                                   p_factors_value: oge_input.p_factors_value,
+                                   c_factors_value: oge_input.c_factors_value,
+                                   formula: oge_input.formula)
+
+              ge.save
+            end
+
+            #For Kb
+            old_mp.kb_inputs.each do |okb_input|
+              kb = Kb::KbInput.new(organization_id: @organization.id,
+                                   module_project_id: new_mp.id,
+                                   formula: okb_input.formula,
+                                   values: okb_input.values,
+                                   regression: okb_input.regression,
+                                   filters: okb_input.filters)
+
+              kb.save
+            end
+
+            #For Staffing
+            old_mp.staffing_custom_data.each do |oscd|
+              staffing = Staffing::StaffingCustomDatum.new( module_project_id: new_mp.id,
+                                                            staffing_model_id: new_mp.staffing_model_id,
+                                                            pbs_project_element_id: new_prj.root_component.id,
+                                                            staffing_method: oscd.staffing_method,
+                                                            period_unit: oscd.period_unit,
+                                                            standard_effort: oscd.standard_effort,
+                                                            global_effort_type: oscd.global_effort_type,
+                                                            global_effort_value: oscd.global_effort_value,
+                                                            staffing_constraint: oscd.staffing_constraint,
+                                                            duration: oscd.duration,
+                                                            max_staffing: oscd.max_staffing,
+                                                            t_max_staffing: oscd.t_max_staffing,
+                                                            mc_donell_coef: oscd.mc_donell_coef,
+                                                            puissance_n: oscd.puissance_n,
+                                                            trapeze_default_values: oscd.trapeze_default_values,
+                                                            trapeze_parameter_values: oscd.trapeze_parameter_values,
+                                                            form_coef: oscd.form_coef,
+                                                            difficulty_coef: oscd.difficulty_coef,
+                                                            coef_a: oscd.coef_a,
+                                                            coef_b: oscd.coef_b,
+                                                            coef_a_prime: oscd.coef_a_prime,
+                                                            coef_b_prime: oscd.coef_b_prime,
+                                                            calculated_effort: oscd.calculated_effort,
+                                                            theoretical_staffing: oscd.theoretical_staffing,
+                                                            calculated_staffing: oscd.calculated_staffing,
+                                                            chart_actual_coordinates: oscd.chart_actual_coordinates,
+                                                            trapeze_chart_theoretical_coordinates: oscd.trapeze_chart_theoretical_coordinates,
+                                                            rayleigh_chart_theoretical_coordinates: oscd.rayleigh_chart_theoretical_coordinates,
+                                                            rayleigh_duration: oscd.rayleigh_duration,
+                                                            actuals_based_on: oscd.actuals_based_on,
+                                                            mcdonnell_chart_theorical_coordinates: oscd.mcdonnell_chart_theorical_coordinates,
+                                                            max_staffing_rayleigh: oscd.max_staffing_rayleigh,
+                                                            percent: oscd.percent)
+
+              staffing.save
             end
 
             # if the module_project is nil
