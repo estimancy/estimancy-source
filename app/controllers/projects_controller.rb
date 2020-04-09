@@ -1192,10 +1192,11 @@ class ProjectsController < ApplicationController
 
     elsif @module_project.pemodule.alias == "kb"
       @kb_model = @module_project.kb_model
-      @kb_model = @module_project.kb_inputs.last
-      # @kb_input = Kb::KbInput.where(organization_id: @project_organization.id,
-      #                               kb_model_id: @kb_model.id,
-      #                               module_project_id: @module_project.id).first#_or_create
+      # @kb_input = @module_project.kb_inputs.last
+
+      @kb_input = Kb::KbInput.where(organization_id: @project_organization.id,
+                                    module_project_id: @module_project.id).first_or_create
+
       @project_list = []
 
     elsif @module_project.pemodule.alias == "skb"
@@ -3506,13 +3507,13 @@ public
           end
 
           #For Kb
-          old_mp.kb_inputs.each do |kb_input|
+          old_mp.kb_inputs.each do |okb_input|
             kb = Kb::KbInput.new(organization_id: @organization.id,
                                  module_project_id: new_mp.id,
-                                 formula: kb_input.formula,
-                                 values: kb_input.values,
-                                 regression: kb_input.regression,
-                                 filters: kb_input.filters)
+                                 formula: okb_input.formula,
+                                 values: okb_input.values,
+                                 regression: okb_input.regression,
+                                 filters: okb_input.filters)
 
             kb.save
           end

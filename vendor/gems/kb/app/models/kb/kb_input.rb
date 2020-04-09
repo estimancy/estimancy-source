@@ -22,6 +22,7 @@
 module Kb
   class KbInput < ActiveRecord::Base
     belongs_to :kb_model
+    belongs_to :module_project
 
     serialize :filters, Hash
     serialize :values, Array
