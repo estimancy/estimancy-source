@@ -34,7 +34,7 @@
           <tr>
             <% selected_inline_columns.each do |column| %>
               <td style="padding: 5px;">
-                <%= text_field_tag column.name, "", class: "form-control form-control-sm" %>
+                <%= text_field_tag column.name, session[:search_hash].nil? ? '' : session[:search_hash][column.name], class: "form-control form-control-sm" %>
               </td>
             <% end %>
             <td></td>

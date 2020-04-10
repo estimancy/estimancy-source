@@ -182,8 +182,8 @@
                               }
 
                           },
-                          min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range %>,
-                          max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range %>
+                          min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range.to_i %>,
+                          max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range.to_i %>
                       });
                   </script>
                 </div>
@@ -209,14 +209,22 @@
                 <div class="indicator-title"><%= I18n.t :revised_effort %></div>
                 <div class="indicator-value">
                   <span class="effort">
-                    <% unless @staffing_custom_data.global_effort_value.nil? %>
-                      <%= @staffing_custom_data.global_effort_value.round(user_number_precision) %>
+                    <% if @module_project.done == true %>
+                      <% unless @staffing_custom_data.global_effort_value.nil? %>
+                        <%= @staffing_custom_data.global_effort_value.round(user_number_precision) %>
+                      <% end %>
+                    <% else %>
+                      -
                     <% end %>
                   </span> <%= @staffing_model.effort_unit %>
                   <span class="indicator-value-gain percent_effort">
-                    <% unless @staffing_custom_data.global_effort_value.nil? %>
-                      <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100).round(1)) %>
-                    <% end %> %
+                    <% if @module_project.done == true %>
+                      <% unless @staffing_custom_data.global_effort_value.nil? %>
+                        <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100).round(1)) %>
+                      <% end %> %
+                    <% else %>
+                      -
+                    <% end %>
                   </span>
                 </div>
                 <div class="indicator-optimal"><%= I18n.t :optimal_effort %></div>
@@ -234,14 +242,22 @@
                 <div class="indicator-title"><%= I18n.t :duration_in_week %></div>
                 <div class="indicator-value">
                   <span class="duration">
-                    <% unless @staffing_custom_data.duration.nil? %>
-                      <%= @staffing_custom_data.duration.round(user_number_precision) %>
+                    <% if @module_project.done == true %>
+                      <% unless @staffing_custom_data.duration.nil? %>
+                        <%= @staffing_custom_data.duration.round(user_number_precision) %>
+                      <% end %>
+                    <% else %>
+                      -
                     <% end %>
                   </span> sem.
                   <span class="indicator-value-gain percent_duration">
-                   <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
-                      <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(1)) %>
-                   <% end %> %
+                    <% if @module_project.done == true %>
+                      <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
+                        <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(1)) %>
+                      <% end %> %
+                    <% else %>
+                      -
+                    <% end %>
                   </span>
                 </div>
                 <div class="indicator-optimal"><%= I18n.t :optimal_duration_in_week %></div>
@@ -260,8 +276,12 @@
                 <div class="indicator-title"><%= I18n.t :end_date %></div>
                 <div class="indicator-value">
                   <span class="end_date">
-                    <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
-                      <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: "%d/%m/%Y") %>
+                    <% if @module_project.done == true %>
+                      <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
+                        <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: "%d/%m/%Y") %>
+                      <% end %>
+                    <% else %>
+                      -
                     <% end %>
                   </span>
                 </div>
@@ -288,21 +308,26 @@
                 </div>
                 <div class="indicator-value">
                   <span class="staffing_trapeze">
-                    <% unless @staffing_custom_data.max_staffing.nil? %>
-                      <%# trapeze_staffing_max = @staffing_custom_data.max_staffing.to_f.round(user_number_precision) rescue 0 %>
-                      <%= @staffing_custom_data.max_staffing.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                    <% if @module_project.done == true %>
+                      <% unless @staffing_custom_data.max_staffing.nil? %>
+                        <%= @staffing_custom_data.max_staffing.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                      <% end %>
+                    <% else %>
+                      -
                     <% end %>
                   </span> pers.
                   <span class="indicator-value-gain percent_trapeze">
-                    <% unless @staffing_custom_data.max_staffing.nil? %>
-                      <%= sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100).round(1)) %>
-                    <% end %> %
+                    <% if @module_project.done == true %>
+                      <% unless @staffing_custom_data.max_staffing.nil? %>
+                        <%= sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100).round(1)) %>
+                      <% end %> %
+                    <% else %>
+                    <% end %>
                   </span>
                 </div>
                 <div class="indicator-optimal">Staffing optimal</div>
                 <div class="indicator-optimal-value">
                   <span class="reference_staffing_trapeze">
-                    <%# trapeze_staffing = staffing_trapeze.to_f.round(user_number_precision) rescue 0 %>
                     <%= staffing_trapeze.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
                   </span> pers.
                 </div>
@@ -313,22 +338,28 @@
                 <div class="indicator-title">Rayleigh (pers.)</div>
                 <div class="indicator-value">
                   <span class="staffing_rayleigh">
-                    <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
-                      <%# rayleigh_staffing_max = @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision) %>
-                      <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                    <% if @module_project.done == true %>
+                      <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
+                        <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                      <% end %>
+                    <% else %>
+                      -
                     <% end %>
                   </span> pers.
                   <span class="indicator-value-gain percent_rayleigh">
-                    <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
-                      <%= sign((((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh) / staffing_rayleigh) * 100).round(1)) %>
-                    <% end %> %
+                    <% if @module_project.done == true %>
+                      <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
+                        <%= sign((((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh) / staffing_rayleigh) * 100).round(1)) %>
+                      <% end %> %
+                    <% else %>
+                      -
+                    <% end %>
                   </span>
                 </div>
                 <div class="indicator-optimal">Optimal (pers.)</div>
                 <div class="indicator-optimal-value">
                   <span class="reference_staffing_rayleigh">
                     <% unless staffing_rayleigh.nil? %>
-                      <%# rayleigh_staffing = staffing_rayleigh.to_f.round(user_number_precision) rescue 0 %>
                       <%= staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0%>
                     <% end %>
                   </span> pers.

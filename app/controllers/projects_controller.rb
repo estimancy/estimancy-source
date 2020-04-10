@@ -1196,7 +1196,7 @@ class ProjectsController < ApplicationController
 
       if @kb_input.nil?
         @kb_input = Kb::KbInput.create(organization_id: @project_organization.id,
-                                       module_project_id: @module_project.id).last
+                                       module_project_id: @module_project.id)
       end
 
       @project_list = []
