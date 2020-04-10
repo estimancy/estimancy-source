@@ -1,78 +1,85 @@
-<div class="tabs">
-  <div id="tabs-1">
-
+<section class="card card-content-bloc estimancy-form">
     <%= simple_form_for(@views_widget, is_project_data_widget: true, :remote => true) do |f| %>
         <%= f.error_notification %>
-        <div class="form-inputs">
-          <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
-          <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
-          <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
-          <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
-          <%= f.input :is_project_data_widget, as: :hidden, :input_html => { value: true } %>
-          <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
 
-          <div class="well well-rounded" style="border-width: 1px;">
-            <table>
-              <tr>
-                <td><%= f.input :name, label: I18n.t(:name) %></td>
-                <td>
-                  <label class="checkbox"></label>
-                  <%= f.input :show_name, label: I18n.t(:show_name) %>
-                </td>
-              </tr>
+        <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
+        <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+        <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+        <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
+        <%= f.input :is_project_data_widget, as: :hidden, :input_html => { value: true } %>
+        <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
 
-              <tr>
-                <td>
-                  <!-- Color is using the JS Spectrum library -->
-                  <% if @views_widget.new_record? %>
-                      <%#= f.input :color, label: I18n.t(:status_color), input_html: {class: "basic", type: 'color', value: '#99ccff'} %>
-                      <%= f.input :color, label: I18n.t(:status_color), input_html: {value: "blanchedalmond"} %>
-                  <% else %>
-                      <%= f.input :color, label: I18n.t(:status_color) %>
-                  <% end %>
-                </td>
-                <td>
-                  <%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
-                </td>
-                <td>
-                  <div id="view_icon_class_image" class="span1"></div>
-                </td>
-              </tr>
-            </table>
-          </div>
 
-          <div class="row-fluid">
-            <div class="span6">
-              <% if @project.organization.name.downcase.include?("distribution transporteur") %>
-                  <% platform_category_name = "TM" %>
-              <% else %>
-                  <% platform_category_name = I18n.t(:platform_category) %>
-              <% end %>
-              <%= f.input :project_attribute_name, as: :select, label: I18n.t(:project_attribute_name),
-                          :collection => [ [I18n.t(:application), 'application_id'], [I18n.t(:project_areas), 'project_area_id'], [I18n.t(:project_category), 'project_category_id'], ["#{platform_category_name}", 'platform_category_id'], [I18n.t(:acquisition_category), 'acquisition_category_id'], [I18n.t(:provider), 'provider_id'] ],
-                          input_html: { class: "input-xlarge", include_blank: false } %>
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+            <div class="form-row">
+              <div class="col-5">
+
+                <table>
+                  <tr>
+                    <td>
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                        <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                      </div>
+
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :show_name, as: :boolean, label: false, :input_html => {:class => 'mdl-checkbox__inputs'}   %>
+                        <label class="mdl-textfield__label" for="show_name" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('show_name') %></label>
+                      </div>
+
+                    </td>
+                  </tr>
+
+                  <tr>
+                    <td>
+                      <% if @views_widget.new_record? %>
+                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <%= f.input :color, label: false, :input_html => { value => "blanchedalmond", :class => 'mdl-textfield__input form-control'} %>
+                            <label class="mdl-textfield__label" for="color"><%= I18n.t('status_color') %></label>
+                          </div>
+                      <% else %>
+                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <%= f.input :color, label: false, :input_html => { :class => 'mdl-textfield__input form-control'} %>
+                            <label class="mdl-textfield__label" for="color"><%= I18n.t('status_color') %></label>
+                          </div>
+                      <% end %>
+                    </td>
+                    <td>
+                      <%= f.input :icon_class, as: :select, :input_html => {:class => 'input-large'}, collection: Projestimate::Application::ICON_CLASSES.sort() , label: I18n.t(:icon) %>
+                    </td>
+                    <td>
+                      <div id="view_icon_class_image" class="span1"></div>
+                    </td>
+                  </tr>
+                </table>
+
+                <div class="row-fluid">
+                  <div class="span6">
+                    <% if @project.organization.name.downcase.include?("distribution transporteur") %>
+                        <% platform_category_name = "TM" %>
+                    <% else %>
+                        <% platform_category_name = I18n.t(:platform_category) %>
+                    <% end %>
+                    <%= f.input :project_attribute_name, as: :select, label: I18n.t(:project_attribute_name),
+                                :collection => [ [I18n.t(:application), 'application_id'], [I18n.t(:project_areas), 'project_area_id'], [I18n.t(:project_category), 'project_category_id'], ["#{platform_category_name}", 'platform_category_id'], [I18n.t(:acquisition_category), 'acquisition_category_id'], [I18n.t(:provider), 'provider_id'] ],
+                                input_html: { class: "input-xlarge", include_blank: false } %>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            <!--<div class="span6">-->
-              <!--<h6 style="margin-bottom: 1rem"><%#= I18n.t :fields %></h6>-->
-              <!--<%# selected = @views_widget.project_fields.first %>-->
-              <%#= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None",
-#                              disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?),
-                             label: I18n.t(:fields), class: "field_margin_top"%>
-            <!--</div>-->
+            <div class="actions-tabs">
+              <% if can?(:alter_estimation_plan, @project)%>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <% end %>
+              <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+            </div>
           </div>
-
         </div>
 
-        <div class="actions-tabs">
-          <% if can?(:alter_estimation_plan, @project)%>
-              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
-          <% end %>
-          <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
-        </div>
     <% end %>
-  </div>
-</div>
+</section>
 
 <script>
 

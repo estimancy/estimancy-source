@@ -4,6 +4,8 @@
     <%= render 'comment_form' %>
   <% elsif params[:is_kpi_widget] == "true"  %>
     <%= render 'kpi_form' %>
+  <% elsif params[:is_project_data_widget] == "true" %>
+      <%= render(:partial => "views_widgets/project_data_widget_form") %>
   <% else %>
     <%= render 'form' %>
   <% end %>

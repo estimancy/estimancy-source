@@ -1,3 +1,7 @@
+:root {
+  --widget-text-color: #ECEFF2;
+}
+
 h2, h5, h6{
   margin: 0;
 }
@@ -227,6 +231,7 @@ table td.guw-cell-ajustment{
 
 .label_widget_title{
   font-weight: bold;
-  font-size: 18px;
+  font-size: 15px;
   margin-left: -15rem;
+  background-color: var(--widget-text-color) !important;
 }

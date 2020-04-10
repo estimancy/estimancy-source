@@ -8,12 +8,6 @@
 //@import "default/colors";
 //@import "default/fonts";
 //@import "default/normalize";
-
-:root {
-  --widget-text-color: #ECEFF2;
-}
-
-
 .widgets-list {
 
   .tools i{
@@ -64,7 +58,6 @@
 
       span {
         background-color: #ECEFF2;  //Valeur initiale
-        //background-color: var(--widget-text-color);
         padding: 0 1rem;
       }
     }
