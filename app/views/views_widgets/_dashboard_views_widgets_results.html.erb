@@ -59,9 +59,16 @@
               <%# @widgets[view_widget.name] = [view_widget, view_widget_data[:value_to_show]] %>
               <% @widgets[view_widget.name] = [view_widget, view_widget.comment] %>
               <% @label_widget_ids << view_widget.id %>
+
             <% elsif view_widget.is_kpi_widget? %>
               <% view_widget_data = get_kpi_value(view_widget) %>
               <% @widgets[view_widget.name] = [view_widget, view_widget_data] %>
+
+            <% elsif view_widget.is_project_data_widget? %>
+                <% view_widget_data = get_project_data_widget_value(view_widget.id, @project.id) %>
+                <% value_to_show = view_widget_data[:value_to_show] rescue nil %>
+                <% @widgets[view_widget.name] = [view_widget, value_to_show] %>
+
             <% else %>
               <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
                 <% if view_widget.widget_type == "text" %>
