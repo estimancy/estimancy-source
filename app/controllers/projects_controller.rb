@@ -3385,7 +3385,8 @@ public
         end
 
         #Managing the component tree : PBS
-        pe_wbs_product = new_prj.pe_wbs_projects.products_wbs.first
+        #pe_wbs_product = new_prj.pe_wbs_projects.products_wbs.first
+        pe_wbs_product = new_prj.pe_wbs_projects.first
 
         # For PBS
         new_prj_components = pe_wbs_product.pbs_project_elements
@@ -3440,8 +3441,8 @@ public
             new_mp.associated_module_projects << new_associated_mp
           end
 
-          Thread.new do
-            ActiveRecord::Base.connection_pool.with_connection do
+          #Thread.new do
+            #ActiveRecord::Base.connection_pool.with_connection do
 
               ### Wbs activity
               #create module_project ratio elements
@@ -3474,9 +3475,9 @@ public
                 #end
                 mp_ratio_element.save
               end
-            end
+            #end
             # ActiveRecord::Base.connection.close
-          end
+          #end
 
 
           ### End wbs_activity
