@@ -1,7 +1,8 @@
 <section class="card card-content-bloc estimancy-form">
     <%= simple_form_for(@views_widget, is_project_data_widget: true, :remote => true) do |f| %>
         <%= f.error_notification %>
-        <div class="form-inputs">
+
+        <div class="card-body">
           <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
           <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
           <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
@@ -19,7 +20,6 @@
                     <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
                     <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
                   </div>
-
                 </div>
 
                 <!--<div class="col-8">-->
@@ -62,9 +62,7 @@
                   <!--</div>-->
                   <!--<div id="view_icon_class_image" class="span1"></div>-->
                 </div>
-
               </div>
-
             </div>
 
             <div class="actions-tabs">
@@ -73,8 +71,6 @@
               <% end %>
               <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
             </div>
-
-
           </div>
         </div>
     <% end %>
