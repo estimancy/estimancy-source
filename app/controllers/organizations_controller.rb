@@ -230,11 +230,13 @@ class OrganizationsController < ApplicationController
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:fields))  #project_fields
 
         #Then copy the widgets of the dafult view
+        widget_index = 0
         module_projects.each do |module_project|
           mp_view = module_project.view
           if mp_view
             mp_view.views_widgets.each_with_index do |view_widget, index|
               k = 0
+              widget_index = widget_index+1
 
               if module_project.pemodule.alias == "initialization"
                 mp_view_module_project_name = "Initialization"
@@ -279,36 +281,36 @@ class OrganizationsController < ApplicationController
                 end
               end
 
-              worksheet_view_widgets.add_cell(index+1, k, view_widget.name)
-              #worksheet_view_widgets.add_cell(index+1, k += 1, mp_view.id)
-              worksheet_view_widgets.add_cell(index+1, k += 1, mp_view_module_project_name)
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.module_project.module_project_name rescue nil))  #module_project.module_project_name
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.estimation_value.pe_attribute.name rescue nil))   # EstimationValue
-              worksheet_view_widgets.add_cell(index+1, k += 1, in_out)   # EstimationValue
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.show_name ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.show_tjm ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, (equation.blank? ? "" : equation.inspect))
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.comment)
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.is_label_widget ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.is_kpi_widget ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.kpi_unit)
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.use_organization_effort_unit ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.is_project_data_widget ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.project_attribute_name)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.icon_class)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.color)
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.show_min_max ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.width)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.height)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.widget_type)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.position)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.position_x)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.position_y)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.min_value)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.max_value)
-              worksheet_view_widgets.add_cell(index+1, k += 1, view_widget.validation_text)
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.show_wbs_activity_ratio ? 1 : 0))
-              worksheet_view_widgets.add_cell(index+1, k += 1, (view_widget.project_fields.last.field.name rescue nil))
+              worksheet_view_widgets.add_cell(widget_index, k, view_widget.name)
+              #worksheet_view_widgets.add_cell(widget_index, k += 1, mp_view.id)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, mp_view_module_project_name)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.module_project.module_project_name rescue nil))  #module_project.module_project_name
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.estimation_value.pe_attribute.name rescue nil))   # EstimationValue
+              worksheet_view_widgets.add_cell(widget_index, k += 1, in_out)   # EstimationValue
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.show_name ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.show_tjm ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (equation.blank? ? "" : equation.inspect))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.comment)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.is_label_widget ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.is_kpi_widget ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.kpi_unit)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.use_organization_effort_unit ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.is_project_data_widget ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.project_attribute_name)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.icon_class)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.color)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.show_min_max ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.width)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.height)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.widget_type)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.position)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.position_x)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.position_y)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.min_value)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.max_value)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.validation_text)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.show_wbs_activity_ratio ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.project_fields.last.field.name rescue nil))
             end
           end
         end

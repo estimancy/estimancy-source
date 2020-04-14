@@ -282,6 +282,8 @@ en:
   # wbs_activities
   show_hide_wbs_header: "Show hide wbs header"
   show_only_ratio: "Show only ratio"
+  hide_all: "Hide WBS header"
+  show_all: "Show WBS header"
   variable_percentage_relation_to_input: "Definition of variables and their percentage in relation to the input value"
   ratios_wbs: "Table of ratios and calculation formula of each phase of the WBS"
   results_entering_the_module: "RESULTS ENTERING THE MODULE"
