@@ -111,6 +111,7 @@ class OrganizationsController < ApplicationController
         worksheet_estimation_plan.add_cell(0, i += 1, "#{I18n.t(:pe_module)} Alias")
         #worksheet_estimation_plan.add_cell(0, i += 1, "ID ModuleProject")
         worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:module_name))
+        worksheet_estimation_plan.add_cell(0, i += 1, I18n.t(:display_order))
         worksheet_estimation_plan.add_cell(0, i += 1, "Position_x")
         worksheet_estimation_plan.add_cell(0, i += 1, "Position_y")
         worksheet_estimation_plan.add_cell(0, i += 1, "Left_position")
@@ -135,7 +136,7 @@ class OrganizationsController < ApplicationController
 
         nb_mp = 0
         module_projects = @project.module_projects
-        module_projects.each_with_index do |module_project, index|
+        module_projects.reorder('display_order ASC').each_with_index do |module_project, index|
           j = 0
           module_project_name = module_project.module_project_name
           if module_project.pemodule.alias == "initialization"
@@ -145,6 +146,7 @@ class OrganizationsController < ApplicationController
           worksheet_estimation_plan.add_cell(index+1, j, module_project.pemodule.title)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.pemodule.alias)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project_name)
+          worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.display_order)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.position_x)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.position_y)
           worksheet_estimation_plan.add_cell(index+1, j += 1, module_project.left_position)
@@ -514,15 +516,15 @@ class OrganizationsController < ApplicationController
                         if index >= 1
                           pemodule_alias = row.cells[1].value rescue nil
                           module_project_name = row.cells[2].value rescue nil
-                          @associated_module_projects["#{module_project_name}"] = eval(row.cells[18].value) rescue nil
-                          @associated_estimation_values["#{module_project_name}"] = eval(row.cells[19].value) rescue nil
-                          guw_unit_of_work_groups = eval(row.cells[20].value) rescue nil
+                          @associated_module_projects["#{module_project_name}"] = eval(row.cells[19].value) rescue nil
+                          @associated_estimation_values["#{module_project_name}"] = eval(row.cells[20].value) rescue nil
+                          guw_unit_of_work_groups = eval(row.cells[21].value) rescue nil
 
                           unless pemodule_alias.nil?
                             if pemodule_alias == "initialization"
                               @initialization_module_project = @initialization_module.nil? ? nil : @project.module_projects.find_by_pemodule_id(@initialization_module.id)
                               unless @initialization_module_project.nil?
-                                @initialization_module_project.update_attributes(show_results_view: (row.cells[8].value rescue nil))
+                                @initialization_module_project.update_attributes(show_results_view: (row.cells[9].value rescue nil))
                               end
                             else
                               # Append_pemodule
@@ -564,7 +566,7 @@ class OrganizationsController < ApplicationController
                                   flash[:error] = "Erreur d'ajout du module #{module_project_name}"
                                 else
                                   if pemodule_alias.to_s == "effort_breakdown"
-                                    wbs_activity_ratio_name = row.cells[12].value.to_f rescue nil
+                                    wbs_activity_ratio_name = row.cells[13].value.to_f rescue nil
                                     if wbs_activity_ratio_name.blank?
                                       wbs_activity_ratio_id = nil
                                     else
@@ -583,12 +585,13 @@ class OrganizationsController < ApplicationController
                                     end
                                   end
                                   # Update the Module-Project positions (left = position_x, top = position_y)
-                                  module_project.update_attributes(position_x: (row.cells[3].value.to_f rescue nil),
-                                                                   position_y: (row.cells[4].value.to_f rescue nil),
-                                                                   left_position: (row.cells[5].value.to_f rescue nil),
-                                                                   top_position: (row.cells[6].value.to_f rescue nil),
-                                                                   creation_order: (row.cells[7].value.to_f rescue nil),
-                                                                   show_results_view: (row.cells[8].value.to_f rescue nil),
+                                  module_project.update_attributes(display_order: (row.cells[3].value.to_f rescue nil),
+                                                                   position_x: (row.cells[4].value.to_f rescue nil),
+                                                                   position_y: (row.cells[5].value.to_f rescue nil),
+                                                                   left_position: (row.cells[6].value.to_f rescue nil),
+                                                                   top_position: (row.cells[7].value.to_f rescue nil),
+                                                                   creation_order: (row.cells[8].value.to_f rescue nil),
+                                                                   show_results_view: (row.cells[9].value.to_f rescue nil),
                                                                    wbs_activity_ratio_id: wbs_activity_ratio_id)
 
                                   @module_project_ids["#{module_project_name}"] = module_project.id
