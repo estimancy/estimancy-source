@@ -63,7 +63,19 @@ class OrganizationsController < ApplicationController
           label_platform_category =  "Urgence Devis"
         end
 
-        start_date = @project.start_date.blank ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@project.start_date)
+        #start_date = @project.start_date.blank ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@project.start_date)
+
+        start_date = I18n.l(Time.now, format: :date_month_year_concise)
+        if @project.start_date.nil? or @project.start_date.blank?
+          start_date = I18n.l(Time.now, format: :date_month_year_concise)
+        else
+          begin
+            start_date_tmp = Date.strptime(@project.start_date, I18n.t('date.formats.default'))
+            start_date = start_date_tmp
+          rescue
+            start_date = I18n.l(Time.now, format: :date_month_year_concise)
+          end
+        end
 
         # Proprietes globales
         global_properties = [[I18n.t(:organizations), @project.organization.name],
@@ -81,7 +93,8 @@ class OrganizationsController < ApplicationController
                             [I18n.t(:original_model), @project.original_model],
                             [I18n.t(:original_model_version), (@project.original_model.version_number rescue nil)],
                             [I18n.t(:description), @project.description],
-                            [I18n.t(:start_date), start_date], #[I18n.t(:start_date), I18n.l(@project.start_date)],
+                            [I18n.t(:start_date), start_date],
+                            #[I18n.t(:start_date), I18n.l(@project.start_date)],
                             [I18n.t(:creator), @project.creator],
                             [I18n.t(:status_alias), (@project.estimation_status.status_alias rescue nil)],
                             [I18n.t(:estimation_status), (@project.estimation_status.name rescue nil)],
