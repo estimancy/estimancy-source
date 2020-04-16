@@ -90,7 +90,7 @@ class ProjectsController < ApplicationController
     render :layout => false
   end
 
-  def raw_data_extraction
+  def   raw_data_extraction
     Thread.new do
       ActiveRecord::Base.connection_pool.with_connection do
 
@@ -380,6 +380,7 @@ class ProjectsController < ApplicationController
                 worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 7, "Charge (j.h)")
                 worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 8, "Coût (€)")
 
+                worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 9, "Localisation SRV")
 
 
 
@@ -501,6 +502,28 @@ class ProjectsController < ApplicationController
 
                 worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 7, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_migration.id}"].to_f.round(2))) # Charge
                 worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 8, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_cout_migration.id}"])) # Cout
+
+
+                ### Localisation ###
+                guw_coefficient_localisation = Guw::GuwCoefficient.where( organization_id: @organization.id,
+                                                                          guw_model_id: @guw_model.id,
+                                                                          name: "Localisation").first
+
+                unless guw_coefficient_localisation.nil?
+                  gceuw_localisation = Guw::GuwCoefficientElementUnitOfWork.where(  organization_id: @organization.id,
+                                                                                   guw_model_id: @guw_model.id,
+                                                                                   guw_coefficient_id: guw_coefficient_localisation.id,
+                                                                                   project_id: project.id,
+                                                                                   module_project_id: pmp.id,
+                                                                                   guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+
+                  unless gceuw_localisation.guw_coefficient_element.nil?
+                    gceuw_value = gceuw.value
+                  end
+                  worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 9, gceuw_value) # Localisation
+                end
+
+
               rescue
                 #
               end
