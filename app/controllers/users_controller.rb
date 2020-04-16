@@ -492,7 +492,7 @@ public
     end
   end
 
-  def destroy
+  def destroy_SAVE
     authorize! :manage, User
 
     @user = User.find(params[:id])
@@ -518,8 +518,113 @@ public
   end
 
 
+  def change_user_project_creator(current_owner, user_projects, anonymous_user)
+
+    unless user_projects.blank?
+      user_projects.each do |project|
+        # Rendre l'estimation non privée
+        project.private = false
+
+        #Remplacer le owner
+        project.creator_id = anonymous_user.id
+        old_comment = project.status_comment
+
+        #Mettre à jour le statut
+        new_comment = "#{I18n.l(Time.now)} : #{I18n.t(:user_deleted_replaced_by_anonymous, owner: "#{current_owner}")}. \r\n"
+        new_comment << "___________________________________________________________________________ \r\n"
+        new_comment << old_comment
+
+        project.status_comment = "\r\n #{new_comment} \r\n"
+        project.save
+      end
+    end
+  end
+
+
+  def destroy
+    authorize! :manage, User
+
+    @user = User.find(params[:id])
+    anonymous_user = User.where(login_name: "anonymous").first_or_create(login_name: "anonymous", first_name: "*", last_name: "ANONYMOUS", initials: "*ANONYMOUS", email: "contact@estimancy.com")
+
+    begin
+      @user.transaction do
+        @user.organizations.each do |organization|
+          user_projects = @user.projects.where(organization_id: organization.id)
+
+          # On met à jour les propriétaires des projets
+          unless user_projects.empty?
+            change_user_project_creator(@user, user_projects, anonymous_user)
+          end
+        end
+
+        @user.destroy
+        flash[:notice] = "L'utilisateur a bien été supprimé"
+
+        if current_user.super_admin?
+          redirect_to users_path and return
+        else
+          redirect_to :back
+        end
+      end
+    rescue
+      flash[:warning] = "Erreur lors de la suppression de l'utilisateur"
+    end
+
+  end
+
+
   # Supprimer un utilisateur d'une organisation
   def destroy_user_from_organization
+    begin
+      @user = User.find(params[:user_id])
+      organization_id = params[:organization_id].to_i
+      anonymous_user = User.where(login_name: "anonymous").first_or_create(login_name: "anonymous", first_name: "*", last_name: "ANONYMOUS", initials: "*ANONYMOUS", email: "contact@estimancy.com")
+      user_projects = @user.projects.where(organization_id: organization_id)
+
+      @user.transaction do
+      unless user_projects.empty?
+          change_user_project_creator(@user, user_projects, anonymous_user)
+        end
+
+        # unless user_projects.empty?
+        #   user_projects.each do |project|
+        #
+        #     # Rendre l'estimation non privée
+        #     project.private = false
+        #
+        #     #Remplacer le owner
+        #     project.creator_id = anonymous_user.id
+        #     old_comment = project.status_comment
+        #
+        #     #Mettre à jour le statut
+        #     new_comment = "#{I18n.l(Time.now)} : #{I18n.t(:user_deleted_replaced_by_anonymous, owner: "#{@user}")}. \r\n"
+        #     new_comment << "___________________________________________________________________________"
+        #     new_comment << old_comment
+        #
+        #     project.status_comment = "\r\n #{new_comment} \r\n"
+        #     project.save
+        #   end
+        # end
+
+        # Detach user from all groups of the current organization
+        current_orga_user_group_ids = @user.groups.where(organization_id: @current_organization.id)#.map(&:id)
+        @user.groups.delete(current_orga_user_group_ids)
+
+        # Detach user from the current organization
+        OrganizationsUsers.where(organization_id: organization_id, user_id: @user.id).delete_all
+      end
+
+      flash[:notice] = "L'utilisateur a bien été supprimé de l'organisation"
+      redirect_to :back and return
+
+    rescue
+      flash[:error] = "Erreur lors de la suppression de l'utilisateur"
+      redirect_to :back and return
+    end
+  end
+
+  def destroy_user_from_organization_SAVE
     begin
       @user = User.find(params[:user_id])
       if @user.projects.where(organization_id: params[:organization_id].to_i).empty?
@@ -543,7 +648,6 @@ public
       flash[:error] = "Erreur lors de la suppression de l'utilisateur"
       redirect_to :back and return
     end
-
   end
 
 

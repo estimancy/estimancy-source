@@ -1756,7 +1756,6 @@ de:
   show_coefficient_label: "Show coefficient label"
   show_coefficient_application_label: "Show application label"
 
-
   unit_of_work_types: "Unit of Work Types"
   weight_b: "Ordinate at origin"
   is_historization_status: "Status to historicize"
@@ -1768,3 +1767,4 @@ de:
   historized_estimations: "Historized estimations"
   display_historized: "Display all"
   hide_historized: "Hide historized"
+  user_deleted_replaced_by_anonymous: "User deleted and replaced by Anonymous"

@@ -2254,8 +2254,8 @@ fr:
         one: "%{count} %{model} affiché(e)"
         other: "%{count} %{model} affiché(e)s"
     page_gap: "&hellip;"
-    previous_label: "← précédent"  
-  
+    previous_label: "← précédent"
+
   warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."
   multiple_delete: "Suppression multiple"
   hide_wbs_header: "Masquer l'entête de la WBS"
@@ -2620,3 +2620,4 @@ fr:
   historized_estimations: "Estimations historisées"
   display_historized: "Afficher tout"
   hide_historized: "Masquer les historisés"
+  user_deleted_replaced_by_anonymous: " L'utilisateur \"%{owner}\" propriétaire de l'estimation a été supprimé et remplacé par Anonyme"

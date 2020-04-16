@@ -2551,7 +2551,7 @@ en:
   historized_estimations: "Historized estimations"
   display_historized: "Display all"
   hide_historized: "Hide historized"
-
+  user_deleted_replaced_by_anonymous: "The user \"%{owner}\" who owns the estimate has been deleted and replaced by Anonymous"
 
   horizontal_axis_label: "Horizontal axis label"
   Y_axis_label: "Y axis label"
@@ -2571,4 +2571,5 @@ en:
   optimal_duration_in_week: "Optimal Duration (week)"
   initial_date: "Initial Date"
   trapeze_staffing: "Staffing Trapeze (pers.)"
+
 

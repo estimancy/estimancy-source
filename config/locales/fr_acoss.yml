@@ -2597,3 +2597,4 @@ fr_acoss:
   historized_estimations: "Estimations historisées"
   display_historized: "Afficher tout"
   hide_historized: "Masquer les historisés"
+  user_deleted_replaced_by_anonymous: " L'utilisateur \"%{owner}\" propriétaire de l'estimation a été supprimé et remplacé par Anonyme"
