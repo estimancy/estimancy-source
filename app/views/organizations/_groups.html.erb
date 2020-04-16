@@ -17,10 +17,13 @@
         <td class="center"><%= group.is_protected_group == true ? I18n.t(:yes) : I18n.t(:no) %></td>
         <td><%= group.description %></td>
         <td class="center">
-          <%= link_to '', edit_organization_group_path(@organization, group), :class => 'icon-pencil', :title => I18n.t('edit') %>
+          <%#= link_to '', edit_organization_group_path(@organization, group), :class => 'icon-pencil', :title => I18n.t('edit') %>
+          <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_group_path(@organization, group), :class => 'material-icons', :title => I18n.t('edit') %>
+
           <% if can? :manage, Group %>
-            <%= link_to '', group, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
-          <% end %>
+            <%#= link_to '', group, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), organization_group_path(@organization, group), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+        <% end %>
         </td>
       </tr>
     <% end %>
