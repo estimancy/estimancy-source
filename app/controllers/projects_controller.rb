@@ -518,9 +518,9 @@ class ProjectsController < ApplicationController
                                                                                    guw_unit_of_work_id: guow.id).order("updated_at ASC").last
 
                   unless gceuw_localisation.guw_coefficient_element.nil?
-                    gceuw_value = gceuw.value
+                    gceuw_name = gceuw_localisation.guw_coefficient_element.name
                   end
-                  worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 9, gceuw_value) # Localisation
+                  worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 9, gceuw_name) # Localisation
                 end
 
 
