@@ -510,7 +510,7 @@ class ProjectsController < ApplicationController
                                                                           name: "Localisation").first
 
                 unless guw_coefficient_localisation.nil?
-                  gceuw_localisation = Guw::GuwCoefficientElementUnitOfWork.where(  organization_id: @organization.id,
+                  gceuw_localisation = Guw::GuwCoefficientElementUnitOfWork.where( organization_id: @organization.id,
                                                                                    guw_model_id: @guw_model.id,
                                                                                    guw_coefficient_id: guw_coefficient_localisation.id,
                                                                                    project_id: project.id,
@@ -520,6 +520,7 @@ class ProjectsController < ApplicationController
                   unless gceuw_localisation.guw_coefficient_element.nil?
                     gceuw_name = gceuw_localisation.guw_coefficient_element.name
                   end
+
                   worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 9, gceuw_name) # Localisation
                 end
 
