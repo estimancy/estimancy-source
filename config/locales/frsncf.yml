@@ -2600,3 +2600,4 @@ frsncf:
   historized_estimations: "Devis historisés"
   display_historized: "Afficher tout"
   hide_historized: "Masquer les historisés"
+  user_deleted_replaced_by_anonymous: " L'utilisateur \"%{owner}\" propriétaire du devis a été supprimé et remplacé par Anonyme"
