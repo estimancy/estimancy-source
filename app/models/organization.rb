@@ -94,14 +94,14 @@ class Organization < ActiveRecord::Base
   has_many :providers
   has_many :versions, class_name: "PaperTrail::Version", dependent: :destroy
 
-  has_many :demands
-  has_many :demand_types
+  # has_many :demands
+  # has_many :demand_types
   # has_many :demand_statuses
-  has_many :livrables
-  has_many :services
-  has_many :criticalities
-  has_many :severities
-  has_many :agreements
+  # has_many :livrables
+  # has_many :services
+  # has_many :criticalities
+  # has_many :severities
+  # has_many :agreements
 
   belongs_to :currency
 
