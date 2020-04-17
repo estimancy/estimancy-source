@@ -96,7 +96,7 @@ class Organization < ActiveRecord::Base
 
   has_many :demands
   has_many :demand_types
-  has_many :demand_statuses
+  # has_many :demand_statuses
   has_many :livrables
   has_many :services
   has_many :criticalities
