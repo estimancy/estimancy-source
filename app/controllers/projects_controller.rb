@@ -90,7 +90,7 @@ class ProjectsController < ApplicationController
     render :layout => false
   end
 
-  def   raw_data_extraction
+  def raw_data_extraction
     Thread.new do
       ActiveRecord::Base.connection_pool.with_connection do
 
@@ -260,7 +260,6 @@ class ProjectsController < ApplicationController
 
               worksheet_cf.add_cell(i, 13, guow.guw_type.nil? ? nil : guow.guw_type.name)
 
-
               if guow.intermediate_percent.nil? && guow.intermediate_weight.nil?
                 @guw_coefficients.each do |gc|
                   if gc.coefficient_type == "Liste" && gc.name == "Taille"
@@ -381,7 +380,6 @@ class ProjectsController < ApplicationController
                 worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 8, "Coût (€)")
 
                 worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 9, "Localisation SRV")
-
 
 
                 ###
@@ -515,7 +513,7 @@ class ProjectsController < ApplicationController
                                                                                    guw_coefficient_id: guw_coefficient_localisation.id,
                                                                                    project_id: project.id,
                                                                                    module_project_id: pmp.id,
-                                                                                   guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+                                                                                   guw_unit_of_work_id: guow.id).first
 
                   unless gceuw_localisation.guw_coefficient_element.nil?
                     gceuw_name = gceuw_localisation.guw_coefficient_element.name
@@ -547,7 +545,6 @@ class ProjectsController < ApplicationController
         worksheet_wbs.add_cell(0, 5, "Service")
         worksheet_wbs.add_cell(0, 6, "Localisation WBS")
 
-        #unless @organization.name == "CDS VOYAGEURS"
         if "cds voyageurs".in?(@organization.name.to_s.downcase)
           worksheet_wbs.add_cell(0, 7, "Urgence Devis")
         else
@@ -615,7 +612,7 @@ class ProjectsController < ApplicationController
                 end
               end
 
-              worksheet_wbs.add_cell(wbs_iii, 7, project_platform_category.nil? ? '' : project_platform_category)
+              worksheet_wbs.add_cell(wbs_iii, 7, project_platform_category.nil? ? '' : project_platform_category.to_s)
 
               worksheet_wbs.add_cell(wbs_iii, 8, project_project_category.to_s)
               worksheet_wbs.add_cell(wbs_iii, 9, project_provider.nil? ? '' : project_provider)
@@ -705,7 +702,7 @@ class ProjectsController < ApplicationController
               worksheet_synt.add_cell(pi, 6, value)
             end
 
-            worksheet_synt.add_cell(pi, 7, project_platform_category)
+            worksheet_synt.add_cell(pi, 7, project_platform_category.to_s)
 
             worksheet_synt.add_cell(pi, 8, project_project_category.to_s)
             worksheet_synt.add_cell(pi, 9, project_provider)
