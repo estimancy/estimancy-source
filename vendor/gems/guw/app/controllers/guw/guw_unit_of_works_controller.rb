@@ -779,9 +779,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         if params[:guw_type]["#{guw_unit_of_work.id}"].nil?
           guw_type = guw_unit_of_work.guw_type
         else
-          guw_type = Guw::GuwType.where(organization_id: @organization.id,
-                                        guw_model_id: @guw_model.id,
-                                        id: params[:guw_type]["#{guw_unit_of_work.id}"]).first  #.find(params[:guw_type]["#{guw_unit_of_work.id}"])
+          guw_type = Guw::GuwType.where(id: params[:guw_type]["#{guw_unit_of_work.id}"].to_i).first
         end
 
         if params[:guw_technology].present?
