@@ -467,11 +467,15 @@
             <% if got.display_type == "display_modif" %>
 
               <%
-                 if guow.size.to_f.round(2) != guow.ajusted_size.to_f.round(2)
-                   color = "background-color: ##{@guw_output.color_code};"
-                 else
-                   color = "background-color: transparent;"
-                 end
+                if guow.size.is_a?(Numeric) || guow.ajusted_size.is_a?(Numeric)
+                  color = "background-color: transparent;"
+                else
+                  if guow.size["#{@guw_output.id}"].to_f.round(2) != guow.ajusted_size["#{@guw_output.id}"].to_f.round(2)
+                    color = "background-color: ##{@guw_output.color_code};"
+                  else
+                    color = "background-color: transparent;"
+                  end
+                end
               %>
 
               <span class=" size_label_<%= guow.id %>">
