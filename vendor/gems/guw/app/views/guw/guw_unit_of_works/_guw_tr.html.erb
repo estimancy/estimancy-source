@@ -467,7 +467,7 @@
             <% if got.display_type == "display_modif" %>
 
               <%
-                 if guow.size != guow.ajusted_size
+                 if guow.size.to_f.round(2) != guow.ajusted_size.to_f.round(2)
                    color = "background-color: ##{@guw_output.color_code};"
                  else
                    color = "background-color: transparent;"
@@ -478,7 +478,7 @@
                 <%= number_field_tag "size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
                                      class: "size-#{uowg.id} guw-#{guow.id} form-control form-control-sm guw_number_field_tag",
                                      readonly: true,
-                                     style: " text-align: right;",
+                                     style: "text-align: right;",
                                      step: 0.001 %>
               </span>
               <span class="ajusted_size_<%= guow.id %>">
