@@ -10,6 +10,6 @@ class CreateBudgetBudgetTypes < ActiveRecord::Migration
   end
 
   def down
-    #drop_table :budget_budget_types
+    drop_table :budget_budget_types
   end
 end
