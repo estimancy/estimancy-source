@@ -35,9 +35,9 @@
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                          <%= f.association :module_project, label: false, collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
+                          <%= f.association :module_project, label: false, collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
                       <% else %>
-                          <%= f.association :module_project, label: false, collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
+                          <%= f.association :module_project, label: false, collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
                       <% end %>
                       <label class="mdl-textfield__label" for="module_project"><%= I18n.t(:label_modules) %></label>
                   </div>
@@ -45,7 +45,7 @@
 
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: "", input_html: {class: "inline_attr mdl-textfield__input form-control"}, include_blank: false %>
+                    <%= f.input :estimation_value_id, collection: @module_project_attributes, as: :grouped_select, group_method: :last, group_label_method: :first, label: false, input_html: {class: "inline_attr mdl-textfield__input form-control"}, include_blank: false %>
                     <label class="mdl-textfield__label" for="estimation_value_id"><%= I18n.t(:associated_attribute) %></label>
                   </div>
                 </div>
