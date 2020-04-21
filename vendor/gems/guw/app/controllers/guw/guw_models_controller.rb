@@ -1294,7 +1294,7 @@ class Guw::GuwModelsController < ApplicationController
       @worksheet.add_cell(0, index, val)
     end
 
-    jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
+    jj = 21 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
 
     @guw_unit_of_works.each_with_index do |guow, i|
 
@@ -1328,8 +1328,8 @@ class Guw::GuwModelsController < ApplicationController
       @worksheet.add_cell(ind, 15, guow.quantity)
       @worksheet.add_cell(ind, 16, guow.tracking)
       @worksheet.add_cell(ind, 17, cplx)
-      @worksheet.add_cell(ind, 18, guow.intermediate_weight)
 
+      @worksheet.add_cell(ind, 18, guow.intermediate_weight)
       @worksheet.add_dropdown(ind, 18, nil, 'Commentaire', guow.cplx_comments.blank? ? guow.guw_type.description : guow.cplx_comments)
 
       hash.sort_by { |k, v| v.to_f }.each_with_index do |i, j|
@@ -1390,7 +1390,7 @@ class Guw::GuwModelsController < ApplicationController
             @worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
             @worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
           else
-            p "GUOWA is nil"
+            # p "GUOWA is nil"
           end
           ii = ii + 2
         end
@@ -1409,7 +1409,7 @@ class Guw::GuwModelsController < ApplicationController
 
         kk = header.size - (@guw_model.guw_attributes.where(organization_id: organization_id).order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : @wbs_activity.wbs_activity_elements.where(organization_id: organization_id).select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
         @wbs_activity_ratio = @wbs_activity.nil? ? nil : @wbs_activity.wbs_activity_ratios.where(organization_id: organization_id).first
-        @module_project_ratio_elements = @wbs_activity_module_project.nil? ? nil : @wbs_activity_module_project.get_module_project_ratio_elements(@wbs_activity_ratio, current_component)
+        @module_project_ratio_elements = @wbs_activity_module_project.nil? ? nil : @wbs_activity_module_project.get_module_project_ratio_elements(current_module_project.nexts.first.wbs_activity_ratio, current_component)
         @root_module_project_ratio_element = @module_project_ratio_elements.nil? ? nil : @module_project_ratio_elements.select{|i| i.root? }.first
 
         tjm_array = []
@@ -1418,13 +1418,15 @@ class Guw::GuwModelsController < ApplicationController
         unless @wbs_activity.nil?
           @wbs_activity.wbs_activity_elements.where(organization_id: organization_id).select{|i| !i.root? }.each_with_index do |wbs_activity_element|
 
-            guw_output_effort = Guw::GuwOutput.where(organization_id: organization_id, guw_model_id: @guw_model.id,
+            guw_output_effort = Guw::GuwOutput.where(organization_id: organization_id,
+                                                     guw_model_id: @guw_model.id,
                                                      name: ["Charge RTU (jh)", "Charge RIS (jh)", "UC Dév. Dg", "Charge RTU Avec Dégr.", "Charge RTU avec prod. (jh)"]).first
 
-            guw_output_test = Guw::GuwOutput.where(organization_id: organization_id, guw_model_id: @guw_model.id,
+            guw_output_test = Guw::GuwOutput.where(organization_id: organization_id,
+                                                   guw_model_id: @guw_model.id,
                                                    name: ["Assiette Test", "Assiette Test (jh)", "Charges T (jh)", "UC Test Dg"]).first
 
-            mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.first
+            mp_ratio_element = @module_project_ratio_elements.select { |mp_ratio_elt| mp_ratio_elt.wbs_activity_element_id == wbs_activity_element.id }.last
 
             guw_output_effort_value = (guow.size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_effort.id}"].to_f.round(2)))
 
@@ -1434,12 +1436,16 @@ class Guw::GuwModelsController < ApplicationController
               guw_output_test_value = ""
             end
 
-            corresponding_ratio_elt = WbsActivityRatioElement.where(organization_id: organization_id, wbs_activity_id: @wbs_activity.id, wbs_activity_ratio_id: @wbs_activity_ratio.id, wbs_activity_element_id: wbs_activity_element.id).first
+            corresponding_ratio_elt = WbsActivityRatioElement.where(organization_id: organization_id,
+                                                                    wbs_activity_id: @wbs_activity.id,
+                                                                    wbs_activity_ratio_id: @wbs_activity_ratio.id,
+                                                                    wbs_activity_element_id: wbs_activity_element.id).first
 
             unless corresponding_ratio_elt.nil?
               final_formula = corresponding_ratio_elt.formula
                                   .gsub("RTU", guw_output_effort_value.to_s)
                                   .gsub("TEST", guw_output_test_value.to_s)
+                                  .gsub("RIS", guw_output_effort_value.to_s)
                                   .gsub('%', ' * 0.01 ')
             end
 
@@ -1449,18 +1455,24 @@ class Guw::GuwModelsController < ApplicationController
               value = 0
             end
 
-            value_cost = value * mp_ratio_element.tjm.to_f
-
-            tjm_array << mp_ratio_element.tjm.to_f
+            if mp_ratio_element.tjm.nil?
+              value_cost = '-'
+              @worksheet.add_cell(ind, kk + ii + 1, value_cost)
+            else
+              value_cost = value * mp_ratio_element.tjm.to_f
+              tjm_array << mp_ratio_element.tjm.to_f
+              @worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
+            end
 
             @worksheet.add_cell(ind, kk + ii, value.round(3))
-            @worksheet.add_cell(ind, kk + ii + 1, value_cost.round(3))
+
             ii = ii + 2
           end
 
           unless tjm_array.empty?
             @worksheet.add_cell(ind, kk + ii, (tjm_array.inject(&:+) / tjm_array.size).round(3))
           end
+
         end
       end
     end
