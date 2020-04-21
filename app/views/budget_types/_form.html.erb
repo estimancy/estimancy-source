@@ -1,8 +1,6 @@
 <section class="card card-content-bloc estimancy-form">
+    <%#= I18n.t(:budget_type) %>
 
-  <%#= I18n.t(:budget_type) %>
-
-  <div id="tabs-1">
     <%#= simple_form_for([@organization, @budget, @application, @budget_type]) do |f| %>
     <%= simple_form_for([@organization, @budget_type]) do |f| %>
         <div class="card-body">
@@ -22,32 +20,47 @@
 
           <div class="edition-bloc-content">
             <div class="edition-bloc-form">
-              <div class="row">
+
+              <div class="form-row">
                 <div class="col">
                   <%= f.input :name, :label => I18n.t('name'), :input_html => { :class => 'input-xxlarge', :autofocus => (controller.action_name == 'new') } %>
                   <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
                 </div>
+              </div>
+
+              <div class="form-row">
                 <div class="col">
                   <%= f.input :display_order, :label => I18n.t('display_order'), :input_html => { :class => 'input-xxlarge' } %>
                 </div>
               </div>
 
-
+              <br /><label><%= I18n.t(:associated_status) %> : </label>
               <% @organization.estimation_statuses.each do |es| %>
-                <div class="row-fluid">
-                  <div class="pull-left">
-                    <%# bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, application_id: @application.id, estimation_status_id: es.id).first %>
-                    <% bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, estimation_status_id: es.id).first %>
-                    <%= check_box_tag "estimation_statuses[#{es.id}]", nil, (bts.nil? ? false : true)  %>
-                  </div>
-                  <div class="pull-left">
-                    <%= es.name %>
-                  </div>
+                <!--<div class="row-fluid">-->
+                  <!--<div class="pull-left">-->
+                    <!--<%# bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, application_id: @application.id, estimation_status_id: es.id).first %>-->
+                    <!--<%# bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, estimation_status_id: es.id).first %>-->
+                    <!--<%#= check_box_tag "estimation_statuses[#{es.id}]", nil, (bts.nil? ? false : true)  %>-->
+                  <!--</div>-->
+                  <!--<div class="pull-left">-->
+                    <!--<%#= es.name %>-->
+                  <!--</div>-->
+                <!--</div>-->
+
+                <div class="form-row">
+                    <div class="col">
+                      <% bts = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, estimation_status_id: es.id).first %>
+                      <label>
+                        <%= check_box_tag "estimation_statuses[#{es.id}]", nil, (bts.nil? ? false : true) %>
+                        <%= es.name %>
+                      </label>
+                    </div>
                 </div>
               <% end %>
               <br/>
 
               <%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color'} %>
+              <br/>
 
               <div class="actions-tabs">
                 <% if can? :manage, BudgetType %>
@@ -65,5 +78,4 @@
           </div>
         </div>
     <% end %>
-  </div>
 </section>

@@ -12,6 +12,6 @@ class CreateApplicationBudgets < ActiveRecord::Migration
   end
 
   def down
-    #drop_table :application_budgets
+    drop_table :application_budgets
   end
 end
