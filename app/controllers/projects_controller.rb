@@ -3434,6 +3434,8 @@ public
 
 
           new_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: old_mp.id).first  #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+          # new_mp.done = false
+          # new_mp.save
 
           # ModuleProject Associations for the new project
           old_mp_associated_module_projects.each do |associated_mp|

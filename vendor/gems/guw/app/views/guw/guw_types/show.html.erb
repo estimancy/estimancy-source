@@ -241,16 +241,6 @@
                   </tr>
               <% end %>
 
-              <% if @guw_model.allow_technology == true %>
-                <tr>
-                  <th colspan="<%= guw_type.guw_complexities.size * 2 + 1 %>">
-                    <b class="pull-left">
-                      <%= I18n.t :technology %>
-                    </b>
-                  </th>
-                </tr>
-              <% end %>
-
             </table>
 
             <% if can? :manage_modules_instances, ModuleProject %>

@@ -35,9 +35,9 @@
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <% if @module_project_box.pemodule.alias == Projestimate::Application::INITIALIZATION %>
-                          <%= f.association :module_project, label: false, collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
+                          <%= f.association :module_project, label: false, collection: @project.module_projects.reject{|i| i.to_s == @project.title }.map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
                       <% else %>
-                          <%= f.association :module_project, label: false, collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, include_blank: false, input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
+                          <%= f.association :module_project, label: false, collection: [@module_project].map{|i| [i, i.id]}, selected: @module_project.id, prompt: "Choisir un module d'estimation", include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
                       <% end %>
                       <label class="mdl-textfield__label" for="module_project"><%= I18n.t(:label_modules) %></label>
                   </div>
@@ -64,7 +64,6 @@
 
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                    <!--<label><%#= I18n.t :fields %></label>-->
                     <% selected = @views_widget.project_fields.first %>
                     <%= select_tag "field", options_for_select(@project.organization.fields.map{|i| [i.name, i.id] }, selected: selected.nil? ? '' : selected.field.id), prompt: "None", disabled: (!(@views_widget.widget_type == "text")  || @views_widget.is_label_widget?), input_html:{class: "mdl-textfield__input form-control"} %>
                     <label class="mdl-textfield__label" for="field"><%= I18n.t(:fields) %></label>
