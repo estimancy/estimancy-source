@@ -2316,15 +2316,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 tmp_hash_res = Hash.new
                 tmp_hash_ares  = Hash.new
 
-                @guw_type = Guw::GuwType.where(organization_id: @organization.id,
-                                               guw_model_id: @guw_model.id,
+                @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
                                                name: row[13].nil? ? '' : row[13].value).first
                 if @guw_type.nil?
-                  @guw_type = Guw::GuwType.where(organization_id: @organization.id,
-                                                 guw_model_id: @guw_model.id,
+                  @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
                                                  is_default: true).first
                   if @guw_type.nil?
-                    @guw_type = Guw::GuwType.where(organization_id: @organization.id, guw_model_id: @guw_model.id).last
+                    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
                   end
                 end
 
@@ -2334,7 +2332,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[11].nil? ? nil : row[11].value).to_i == 1),
+                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[11].nil? ? false : (row[11].value).to_i == 1)),
                                                   name: row[12].nil? ? nil : row[12].value,
                                                   comments: row[14].nil? ? nil : row[14].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
