@@ -2588,8 +2588,19 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         (16..60).to_a.each do |k|
                           if guw_output.name == (tab[0][k].nil? ? '' : tab[0][k].value)
                             if row[k].nil?
-                              tmp_hash_res["#{guw_output.id}"] = @final_value
-                              tmp_hash_ares["#{guw_output.id}"] = @final_value
+
+                              got = Guw::GuwOutputType.where(organization_id: @organization.id,
+                                                             guw_model_id: @guw_model.id,
+                                                             guw_output_id: guw_output.id,
+                                                             guw_type_id: guw_uow.guw_type_id).first
+
+                              if got.display_type == "display_modif"
+                                tmp_hash_res["#{guw_output.id}"] = nil
+                                tmp_hash_ares["#{guw_output.id}"] = nil
+                              else
+                                tmp_hash_res["#{guw_output.id}"] = @final_value
+                                tmp_hash_ares["#{guw_output.id}"] = @final_value
+                              end
                             else
                               tmp_hash_res["#{guw_output.id}"] = row[k].value
                               tmp_hash_ares["#{guw_output.id}"] = row[k].value
