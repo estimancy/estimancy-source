@@ -2332,6 +2332,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
+                # Guw::GuwModel.all.each do |guw_model|
+                #   guw_model.guw_types.each do |guw_type|
+                #     guw_type.organization_id = guw_model.organization_id
+                #     guw_type.save(validate: false)
+                #   end
+                # end
+
                 guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[11].nil? ? false : (row[11].value).to_i == 1)),
                                                   name: row[12].nil? ? nil : row[12].value,
                                                   comments: row[14].nil? ? nil : row[14].value,

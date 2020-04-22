@@ -470,7 +470,7 @@
                 if guow.size.is_a?(Numeric) || guow.ajusted_size.is_a?(Numeric)
                   color = "background-color: transparent;"
                 else
-                  if guow.size["#{@guw_output.id}"].to_f.round(2) != guow.ajusted_size["#{@guw_output.id}"].to_f.round(2)
+                  if guow.size["#{@guw_output.id}"].to_f.round(user_number_precision) != guow.ajusted_size["#{@guw_output.id}"].to_f.round(user_number_precision)
                     color = "background-color: ##{@guw_output.color_code};"
                   else
                     color = "background-color: transparent;"
@@ -479,15 +479,14 @@
               %>
 
               <span class=" size_label_<%= guow.id %>">
-                <%= number_field_tag "size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
+                <%= text_field_tag "size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size.to_f.round(user_number_precision) : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                      class: "size-#{uowg.id} guw-#{guow.id} form-control form-control-sm guw_number_field_tag",
                                      readonly: true,
                                      style: "text-align: right;",
-                                     step: 0.001 %>
+                                     %>
               </span>
               <span class="ajusted_size_<%= guow.id %>">
-                <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
-                                     step: 0.001,
+                <%= text_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size.to_f.round(user_number_precision) : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                      class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw,number_field_tag retained form-control form-control-sm",
                                      style: "#{color} text-align: right;"
                 %>
