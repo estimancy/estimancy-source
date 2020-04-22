@@ -431,7 +431,7 @@
             <% if got.display_type == "display" %>
               <%# if (@guw_output.estimation_status_id == @project.estimation_status_id) || @guw_output.estimation_status_id.nil? %>
                 <span class="ajusted_size_<%= guow.id %>">
-                  <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
+                  <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                        step: 0.001,
                                        readonly: true,
                                        class: "guw-#{guow.id} guw_number_field_tag retained form-control form-control-sm total_#{uowg.id}_#{@guw_output.id}",
@@ -452,7 +452,7 @@
                 <% end %>
 
                 <span class="ajusted_size_<%= guow.id %>">
-                  <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
+                  <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                        step: 0.001,
                                        class: "retained-guw-#{guow.id} form-control form-control-sm guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
                                        style: "#{color} text-align: right;" %>
@@ -497,7 +497,7 @@
         <% else %>
           <td class="guw-cell-ajustment">
             <span class="ajusted_size_<%= guow.id %>">
-              <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
+              <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                    step: 0.001,
                                    class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained form-control form-control-sm",
                                    style: "background-color: ##{@guw_output.color_code}; text-align: right;" %>
