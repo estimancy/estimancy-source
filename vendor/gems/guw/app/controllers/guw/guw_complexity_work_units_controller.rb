@@ -170,7 +170,7 @@ class Guw::GuwComplexityWorkUnitsController < ApplicationController
                                                             guw_type_id: @guw_type.id)
               end
             else
-              cwu.value = params[:coefficient_elements_value]["#{cplx.id}"]["#{ce.id}"]["#{output.id}"]
+              cwu.value = params[:coefficient_elements_value]["#{cplx.id}"]["#{ce.id}"]["#{output.id}"].to_f
               cwu.guw_type_id = @guw_type.id
               cwu.guw_output_id = output.id
               cwu.save

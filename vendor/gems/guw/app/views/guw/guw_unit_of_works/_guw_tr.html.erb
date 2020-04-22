@@ -431,7 +431,7 @@
             <% if got.display_type == "display" %>
               <%# if (@guw_output.estimation_status_id == @project.estimation_status_id) || @guw_output.estimation_status_id.nil? %>
                 <span class="ajusted_size_<%= guow.id %>">
-                  <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
+                  <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                        step: 0.001,
                                        readonly: true,
                                        class: "guw-#{guow.id} guw_number_field_tag retained form-control form-control-sm total_#{uowg.id}_#{@guw_output.id}",
@@ -452,7 +452,7 @@
                 <% end %>
 
                 <span class="ajusted_size_<%= guow.id %>">
-                  <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
+                  <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                        step: 0.001,
                                        class: "retained-guw-#{guow.id} form-control form-control-sm guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained",
                                        style: "#{color} text-align: right;" %>
@@ -470,7 +470,7 @@
                 if guow.size.is_a?(Numeric) || guow.ajusted_size.is_a?(Numeric)
                   color = "background-color: transparent;"
                 else
-                  if guow.size["#{@guw_output.id}"].to_f.round(2) != guow.ajusted_size["#{@guw_output.id}"].to_f.round(2)
+                  if guow.size["#{@guw_output.id}"].to_f.round(user_number_precision) != guow.ajusted_size["#{@guw_output.id}"].to_f.round(user_number_precision)
                     color = "background-color: ##{@guw_output.color_code};"
                   else
                     color = "background-color: transparent;"
@@ -479,14 +479,14 @@
               %>
 
               <span class=" size_label_<%= guow.id %>">
-                <%= number_field_tag "size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(2))),
+                <%= number_field_tag "size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size.to_f.round(user_number_precision) : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                      class: "size-#{uowg.id} guw-#{guow.id} form-control form-control-sm guw_number_field_tag",
                                      readonly: true,
                                      style: "text-align: right;",
                                      step: 0.001 %>
               </span>
               <span class="ajusted_size_<%= guow.id %>">
-                <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
+                <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size.to_f.round(user_number_precision) : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                      step: 0.001,
                                      class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw,number_field_tag retained form-control form-control-sm",
                                      style: "#{color} text-align: right;"
@@ -497,7 +497,7 @@
         <% else %>
           <td class="guw-cell-ajustment">
             <span class="ajusted_size_<%= guow.id %>">
-              <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(2))),
+              <%= number_field_tag "ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : (guow.ajusted_size["#{@guw_output.id}"].nil? ? '' : guow.ajusted_size["#{@guw_output.id}"].to_f.round(user_number_precision))),
                                    step: 0.001,
                                    class: "retained-guw-#{guow.id} guw-#{guow.id} retained-gp-#{uowg.id} guw_number_field_tag retained form-control form-control-sm",
                                    style: "background-color: ##{@guw_output.color_code}; text-align: right;" %>
@@ -564,11 +564,13 @@
         </button>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton" x-placement="top-end" style="position: absolute; transform: translate3d(-209px, -185px, 0px); top: 0px; left: 0px; will-change: transform;">
           <% if guow.guw_unit_of_work.nil? %>
-            <% if @guw_type.allow_to_add_to_knowledge_db == true && @project.estimation_status.name == "Manual Ctrl" %>
-              <a class="dropdown-item" href="#" method="POST"><i class="material-icons">file_copy</i><%= I18n.t(:add_to_kb) %></a>
-            <% end %>
-            <% if @guw_type.allow_to_suggest_a_correction == true %>
-              <%= link_to raw("<i class='material-icons'>file_copy</i> Suggest a correction"), guw.guw_unit_of_work_add_correction_path(guow), method: "post", class: "dropdown-item" %>
+            <% unless @guw_type.nil? %>
+              <% if @guw_type.allow_to_add_to_knowledge_db == true && @project.estimation_status.name == "Manual Ctrl" %>
+                <a class="dropdown-item" href="#" method="POST"><i class="material-icons">file_copy</i><%= I18n.t(:add_to_kb) %></a>
+              <% end %>
+              <% if @guw_type.allow_to_suggest_a_correction == true %>
+                <%= link_to raw("<i class='material-icons'>file_copy</i> Suggest a correction"), guw.guw_unit_of_work_add_correction_path(guow), method: "post", class: "dropdown-item" %>
+              <% end %>
             <% end %>
             <%= link_to raw("<i class='material-icons'>file_copy</i> Duplicate"), guw.guw_unit_of_work_duplicate_path(guow), method: "post",  class: "dropdown-item" %>
 

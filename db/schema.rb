@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200316133814) do
+ActiveRecord::Schema.define(version: 20200422134359) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -774,7 +774,7 @@ ActiveRecord::Schema.define(version: 20200316133814) do
     t.integer  "guw_coefficient_element_id", limit: 4
     t.integer  "guw_output_id",              limit: 4
     t.integer  "guw_type_id",                limit: 4
-    t.decimal  "value",                                precision: 20, scale: 3
+    t.decimal  "value",                                precision: 16, scale: 6
     t.datetime "created_at",                                                    null: false
     t.datetime "updated_at",                                                    null: false
   end
@@ -2511,7 +2511,7 @@ BEGIN
             old_value = OLD.id,
             new_value = NEW.id;
 
-          
+          -- Pour le super_admin
           IF (OLD.super_admin != NEW.super_admin) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,
@@ -2524,7 +2524,7 @@ BEGIN
               created_at = UTC_TIMESTAMP() ;
           END IF;
 
-          
+          -- Pour le mot de passe
           IF (OLD.encrypted_password != NEW.encrypted_password) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,
@@ -2537,7 +2537,7 @@ BEGIN
               created_at = UTC_TIMESTAMP() ;
           END IF;
 
-          
+          -- Pour le mot de passe
           IF (OLD.email != NEW.email) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,

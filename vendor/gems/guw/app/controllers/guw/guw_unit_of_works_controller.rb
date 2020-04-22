@@ -2316,15 +2316,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 tmp_hash_res = Hash.new
                 tmp_hash_ares  = Hash.new
 
-                @guw_type = Guw::GuwType.where(organization_id: @organization.id,
-                                               guw_model_id: @guw_model.id,
+                @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
                                                name: row[13].nil? ? '' : row[13].value).first
                 if @guw_type.nil?
-                  @guw_type = Guw::GuwType.where(organization_id: @organization.id,
-                                                 guw_model_id: @guw_model.id,
+                  @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id,
                                                  is_default: true).first
                   if @guw_type.nil?
-                    @guw_type = Guw::GuwType.where(organization_id: @organization.id, guw_model_id: @guw_model.id).last
+                    @guw_type = Guw::GuwType.where(guw_model_id: @guw_model.id).last
                   end
                 end
 
@@ -2334,7 +2332,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[11].nil? ? nil : row[11].value).to_i == 1),
+                # Guw::GuwModel.all.each do |guw_model|
+                #   guw_model.guw_types.each do |guw_type|
+                #     guw_type.organization_id = guw_model.organization_id
+                #     guw_type.save(validate: false)
+                #   end
+                # end
+
+                guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[11].nil? ? false : (row[11].value).to_i == 1)),
                                                   name: row[12].nil? ? nil : row[12].value,
                                                   comments: row[14].nil? ? nil : row[14].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
@@ -2349,18 +2354,22 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   ajusted_size: nil,
                                                   intermediate_percent: row[18].nil? ? nil : row[18].value,
                                                   intermediate_weight: row[18].nil? ? nil : row[18].value,
-                                                  guw_type_id: @guw_type.id)
+                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-                uo_type = module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id)
-                if uo_type.nil?
-                  guw_uow.selected = true
-                else
-                  if module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
-                    guw_uow.selected = false
-                  else
-                    guw_uow.selected = true
-                  end
-                end
+                # begin
+                #   uo_type = module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id)
+                #   if uo_type.nil?
+                #     guw_uow.selected = true
+                #   else
+                #     if module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
+                #       guw_uow.selected = false
+                #     else
+                #       guw_uow.selected = true
+                #     end
+                #   end
+                # rescue
+                #   guw_uow.selected = false
+                # end
 
 
                 guw_uow.save(validate: false)
@@ -2390,13 +2399,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
                 guw_uow.save(validate: false)
 
-                @guw_attributes.each_with_index do |gac, ii|
-                  #update attributes complexities
-                  if @all_guw_attribute_complexities[@guw_type.id][gac.id].nil?
-                    @all_guw_attribute_complexities[@guw_type.id][gac.id] = Guw::GuwAttributeComplexity.where(organization_id: @organization.id,
-                                                                                                              guw_model_id: @guw_model.id,
-                                                                                                              guw_attribute_id: gac.id,
-                                                                                                              guw_type_id: (@guw_type.nil? ? nil : @guw_type.id)).all
+                unless @guw_type.nil?
+                  @guw_attributes.each_with_index do |gac, ii|
+                    #update attributes complexities
+                    if @all_guw_attribute_complexities[@guw_type.id][gac.id].nil?
+                      @all_guw_attribute_complexities[@guw_type.id][gac.id] = Guw::GuwAttributeComplexity.where(organization_id: @organization.id,
+                                                                                                                guw_model_id: @guw_model.id,
+                                                                                                                guw_attribute_id: gac.id,
+                                                                                                                guw_type_id: (@guw_type.nil? ? nil : @guw_type.id)).all
+                    end
                   end
                 end
 
@@ -2433,37 +2444,40 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 array_pert = Array.new
 
-                if @guw_type.allow_criteria == true
+                unless @guw_type.nil?
 
-                  @lows = Array.new
-                  @mls = Array.new
-                  @highs = Array.new
+                  if @guw_type.allow_criteria == true
 
-                  guw_uow.off_line = false
-                  guw_uow.off_line_uo = false
+                    @lows = Array.new
+                    @mls = Array.new
+                    @highs = Array.new
 
-                  guw_uow.guw_unit_of_work_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |guowa|
-                    unless guowa.low.nil? || guowa.most_likely.nil? || guowa.high.nil?
-                      calculate_guowa(guowa, guw_uow, @guw_type, @all_guw_attribute_complexities[@guw_type.id])
+                    guw_uow.off_line = false
+                    guw_uow.off_line_uo = false
+
+                    guw_uow.guw_unit_of_work_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |guowa|
+                      unless guowa.low.nil? || guowa.most_likely.nil? || guowa.high.nil?
+                        calculate_guowa(guowa, guw_uow, @guw_type, @all_guw_attribute_complexities[@guw_type.id])
+                      end
                     end
-                  end
 
-                  if @lows.empty?
-                    guw_uow.result_low = nil
-                  else
-                    guw_uow.result_low = @lows.sum
-                  end
+                    if @lows.empty?
+                      guw_uow.result_low = nil
+                    else
+                      guw_uow.result_low = @lows.sum
+                    end
 
-                  if @mls.empty?
-                    guw_uow.result_most_likely = nil
-                  else
-                    guw_uow.result_most_likely = @mls.sum
-                  end
+                    if @mls.empty?
+                      guw_uow.result_most_likely = nil
+                    else
+                      guw_uow.result_most_likely = @mls.sum
+                    end
 
-                  if @highs.empty?
-                    guw_uow.result_high = nil
-                  else
-                    guw_uow.result_high = @highs.sum
+                    if @highs.empty?
+                      guw_uow.result_high = nil
+                    else
+                      guw_uow.result_high = @highs.sum
+                    end
                   end
                 end
 
@@ -2574,8 +2588,19 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                         (16..60).to_a.each do |k|
                           if guw_output.name == (tab[0][k].nil? ? '' : tab[0][k].value)
                             if row[k].nil?
-                              tmp_hash_res["#{guw_output.id}"] = @final_value
-                              tmp_hash_ares["#{guw_output.id}"] = @final_value
+
+                              got = Guw::GuwOutputType.where(organization_id: @organization.id,
+                                                             guw_model_id: @guw_model.id,
+                                                             guw_output_id: guw_output.id,
+                                                             guw_type_id: guw_uow.guw_type_id).first
+
+                              if got.display_type == "display_modif"
+                                tmp_hash_res["#{guw_output.id}"] = nil
+                                tmp_hash_ares["#{guw_output.id}"] = nil
+                              else
+                                tmp_hash_res["#{guw_output.id}"] = @final_value
+                                tmp_hash_ares["#{guw_output.id}"] = @final_value
+                              end
                             else
                               tmp_hash_res["#{guw_output.id}"] = row[k].value
                               tmp_hash_ares["#{guw_output.id}"] = row[k].value
