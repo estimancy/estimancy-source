@@ -2349,17 +2349,21 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   ajusted_size: nil,
                                                   intermediate_percent: row[18].nil? ? nil : row[18].value,
                                                   intermediate_weight: row[18].nil? ? nil : row[18].value,
-                                                  guw_type_id: @guw_type.id)
+                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-                uo_type = module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id)
-                if uo_type.nil?
-                  guw_uow.selected = true
-                else
-                  if module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
-                    guw_uow.selected = false
-                  else
+                begin
+                  uo_type = module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id)
+                  if uo_type.nil?
                     guw_uow.selected = true
+                  else
+                    if module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
+                      guw_uow.selected = false
+                    else
+                      guw_uow.selected = true
+                    end
                   end
+                rescue
+                  guw_uow.selected = false
                 end
 
 
@@ -2390,13 +2394,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 guw_uow.guw_complexity_id = guw_complexity.nil? ? nil : guw_complexity.id
                 guw_uow.save(validate: false)
 
-                @guw_attributes.each_with_index do |gac, ii|
-                  #update attributes complexities
-                  if @all_guw_attribute_complexities[@guw_type.id][gac.id].nil?
-                    @all_guw_attribute_complexities[@guw_type.id][gac.id] = Guw::GuwAttributeComplexity.where(organization_id: @organization.id,
-                                                                                                              guw_model_id: @guw_model.id,
-                                                                                                              guw_attribute_id: gac.id,
-                                                                                                              guw_type_id: (@guw_type.nil? ? nil : @guw_type.id)).all
+                unless @guw_type.nil?
+                  @guw_attributes.each_with_index do |gac, ii|
+                    #update attributes complexities
+                    if @all_guw_attribute_complexities[@guw_type.id][gac.id].nil?
+                      @all_guw_attribute_complexities[@guw_type.id][gac.id] = Guw::GuwAttributeComplexity.where(organization_id: @organization.id,
+                                                                                                                guw_model_id: @guw_model.id,
+                                                                                                                guw_attribute_id: gac.id,
+                                                                                                                guw_type_id: (@guw_type.nil? ? nil : @guw_type.id)).all
+                    end
                   end
                 end
 
