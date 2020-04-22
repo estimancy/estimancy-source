@@ -2356,20 +2356,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   intermediate_weight: row[18].nil? ? nil : row[18].value,
                                                   guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
 
-                begin
-                  uo_type = module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id)
-                  if uo_type.nil?
-                    guw_uow.selected = true
-                  else
-                    if module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
-                      guw_uow.selected = false
-                    else
-                      guw_uow.selected = true
-                    end
-                  end
-                rescue
-                  guw_uow.selected = false
-                end
+                # begin
+                #   uo_type = module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id)
+                #   if uo_type.nil?
+                #     guw_uow.selected = true
+                #   else
+                #     if module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id).size >= @guw_type.maximum.to_i && !@guw_type.maximum.nil?
+                #       guw_uow.selected = false
+                #     else
+                #       guw_uow.selected = true
+                #     end
+                #   end
+                # rescue
+                #   guw_uow.selected = false
+                # end
 
 
                 guw_uow.save(validate: false)
