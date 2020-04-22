@@ -2439,37 +2439,40 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 array_pert = Array.new
 
-                if @guw_type.allow_criteria == true
+                unless @guw_type.nil?
 
-                  @lows = Array.new
-                  @mls = Array.new
-                  @highs = Array.new
+                  if @guw_type.allow_criteria == true
 
-                  guw_uow.off_line = false
-                  guw_uow.off_line_uo = false
+                    @lows = Array.new
+                    @mls = Array.new
+                    @highs = Array.new
 
-                  guw_uow.guw_unit_of_work_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |guowa|
-                    unless guowa.low.nil? || guowa.most_likely.nil? || guowa.high.nil?
-                      calculate_guowa(guowa, guw_uow, @guw_type, @all_guw_attribute_complexities[@guw_type.id])
+                    guw_uow.off_line = false
+                    guw_uow.off_line_uo = false
+
+                    guw_uow.guw_unit_of_work_attributes.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |guowa|
+                      unless guowa.low.nil? || guowa.most_likely.nil? || guowa.high.nil?
+                        calculate_guowa(guowa, guw_uow, @guw_type, @all_guw_attribute_complexities[@guw_type.id])
+                      end
                     end
-                  end
 
-                  if @lows.empty?
-                    guw_uow.result_low = nil
-                  else
-                    guw_uow.result_low = @lows.sum
-                  end
+                    if @lows.empty?
+                      guw_uow.result_low = nil
+                    else
+                      guw_uow.result_low = @lows.sum
+                    end
 
-                  if @mls.empty?
-                    guw_uow.result_most_likely = nil
-                  else
-                    guw_uow.result_most_likely = @mls.sum
-                  end
+                    if @mls.empty?
+                      guw_uow.result_most_likely = nil
+                    else
+                      guw_uow.result_most_likely = @mls.sum
+                    end
 
-                  if @highs.empty?
-                    guw_uow.result_high = nil
-                  else
-                    guw_uow.result_high = @highs.sum
+                    if @highs.empty?
+                      guw_uow.result_high = nil
+                    else
+                      guw_uow.result_high = @highs.sum
+                    end
                   end
                 end
 
