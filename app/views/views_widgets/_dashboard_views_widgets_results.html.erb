@@ -257,6 +257,23 @@
     //$('.card-body').css('padding', '1.1rem 1.3rem 1.1rem 0 !important');
     var label_widget_ids = <%= @label_widget_ids.to_json.html_safe %>;
 
+    function _getItems() {
+        var items = [];
+
+        $('.grid-stack-item.ui-draggable').each(function () {
+            var $this = $(this);
+            items.push({
+                x_position: $this.attr('data-gs-x'),
+                y_position: $this.attr('data-gs-y'),
+                item_width: $this.attr('data-gs-width'),
+                item_height: $this.attr('data-gs-height'),
+                view_widget_id: $this.data('view_widget_id')
+            });
+        });
+
+        return items;
+    }
+
     $(function () {
         var options = {
             width: 12,
@@ -276,6 +293,7 @@
         $('.grid-stack').on('dragstop', function (event, ui) {
             var element = $(event.target);
             var node = element.data('_gridstack_node');
+            var items = _getItems();
 
             $.ajax({
                 url: "/update_view_widget_positions",
@@ -285,16 +303,18 @@
                     y_position: node['y'],
                     item_width: node['width'],
                     item_height: node['height'],
-                    view_widget_id: element.data('view_widget_id')
+                    view_widget_id: element.data('view_widget_id'),
+                    view_widget_items: items
                 }
             });
         });
-
 
         $('.grid-stack').on('resizestop', function(event, ui) {
             var element = $(event.target);
             var node = element.data('_gridstack_node');
             var node_height = node['height']; //node.height;
+            var items = _getItems();
+
             //console.log(node);
 
             $.ajax({
@@ -305,7 +325,8 @@
                     y_position: node['y'],
                     item_width: node['width'],
                     item_height: node['height'],
-                    view_widget_id: element.data('view_widget_id')
+                    view_widget_id: element.data('view_widget_id'),
+                    view_widget_items: items
                 }
             });
         });

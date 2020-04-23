@@ -419,12 +419,34 @@ class ViewsWidgetsController < ApplicationController
 
   #update the view_widget position (x,y)
   def update_view_widget_positions
-    view_widget_id = params[:view_widget_id]
-    unless view_widget_id.blank?
-      view_widget = ViewsWidget.find(view_widget_id)
-      if view_widget
-        # Update the View Widget positions (left = position_x, top = position_y)
-        view_widget.update_attributes(position_x: params[:x_position], position_y: params[:y_position], width: params[:item_width], height: params[:item_height])
+
+    dragged_widget_id = params[:view_widget_id]
+    view_widget_items = params[:view_widget_items]
+
+    unless view_widget_items.empty?
+      view_widget_items.each_with_index do |item, index|
+
+        view_widget_item = item[1]
+        view_widget_id = view_widget_item[:view_widget_id]
+
+        unless view_widget_id.blank?
+          view_widget = ViewsWidget.find(view_widget_id)
+          if view_widget
+            # Update the View Widget positions (left = position_x, top = position_y)
+            if view_widget.id == dragged_widget_id.to_i
+
+              view_widget.update_attributes(position_x: params[:x_position],
+                                            position_y: params[:y_position],
+                                            width: params[:item_width],
+                                            height: params[:item_height])
+            else
+              view_widget.update_attributes(position_x: view_widget_item[:x_position],
+                                          position_y: view_widget_item[:y_position],
+                                          width: view_widget_item[:item_width],
+                                          height: view_widget_item[:item_height])
+            end
+          end
+        end
       end
     end
   end
