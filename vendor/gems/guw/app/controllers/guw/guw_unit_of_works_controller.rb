@@ -2967,7 +2967,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   end
                 end
 
-                guw_uow = Guw::GuwUnitOfWork.new( selected: row[11].value == 0 ? true : false,
+                guw_uow = Guw::GuwUnitOfWork.new( selected: row[11].nil? ? false : (row[11].value == 1),
                                                   name: row[12].nil? ? nil : row[12].value,
                                                   comments: row[14].nil? ? nil : row[14].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
