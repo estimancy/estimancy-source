@@ -160,8 +160,7 @@ module ViewsWidgetsHelper
           val.to_s
         end
       else
-        #nil
-        ""
+        nil
       end
     end
   end
