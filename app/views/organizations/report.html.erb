@@ -170,7 +170,7 @@
     <div class="row-fluid">
       <div class="span12">
         <% @projects = @organization.projects %>
-        <%= form_tag multiple_export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form', target: "_blank" do %>
+        <%# form_tag multiple_export_dashboard_path(format: "pdf"), :method => "POST", :class => 'simple_form', target: "_blank" do %>
           <div class="modal-body" style="height: inherit;">
 
             <p>
@@ -218,7 +218,7 @@
 
           <%= submit_tag I18n.t(:Generate_Report), :class => 'btn btn-primary' %>
 
-        <% end %>
+        <%# end %>
       </div>
     </div>
   </div>
