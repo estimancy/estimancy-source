@@ -134,7 +134,7 @@ class ProjectsController < ApplicationController
         if "cds voyageurs".in?(@organization.name.to_s.downcase)
           worksheet_cf.add_cell(0, 7, "Urgence Devis")
         else
-          worksheet_cf.add_cell(0, 7, "Localisation Modèle")
+          worksheet_cf.add_cell(0, 7, "Localisation Devis")
         end
 
         worksheet_cf.add_cell(0, 8, "Catégorie")
@@ -682,10 +682,10 @@ class ProjectsController < ApplicationController
         worksheet_synt.add_cell(0, 5, "Service")
         worksheet_synt.add_cell(0, 6, "Localisation WBS")
 
-        if @organization.name == "CDS VOYAGEURS"
+        if "cds voyageurs".in?(@organization.name.to_s.downcase)
           worksheet_synt.add_cell(0, 7, "Urgence Devis")
         else
-          worksheet_synt.add_cell(0, 7, "Localisation Modèle")
+          worksheet_synt.add_cell(0, 7, "Localisation Devis")
         end
 
         worksheet_synt.add_cell(0, 8, "Catégorie")
