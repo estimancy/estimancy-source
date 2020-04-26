@@ -401,9 +401,13 @@ class ProjectsController < ApplicationController
 
                 end
 
+              rescue
+              end
 
 
 
+
+              begin
                 ###
                 guw_coefficient_quantite_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
                                                                                guw_model_id: @guw_model.id,
@@ -433,7 +437,13 @@ class ProjectsController < ApplicationController
 
                 end
 
+              rescue
+              end
 
+
+
+
+              begin
 
                 ###
                 guw_coefficient_nbj_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
@@ -464,9 +474,12 @@ class ProjectsController < ApplicationController
 
                 end
 
+              rescue
+              end
 
 
 
+              begin
                 ### Métrique ###
                 guw_coefficient_metrique_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
                                                                                guw_model_id: @guw_model.id,
@@ -484,8 +497,11 @@ class ProjectsController < ApplicationController
                     worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 6, metrique_migration.guw_coefficient_element.name) # Métrique
                   end
                 end
+              rescue
+              end
 
 
+              begin
 
                 ### Charge ###
                 guw_output_charge_migration = Guw::GuwOutput.where( organization_id: @organization.id,
@@ -500,20 +516,26 @@ class ProjectsController < ApplicationController
 
                 worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 7, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_charge_migration.id}"].to_f.round(2))) # Charge
                 worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 8, guow.ajusted_size.nil? ? nil : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output_cout_migration.id}"])) # Cout
+              rescue
+              end
 
 
+
+              begin
                 ### Localisation ###
                 guw_coefficient_localisation = Guw::GuwCoefficient.where( organization_id: @organization.id,
                                                                           guw_model_id: @guw_model.id,
                                                                           name: "Localisation").first
 
                 unless guw_coefficient_localisation.nil?
-                  gceuw_localisation = Guw::GuwCoefficientElementUnitOfWork.where( organization_id: @organization.id,
-                                                                                   guw_model_id: @guw_model.id,
-                                                                                   guw_coefficient_id: guw_coefficient_localisation.id,
-                                                                                   project_id: project.id,
-                                                                                   module_project_id: pmp.id,
-                                                                                   guw_unit_of_work_id: guow.id).first
+                  # gceuw_localisation = Guw::GuwCoefficientElementUnitOfWork.where( organization_id: @organization.id,
+                  #                                                                  guw_model_id: @guw_model.id,
+                  #                                                                  guw_coefficient_id: guw_coefficient_localisation.id,
+                  #                                                                  project_id: project.id,
+                  #                                                                  module_project_id: pmp.id,
+                  #                                                                  guw_unit_of_work_id: guow.id).first
+
+                  gceuw_localisation = guow.guw_coefficient_element_unit_of_works.where(guw_coefficient_id: guw_coefficient_localisation.id).first
 
                   unless gceuw_localisation.guw_coefficient_element.nil?
                     gceuw_name = gceuw_localisation.guw_coefficient_element.name
@@ -521,7 +543,6 @@ class ProjectsController < ApplicationController
 
                   worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 9, gceuw_name) # Localisation
                 end
-
 
               rescue
                 #
