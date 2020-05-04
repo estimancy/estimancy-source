@@ -1321,52 +1321,43 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           end
 
-          if guw_output.name == "Effort AI (m.d)"
-            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * 1.13
-            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * 1.13
-          else
-            if params["ajusted_size"].present?
-              if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
-                tmp_hash_res["#{guw_output.id}"] = tmp
-                tmp_hash_ares["#{guw_output.id}"] = tmp
-              else
-                if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
-                  tmp_hash_res["#{guw_output.id}"] = tmp
-                  tmp_hash_ares["#{guw_output.id}"] = tmp
-                else
-
-                  if tmp == 0
-                    tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
-                  else
-                    tmp_hash_res["#{guw_output.id}"] = tmp
-                  end
-
-                  tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
-
-                end
-              end
-            else
-              tmp_hash_res["#{guw_output.id}"] = tmp
-              tmp_hash_ares["#{guw_output.id}"] = tmp
-            end
-          end
-
           got = Guw::GuwOutputType.where(guw_output_id: guw_output.id,
                                          guw_type_id: guw_unit_of_work.guw_type_id).first
 
-          if got.nil?
-            guw_unit_of_work.size = nil
-            guw_unit_of_work.ajusted_size = nil
-          else
-            if got.display_type == "display_modif_no_calcul"
-              guw_unit_of_work.size = nil
-              guw_unit_of_work.ajusted_size = nil
+          unless got.display_type == "display_modif_no_calcul"
+            if guw_output.name == "Effort AI (m.d)"
+              tmp_hash_res["#{guw_output.id}"] = tmp.to_f * 1.13
+              tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * 1.13
             else
-              guw_unit_of_work.size = tmp_hash_res
-              guw_unit_of_work.ajusted_size = tmp_hash_ares
+              if params["ajusted_size"].present?
+                if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
+                  tmp_hash_res["#{guw_output.id}"] = tmp
+                  tmp_hash_ares["#{guw_output.id}"] = tmp
+                else
+                  if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+                    tmp_hash_res["#{guw_output.id}"] = tmp
+                    tmp_hash_ares["#{guw_output.id}"] = tmp
+                  else
+
+                    if tmp == 0
+                      tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+                    else
+                      tmp_hash_res["#{guw_output.id}"] = tmp
+                    end
+
+                    tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+
+                  end
+                end
+              else
+                tmp_hash_res["#{guw_output.id}"] = tmp
+                tmp_hash_ares["#{guw_output.id}"] = tmp
+              end
             end
           end
 
+          guw_unit_of_work.size = tmp_hash_res
+          guw_unit_of_work.ajusted_size = tmp_hash_ares
         end
 
         reorder guw_unit_of_work.guw_unit_of_work_group
@@ -2608,14 +2599,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                              guw_output_id: guw_output.id,
                                                              guw_type_id: guw_uow.guw_type_id).first
 
-                              unless got.display_type == "display_modif_no_calcul"
-                                if got.display_type == "display_modif"
-                                  tmp_hash_res["#{guw_output.id}"] = nil
-                                  tmp_hash_ares["#{guw_output.id}"] = nil
-                                else
-                                  tmp_hash_res["#{guw_output.id}"] = @final_value
-                                  tmp_hash_ares["#{guw_output.id}"] = @final_value
-                                end
+                              if got.display_type == "display_modif"
+                                tmp_hash_res["#{guw_output.id}"] = nil
+                                tmp_hash_ares["#{guw_output.id}"] = nil
+                              else
+                                tmp_hash_res["#{guw_output.id}"] = @final_value
+                                tmp_hash_ares["#{guw_output.id}"] = @final_value
                               end
                             else
                               tmp_hash_res["#{guw_output.id}"] = row[k].value
