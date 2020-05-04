@@ -759,8 +759,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         #
         # guw_unit_of_work.save
 
-        guw_unit_of_work.ajusted_size = nil
-        guw_unit_of_work.size = nil
+        # guw_unit_of_work.ajusted_size = nil
+        # guw_unit_of_work.size = nil
         guw_unit_of_work.effort = nil
         guw_unit_of_work.cost = nil
 
