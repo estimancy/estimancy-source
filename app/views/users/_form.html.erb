@@ -161,7 +161,7 @@
 
                       <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                          <%= f.input :password_confirmation, :as => :password, :label => false, :input_html => {:value => (@generated_password if @generated_password), :class => 'mdl-textfield__input form-control' } %>
+                          <%= f.input :password_confirmation, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@generated_password if @generated_password), :class => 'mdl-textfield__input form-control' } %>
                           <label class="mdl-textfield__label" for="password_confirmation"><%= I18n.t(:password_confirmation) %></label>
                         </div>
                       </div>
@@ -172,7 +172,7 @@
                     <div class="form-row">
                       <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                          <%= f.input :current_password, :label => false, required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                          <%= f.input :current_password, :label => false, :autocomplete => "off", required: false, :input_html => {:value => (@user_current_password if @user_current_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
                           <label class="mdl-textfield__label" for="current_password"><%= I18n.t(:current_password) %></label>
                         </div>
                       </div>
@@ -188,7 +188,7 @@
 
                       <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                          <%= f.input :password_confirmation, :as => :password, :label => false, :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                          <%= f.input :password_confirmation, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@user_password_confirmation if @user_password_confirmation), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
                           <label class="mdl-textfield__label" for="password_confirmation"><%= I18n.t(:confirm_new_password) %></label>
                         </div>
                       </div>
