@@ -428,7 +428,7 @@
 
         <% unless got.nil? %>
           <td class="guw-cell-ajustment">
-            <% if got.display_type == "display" %>
+            <% if got.display_type == "display" || got.display_type == "display_modif_no_calcul" %>
               <%# if (@guw_output.estimation_status_id == @project.estimation_status_id) || @guw_output.estimation_status_id.nil? %>
                 <span class="ajusted_size_<%= guow.id %>">
                   <%= number_field_tag "display_ajusted_size[#{guow.id}][#{@guw_output.id}]", guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : (guow.size["#{@guw_output.id}"].nil? ? '' : guow.size["#{@guw_output.id}"].to_f.round(user_number_precision))),
