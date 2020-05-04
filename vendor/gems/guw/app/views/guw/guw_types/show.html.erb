@@ -160,6 +160,7 @@
                     <%= select_tag "display_modif[#{aguw_output.id}]",
                                    options_for_select([["Ne pas afficher", nil],
                                                        ["Afficher sans modification", "display"],
+                                                       ["Afficher sans modification / ignorer le calcul", "display_modif_no_calcul"],
                                                        ["Afficher avec modification", "display_modif"],
                                                        ["Modifier seulement", "modif"]],
                                                       selected: got.nil? ? nil : got.display_type),

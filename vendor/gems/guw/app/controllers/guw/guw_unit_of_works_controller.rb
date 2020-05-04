@@ -2594,12 +2594,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                              guw_output_id: guw_output.id,
                                                              guw_type_id: guw_uow.guw_type_id).first
 
-                              if got.display_type == "display_modif"
-                                tmp_hash_res["#{guw_output.id}"] = nil
-                                tmp_hash_ares["#{guw_output.id}"] = nil
-                              else
-                                tmp_hash_res["#{guw_output.id}"] = @final_value
-                                tmp_hash_ares["#{guw_output.id}"] = @final_value
+                              unless got.display_type == "display_modif_no_calcul"
+                                if got.display_type == "display_modif"
+                                  tmp_hash_res["#{guw_output.id}"] = nil
+                                  tmp_hash_ares["#{guw_output.id}"] = nil
+                                else
+                                  tmp_hash_res["#{guw_output.id}"] = @final_value
+                                  tmp_hash_ares["#{guw_output.id}"] = @final_value
+                                end
                               end
                             else
                               tmp_hash_res["#{guw_output.id}"] = row[k].value

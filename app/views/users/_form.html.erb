@@ -181,7 +181,11 @@
                     <div class="form-row">
                       <div class="col-4">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                          <%= f.input :password, :as => :password, :autocomplete => "off", :label => false, :input_html => {:value => (@user_password if @user_password), :class => 'mdl-textfield__input form-control' }, :placeholder => I18n.t(:leave_it_blank_if_no_change) %>
+                          <%= f.input :password, :as => :password,
+                                      :autocomplete => "off", :label => false,
+                                      :input_html => { :value => (@user_password if @user_password), :class => 'mdl-textfield__input form-control' },
+                                      :placeholder => I18n.t(:leave_it_blank_if_no_change),
+                                      :style => "text-security:disc; -webkit-text-security:disc;" %>
                           <label class="mdl-textfield__label" for="password"><%= I18n.t(:new_password) %></label>
                         </div>
                       </div>
