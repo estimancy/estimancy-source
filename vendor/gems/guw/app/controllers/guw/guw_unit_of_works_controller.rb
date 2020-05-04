@@ -1351,19 +1351,20 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           end
 
-          got = Guw::GuwOutputType.where(organization_id: @organization.id,
-                                         guw_model_id: @guw_model.id,
-                                         guw_output_id: guw_output.id,
+          got = Guw::GuwOutputType.where(guw_output_id: guw_output.id,
                                          guw_type_id: guw_unit_of_work.guw_type_id).first
 
-          unless got.nil?
-            unless got.display_type == "display_modif_no_calcul"
+          if got.nil?
+            guw_unit_of_work.size = nil
+            guw_unit_of_work.ajusted_size = nil
+          else
+            if got.display_type == "display_modif_no_calcul"
+              guw_unit_of_work.size = nil
+              guw_unit_of_work.ajusted_size = nil
+            else
               guw_unit_of_work.size = tmp_hash_res
               guw_unit_of_work.ajusted_size = tmp_hash_ares
             end
-          else
-            guw_unit_of_work.size = tmp_hash_res
-            guw_unit_of_work.ajusted_size = tmp_hash_ares
           end
 
         end
