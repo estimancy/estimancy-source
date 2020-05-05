@@ -1137,38 +1137,59 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                          guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                                                                          guw_coefficient_element_id: @coeff_elts_with_application["#{guw_coefficient.id}"])
                 if cplx_coeff_elements.size >= 1
-                  selected_coefficient_values["#{guw_output.id}"] << 0
+
+                  selected_coefficient_values["#{guw_output.id}"] << cplx_coeff_elements.compact.map(&:value).inject(&:*)
+
+                  case guw_coefficient.coefficient_type
+                    when "Application"
+                      coefficient_value = @project.application.coefficient rescue 1
+                    when "Provider"
+                      coefficient_value = @project.provider.coefficient rescue 1
+                    when "ProjectArea"
+                      coefficient_value = @project.project_area.coefficient rescue 1
+                    when "ProjectCategory"
+                      coefficient_value = @project.project_category.coefficient rescue 1
+                    when "PlatformCategory"
+                      coefficient_value = @project.platform_category.coefficient rescue 1
+                    when "AcquisitionCategory"
+                      coefficient_value = @project.acquisition_category.coefficient rescue 1
+                    else
+                      coefficient_value = 1
+                    end
+
+                  selected_coefficient_values["#{guw_output.id}"] << coefficient_value
+
                 end
               else
-                cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
-                                                                 guw_model_id: @guw_model.id,
-                                                                 guw_output_id: guw_output.id,
-                                                                 guw_coefficient_element_id: ce.id,
-                                                                 guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
+                # cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                #                                                  guw_model_id: @guw_model.id,
+                #                                                  guw_output_id: guw_output.id,
+                #                                                  guw_coefficient_element_id: ce.id,
+                #                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
                 # unless cce.nil?
                 #   selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 0 : cce.value) * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
                 # end
-                unless cce.nil?
-                  unless cce.value.blank?
-                    coefficient_value = 1
-                    case guw_coefficient.coefficient_type
-                      when "Application"
-                        coefficient_value = @project.application.coefficient rescue 1
-                      when "Provider"
-                        coefficient_value = @project.provider.coefficient rescue 1
-                      when "ProjectArea"
-                        coefficient_value = @project.project_area.coefficient rescue 1
-                      when "ProjectCategory"
-                        coefficient_value = @project.project_category.coefficient rescue 1
-                      when "PlatformCategory"
-                        coefficient_value = @project.platform_category.coefficient rescue 1
-                      when "AcquisitionCategory"
-                        coefficient_value = @project.acquisition_category.coefficient rescue 1
-                    end
-                    
-                    selected_coefficient_values["#{guw_output.id}"] <<  cce.value * (coefficient_value.nil? ? 1 : coefficient_value.to_f)
-                  end
-                end
+                # unless cce.nil?
+                  # unless cce.value.blank?
+                    # coefficient_value = 1
+                    # case guw_coefficient.coefficient_type
+                    #   when "Application"
+                    #     coefficient_value = @project.application.coefficient rescue 1
+                    #   when "Provider"
+                    #     coefficient_value = @project.provider.coefficient rescue 1
+                    #   when "ProjectArea"
+                    #     coefficient_value = @project.project_area.coefficient rescue 1
+                    #   when "ProjectCategory"
+                    #     coefficient_value = @project.project_category.coefficient rescue 1
+                    #   when "PlatformCategory"
+                    #     coefficient_value = @project.platform_category.coefficient rescue 1
+                    #   when "AcquisitionCategory"
+                    #     coefficient_value = @project.acquisition_category.coefficient rescue 1
+                    # end
+                    #
+                    # selected_coefficient_values["#{guw_output.id}"] <<  cce.value * (coefficient_value.nil? ? 1 : coefficient_value.to_f)
+                  # end
+                # end
               end
 
               ceuw = ceuws_without_nil[guw_coefficient.id]
