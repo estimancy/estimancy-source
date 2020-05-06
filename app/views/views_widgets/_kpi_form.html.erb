@@ -43,7 +43,7 @@
                       <% unless @views_widget.equation[letter].nil?
                            mp_id = @views_widget.equation[letter].last
                            unless mp_id.nil?
-                             mpl = ModuleProject.find(mp_id)
+                             mpl = ModuleProject.where(id: mp_id).first
                            end
                       end %>
                       <%= select_tag "module_project[#{letter}]", options_for_select(@project.module_projects.map{|i| [i, i.id]}, selected: mp_id),  ### selected: mpl.nil? ? '' : mpl.id),
