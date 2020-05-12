@@ -130,7 +130,7 @@
 
     <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("created_at ASC") %>
 
-    <% @guw_types = @guw_model.guw_types.includes(:guw_complexities) %>
+    <% @guw_types = @guw_model.guw_types.includes(:guw_complexities).order("name asc") %>
 
     <div class="card card-widget">
       <div class="card-body">
