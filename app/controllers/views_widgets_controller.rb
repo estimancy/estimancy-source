@@ -355,7 +355,10 @@ class ViewsWidgetsController < ApplicationController
           end
 
           if pf.nil?
-            pf = ProjectField.new(project_id: project.id, field_id: params["field"].to_i, views_widget_id: @views_widget.id, value: @value)
+            pf = ProjectField.new(project_id: project.id,
+                                  field_id: params["field"].to_i,
+                                  views_widget_id: @views_widget.id,
+                                  value: @value)
             if !pf.save
               flash[:error] = "Erreur lors de la mise à jour du champs personnalisé"
             end

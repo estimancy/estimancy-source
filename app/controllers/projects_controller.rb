@@ -4559,14 +4559,14 @@ public
     new_prj = old_prj.checkout_project_base(current_user, description, version_number, archive_last_project_version, new_project_version)
 
     # doublon ?
-    old_prj.module_projects.group(:id).each do |old_mp|
-      new_mp = ModuleProject.where(organization_id: @organization.id,
-                                   project_id: new_prj.id,
-                                   copy_id: old_mp.id).first
-      unless old_mp.view.nil?
-        update_views_and_widgets(new_prj, old_mp, new_mp)
-      end
-    end
+    # old_prj.module_projects.group(:id).each do |old_mp|
+    #   new_mp = ModuleProject.where(organization_id: @organization.id,
+    #                                project_id: new_prj.id,
+    #                                copy_id: old_mp.id).first
+    #   unless old_mp.view.nil?
+    #     update_views_and_widgets(new_prj, old_mp, new_mp)
+    #   end
+    # end
 
     # On remet à jour ce champs pour la gestion des Trigger
     new_prj.is_new_created_record = false
