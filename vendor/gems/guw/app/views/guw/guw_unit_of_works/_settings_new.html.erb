@@ -1,3 +1,5 @@
+<% @guw_types = @guw_model.guw_types.order("name asc").includes(:guw_complexities) %>
+
 <%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path, id: "guw_form", remote: true do %>
 
   <%= hidden_field_tag 'module_project_id', @module_project.id %>
@@ -129,8 +131,6 @@
     <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
     <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("created_at ASC") %>
-
-    <% @guw_types = @guw_model.guw_types.includes(:guw_complexities).order("name asc") %>
 
     <div class="card card-widget">
       <div class="card-body">
