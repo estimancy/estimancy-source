@@ -73,7 +73,7 @@
     <div class="widget-list-content">
       <div class="widget-group">
         <div class="row grid-stack">
-          <% @all_kpi_config.each do |kpi_config| %>
+          <% @all_kpi_config.all.each do |kpi_config| %>
               <div id='<%="productivity_indicator_#{kpi_config.id}"%>' class="col-6" style="visibility: hidden; margin-bottom: 30px;">
               </div>
           <% end %>
