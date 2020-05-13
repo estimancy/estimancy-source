@@ -759,8 +759,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         #
         # guw_unit_of_work.save
 
-        guw_unit_of_work.ajusted_size = nil
-        guw_unit_of_work.size = nil
+        # guw_unit_of_work.ajusted_size = nil
+        # guw_unit_of_work.size = nil
         guw_unit_of_work.effort = nil
         guw_unit_of_work.cost = nil
 
@@ -1137,38 +1137,59 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                                          guw_complexity_id: guw_unit_of_work.guw_complexity_id,
                                                                                          guw_coefficient_element_id: @coeff_elts_with_application["#{guw_coefficient.id}"])
                 if cplx_coeff_elements.size >= 1
-                  selected_coefficient_values["#{guw_output.id}"] << 0
+
+                  selected_coefficient_values["#{guw_output.id}"] << cplx_coeff_elements.compact.map(&:value).inject(&:*)
+
+                  case guw_coefficient.coefficient_type
+                    when "Application"
+                      coefficient_value = @project.application.coefficient rescue 1
+                    when "Provider"
+                      coefficient_value = @project.provider.coefficient rescue 1
+                    when "ProjectArea"
+                      coefficient_value = @project.project_area.coefficient rescue 1
+                    when "ProjectCategory"
+                      coefficient_value = @project.project_category.coefficient rescue 1
+                    when "PlatformCategory"
+                      coefficient_value = @project.platform_category.coefficient rescue 1
+                    when "AcquisitionCategory"
+                      coefficient_value = @project.acquisition_category.coefficient rescue 1
+                    else
+                      coefficient_value = 1
+                    end
+
+                  selected_coefficient_values["#{guw_output.id}"] << coefficient_value
+
                 end
               else
-                cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
-                                                                 guw_model_id: @guw_model.id,
-                                                                 guw_output_id: guw_output.id,
-                                                                 guw_coefficient_element_id: ce.id,
-                                                                 guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
+                # cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                #                                                  guw_model_id: @guw_model.id,
+                #                                                  guw_output_id: guw_output.id,
+                #                                                  guw_coefficient_element_id: ce.id,
+                #                                                  guw_complexity_id: guw_unit_of_work.guw_complexity_id).first
                 # unless cce.nil?
                 #   selected_coefficient_values["#{guw_output.id}"] << (cce.value.nil? ? 0 : cce.value) * (@project.application.coefficient.nil? ? 1 : @project.application.coefficient.to_f)
                 # end
-                unless cce.nil?
-                  unless cce.value.blank?
-                    coefficient_value = 1
-                    case guw_coefficient.coefficient_type
-                      when "Application"
-                        coefficient_value = @project.application.coefficient rescue 1
-                      when "Provider"
-                        coefficient_value = @project.provider.coefficient rescue 1
-                      when "ProjectArea"
-                        coefficient_value = @project.project_area.coefficient rescue 1
-                      when "ProjectCategory"
-                        coefficient_value = @project.project_category.coefficient rescue 1
-                      when "PlatformCategory"
-                        coefficient_value = @project.platform_category.coefficient rescue 1
-                      when "AcquisitionCategory"
-                        coefficient_value = @project.acquisition_category.coefficient rescue 1
-                    end
-                    
-                    selected_coefficient_values["#{guw_output.id}"] <<  cce.value * (coefficient_value.nil? ? 1 : coefficient_value.to_f)
-                  end
-                end
+                # unless cce.nil?
+                  # unless cce.value.blank?
+                    # coefficient_value = 1
+                    # case guw_coefficient.coefficient_type
+                    #   when "Application"
+                    #     coefficient_value = @project.application.coefficient rescue 1
+                    #   when "Provider"
+                    #     coefficient_value = @project.provider.coefficient rescue 1
+                    #   when "ProjectArea"
+                    #     coefficient_value = @project.project_area.coefficient rescue 1
+                    #   when "ProjectCategory"
+                    #     coefficient_value = @project.project_category.coefficient rescue 1
+                    #   when "PlatformCategory"
+                    #     coefficient_value = @project.platform_category.coefficient rescue 1
+                    #   when "AcquisitionCategory"
+                    #     coefficient_value = @project.acquisition_category.coefficient rescue 1
+                    # end
+                    #
+                    # selected_coefficient_values["#{guw_output.id}"] <<  cce.value * (coefficient_value.nil? ? 1 : coefficient_value.to_f)
+                  # end
+                # end
               end
 
               ceuw = ceuws_without_nil[guw_coefficient.id]
@@ -1321,34 +1342,44 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             tmp = inter_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
           end
 
-          if guw_output.name == "Effort AI (m.d)"
-            tmp_hash_res["#{guw_output.id}"] = tmp.to_f * 1.13
-            tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * 1.13
-          else
-            if params["ajusted_size"].present?
-              if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
-                tmp_hash_res["#{guw_output.id}"] = tmp
-                tmp_hash_ares["#{guw_output.id}"] = tmp
+          got = Guw::GuwOutputType.where(guw_output_id: guw_output.id,
+                                         guw_type_id: guw_unit_of_work.guw_type_id).first
+
+          unless got.nil?
+            unless got.display_type == "display_modif_no_calcul"
+              if guw_output.name == "Effort AI (m.d)"
+                tmp_hash_res["#{guw_output.id}"] = tmp.to_f * 1.13
+                tmp_hash_ares["#{guw_output.id}"] = tmp.to_f * 1.13
               else
-                if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+                if params["ajusted_size"].present?
+                  if params["ajusted_size"]["#{guw_unit_of_work.id}"].nil?
+                    tmp_hash_res["#{guw_output.id}"] = tmp
+                    tmp_hash_ares["#{guw_output.id}"] = tmp
+                  else
+                    if params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].blank?
+                      tmp_hash_res["#{guw_output.id}"] = tmp
+                      tmp_hash_ares["#{guw_output.id}"] = tmp
+                    else
+
+                      if tmp == 0
+                        tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+                      else
+                        tmp_hash_res["#{guw_output.id}"] = tmp
+                      end
+
+                      tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
+
+                    end
+                  end
+                else
                   tmp_hash_res["#{guw_output.id}"] = tmp
                   tmp_hash_ares["#{guw_output.id}"] = tmp
-                else
-
-                  if tmp == 0
-                    tmp_hash_res["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
-                  else
-                    tmp_hash_res["#{guw_output.id}"] = tmp
-                  end
-
-                  tmp_hash_ares["#{guw_output.id}"] = params["ajusted_size"]["#{guw_unit_of_work.id}"]["#{guw_output.id}"].to_f
-
                 end
               end
-            else
-              tmp_hash_res["#{guw_output.id}"] = tmp
-              tmp_hash_ares["#{guw_output.id}"] = tmp
             end
+          else
+            tmp_hash_res["#{guw_output.id}"] = tmp
+            tmp_hash_ares["#{guw_output.id}"] = tmp
           end
 
           guw_unit_of_work.size = tmp_hash_res

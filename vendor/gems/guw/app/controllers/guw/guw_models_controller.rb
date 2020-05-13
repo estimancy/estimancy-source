@@ -1365,7 +1365,7 @@ class Guw::GuwModelsController < ApplicationController
           guw_output = Guw::GuwOutput.where(organization_id: organization_id, guw_model_id: @guw_model.id, name: i[0]).first
           unless guow.guw_type.nil?
             unless guw_output.nil?
-              v = (guow.size.nil? ? '' : (guow.size.is_a?(Numeric) ? guow.size : guow.size["#{guw_output.id}"].to_f))
+              v = (guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output.id}"].to_f))
               @worksheet.add_cell(ind, 19 + j, v.to_s)
             end
           end
