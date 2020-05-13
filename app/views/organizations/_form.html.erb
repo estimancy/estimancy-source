@@ -341,7 +341,6 @@
                                 <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
                                   <%= I18n.t("#{report}") %>
                                 </label>
-
                               </div>
                             </div>
                           </div>
@@ -376,11 +375,23 @@
 
                   </div>
                 </div>
-            <% end %>
+            </div>
 
-          </div>
+            <div class="form-row">
+                <div class="col-12">
+                  <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
+                      <% if action_name == 'edit' %>
+                          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                      <% end %>
+                      <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                  <% end %>
+                  <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
+                </div>
+            </div>
+
+          <% end %>
+
         </div>
-
       </div>
     <% end %>
 

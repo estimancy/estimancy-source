@@ -40,6 +40,7 @@ class EstimationStatus < ActiveRecord::Base
   #Estimations permissions on Group according to the estimation status
   has_many :estimation_status_group_roles, dependent: :delete_all
 
+
   #validates :organization_id, presence: true
   validates :name, presence: true
   validates :status_number, presence: true, uniqueness: { scope: :organization_id, case_sensitive: false }

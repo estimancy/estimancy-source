@@ -1,0 +1,23 @@
+<!--<div class="grid-stack-item" data-view_widget_id="<%#= kpi_config.id %>" data-gs-x="<%#= kpi_config.position_x %>" data-gs-y="<%#= kpi_config.position_y %>" data-gs-width="<%#= view_widget.width.to_i %>" data-gs-height="5">-->
+<div class="grid-stack-item" data-view_widget_id="<%= kpi_config.id %>" data-gs-x="<%= kpi_config.position_x %>" data-gs-y="<%= kpi_config.position_y %>" data-gs-width="<%= 5 %>" data-gs-height="5">
+  <div class="grid-stack-item-content">
+
+    <div class="card card-widget card-indicator card-indicator-with-module" style="padding-right: 5px;">
+      <div class="card-body">
+
+        <div class="card-indicator-text">
+          <!--<div class="dragme">-->
+            <!--<i class='material-icons grip' style="float: right;  margin-right: -1.5rem">drag_indicator</i>-->
+          <!--</div>-->
+          <%= kpi_config.name %>
+        </div>
+
+        <div class="card-indicator-label">
+          <span style="margin-top: 0.9rem">
+            <%= render(:partial => "g_productivity_indicators", :locals => { kpi_config: kpi_config, :r_data => @productivity_indicators["#{kpi_config.id}"] }) %>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -2158,3 +2158,21 @@ es:
   display_historized: "Display all"
   hide_historized: "Hide historized"
   user_deleted_replaced_by_anonymous: "The user \"%{owner}\" who owns the estimate has been deleted and replaced by Anonymous"
+  productivity: "Productivity"
+  choose_an_estimation_status: "Please choose a status"
+  show_graph: "View graph"
+
+  label_add_new_project_data_widget: "Project data"
+  label_add_new_productivity_kpi_widget: "KPI data"
+  organization_kpi_config: "KPI"
+  organization_kpi_name: "KPI name"
+  choose_kpi_config: "Choose KPI config"  #Choisir une configuration de KPI
+  productivity_kpi_config_list: "List of productivity KPI config" #Liste des configurations de KPI de type Productivité
+  min_less_than_max_value: "The minimum value must be less than the maximum value."
+  signalize: "Signalize"
+  lock_project: "Blocking"
+  minimum: "Min value"
+  maximum: "Max value"
+  average: "Average value"
+  median: "Median value"
+  graphic: "Graphic"

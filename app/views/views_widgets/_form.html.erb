@@ -71,7 +71,27 @@
                 </div>
               </div>
 
+              <b>
+                <%= I18n.t(:min_less_than_max_value)%>
+              </b>
 
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :min_value, as: :integer, label: false, :input_html => { value: @min_value, placeholder: "Valeur min. autorisée", class: "mdl-textfield__input form-control"} %>
+                    </td>
+                    <label class="mdl-textfield__label" for="min_value"><%= I18n.t(:val_min) %></label>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :max_value, as: :integer, label: false, :input_html => { value: @max_value, placeholder: "Valeur max. autorisée", class: "mdl-textfield__input form-control" } %>
+                    </td>
+                    <label class="mdl-textfield__label" for="max_value"><%= I18n.t(:val_max) %></label>
+                  </div>
+                </div>
+              </div>
 
               <div class="form-row">
                 <div class="col-6">
@@ -81,15 +101,25 @@
                   </div>
                 </div>
 
+                <div class="col-3" style="margin-top: 3em;">
+                  <%= f.input :lock_project, as: :boolean, label: false, input_html: {class: 'mdl-checkbox__input' } %>
+                  <label class="mdl-textfield__label" for="lock_project" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:lock_project) %></label>
+                </div>
+
+                <div class="col-3"  style="margin-top: 3em;">
+                  <%= f.input :signalize, as: :boolean, label: false, input_html: {class: 'mdl-checkbox__input' } %>
+                  <label class="mdl-textfield__label" for="signalize" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:signalize) %></label>
+                </div>
+              </div>
+
+              <div class="form-row">
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <%= f.input :estimation_status_id, as: :select, collection: @current_organization.estimation_statuses, label: false, input_html:{class: "mdl-textfield__input form-control"}  %>
                     <label class="mdl-textfield__label" for="estimation_status_id"><%= I18n.t(:associated_status) %></label>
                   </div>
                 </div>
-              </div>
 
-              <div class="form-row">
                 <div class="col-6">
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>

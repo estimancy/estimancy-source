@@ -1375,3 +1375,67 @@ table.table_effort_per_phase th{
 .guw_line {
     opacity: 0;
 }
+
+
+.blink:before, .blink {
+    -webkit-animation: 2s linear infinite condemed_blink_effect; // pour Safari 4.0-8.0
+    animation: 2s linear infinite condemed_blink_effect;
+
+}
+@-webkit-keyframes condemed_blink_effect {
+    0% {
+        visibility: visible;
+        border-left-color: white;
+    }
+    50% {
+        visibility: hidden;
+        border-left-color: red;
+    }
+    100% {
+        visibility: visible;
+        border-left-color: red;
+    }
+}
+@keyframes condemed_blink_effect {
+    0% {
+        visibility: visible;
+        border-left-color: white;
+    }
+    50% {
+        visibility: hidden;
+        border-left-color: red;
+    }
+    100% {
+        visibility: visible;
+        border-left-color: red;
+    }
+}
+
+
+
+.blink_value {
+    -webkit-animation: 2s linear infinite condemed_blink_value_effect; // pour Safari 4.0-8.0
+    animation: 2s linear infinite condemed_blink_value_effect;
+}
+@-webkit-keyframes condemed_blink_value_effect {
+    0% {
+        visibility: hidden;
+    }
+    50% {
+        visibility: hidden;
+    }
+    100% {
+        visibility: visible;
+    }
+}
+@keyframes condemed_blink_value_effect {
+    0% {
+        visibility: hidden;
+    }
+    50% {
+        visibility: hidden;
+    }
+    100% {
+        visibility: visible;
+    }
+}

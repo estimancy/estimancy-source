@@ -245,6 +245,10 @@ class OrganizationsController < ApplicationController
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:validation_options)) #validation_text
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:show_wbs_activity_ratio))
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:fields))  #project_fields
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:is_organization_kpi_widget))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:organization_kpi_name))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:signalize))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:lock_project))
 
         #Then copy the widgets of the dafult view
         widget_index = 0
@@ -328,6 +332,10 @@ class OrganizationsController < ApplicationController
               worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.validation_text)
               worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.show_wbs_activity_ratio ? 1 : 0))
               worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.project_fields.last.field.name rescue nil))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.is_organization_kpi_widget ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.kpi.name rescue nil))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.signalize ? 1 : 0))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.lock_project ? 1 : 0))
             end
           end
         end
@@ -772,8 +780,21 @@ class OrganizationsController < ApplicationController
                           validation_text = row.cells[26].value rescue nil
                           show_wbs_activity_ratio = row.cells[27].value rescue nil
                           project_field = row.cells[28].value rescue nil
+                          is_organization_kpi_widget = row.cells[29].value rescue nil
+                          organization_kpi_name = row.cells[30].value rescue nil
+                          signalize = row.cells[31].value rescue nil
+                          lock_project = row.cells[32].value rescue nil
 
-                          field_id = @organization. fields.where(name: project_field).first.id rescue nil
+
+                          kpi_id = nil
+                          unless organization_kpi_name.blank?
+                            kpi_config = @organization.kpis.where(name: organization_kpi_name).first
+                            if kpi_config
+                              kpi_id = kpi_config.id
+                            end
+                          end
+
+                          field_id = @organization.fields.where(name: project_field).first.id rescue nil
                           estimation_value_id = nil
 
                           begin
@@ -924,7 +945,11 @@ class OrganizationsController < ApplicationController
                                                               min_value: min_value,
                                                               max_value: max_value,
                                                               validation_text: validation_text,
-                                                              position_y: position_y)
+                                                              position_y: position_y,
+                                                              is_organization_kpi_widget: is_organization_kpi_widget,
+                                                              kpi_id: kpi_id,
+                                                              signalize: signalize,
+                                                              lock_project: lock_project)
 
                             #new_view_widget.save
                             if new_view_widget.save
@@ -962,7 +987,11 @@ class OrganizationsController < ApplicationController
                                                               position_y: position_y,
                                                               min_value: min_value,
                                                               max_value: max_value,
-                                                              validation_text: validation_text)
+                                                              validation_text: validation_text,
+                                                              is_organization_kpi_widget: is_organization_kpi_widget,
+                                                              kpi_id: kpi_id,
+                                                              signalize: signalize,
+                                                              lock_project: lock_project)
                             if new_view_widget.save
                               #Update the copied project_fields
                               unless project_field.blank?
@@ -4710,6 +4739,18 @@ class OrganizationsController < ApplicationController
                 project.ancestry = new_ancestor_ids_list.join('/')
                 project.save
               end
+
+              #update project's views_widgets with organization_kpi_config KPI
+              project.views_widgets.where(is_organization_kpi_widget: true).each do |view_widget|
+                old_kpi_id = view_widget.kpi_id
+                new_kpi_id = nil
+                new_kpi = new_organization.kpis.where(copy_id: old_kpi_id).first
+                if new_kpi
+                  new_kpi_id = new_kpi.id
+                end
+                view_widget.kpi_id = new_kpi_id
+                view_widget.save
+              end
             end
 
             # Update the modules's GE Models instances
@@ -4835,7 +4876,7 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
     @groups = @organization.groups
     @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report",  "raw_data_extract", "budget_report", "budget_excel_report"]
-    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators"]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "productivity"]
     @organization_show_reports_keys = []
     @organization_show_kpi_keys = []
   end
@@ -4861,7 +4902,7 @@ class OrganizationsController < ApplicationController
     @work_element_types = @organization.work_element_types
 
     @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "raw_data_extract", "budget_report", "budget_excel_report"]
-    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators"]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "productivity"]
 
     @organization_show_reports_keys = @organization.show_reports.keys
     @organization_show_kpi_keys = @organization.show_kpi.keys
@@ -5626,7 +5667,6 @@ class OrganizationsController < ApplicationController
     @colors << '#D96675'
     @colors << '#D95F18'
 
-
     @organization.applications.each do |app|
       @coeff_data << ["#{app.name}"]
       @coeff_data << create_nb << modif_nb << delete_nb << dup_nb<< redund_nb << registered_nb
@@ -5634,7 +5674,7 @@ class OrganizationsController < ApplicationController
 
   end
 
-  def kpi
+  def global_kpis
       @organization = Organization.find(params[:organization_id])
       @attributes = PeAttribute.all
       @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
@@ -5655,7 +5695,7 @@ class OrganizationsController < ApplicationController
       budget_header = ["Budgets"]
       organization_budget_types = @organization.budget_types
       @nb_series = organization_budget_types.all.size
-      @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators"]
+      @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "productivity"]
       @organization_show_kpi_keys = @organization.show_kpi.keys
       @partial_name = params[:partial_name]
       @item_title = params[:item_title]
@@ -5708,6 +5748,16 @@ class OrganizationsController < ApplicationController
       #per application
       #selected_appli = params['application']
       #@data_actions_per_appli = projects_per_application_stability_indicators(selected_appli)
+
+    case params[:partial_name]
+      #Productivity
+      when "tabs_kpi_productivity"
+        @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
+
+        @productivity_indicators = Hash.new
+        #@productivity_indicators = projects_productivity_indicators(@organization.id, nil)
+      else
+    end
 
   end
 
@@ -5797,6 +5847,213 @@ class OrganizationsController < ApplicationController
     @res << ['Total', create, modification, delete]
     @res
   end
+
+
+  #productivity
+  def get_projects_productivity_indicators
+    @productivity_indicators = Hash.new
+    @config_for_graph_label = Hash.new
+    @selected_kpi_config = []
+    kpi_config_id = params['kpi_configuration']
+    selected_configs = params[:selected_kpi_configuration]
+    unless selected_configs.blank?
+      selected_configs.keys.each do |kpi_id|
+        kpi = Kpi.find(kpi_id)
+        if kpi
+          kpi.update_attribute(:is_selected, true)
+          @selected_kpi_config << kpi
+          kpi_config = []
+          kpi_config = projects_productivity_indicators(@current_organization.id, kpi_id)
+          @productivity_indicators["#{kpi_id}"] = kpi_config
+
+          # config_for_graph = "#{kpi.name} >>"
+          # application = "  " + "#{I18n.t(:application)}: #{kpi.application.name}" rescue ""
+          # project_area = "  -  " +  "#{I18n.t(:project_area)}: #{kpi.project_area.name}" rescue ""
+          # project_category = "  -  " +  "#{I18n.t(:project_category)}: #{kpi.project_category.name}" rescue ""
+          # acquisition_category = "  -  " + "#{I18n.t(:acquisition_category)}: #{kpi.acquisition_category.name}" rescue ""
+          # platform_category = "  -  " + "#{I18n.t(:platform_category)}: #{kpi.platform_category.name}" rescue ""
+          # provider = "  -  " + "#{I18n.t(:provider)}: #{kpi.provider.name}" rescue ""
+          #
+          # @config_for_graph_label["#{kpi_id}"] = config_for_graph + application + project_area + project_category + acquisition_category + platform_category + provider
+        end
+      end
+    end
+
+    #@productivity_indicators = projects_productivity_indicators(@current_organization.id, kpi_config_id)
+    @productivity_indicators
+  end
+
+
+  def projects_productivity_indicators(organization_id, kpi_config_id)
+    organization = Organization.find(organization_id)
+    @res_graphic = []
+    #@res << [I18n.t(:productivity), "Les autres projets", "Projet courant"]
+    #@res_graphic << [I18n.t(:productivity), "Projets"]
+
+    @projects_values = []
+    #@calculation_output = 0.0
+
+    #on récupère les elements de la vue non historisés
+    @projects = organization.organization_estimations
+
+    if kpi_config_id.blank?
+      @projects = organization.projects
+      kpi_config = Kpi.where(organization_id: organization_id, kpi_type: "Productivity").first
+    else
+      kpi_config = Kpi.where(organization_id: organization_id, id: kpi_config_id).first
+    end
+
+    if kpi_config
+      estimation_model_id = kpi_config.estimation_model_id
+      application_id = kpi_config.application_id
+      project_area_id = kpi_config.project_area_id
+      project_category_id = kpi_config.project_category_id
+      acquisition_category_id = kpi_config.acquisition_category_id
+      platform_category_id = kpi_config.platform_category_id
+      provider_id = kpi_config.provider_id
+      estimation_status_ids = kpi_config.estimation_statuses.map(&:id)
+      field_id = kpi_config.field_id
+      output_type = kpi_config.output_type #(Min, Max, Moyenne, Mediane, Graphique)
+      nb_last_projects = kpi_config.nb_last_projects
+      include_historized = kpi_config.include_historized
+      project_versions = kpi_config.project_versions
+
+      #Inclure ou pas les historisés
+      if include_historized == true
+        @projects = @projects = organization.projects
+      end
+
+      #Modele
+      unless estimation_model_id.blank?
+        @projects = @projects.where(original_model_id: estimation_model_id)
+      end
+
+      #statuts
+      unless estimation_status_ids.size <= 0
+        @projects = @projects.where(estimation_status_id: estimation_status_ids)
+      end
+
+      #versions
+      # unless project_versions.blank?
+      #   if project_versions.to_s == "last_version"
+      #     if include_historized == true
+      #       @projects = Project.sort_by_ancestry(@projects.arrange(:order => :position))
+      #     else
+      #       @projects = OrganizationEstimation.sort_by_ancestry(@projects.arrange(:order => :position))
+      #     end
+      #   end
+      # end
+
+      config_for_graph = "#{kpi_config.name} >>"
+      unless application_id.blank?
+        @projects = @projects.where(application_id: application_id)
+        application = organization.applications.where(id: application_id).first
+        config_for_graph = config_for_graph + "  " + "#{I18n.t(:application)}: #{application.name}"
+      end
+
+      unless project_area_id.blank?
+        @projects = @projects.where(project_area_id: project_area_id)
+        project_area = organization.project_areas.where(id: project_area_id).first
+        config_for_graph = config_for_graph + "  -  " +  "#{I18n.t(:project_area)}: #{project_area.name}"
+      end
+
+      unless project_category_id.blank?
+        @projects = @projects.where(project_category_id: project_category_id)
+        project_category = organization.project_categories.where(id: project_category_id).first
+        config_for_graph = config_for_graph + "  -  " +  "#{I18n.t(:project_category)}: #{project_category.name}"
+      end
+
+      unless acquisition_category_id.blank?
+        @projects = @projects.where(acquisition_category_id: acquisition_category_id)
+        acquisition_category = organization.acquisition_categories.where(id: acquisition_category_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:acquisition_category)}: #{acquisition_category.name}"
+      end
+
+      unless platform_category_id.blank?
+        @projects = @projects.where(platform_category_id: platform_category_id)
+        platform_category = organization.platform_categories.where(id: platform_category_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:platform_category)}: #{platform_category.name}"
+      end
+
+      unless provider_id.blank?
+        @projects = @projects.where(provider_id: provider_id)
+        provider = organization.providers.where(id: provider_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:provider)}: #{provider.name}"
+      end
+
+      #@res_graphic << ["#{I18n.t(:productivity)} : #{kpi_config.name}", "#{config_for_graph}"]
+      @res_graphic << ["#{I18n.t(:created_at)}", "#{config_for_graph}", { role: 'tooltip' } ]
+
+      # ordonner par ordre plus récents
+      if nb_last_projects.blank?
+        @projects = @projects.reorder(created_at: :asc)
+        nb_projects = @projects.all.size
+      else
+        @projects = @projects.reorder(created_at: :asc)
+        nb_projects = @projects.all.size
+      end
+
+      unless field_id.nil?
+        if project_versions.to_s == "last_version"
+
+          @projects.each do |project|
+            if project.is_childless?
+              project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
+              if project_field
+                value = project_field.value.to_f
+              else
+                value = 0
+              end
+
+              @projects_values << value
+              @res_graphic << [I18n.l(project.created_at.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+            end
+          end
+
+        else
+          @projects.each do |project|
+            project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
+            if project_field
+              value = project_field.value.to_f
+            else
+              value = 0
+            end
+
+            @projects_values << value
+            @res_graphic << [I18n.l(project.created_at.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+          end
+        end
+
+        #Mode de calcul
+        case output_type.to_s
+          when "minimum"
+            @calculation_output = @projects_values.min
+
+          when "maximum"
+            @calculation_output = @projects_values.max
+
+          when "average"
+            @calculation_output = @projects_values.sum / nb_projects
+
+          when "median"
+            #@calculation_output = @projects_values.median
+            sorted = @projects_values.sort
+            len = sorted.length
+            @calculation_output = (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0
+
+          when "graphic"
+            #@res << ["Projet 123", 200]
+            #@calculation_output = render :partial => 'organizations/g_productivity_indicators', :locals => { :r_data => @res_graphic }
+            @calculation_output = @res_graphic
+          else
+        end
+      end
+    end
+
+    @calculation_output
+  end
+
+
 
   #########   END Organization settings pages  ###################
 

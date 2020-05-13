@@ -5,6 +5,7 @@
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >exposure</i></a><!-- add_box -->
+          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_organization_kpi_widget: true) %>" title="<%= I18n.t :label_add_new_productivity_kpi_widget %>"><i class="material-icons">show_chart</i></a>
       <% end %>
     </div>
   </div>
@@ -34,6 +35,11 @@
               <% value_to_show = view_widget_data[:value_to_show] rescue nil %>
               <% @data_widget_hash[view_widget.name] = [view_widget, value_to_show] %>
 
+          <% elsif view_widget.is_organization_kpi_widget? %>
+              <% view_widget_data = get_organization_kpi_data_widget_value(view_widget.id, @project.id) %>
+              <% value_to_show = "#{view_widget_data[:value_to_show]} #{view_widget.kpi_unit}" rescue nil %>
+              <% @data_widget_hash[view_widget.name] = [view_widget, value_to_show] %>
+
           <% else %>
               <%# view_widget_data = new_get_view_widget_data(module_project.id, view_widget.id) %>
               <% view_widget_data = get_view_widget_data(module_project.id, view_widget.id) %>
@@ -43,7 +49,6 @@
       <% end %>
   <% end %>
 
-
   <% @label_widget_hash.each do |k| %>
       <div class="widget-group-label">
         <span>
@@ -51,7 +56,6 @@
         </span>
       </div>
   <% end %>
-
 
   <% @widgets = @kpi_widget_hash.merge(@data_widget_hash) %>
   <div class="widget-list-content">
@@ -61,8 +65,30 @@
             <% view_widget = @widgets[k].first %>
             <% value = @widgets[k].last %>
             <% unless value.is_a?(Hash) %>
+
+                <% borne_min = view_widget.min_value
+                   borne_max = view_widget.max_value
+                   blink_class = ""
+                   blink_value_class = ""
+
+                   unless borne_min.nil? || borne_max.nil?
+                     if value.to_f < borne_min || value.to_f > borne_max
+                       if view_widget.signalize
+                         blink_class = "blink red"
+                         blink_value_class = "blink_value"
+                       else
+                         blink_class = ""
+                         blink_value_class = ""
+                       end
+                     else
+                       blink_class = ""
+                       blink_value_class = ""
+                     end
+
+                   end %>
+
                 <li>
-                  <div class="card card-widget card-indicator card-indicator-with-module" style="--widget-color: <%= view_widget.color %>;">
+                  <div class="card card-widget <%= blink_class %> card-indicator card-indicator-with-module" style="--widget-color: <%= view_widget.color %>;">
                   <!--<div class="card card-widget module-indicator module-indicator-without-module">-->
                     <div class="card-body">
                       <div class="card-indicator-type"></div>
@@ -85,7 +111,7 @@
                       </div>
 
                       <div class="card-indicator-label'">
-                        <span>
+                        <span class="<%= blink_value_class %>">
                           <%= value.nil? ? '-' : value %>
                         </span>
                         <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>

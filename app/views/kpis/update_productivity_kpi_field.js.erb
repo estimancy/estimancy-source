@@ -1,0 +1,4 @@
+
+$("#kpi_field_id").html("<%=raw j(select_tag 'kpi[field_id]',
+                                     options_for_select(@estimation_model_fields.map{|i| ["#{i.name}", i.id]}),
+                                     class: 'inline_attr') %>");

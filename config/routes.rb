@@ -23,6 +23,10 @@
 
 Projestimate::Application.routes.draw do
 
+  get 'kpis/new'
+
+  get 'kpis/edit'
+
   #get 'file_uploader/index'
 
   #get 'file_uploader/new'
@@ -256,6 +260,9 @@ Projestimate::Application.routes.draw do
     get 'projects_stability_indicators' => 'organizations#projects_stability_indicators'
     get 'get_projects_stability_indicators' => 'organizations#get_projects_stability_indicators'
 
+    get 'projects_productivity_indicators' => 'organizations#projects_productivity_indicators'
+    get 'get_projects_productivity_indicators' => 'organizations#get_projects_productivity_indicators'
+
     get 'cds_data' => 'projects#cds_data'
 
     post 'generate_budget_report' => 'budgets#generate_budget_report', :as => 'generate_budget_report'
@@ -315,6 +322,7 @@ Projestimate::Application.routes.draw do
     resources :views
     resources :providers
     resources :budget_types
+    resources :kpis
 
     get "authorization" => 'organizations#authorization'
     get "setting" => 'organizations#setting'
@@ -328,7 +336,7 @@ Projestimate::Application.routes.draw do
     get "async_estimations" => 'organizations#async_estimations'
 
     get "report" => 'organizations#report'
-    get "kpi" => 'organizations#kpi'
+    get "global_kpis" => 'organizations#global_kpis'
 
     post "generate_report_csv" => 'organizations#generate_report_csv'
     post "generate_report_excel" => 'organizations#generate_report_excel'
@@ -525,4 +533,6 @@ Projestimate::Application.routes.draw do
 
   get 'advanced_search' => 'projects#advanced_search', :as => 'advanced_search'
   get 'user_search' => 'projects#user_search', :as => 'user_search'
+
+  get 'update_productivity_kpi_field' => 'kpis#update_productivity_kpi_field', :as => 'update_productivity_kpi_field'
 end

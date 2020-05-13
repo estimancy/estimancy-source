@@ -384,7 +384,11 @@ class ModuleProjectsController < ApplicationController
                                                 position_y: view_widget.position_y,
                                                 min_value: view_widget.min_value,
                                                 max_value: view_widget.max_value,
-                                                validation_text: view_widget.validation_text)
+                                                validation_text: view_widget.validation_text,
+                                                is_organization_kpi_widget: view_widget.is_organization_kpi_widget,
+                                                kpi_id: view_widget.kpi_id,
+                                                signalize: view_widget.signalize,
+                                                lock_project: view_widget.lock_project)
                   #Save and copy project_fields
                   if widget_copy.save
                     unless view_widget.project_fields.empty?
@@ -458,7 +462,11 @@ class ModuleProjectsController < ApplicationController
                                               show_min_max: view_widget.show_min_max,
                                               width: view_widget.width, height: view_widget.height,
                                               widget_type: view_widget.widget_type, position: view_widget.position,
-                                              position_x: view_widget.position_x, position_y: view_widget.position_y)
+                                              position_x: view_widget.position_x, position_y: view_widget.position_y,
+                                              is_organization_kpi_widget: view_widget.is_organization_kpi_widget,
+                                              kpi_id: view_widget.kpi_id,
+                                              signalize: view_widget.signalize,
+                                              lock_project: view_widget.lock_project)
                 #Save and copy project_fields
                 if widget_copy.save
                   unless view_widget.project_fields.empty?
