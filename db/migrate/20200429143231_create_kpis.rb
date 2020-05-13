@@ -31,7 +31,7 @@ class CreateKpis < ActiveRecord::Migration
     end
 
 
-    create_table :kpi_statuses do |t|
+    create_table :kpi_statuses, :force => true do |t|
       t.integer :kpi_id
       t.integer :estimation_status_id
 
