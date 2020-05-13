@@ -397,9 +397,11 @@ module ViewsWidgetsHelper
       if productivity_config
         orga_controller = OrganizationsController.new
         value_to_show = orga_controller.projects_productivity_indicators(organization.id, productivity_config_id)
-        # if productivity_config.output_type == "graphic"
-        #   value_to_show = render(:partial => "organization/g_productivity_indicators", :locals => { :r_data => value_to_show })
-        # end
+
+        if productivity_config.output_type != "graphic"
+          #value_to_show = "#{ActionController::Base.helpers.number_with_precision(value_to_show_tmp.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr"))} #{productivity_config.kpi_unit.to_s}"
+          value_to_show = "#{ActionController::Base.helpers.number_with_precision(value_to_show.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr"))}"
+        end
       else
         value_to_show ="-"
       end
