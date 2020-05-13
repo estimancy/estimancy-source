@@ -5985,10 +5985,10 @@ class OrganizationsController < ApplicationController
 
       # ordonner par ordre plus récents
       if nb_last_projects.blank?
-        @projects = @projects.reorder(created_at: :asc)
+        @projects = @projects.reorder(start_date: :asc)
         nb_projects = @projects.all.size
       else
-        @projects = @projects.reorder(created_at: :asc)
+        @projects = @projects.reorder(start_date: :asc)
         nb_projects = @projects.all.size
       end
 
@@ -6005,7 +6005,7 @@ class OrganizationsController < ApplicationController
               end
 
               @projects_values << value
-              @res_graphic << [I18n.l(project.created_at.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+              @res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
             end
           end
 
@@ -6019,7 +6019,7 @@ class OrganizationsController < ApplicationController
             end
 
             @projects_values << value
-            @res_graphic << [I18n.l(project.created_at.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+            @res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
           end
         end
 
