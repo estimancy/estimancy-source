@@ -167,8 +167,7 @@
                                   :label => false,
                                   :as => :select,
                                   :collection => @organization.acquisition_categories,
-                                  :input_html => {:class => 'mdl-textfield__input form-control'},
-                                  :disabled => !((can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project)) || can_alter_model) %>
+                                  :input_html => {:class => 'mdl-textfield__input form-control'} %>
               </div>
             </div>
           </div>

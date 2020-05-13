@@ -8,7 +8,7 @@
         var view = new google.visualization.DataView(data_array);
 
         var options = {
-            title: '<%= "#{I18n.t(:productivity)}" %>',
+            title: '<%#= "#{I18n.t(:productivity)}" %>',
             curveType: 'function',
             legend: { position: 'bottom' },
 
@@ -16,7 +16,7 @@
                 title: '<%= "Date de création" %>'
             },
             vAxis: {
-                title: '<%= "#{I18n.t(:productivity)} (#{kpi_config.kpi_unit})" %>'
+                title: '<%= kpi_config.field.name %>'
             },
 
             pointsVisible: true,
