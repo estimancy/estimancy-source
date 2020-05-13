@@ -5749,11 +5749,10 @@ class OrganizationsController < ApplicationController
       #selected_appli = params['application']
       #@data_actions_per_appli = projects_per_application_stability_indicators(selected_appli)
 
+    @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
     case params[:partial_name]
       #Productivity
       when "tabs_kpi_productivity"
-        @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
-
         @productivity_indicators = Hash.new
         #@productivity_indicators = projects_productivity_indicators(@organization.id, nil)
       else
