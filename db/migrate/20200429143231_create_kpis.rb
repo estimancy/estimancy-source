@@ -1,6 +1,6 @@
 class CreateKpis < ActiveRecord::Migration
   def change
-    create_table :kpis do |t|
+    create_table :kpis, :force => true do |t|
       t.string :kpi_type
       t.integer :organization_id
       t.string :name
@@ -38,6 +38,5 @@ class CreateKpis < ActiveRecord::Migration
       t.timestamps null: false
     end
 
-    #add_index :kpis, [:organization_id, :kpi_type, :name], unique: true
   end
 end
