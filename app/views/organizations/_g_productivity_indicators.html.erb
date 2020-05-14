@@ -13,7 +13,7 @@
             legend: { position: 'bottom' },
 
             hAxis: {
-                title: '<%= "Date de création" %>'
+                title: '<%= (kpi_config.selected_date == "created_at" ? I18n.t(:created_date) : I18n.t("#{kpi_config.selected_date}")) %>'
             },
             vAxis: {
                 title: '<%= kpi_config.field.name %>'

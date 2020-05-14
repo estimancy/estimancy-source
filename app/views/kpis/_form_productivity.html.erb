@@ -52,7 +52,7 @@
                               :label => false,
                               :as => :select,
                               :collection => @kpi.get_estimation_model_fields(@organization), #@organization.fields,
-                              :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                              :input_html => { :class => 'mdl-textfield__input form-control' }, include_blank: false %>
           </div>
           <div class="col-2">
             <label for="kpi_unit" class="label-estimancy"><%= I18n.t 'kpi_unit' %></label>
@@ -88,7 +88,9 @@
           <div class="col-3">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <%= f.input :start_date, as: :string, :label => false,
-                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.start_date) } %>
+                  #:input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.start_date) }
+                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? nil : I18n.l(@kpi.start_date) } %>
+
               <label class="mdl-textfield__label" ><%= I18n.t('start_date') %></label>
             </div>
           </div>
@@ -96,7 +98,8 @@
           <div class="col-3">
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <%= f.input :end_date, as: :string, :label => false,
-                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.end_date) } %>
+                          #:input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.end_date) }
+                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? nil : I18n.l(@kpi.end_date) } %>
               <label class="mdl-textfield__label" ><%= I18n.t('end_date') %></label>
             </div>
           </div>
@@ -137,7 +140,7 @@
             <%= f.input :output_type,
                         :label => false,
                         :as => :select,
-                        :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:serie), "graphic"]],
+                        :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"], [I18n.t(:serie), "graphic"]],
                         :input_html => { :class => 'mdl-textfield__input form-control' },
                         include_blank: false %>
           </div>

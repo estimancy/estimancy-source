@@ -5893,7 +5893,7 @@ class OrganizationsController < ApplicationController
     #@calculation_output = 0.0
 
     #on récupère les elements de la vue non historisés
-    @projects = organization.organization_estimations
+    @projects = organization.organization_estimations.where(is_model: [nil, false])
 
     if kpi_config_id.blank?
       @projects = organization.projects
@@ -5922,7 +5922,7 @@ class OrganizationsController < ApplicationController
 
       #Inclure ou pas les historisés
       if include_historized == true
-        @projects = @projects = organization.projects
+        @projects = @projects = organization.projects.where(is_model: [nil, false])
       end
 
       # start_date
@@ -6046,6 +6046,9 @@ class OrganizationsController < ApplicationController
 
           when "sum"
             @calculation_output = @projects_values.sum
+
+          when "counter"
+            @calculation_output = nb_projects
 
           when "graphic", "serie"
             #@res << ["Projet 123", 200]

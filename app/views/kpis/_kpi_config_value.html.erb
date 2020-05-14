@@ -9,14 +9,14 @@
             <!--<i class='material-icons grip' style="float: right;  margin-right: -1.5rem">drag_indicator</i>-->
           <!--</div>-->
 
-          <%= "#{kpi_config.name} : #{ kpi_config.output_type.blank? ? "" : I18n.t("#{kpi_config.output_type}_value")}" %>
-
+          <%#= "#{kpi_config.name} : #{ kpi_config.output_type.blank? ? "" : I18n.t("#{kpi_config.output_type}_value")}" %>
+          <%= "#{kpi_config.name}" %>
         </div>
         <div class="card-indicator-label">
           <span style="margin-top: 0.9rem">
             <%#= @productivity_indicators["#{kpi_config.id}"].nil? ? '-' : @productivity_indicators["#{kpi_config.id}"] %> <%#= "(#{kpi_config.kpi_unit})" %>
             <% value =  @productivity_indicators["#{kpi_config.id}"].nil? ? '-' : ActionController::Base.helpers.number_with_precision(@productivity_indicators["#{kpi_config.id}"].to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr")) %>
-            <%= value %> <%= "(#{kpi_config.kpi_unit})" %>
+            <%= value %> <%= "#{kpi_config.kpi_unit}" %>
           </span>
         </div>
       </div>
