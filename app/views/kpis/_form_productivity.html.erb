@@ -46,7 +46,7 @@
               </div>
             </div>
 
-          <div class="col-4 select-estimancy">
+          <div class="col-3 select-estimancy">
             <label for="field_id" class="label-estimancy"><%#= I18n.t 'field' %>Champs sur lequel se fait le calcul</label>
             <%= f.association :field,
                               :label => false,
@@ -63,15 +63,42 @@
 
         <div class="form-row">
           <div class="col-3">
-            <label for="nb_last_projects" class="label-estimancy"><%#= I18n.t 'nb_last_projects' %>N derniers projets à prendre en compte</label>
+            <label for="nb_last_projects" class="label-estimancy"><%= I18n.t('nb_last_projects') %></label>
             <%= f.input :nb_last_projects, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
           </div>
 
+          <div class="col-3 select-estimancy">
+            <label for="selected_date" class="label-estimancy"><%= I18n.t 'selected_date' %></label>
+            <%= f.input :selected_date,
+                        :label => false,
+                        :as => :select,
+                        :collection => [[I18n.t(:created_date), "created_at"], [I18n.t(:start_date), "start_date"]],
+                        :input_html => { :class => 'mdl-textfield__input form-control' },
+                        include_blank: false %>
+          </div>
           <div class="col-3" style="margin-top: 4em">
             <%= f.input :include_historized, as: :boolean, label: false, input_html: {class: 'mdl-checkbox__input' } %>
             <label class="mdl-textfield__label" for="include_historized" style="padding-left: 4rem; margin-top: -1.7em">
-                <%#= I18n.t(:include_historized) %>Inclure les historisés
+                <%= I18n.t(:include_historized) %>
             </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :start_date, as: :string, :label => false,
+                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.start_date) } %>
+              <label class="mdl-textfield__label" ><%= I18n.t('start_date') %></label>
+            </div>
+          </div>
+
+          <div class="col-3">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :end_date, as: :string, :label => false,
+                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.end_date) } %>
+              <label class="mdl-textfield__label" ><%= I18n.t('end_date') %></label>
+            </div>
           </div>
         </div>
 
@@ -79,20 +106,11 @@
             <div class="col-3">
               <div class="select-estimancy">
                 <label for="estimation_statuses" class="label-estimancy"><%= I18n.t 'associated_status' %> : </label>
-                <%#= f.input :estimation_statuses,
-                                  :label => false,
-                                  :as => :select,
-                                  :collection => @current_organization.estimation_statuses,
-                                  :input_html => { :class => 'mdl-textfield__input form-control' } %>
-
-                <%#= f.collection_check_boxes(:estimation_statuses, @organization.estimation_statuses.all, :id, :name) %>
 
                 <%= hidden_field_tag "kpi[estimation_status_ids][]", nil %>
                 <% @organization.estimation_statuses.each do |es| %>
                   <div class="col">
-                    <%# kpi_es = BudgetTypeStatus.where(organization_id: @organization.id, budget_type_id: @budget_type.id, estimation_status_id: es.id).first %>
                     <label>
-                      <%#= check_box_tag "estimation_statuses[#{es.id}]", nil, (bts.nil? ? false : true) %>
                       <%= check_box_tag "kpi[estimation_status_ids][]", es.id, @kpi.estimation_status_ids.include?(es.id) %>
                       <%= es %>
                     </label>
@@ -115,11 +133,11 @@
           </div>
 
           <div class="col-3 select-estimancy">
-            <label for="output_type" class="label-estimancy"><%#= I18n.t 'field' %>Type de sortie souhaité </label>
+            <label for="output_type" class="label-estimancy"><%= I18n.t 'output_type' %></label>
             <%= f.input :output_type,
                         :label => false,
                         :as => :select,
-                        :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], ["Graphique", "graphic"]],
+                        :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:serie), "graphic"]],
                         :input_html => { :class => 'mdl-textfield__input form-control' },
                         include_blank: false %>
           </div>
@@ -214,5 +232,22 @@
                 data: "estimation_model_id=" + $(this).val()
             });
         }
+    });
+</script>
+
+<script>
+    $(document).ready(function() {
+        $(".date-picker").datepicker({
+            language: '<%= set_user_language_for_datepicker %>',
+            //uiLibrary: 'bootstrap4',
+            //locale: 'fr-fr',
+            orientation: 'auto top',
+            autoclose: true,
+            todayHighlight: true,
+            todayBtn: true,
+            icons: {
+                rightIcon: '<i class="material-icons">event</i>'
+            }
+        });
     });
 </script>

@@ -9,7 +9,7 @@
             <!--<i class='material-icons grip' style="float: right;  margin-right: -1.5rem">drag_indicator</i>-->
           <!--</div>-->
 
-          <%= "#{kpi_config.name}  : #{I18n.t(kpi_config.output_type)}" %>
+          <%= "#{kpi_config.name} : #{ kpi_config.output_type.blank? ? "" : I18n.t("#{kpi_config.output_type}_value")}" %>
 
         </div>
         <div class="card-indicator-label">

@@ -14,6 +14,8 @@
       <th><%= I18n.t(:outputs) %></th>
       <th><%= I18n.t(:estimations_statuses) %></th>
       <th><%= I18n.t(:application)%></th>
+      <th><%= I18n.t(:start_date)%></th>
+      <th><%= I18n.t(:end_date)%></th>
 
       <!--<th><%#= I18n.t(:project_area)%></th>-->
       <!--<th><%#= I18n.t(:project_category)%></th>-->
@@ -40,6 +42,8 @@
           <td><%= productivity.output_type.blank? ? "-" : I18n.t("#{productivity.output_type}") %></td>
           <td><%= productivity.estimation_statuses.join("; ") %></td>
           <td><%= productivity.application %></td>
+          <td><%= productivity.start_date.blank? ? "-" : I18n.l(productivity.start_date)  %></td>
+          <td><%= productivity.end_date.blank? ? "-" : I18n.l(productivity.end_date)  %></td>
 
           <!--<td><%#= productivity.project_area %></td>-->
           <!--<td><%#= productivity.project_category %></td>-->
@@ -49,16 +53,12 @@
 
           <td class="align-center">
             <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_kpi_path(@organization, productivity), class: "material-icons", :title => I18n.t('edit') %>
-            <% if can? :manage, User, :organization_id => @organization.id %>
-                <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
-                <%= link_to raw("<i class='material-icons'>delete</i>"), organization_kpi_path(@organization, productivity), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
-            <% end %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), organization_kpi_path(@organization, productivity), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
           </td>
         </tr>
     <% end %>
 
     <%= render :partial => 'layouts/footer_table' %>
-
     </tbody>
   </table>
 </div>

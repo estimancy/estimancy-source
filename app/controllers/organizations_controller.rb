@@ -5916,10 +5916,23 @@ class OrganizationsController < ApplicationController
       nb_last_projects = kpi_config.nb_last_projects
       include_historized = kpi_config.include_historized
       project_versions = kpi_config.project_versions
+      selected_date = kpi_config.selected_date || "start_date"
+      start_date = kpi_config.start_date
+      end_date = kpi_config.end_date
 
       #Inclure ou pas les historisés
       if include_historized == true
         @projects = @projects = organization.projects
+      end
+
+      # start_date
+      unless start_date.blank?
+        @projects = @projects.where("#{selected_date} >= ?", start_date)
+      end
+
+      #end_date
+      unless end_date.blank?
+        @projects = @projects.where("#{selected_date} <= ?", end_date)
       end
 
       #Modele
@@ -5931,17 +5944,6 @@ class OrganizationsController < ApplicationController
       unless estimation_status_ids.size <= 0
         @projects = @projects.where(estimation_status_id: estimation_status_ids)
       end
-
-      #versions
-      # unless project_versions.blank?
-      #   if project_versions.to_s == "last_version"
-      #     if include_historized == true
-      #       @projects = Project.sort_by_ancestry(@projects.arrange(:order => :position))
-      #     else
-      #       @projects = OrganizationEstimation.sort_by_ancestry(@projects.arrange(:order => :position))
-      #     end
-      #   end
-      # end
 
       config_for_graph = "#{kpi_config.name} >>"
       unless application_id.blank?
@@ -5981,15 +5983,15 @@ class OrganizationsController < ApplicationController
       end
 
       #@res_graphic << ["#{I18n.t(:productivity)} : #{kpi_config.name}", "#{config_for_graph}"]
-      @res_graphic << ["#{I18n.t(:created_at)}", "#{config_for_graph}", { role: 'tooltip' } ]
+      @res_graphic << [I18n.t("#{selected_date}"), "#{config_for_graph}", { role: 'tooltip' } ]
 
       # ordonner par ordre plus récents
       if nb_last_projects.blank?
-        @projects = @projects.reorder(start_date: :asc)
+        @projects = @projects.reorder("#{selected_date} asc")
         nb_projects = @projects.all.size
       else
-        @projects = @projects.reorder(start_date: :asc)
-        nb_projects = @projects.all.size
+        @projects = @projects.reorder("#{selected_date} asc").last(nb_last_projects.to_i)
+        nb_projects = @projects.size
       end
 
       unless field_id.nil?
@@ -6005,7 +6007,8 @@ class OrganizationsController < ApplicationController
               end
 
               @projects_values << value
-              @res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+              #@res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+              @res_graphic << [I18n.l(project.send("#{selected_date}").to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
             end
           end
 
@@ -6019,7 +6022,8 @@ class OrganizationsController < ApplicationController
             end
 
             @projects_values << value
-            @res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+            #@res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+            @res_graphic << [I18n.l(project.send("#{selected_date}").to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
           end
         end
 
@@ -6040,7 +6044,10 @@ class OrganizationsController < ApplicationController
             len = sorted.length
             @calculation_output = (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0
 
-          when "graphic"
+          when "sum"
+            @calculation_output = @projects_values.sum
+
+          when "graphic", "serie"
             #@res << ["Projet 123", 200]
             #@calculation_output = render :partial => 'organizations/g_productivity_indicators', :locals => { :r_data => @res_graphic }
             @calculation_output = @res_graphic
