@@ -37,7 +37,7 @@
           <td><%= productivity.field.name rescue nil %></td>
           <td><%= productivity.kpi_unit %></td>
 
-          <td><%= I18n.t("#{productivity.output_type}") %></td>
+          <td><%= productivity.output_type.blank? ? "-" : I18n.t("#{productivity.output_type}") %></td>
           <td><%= productivity.estimation_statuses.join("; ") %></td>
           <td><%= productivity.application %></td>
 

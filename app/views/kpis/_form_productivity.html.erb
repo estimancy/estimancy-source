@@ -120,7 +120,8 @@
                         :label => false,
                         :as => :select,
                         :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], ["Graphique", "graphic"]],
-                        :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                        :input_html => { :class => 'mdl-textfield__input form-control' },
+                        include_blank: false %>
           </div>
         </div>
 
