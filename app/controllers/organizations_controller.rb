@@ -5675,89 +5675,108 @@ class OrganizationsController < ApplicationController
   end
 
   def global_kpis
-      @organization = Organization.find(params[:organization_id])
-      @attributes = PeAttribute.all
-      @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
+    @organization = Organization.find(params[:organization_id])
+    @organization_show_kpi_keys = @organization.show_kpi.keys
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "productivity"]
 
-      @users = @organization.users
-      @fields = @organization.fields
 
-      @organization_profiles = @organization.organization_profiles
-      @work_element_types = @organization.work_element_types
+    # @attributes = PeAttribute.all
+    # @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
+    #
+    # @users = @organization.users
+    # @fields = @organization.fields
+    #
+    # @organization_profiles = @organization.organization_profiles
+    # @work_element_types = @organization.work_element_types
 
-      # get organization estimations per year
-      #@projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort_by{|created_at, _extras| created_at }
-      @projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] }
 
-      # Budget global
-      @data_for_global_budget = []
-      @bt_colors = []
-      budget_header = ["Budgets"]
-      organization_budget_types = @organization.budget_types
-      @nb_series = organization_budget_types.all.size
-      @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "productivity"]
-      @organization_show_kpi_keys = @organization.show_kpi.keys
-      @partial_name = params[:partial_name]
-      @item_title = params[:item_title]
-
-      organization_budget_types.each do |bt|
-        budget_header << bt.name
-        @bt_colors << bt.color
+    unless @organization_show_kpi_keys.blank?
+      if @partial_name.blank?
+        tab_name = @organization_show_kpi_keys.first
+        @partial_name = "tabs_kpi_#{tab_name}"
       end
-      @bt_colors << '#007DAB'
 
-      budget_header << I18n.t(:planned_budget)
-      #budget_header << { role: 'annotation' }
-      @data_for_global_budget << budget_header
+      case @partial_name
 
-      @organization.budgets.each do |budget|
-        budget_values = ["#{budget.name}"]
-        budget_sum = 0.0
-        budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
+        # Temps réalisation devis
+        when "tabs_kpi_quote_creation_duration_kpi"
 
-        # budget_used_applications.each do |application|
-        #   application_values = []
-        #   data = Budget::fetch_project_field_data(@organization, budget, application)
-        #   organization_budget_types.each do |budget_type|
-        #     application_values << data["#{budget_type.name}"].to_f
-        #   end
-        #   budget_sum = application_values.sum
-        #   budget_values << budget_sum
-        # end
+        # Nb PF livrés
+        when "tabs_kpi_fp_delivered_number_kpi"
 
-        organization_budget_types.each do |budget_type|
-          budget_type_values = []
-          budget_used_applications.each do |application|
-            data = Budget::fetch_project_field_data(@organization, budget, application)
-            budget_type_values << data["#{budget_type.name}"].to_f
+        # Budget global
+        when "tabs_kpi_global_budget"
+          @data_for_global_budget = []
+          @bt_colors = []
+          budget_header = ["Budgets"]
+          organization_budget_types = @organization.budget_types
+          @nb_series = organization_budget_types.all.size
+
+          organization_budget_types.each do |bt|
+            budget_header << bt.name
+            @bt_colors << bt.color
           end
-          budget_sum = budget_type_values.sum
-          budget_values << budget_sum
-        end
+          @bt_colors << '#007DAB'
 
-        budget_values << budget.sum
-        #budget_values << ''
-        @data_for_global_budget << budget_values
-      end
+          budget_header << I18n.t(:planned_budget)
+          #budget_header << { role: 'annotation' }
+          @data_for_global_budget << budget_header
 
+          @organization.budgets.each do |budget|
+            budget_values = ["#{budget.name}"]
+            budget_sum = 0.0
+            budget_used_applications = budget.application_budgets.where(is_used: true).map(&:application)
+            # budget_used_applications.each do |application|
+            #   application_values = []
+            #   data = Budget::fetch_project_field_data(@organization, budget, application)
+            #   organization_budget_types.each do |budget_type|
+            #     application_values << data["#{budget_type.name}"].to_f
+            #   end
+            #   budget_sum = application_values.sum
+            #   budget_values << budget_sum
+            # end
 
-      #toutes appplications
-      @projects_orga = @organization.projects
-      @stability_ind = projects_stability_indicators(@projects_orga)
+            organization_budget_types.each do |budget_type|
+              budget_type_values = []
+              budget_used_applications.each do |application|
+                data = Budget::fetch_project_field_data(@organization, budget, application)
+                budget_type_values << data["#{budget_type.name}"].to_f
+              end
+              budget_sum = budget_type_values.sum
+              budget_values << budget_sum
+            end
 
-      #per application
-      #selected_appli = params['application']
-      #@data_actions_per_appli = projects_per_application_stability_indicators(selected_appli)
+            budget_values << budget.sum
+            #budget_values << ''
+            @data_for_global_budget << budget_values
+          end
 
-    @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
-    case params[:partial_name]
-      #Productivity
-      when "tabs_kpi_productivity"
-        @productivity_indicators = Hash.new
+        # Nb devis
+        when "tabs_kpi_estimations_total_kpi"
+          # get organization estimations per year
+          #@projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort_by{|created_at, _extras| created_at }
+          @projects_per_year = @organization.projects.group_by{ |t| t.created_at.year }.sort {|k, v| k[1] <=> v[1] }
+
+        # Indicateurs de stabilités des estimations
+        when "tabs_kpi_projects_stability_indicators"
+          #toutes appplications
+          @projects_orga = @organization.projects
+          @stability_ind = projects_stability_indicators(@projects_orga)
+
+          #per application
+          #selected_appli = params['application']
+          #@data_actions_per_appli = projects_per_application_stability_indicators(selected_appli)
+
+        # KPI config / Productivité
+        when "tabs_kpi_productivity"
+          @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
+          @productivity_indicators = Hash.new
         #@productivity_indicators = projects_productivity_indicators(@organization.id, nil)
-      else
+        else
+      end
     end
-
   end
 
   def save_show_reports
@@ -5850,19 +5869,28 @@ class OrganizationsController < ApplicationController
 
   #productivity
   def get_projects_productivity_indicators
+    @organization = @current_organization
     @productivity_indicators = Hash.new
     @config_for_graph_label = Hash.new
     @selected_kpi_config = []
     kpi_config_id = params['kpi_configuration']
     selected_configs = params[:selected_kpi_configuration]
-    unless selected_configs.blank?
-      selected_configs.keys.each do |kpi_id|
+    orga_productivity_kpis = @organization.kpis.where(kpi_type: "Productivity")
+
+    if selected_configs.blank?
+      orga_productivity_kpis.update_all(is_selected: false)
+    else
+      selected_kpi_keys = selected_configs.keys
+      non_selected_kpi_keys = orga_productivity_kpis.map(&:id).map(&:to_s) - selected_kpi_keys
+      orga_productivity_kpis.where(id: non_selected_kpi_keys).update_all(is_selected: false)
+
+      selected_kpi_keys.each do |kpi_id|
         kpi = Kpi.find(kpi_id)
         if kpi
           kpi.update_attribute(:is_selected, true)
           @selected_kpi_config << kpi
           kpi_config = []
-          kpi_config = projects_productivity_indicators(@current_organization.id, kpi_id)
+          kpi_config = projects_productivity_indicators(@organization.id, kpi_id)
           @productivity_indicators["#{kpi_id}"] = kpi_config
 
           # config_for_graph = "#{kpi.name} >>"

@@ -12,7 +12,7 @@
       <th><%= "Champs de calcul" %></th>
       <th><%= I18n.t(:kpi_unit) %></th>
       <th><%= I18n.t(:outputs) %></th>
-      <th><%= I18n.t(:estimations_statuses) %></th>
+      <!--<th><%#= I18n.t(:estimations_statuses) %></th>-->
       <th><%= I18n.t(:application)%></th>
       <th><%= I18n.t(:start_date)%></th>
       <th><%= I18n.t(:end_date)%></th>
@@ -40,7 +40,7 @@
           <td><%= productivity.kpi_unit %></td>
 
           <td><%= productivity.output_type.blank? ? "-" : I18n.t("#{productivity.output_type}") %></td>
-          <td><%= productivity.estimation_statuses.join("; ") %></td>
+          <!--<td><%#= productivity.estimation_statuses.join("; ") %></td>-->
           <td><%= productivity.application %></td>
           <td><%= productivity.start_date.blank? ? "-" : I18n.l(productivity.start_date)  %></td>
           <td><%= productivity.end_date.blank? ? "-" : I18n.l(productivity.end_date)  %></td>
