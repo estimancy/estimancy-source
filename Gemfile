@@ -4,6 +4,7 @@ source 'https://rubygems.org'
 gem 'rails', '4.2.11.1'
 gem 'sprockets', '~> 3.7.2'
 
+gem 'unique_validation_inspector'
 
 gem 'jquery-rails', '~> 2.0.2'
 gem 'i18n'
