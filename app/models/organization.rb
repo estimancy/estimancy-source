@@ -94,6 +94,8 @@ class Organization < ActiveRecord::Base
   has_many :providers
   has_many :versions, class_name: "PaperTrail::Version", dependent: :destroy
 
+  has_many :kpis
+
   # has_many :demands
   # has_many :demand_types
   # has_many :demand_statuses

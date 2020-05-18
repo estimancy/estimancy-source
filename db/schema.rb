@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200422134359) do
+ActiveRecord::Schema.define(version: 20200514102538) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1244,6 +1244,45 @@ ActiveRecord::Schema.define(version: 20200422134359) do
 
   add_index "kb_kb_models", ["organization_id", "name"], name: "index_kb_kb_models_on_organization_id_and_name", unique: true, using: :btree
 
+  create_table "kpi_statuses", force: :cascade do |t|
+    t.integer  "kpi_id",               limit: 4
+    t.integer  "estimation_status_id", limit: 4
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  create_table "kpis", force: :cascade do |t|
+    t.string   "kpi_type",                limit: 255
+    t.integer  "organization_id",         limit: 4
+    t.string   "name",                    limit: 255
+    t.text     "description",             limit: 65535
+    t.integer  "project_id",              limit: 4
+    t.integer  "estimation_model_id",     limit: 4
+    t.integer  "field_id",                limit: 4
+    t.string   "output_type",             limit: 255
+    t.integer  "application_id",          limit: 4
+    t.integer  "project_area_id",         limit: 4
+    t.integer  "project_category_id",     limit: 4
+    t.integer  "platform_category_id",    limit: 4
+    t.integer  "acquisition_category_id", limit: 4
+    t.integer  "provider_id",             limit: 4
+    t.integer  "nb_last_projects",        limit: 4
+    t.boolean  "include_historized"
+    t.string   "project_versions",        limit: 255
+    t.integer  "copy_id",                 limit: 4
+    t.boolean  "is_selected"
+    t.string   "selected_date",           limit: 255
+    t.string   "kpi_unit",                limit: 255
+    t.string   "position_x",              limit: 255
+    t.string   "position_y",              limit: 255
+    t.string   "width",                   limit: 255
+    t.string   "height",                  limit: 255
+    t.datetime "created_at",                            null: false
+    t.datetime "updated_at",                            null: false
+    t.date     "start_date"
+    t.date     "end_date"
+  end
+
   create_table "labor_categories", force: :cascade do |t|
     t.string   "name",             limit: 255
     t.text     "description",      limit: 65535
@@ -2299,6 +2338,10 @@ ActiveRecord::Schema.define(version: 20200422134359) do
     t.string   "project_attribute_name",       limit: 255
     t.integer  "estimation_status_id",         limit: 4
     t.boolean  "show_module_name"
+    t.boolean  "is_organization_kpi_widget"
+    t.integer  "kpi_id",                       limit: 4
+    t.boolean  "signalize"
+    t.boolean  "lock_project"
   end
 
   add_index "views_widgets", ["module_project_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree

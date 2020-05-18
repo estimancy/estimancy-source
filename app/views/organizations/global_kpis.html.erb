@@ -38,7 +38,7 @@
         <% @kpi_list.each do |kpi| %>
           <% if @organization_show_kpi_keys.include?(kpi) %>
             <li class="nav-item">
-              <a class="nav-link group" href="<%= organization_kpi_path(@organization,
+              <a class="nav-link group" href="<%= organization_global_kpis_path(@organization,
                                                                            partial_name: "tabs_kpi_" + kpi ,
                                                                            item_title: kpi,
                                                                            anchor: "tabs-") %>">

@@ -20,6 +20,8 @@
     <div class="edition-bloc-content">
       <div class="edition-bloc-form">
 
+        <% @organization = Organization.where(id: params[:organization_id]).first %>
+
         <%= form_tag organization_get_budget_details_path(@organization), method: "post", remote: true do %>
 
             <%= hidden_field_tag "organization_id", @organization.id %>

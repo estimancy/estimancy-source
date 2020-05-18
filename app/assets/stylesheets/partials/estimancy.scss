@@ -167,7 +167,7 @@ table td.guw-cell-ajustment{
 
 .grid-stack > .grid-stack-item.label_widget > .ui-resizable-se {
   margin-bottom: 1.5rem;  //1rem;
-  margin-right: -3.5rem; //-1.5rem;
+  margin-right: -1rem; //-3.5rem; //-1.5rem;
 }
 
 .grid-stack > .grid-stack-item .card-body{
@@ -233,5 +233,6 @@ table td.guw-cell-ajustment{
   font-weight: bold;
   font-size: 15px;
   margin-left: -15rem;
+  text-transform: none;
   background-color: var(--widget-text-color) !important;
 }

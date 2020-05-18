@@ -36,6 +36,11 @@ class OrganizationEstimation < ActiveRecord::Base
   has_many :pbs_project_elements, :through => :pe_wbs_projects
   has_many :wbs_project_elements, :through => :pe_wbs_projects
 
+
+  def to_s
+    "#{self.nil? ? '' : self.title} - #{self.nil? ? '' : self.version_number}"
+  end
+
   # Next ones by Created_at DESC
   def next_ones_by_date(n)
     OrganizationEstimation.next_by_date(self.organization_id, self.created_at).limit(n)

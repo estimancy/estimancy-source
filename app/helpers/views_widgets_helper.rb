@@ -385,6 +385,35 @@ module ViewsWidgetsHelper
   #   end
   # end
 
+  def get_organization_kpi_data_widget_value(view_widget_id, project_id)
+    widget_data = {}
+    begin
+      view_widget = ViewsWidget.find(view_widget_id)
+      project = Project.find(project_id)
+      organization = project.organization
+      productivity_config_id = view_widget.kpi_id
+      productivity_config = organization.kpis.where(kpi_type: "Productivity", id: productivity_config_id).first
+
+      if productivity_config
+        orga_controller = OrganizationsController.new
+        value_to_show = orga_controller.projects_productivity_indicators(organization.id, productivity_config_id)
+
+        if productivity_config.output_type != "graphic"
+          #value_to_show = "#{ActionController::Base.helpers.number_with_precision(value_to_show_tmp.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr"))} #{productivity_config.kpi_unit.to_s}"
+          value_to_show = "#{ActionController::Base.helpers.number_with_precision(value_to_show.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr"))}"
+        end
+      else
+        value_to_show ="-"
+      end
+
+      widget_data[:value_to_show] = value_to_show
+
+    rescue
+      widget_data[:value_to_show] = "-"
+    end
+
+    widget_data
+  end
 
   def get_project_data_widget_value(view_widget_id, project_id)
     widget_data = {}
@@ -403,8 +432,6 @@ module ViewsWidgetsHelper
 
     widget_data
   end
-
-
 
   def get_kpi_widget_data(view_widget_id)
     view_widget = ViewsWidget.find(view_widget_id)

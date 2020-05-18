@@ -1,0 +1,17 @@
+$("[id*='productivity_indicator_']").css("visibility","hidden");
+
+<% @selected_kpi_config.each do |kpi_config| %>
+  <% if kpi_config.output_type == "graphic" %>
+
+//    $('#<%#="productivity_indicator_#{kpi_config.id}"%>').html('<%#= j(render(:partial => "g_productivity_indicators", :locals => {kpi_config: kpi_config, :r_data => @productivity_indicators["#{kpi_config.id}"] })) %>');
+    $('#<%="productivity_indicator_#{kpi_config.id}"%>').html('<%= j(render(:partial => "kpis/kpi_config_graph", :locals => { kpi_config: kpi_config }, object: [@productivity_indicators])) %>');
+
+  <% else %>
+
+//    $('#<%#="productivity_indicator_#{kpi_config.id}"%>').html('<%#= "#{kpi_config.name} >>  #{I18n.t("#{kpi_config.output_type}")} :  #{@productivity_indicators["#{kpi_config.id}"]}" %>');
+$('#<%="productivity_indicator_#{kpi_config.id}"%>').html('<%= j(render(:partial => "kpis/kpi_config_value", :locals => { kpi_config: kpi_config }, object: [@productivity_indicators])) %>');
+
+  <% end %>
+
+  $('#<%="productivity_indicator_#{kpi_config.id}"%>').css("visibility","visible");
+<% end %>
