@@ -2505,6 +2505,7 @@ class ProjectsController < ApplicationController
         end
       end
     else
+      flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
       redirect_to organization_estimations_path(@current_organization.id)
     end
   end
