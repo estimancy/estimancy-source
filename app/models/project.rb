@@ -682,7 +682,7 @@ class Project < ActiveRecord::Base
                                    processing: skbi.processing,
                                    retained_size: skbi.retained_size,
                                    filters: skbi.filters,
-                                   organization_id: @organization.id,
+                                   organization_id: new_prj.organization_id,
                                    module_project_id: new_mp.id)
             end
 
@@ -694,12 +694,12 @@ class Project < ActiveRecord::Base
                                                   description: factor_description.description,
                                                   module_project_id: new_mp.id,
                                                   project_id: new_prj.id,
-                                                  organization_id: @organization.id)
+                                                  organization_id: new_prj.organization_id)
             end
 
             #For Ge inputs
             old_mp.ge_inputs.each do |oge_input|
-              ge = Ge::GeInput.new(organization_id: @organization.id,
+              ge = Ge::GeInput.new(organization_id: new_prj.organization_id,
                                    module_project_id: new_mp.id,
                                    project_id: new_prj.id,
                                    values: oge_input.values,
@@ -713,7 +713,7 @@ class Project < ActiveRecord::Base
 
             #For Kb
             old_mp.kb_inputs.each do |okb_input|
-              kb = Kb::KbInput.new(organization_id: @organization.id,
+              kb = Kb::KbInput.new(organization_id: new_prj.organization_id,
                                    module_project_id: new_mp.id,
                                    formula: okb_input.formula,
                                    values: okb_input.values,
