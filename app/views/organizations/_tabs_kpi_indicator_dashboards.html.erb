@@ -1,0 +1,34 @@
+<%= link_to I18n.t('create_button'), new_organization_indicator_dashboard_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+<br>
+
+<div id="organization_indicator_dashboards" style="width:100%; overflow:auto; white-space:nowrap;">
+  <table class="table tablesorter table-list table-sm mt-2" style="width:100%; overflow: auto;">
+    <thead>
+    <tr>
+      <th><%= I18n.t(:name) %></th>
+      <th><%= I18n.t(:description) %></th>
+
+      <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @organization.indicator_dashboards.each do |dashboard| %>
+        <tr>
+          <!--<td><%#= check_box_tag "selected_kpi_configuration[#{productivity.id}]", nil, productivity.is_selected? %></td>-->
+
+          <td><%= dashboard.name %></td>
+          <td><%= dashboard.description %></td>
+
+          <td class="align-center">
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_indicator_dashboard_path(@organization, dashboard), class: "material-icons", :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>dashboard</i>"), organization_indicator_dashboard_path(@organization, dashboard), class: "material-icons", :title => I18n.t('show') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), organization_indicator_dashboard_path(@organization, dashboard), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+          </td>
+        </tr>
+    <% end %>
+
+    <%= render :partial => 'layouts/footer_table' %>
+    </tbody>
+  </table>
+</div>

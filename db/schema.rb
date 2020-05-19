@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200514102538) do
+ActiveRecord::Schema.define(version: 20200519084724) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1187,6 +1187,14 @@ ActiveRecord::Schema.define(version: 20200514102538) do
     t.text     "ceuw_comments",                 limit: 65535
   end
 
+  create_table "indicator_dashboards", force: :cascade do |t|
+    t.integer  "organization_id", limit: 4
+    t.string   "name",            limit: 255
+    t.text     "description",     limit: 65535
+    t.datetime "created_at",                    null: false
+    t.datetime "updated_at",                    null: false
+  end
+
   create_table "input_cocomos", force: :cascade do |t|
     t.integer  "factor_id",                      limit: 4
     t.integer  "organization_uow_complexity_id", limit: 4
@@ -1281,6 +1289,7 @@ ActiveRecord::Schema.define(version: 20200514102538) do
     t.datetime "updated_at",                            null: false
     t.date     "start_date"
     t.date     "end_date"
+    t.float    "kpi_coefficient",         limit: 24
   end
 
   create_table "labor_categories", force: :cascade do |t|

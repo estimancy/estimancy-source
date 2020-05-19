@@ -3331,6 +3331,9 @@ class OrganizationsController < ApplicationController
       end
     end
 
+    #Indicateurs
+    @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
+    @productivity_indicators = Hash.new
   end
 
   def setting_demand
@@ -4876,7 +4879,7 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", I18n.t(:new_organization) => ""
     @groups = @organization.groups
     @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report",  "raw_data_extract", "budget_report", "budget_excel_report"]
-    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "productivity"]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "general_dashboard"]
     @organization_show_reports_keys = []
     @organization_show_kpi_keys = []
   end
@@ -4902,7 +4905,7 @@ class OrganizationsController < ApplicationController
     @work_element_types = @organization.work_element_types
 
     @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "raw_data_extract", "budget_report", "budget_excel_report"]
-    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "productivity"]
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "general_dashboard"]
 
     @organization_show_reports_keys = @organization.show_reports.keys
     @organization_show_kpi_keys = @organization.show_kpi.keys
@@ -5679,7 +5682,8 @@ class OrganizationsController < ApplicationController
     @organization_show_kpi_keys = @organization.show_kpi.keys
     @partial_name = params[:partial_name]
     @item_title = params[:item_title]
-    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "productivity"]
+    @is_a_dashboard = params[:is_a_dashboard].to_s
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "general_dashboard"]
 
 
     # @attributes = PeAttribute.all
@@ -5770,7 +5774,7 @@ class OrganizationsController < ApplicationController
           #@data_actions_per_appli = projects_per_application_stability_indicators(selected_appli)
 
         # KPI config / Productivité
-        when "tabs_kpi_productivity"
+        when "tabs_kpi_general_dashboard"
           @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
           @productivity_indicators = Hash.new
         #@productivity_indicators = projects_productivity_indicators(@organization.id, nil)
@@ -5947,6 +5951,10 @@ class OrganizationsController < ApplicationController
       selected_date = kpi_config.selected_date || "start_date"
       start_date = kpi_config.start_date
       end_date = kpi_config.end_date
+      kpi_coefficient = kpi_config.kpi_coefficient.to_f
+      if kpi_coefficient.blank? || kpi_coefficient == 0
+        kpi_coefficient = 1
+      end
 
       #Inclure ou pas les historisés
       if include_historized == true
@@ -6029,7 +6037,7 @@ class OrganizationsController < ApplicationController
             if project.is_childless?
               project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
               if project_field
-                value = project_field.value.to_f
+                value = project_field.value.to_f/kpi_coefficient
               else
                 value = 0
               end
@@ -6044,7 +6052,7 @@ class OrganizationsController < ApplicationController
           @projects.each do |project|
             project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
             if project_field
-              value = project_field.value.to_f
+              value = project_field.value.to_f/kpi_coefficient
             else
               value = 0
             end

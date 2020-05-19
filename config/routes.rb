@@ -23,6 +23,7 @@
 
 Projestimate::Application.routes.draw do
 
+  resources :indicator_dashboards
   get 'kpis/new'
 
   get 'kpis/edit'
@@ -323,6 +324,7 @@ Projestimate::Application.routes.draw do
     resources :providers
     resources :budget_types
     resources :kpis
+    resources :indicator_dashboards
 
     get "authorization" => 'organizations#authorization'
     get "setting" => 'organizations#setting'
@@ -337,6 +339,7 @@ Projestimate::Application.routes.draw do
 
     get "report" => 'organizations#report'
     get "global_kpis" => 'organizations#global_kpis'
+    get "odashboard" => 'organizations#odashboard'
 
     post "generate_report_csv" => 'organizations#generate_report_csv'
     post "generate_report_excel" => 'organizations#generate_report_excel'

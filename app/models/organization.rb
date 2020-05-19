@@ -95,6 +95,7 @@ class Organization < ActiveRecord::Base
   has_many :versions, class_name: "PaperTrail::Version", dependent: :destroy
 
   has_many :kpis
+  has_many :indicator_dashboards
 
   # has_many :demands
   # has_many :demand_types

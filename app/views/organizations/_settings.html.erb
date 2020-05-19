@@ -24,7 +24,7 @@
 
   <div class="col-2">
     <div id="edition-sidebar">
-      <h4 class="mb-0">Navigation</h4>
+      <h4 class="mb-0"><%= I18n.t(:setting_estimations) %></h4>
       <ul class="nav flex-column">
 
         <li class="nav-item">
@@ -77,6 +77,10 @@
 
         <li class="nav-item">
           <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_select_columns_list', item_title: 'select_columns_list', anchor: 'tabs-select-columns-list') %>"><span><%= I18n.t("select_columns_list") %></span></a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators') %>"><span><%= I18n.t("indicators") %></span></a>
         </li>
       </ul>
     </div>

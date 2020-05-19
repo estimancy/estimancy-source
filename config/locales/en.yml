@@ -2337,7 +2337,7 @@ en:
   demands_list : "Demands List"
 
   #paramétrage demande
-  setting_estimations: "Estimations Settings"
+  setting_estimations: "Settings"
   setting_demands: "Demands Settings"
   extract_raw_data: "Extract Raw Data"
   edit_demand_statuses: "Edit Demand Status"
@@ -2384,7 +2384,7 @@ en:
   host_group: "Host group"
 
   extract_raw_data: "Extract raw data"
-  setting_estimations: "Estimation settings"
+  settings_estimations: "Estimation settings"
   urgent_project: "Devis urgent"
   Autoriser l'export PDF: "Allow export pdf"
   forfait_mco : "Forfait MCO"
@@ -2600,9 +2600,15 @@ en:
   output_type: "Output type" #Sortie souhaité
   include_historized: "Include historized"  #Inclure les historisés
   selected_date: "Selected date"
-  new_kpi: "New KPI"
-  edit_kpi: "Edit KPI"
+  new_kpi: "New indicator"
+  edit_kpi: "Edit indicator"
   nb_last_projects: "N last projects to consider"
   counter: "Counter"
+  indicator_dashboards: "Dashboards"
+  indicators: "Indicators"
+  general_dashboard: "General dashboard"
+  new_dashboard: "New dashboard"
+  edit_dashboard: "Edit dashboard"
+
 
 

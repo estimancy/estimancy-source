@@ -1,0 +1,19 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Organization:</strong>
+  <%= @indicator_dashboard.organization_id %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @indicator_dashboard.name %>
+</p>
+
+<p>
+  <strong>Description:</strong>
+  <%= @indicator_dashboard.description %>
+</p>
+
+<%= link_to 'Edit', edit_indicator_dashboard_path(@indicator_dashboard) %> |
+<%= link_to 'Back', indicator_dashboards_path %>

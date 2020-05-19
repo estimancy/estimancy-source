@@ -5,7 +5,8 @@ class KpisController < ApplicationController
     @organization = Organization.find_by_id(params[:organization_id])
 
     #set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => edit_organization_path(@organization)
-    set_breadcrumbs I18n.t(:kpis) => organization_global_kpis_path(@organization, anchor: "tabs_kpi_productivity"), I18n.t('new_kpi') => ""
+    set_breadcrumbs I18n.t(:kpis) => organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators'), I18n.t('new_kpi') => ""
+
 
   end
 
@@ -29,7 +30,8 @@ class KpisController < ApplicationController
     #set_breadcrumbs I18n.t(:kpis) => organization_setting_path(@organization, anchor: "tabs-kpi"), I18n.t('new_kpi') => ""
 
     if @kpi.save
-      redirect_to organization_global_kpis_path(@organization, partial_name: "tabs_kpi_productivity")
+      #redirect_to organization_global_kpis_path(@organization, partial_name: "tabs_kpi_productivity")
+      redirect_to organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators')
     else
       render action: 'new'
     end
@@ -45,10 +47,9 @@ class KpisController < ApplicationController
     #set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", "#{@organization.to_s} / #{I18n.t(:kpis)} / #{@kpi.to_s}" => edit_organization_path(@organization)
 
     if @kpi.update_attributes(params[:kpi])
-      #redirect_to redirect(groups_path), :notice => "#{I18n.t (:notice_group_successful_updated)}"
       flash[:notice] =  "#{I18n.t (:notice_kpi_successful_updated)}"
-      #redirect_to edit_organization_path(@organization)
-      redirect_to organization_global_kpis_path(@organization, partial_name: "tabs_kpi_productivity")
+      #redirect_to organization_global_kpis_path(@organization, partial_name: "tabs_kpi_productivity")
+      redirect_to organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators')
     else
       render action: 'edit'
     end
@@ -63,7 +64,7 @@ class KpisController < ApplicationController
 
     flash[:notice] = I18n.t(:notice_kpi_successful_deleted)
     #redirect_to organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: "tabs-group")
-    redirect_to :back
+    redirect_to organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators')
   end
 
   #Update the module_project corresponding data of view
@@ -82,6 +83,5 @@ class KpisController < ApplicationController
       end
     end
   end
-
 
 end

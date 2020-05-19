@@ -36,7 +36,11 @@
               <%= I18n.t(:projestimate_module) %>
             </a>
           </li>
-
+          <li class="dropdown">
+            <a href="<%= main_app.organization_odashboard_path(@current_organization)%>" data-turbolinks="false">
+              <%= I18n.t(:indicator_dashboards) %>
+            </a>
+          </li>
       <% end %>
     </ul>
   </li>

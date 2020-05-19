@@ -1,17 +1,9 @@
 <section class="card card-content-bloc estimancy-form">
   <div class="card-body">
-
-    <div class="edition-bloc-left">
-      <div class="edition-bloc-title">
-        <h2>
-          <%= I18n.t(:productivity) %>
-        </h2>
-      </div>
-    </div>
-      <br>
       <%# @productivity_kpi = Kpi.where(organization_id: @current_organization.id, name: "Productivity").first_or_create %>
 
       <%= simple_form_for([@organization, @kpi]) do |f| %>
+        <%= f.error_notification %>
 
           <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
           <%= f.input :kpi_type, :as => :hidden, :input_html => { :value => "Productivity" } %>
@@ -59,6 +51,10 @@
             <%= f.input :kpi_unit, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
           </div>
 
+          <div class="col-2">
+            <label for="kpi_coefficient" class="label-estimancy"><%= I18n.t 'coefficient_value' %></label>
+            <%= f.input :kpi_coefficient, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+          </div>
         </div>
 
         <div class="form-row">
@@ -219,6 +215,7 @@
           </div>
 
           <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary' %>
       <% end %>
     </div>
   </div>

@@ -1,44 +1,32 @@
 
 <div class="edition-bloc-left">
-  <div class="edition-bloc-title">
-    <h2>
-      <%= I18n.t(:productivity) %>
-    </h2>
-  </div>
 
+  <%#= I18n.t(:productivity_kpi_config_list) %>
+
+  <%= link_to I18n.t('create_button'), new_organization_kpi_path, :class => 'btn btn-primary btn-estimancy' %>
   <br>
-  <%= I18n.t(:productivity_kpi_config_list) %> :
 
-  <section class="card card-content-bloc estimancy-form">
-    <div class="mb-5">
-      <div class="edition-bloc-content">
-        <div class="card-body">
-          <div>
-            <%= link_to I18n.t('create_button'), new_organization_kpi_path, :class => 'btn btn-primary btn-estimancy' %>
-          </div>
-          <br>
+  <% @productivity_kpis = Kpi.where(organization_id: @current_organization.id, kpi_type: "Productivity") %>
+  <%# @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity") %>
+  <%= form_tag organization_get_projects_productivity_indicators_path, :class => 'simple_form', :method => :get, remote: true do  %>
 
-          <% @productivity_kpis = Kpi.where(organization_id: @current_organization.id, kpi_type: "Productivity") %>
-          <%= form_tag organization_get_projects_productivity_indicators_path, :class => 'simple_form', :method => :get, remote: true do  %>
-
-              <div id="users" class="table-responsive-sm" style="width:100%;overflow:auto; white-space:nowrap;">
-                <%= render :partial => 'kpis/kpi_productivity_configurations', :object => @current_organization %>
-              </div>
-
-              <br><br><br>
-              <%= hidden_field_tag :organization_id, @current_organization.id %>
-              <%= hidden_field_tag :kpi_type, "Productivity" %>
-
-              <%#= select_tag "kpi_configuration", options_for_select(@productivity_kpis.map{|i| [i.name, i.id] }),
-                             :prompt => "Choisir une configuration" , :class => 'btn btn-secondary' %>
-
-              <%#= submit_tag I18n.t('show_graph'), :class => 'btn btn-primary productivity' %>
-              <%= submit_tag "Afficher les résultats des configurations sélectionnées", :class => 'btn btn-primary productivity' %>
-          <% end %>
-        </div>
+      <div id="users" class="table-responsive-sm" style="width:100%;overflow:auto; white-space:nowrap;">
+        <%= render :partial => 'kpis/kpi_productivity_configurations', :object => @current_organization %>
       </div>
-    </div>
-  </section>
+
+      <br><br><br>
+      <%= hidden_field_tag :organization_id, @current_organization.id %>
+      <%= hidden_field_tag :kpi_type, "Productivity" %>
+
+      <%#= select_tag "kpi_configuration", options_for_select(@productivity_kpis.map{|i| [i.name, i.id] }),
+                     :prompt => "Choisir une configuration" , :class => 'btn btn-secondary' %>
+
+      <%#= submit_tag I18n.t('show_graph'), :class => 'btn btn-primary productivity' %>
+      <%= submit_tag "Calculer les résultats des configurations sélectionnées", :class => 'btn btn-primary productivity' %>
+      <br>
+
+  <% end %>
+
 
 
   <%#= select_tag "application_id", options_for_select(@current_organization.applications.map{|i| [i.name, i.id] }),

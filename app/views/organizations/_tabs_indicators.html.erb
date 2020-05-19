@@ -1,0 +1,63 @@
+<!--Load the Google charts API  -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+</script>
+
+<%= link_to I18n.t('create_button'), new_organization_kpi_path, :class => 'btn btn-primary btn-estimancy' %>
+
+<% @productivity_kpis = Kpi.where(organization_id: @current_organization.id, kpi_type: "Productivity") %>
+<%= form_tag organization_get_projects_productivity_indicators_path, :class => 'simple_form', :method => :get, remote: true do  %>
+
+  <div id="users" class="table-responsive-sm" style="width:100%;overflow:auto; white-space:nowrap;">
+    <%= render :partial => 'kpis/kpi_productivity_configurations', :object => @current_organization %>
+  </div>
+
+  <br><br><br>
+  <%= hidden_field_tag :organization_id, @current_organization.id %>
+  <%= hidden_field_tag :kpi_type, "Productivity" %>
+
+  <%#= select_tag "kpi_configuration", options_for_select(@productivity_kpis.map{|i| [i.name, i.id] }),
+                 :prompt => "Choisir une configuration" , :class => 'btn btn-secondary' %>
+
+  <%#= submit_tag I18n.t('show_graph'), :class => 'btn btn-primary productivity' %>
+  <%= submit_tag "Afficher les résultats des configurations sélectionnées", :class => 'btn btn-primary productivity' %>
+<% end %>
+
+
+<br>
+
+<div class="mb-4">
+  <div class="widgets-list">
+
+    <div class="widget-list-content">
+      <div class="widget-group">
+        <div class="grid-stack">
+          <% @all_kpi_config.all.each do |kpi_config| %>
+              <div id='<%="productivity_indicator_#{kpi_config.id}"%>' class="col" style="visibility: hidden; margin-bottom: 30px;">
+              </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    $("button.productivity_save").click(function(){
+        var btn_id = $(this).attr('id');
+        var application_id = $("#application_id").val();
+        var estimation_status_id = $("#estimation_status_id").val();
+        $.ajax({
+            url: "<%= organization_get_projects_productivity_indicators_path %>",
+            method: "GET",
+            data: {
+                productivity_id: btn_id,
+                application_id: $('#application_id option:selected').val(),
+                estimation_status_id: $('#estimation_status_id option:selected').val()
+            }
+        });
+    });
+</script>

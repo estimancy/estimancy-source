@@ -2391,7 +2391,7 @@ fr_acoss:
   demands_list : "Liste de demandes"
 
   #paramétrage demandes
-  setting_estimations: "Paramétrage des estimations"
+  setting_estimations: "Paramétrages"
   setting_demands: "Paramétrage des demandes"
   extract_raw_data: "Extraction des données brutes"
   edit_demand_statuses: "Paramétrage de la demande statut"
@@ -2409,6 +2409,7 @@ fr_acoss:
 
   #_user_account.html.erb
   setting_demands: "Paramétrage demandes"
+  settings_estimations: "Paramétrage des estimations"
 
   # setting_demand
   demands: "Demandes"
@@ -2628,7 +2629,12 @@ fr_acoss:
   output_type: "Sortie souhaitée"
   include_historized: "Inclure les historisés"
   selected_date: "Date à prendre compte"
-  new_kpi: "Nouveau KPI"
-  edit_kpi: "Éditer KPI"
+  new_kpi: "Nouvel indicateur"
+  edit_kpi: "Éditer indicateur"
   nb_last_projects: "N derniers projets à prendre en compte"
   counter: "Compteur"
+  indicator_dashboards: "Dashboards"
+  indicators: "Indicateurs"
+  general_dashboard: "Dashboard général"
+  new_dashboard: "Nouveau dashboard"
+  edit_dashboard: "Éditer dashboard"
