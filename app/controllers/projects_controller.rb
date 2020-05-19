@@ -2505,7 +2505,7 @@ class ProjectsController < ApplicationController
         end
       end
     else
-      flash[:warning] = I18n.t(:warning_project_cannot_be_deleted)
+      flash[:warning] = "Ce projet ne peut être supprimée car il existe une version parente."
       redirect_to organization_estimations_path(@current_organization.id)
     end
   end
