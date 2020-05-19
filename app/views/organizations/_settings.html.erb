@@ -71,9 +71,11 @@
           <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_estimation_models', item_title: 'estimation_models', anchor: 'tabs-estimation-models') %>"><span><%= I18n.t("estimation_models") %></span></a>
         </li>
 
-        <li class="nav-item">
-          <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_views', item_title: 'views', anchor: 'tabs-views') %>"><span><%= I18n.t("views") %></span></a>
-        </li>
+        <% if @current_user.super_admin? %>
+            <li class="nav-item">
+              <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_views', item_title: 'views', anchor: 'tabs-views') %>"><span><%= I18n.t("views") %></span></a>
+            </li>
+        <% end %>
 
         <li class="nav-item">
           <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_select_columns_list', item_title: 'select_columns_list', anchor: 'tabs-select-columns-list') %>"><span><%= I18n.t("select_columns_list") %></span></a>

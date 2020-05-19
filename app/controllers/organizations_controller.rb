@@ -6044,7 +6044,7 @@ class OrganizationsController < ApplicationController
 
               @projects_values << value
               #@res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
-              @res_graphic << [I18n.l(project.send("#{selected_date}").to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+              @res_graphic << [I18n.l(project.send("#{selected_date}").to_date), value, "#{project.to_s} : #{value.round(2)} (#{kpi_config.kpi_unit}) "]
             end
           end
 
@@ -6059,7 +6059,7 @@ class OrganizationsController < ApplicationController
 
             @projects_values << value
             #@res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
-            @res_graphic << [I18n.l(project.send("#{selected_date}").to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+            @res_graphic << [I18n.l(project.send("#{selected_date}").to_date), value, "#{project.to_s} : #{value.round(2)} (#{kpi_config.kpi_unit}) "]
           end
         end
 
