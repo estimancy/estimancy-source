@@ -3816,26 +3816,40 @@ public
 
     new_prj = old_prj.checkout_project_base(current_user, description, version_number, archive_last_project_version, new_project_version)
 
-    # doublon ?
-    old_prj.module_projects.group(:id).each do |old_mp|
-      new_mp = ModuleProject.where(organization_id: @organization.id,
-                                   project_id: new_prj.id,
-                                   copy_id: old_mp.id).first
-      unless old_mp.view.nil?
-        update_views_and_widgets(new_prj, old_mp, new_mp)
+    if new_prj.valid?
+      old_prj.module_projects.group(:id).each do |old_mp|
+        new_mp = ModuleProject.where(organization_id: @organization.id,
+                                     project_id: new_prj.id,
+                                     copy_id: old_mp.id).first
+        unless old_mp.view.nil?
+          update_views_and_widgets(new_prj, old_mp, new_mp)
+        end
       end
-    end
 
-    # On remet à jour ce champs pour la gestion des Trigger
-    new_prj.is_new_created_record = false
+      # On remet à jour ce champs pour la gestion des Trigger
+      new_prj.is_new_created_record = false
 
-    if new_prj.save
-      flash[:success] = I18n.t(:notice_project_successful_checkout)
-      redirect_to (edit_project_path(new_prj, :anchor => "tabs-history")), :notice => I18n.t(:notice_project_successful_checkout) and return
+      if new_prj.save
+        flash[:success] = I18n.t(:notice_project_successful_checkout)
+        redirect_to (edit_project_path(new_prj, :anchor => "tabs-history")), :notice => I18n.t(:notice_project_successful_checkout) and return
 
+      else
+        errors = I18n.t(:error_project_checkout_failed)
+        new_prj.errors.messages.each do |key, msg|
+          errors << "#{msg} \r\n"
+        end
+
+        flash[:error] = errors #I18n.t(:error_project_checkout_failed)
+        redirect_to organization_estimations_path(@current_organization), :flash => {:error => errors} and return
+      end
     else
-      flash[:error] = I18n.t(:error_project_checkout_failed)
-      redirect_to organization_estimations_path(@current_organization), :flash => {:error => I18n.t(:error_project_checkout_failed)} and return
+      errors = I18n.t(:error_project_checkout_failed)
+      new_prj.errors.messages.each do |key, msg|
+        errors << "#{msg} \r\n"
+      end
+
+      flash[:error] = errors
+      redirect_to organization_estimations_path(@current_organization), :flash => {:error => errors} and return
     end
   end
 

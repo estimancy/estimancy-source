@@ -360,6 +360,7 @@ class Project < ActiveRecord::Base
       else
         new_version = "#{ version_ended }.1"
       end
+
     else
       #That means project has successor(s)/children, and a new branch need to be created
       branch_version = 1
@@ -390,6 +391,14 @@ class Project < ActiveRecord::Base
         new_version = "#{branch_name}-#{branch_version}.#{parent_version_ended_end}"
       end
     end
+
+    #On verifie que cette même version n'existe pour le même projet
+    same_project_version = Project.where(organization_id: project_to_checkout.organization_id, title: project_to_checkout.title,
+                                         version_number: new_version).first
+    unless same_project_version.nil?
+      new_version = "#{new_version}-a"
+    end
+
     new_version
   end
 
@@ -658,7 +667,6 @@ class Project < ActiveRecord::Base
               #Update the new project/estimation views and widgets
               new_prj.update_project_views_and_widgets(old_mp, new_mp)
             end
-
 
             #Update the Unit of works's groups
             new_mp.guw_unit_of_work_groups.each do |guw_group|
