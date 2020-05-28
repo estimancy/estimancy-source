@@ -20,7 +20,7 @@ class CreateIndexOrganizationProjectsTitleUniqueness < ActiveRecord::Migration
         random_string = (0...6).map { ('a'..'z').to_a[rand(26)] }.join
 
         project.version_number = "#{project.version_number}-#{random_string}"
-        project.save
+        project.save(validate: false)
       end
     end
 
