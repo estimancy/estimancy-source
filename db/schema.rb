@@ -2164,6 +2164,7 @@ ActiveRecord::Schema.define(version: 20200122142616) do
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
+  add_index "projects", ["organization_id", "is_model", "version_number", "title"], name: "organization_projects_title_uniqueness", unique: true, using: :btree
   add_index "projects", ["organization_id", "is_model"], name: "index_projects_on_organization_id_and_is_model", using: :btree
 
   create_table "projects_users", id: false, force: :cascade do |t|
