@@ -61,6 +61,15 @@
               </a>
             </li>
 
+            <li class="nav-item">
+              <a class="nav-link group" href="<%= organization_global_kpis_path(@organization,
+                                                                                partial_name: "tabs_kpi_general_dashboard",
+                                                                                item_title: "general_dashboard",
+                                                                                anchor: "tabs-general_dashboard") %>">
+                <span><%= I18n.t(:general_dashboard) %></span>
+              </a>
+            </li>
+
             <!-- Les dashboards -->
             <% @organization.indicator_dashboards.each do |dashboard| %>
                 <% dashboard_name = dashboard.name %>
