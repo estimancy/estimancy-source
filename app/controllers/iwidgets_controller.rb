@@ -38,6 +38,29 @@ class IwidgetsController < ApplicationController
     @iwidget = Iwidget.new(iwidget_params)
     @indicator_dashboard = @iwidget.indicator_dashboard
 
+    # Add the position_x and position_y to params
+    position_x = 1
+    position_y = 1
+
+    # Get the max (width, height) of the view's widgets : then add the widget in last positions
+    unless @indicator_dashboard.nil? || @indicator_dashboard.iwidgets.empty?
+      current_view_widgets = @indicator_dashboard.iwidgets
+      y_positions = @indicator_dashboard.iwidgets.map(&:position_y).map(&:to_i)
+      y_max = y_positions.max
+      widgets_on_ymax = current_view_widgets.where(position_y: y_max.to_s)
+      x_positions = widgets_on_ymax.map(&:position_x).map(&:to_i)
+      x_max = x_positions.max
+      view_widget_max_position = widgets_on_ymax.where(position_x: x_max.to_s).first
+
+      position_x = view_widget_max_position.position_x.to_i+view_widget_max_position.width.to_i+1
+      position_y = y_max
+    end
+
+    #new widget with the default positions
+    @iwidget = Iwidget.new(iwidget_params.merge(:position_x => position_x,
+                                                :position_y => position_y,
+                                                :width => 3,
+                                                :height => 1))
     respond_to do |format|
       if @iwidget.save
         partial_name = "tabs_dashboard_#{@indicator_dashboard.name}"

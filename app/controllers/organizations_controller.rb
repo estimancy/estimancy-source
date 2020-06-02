@@ -5950,7 +5950,7 @@ class OrganizationsController < ApplicationController
       project_versions = kpi_config.project_versions
       selected_date = kpi_config.selected_date || "start_date"
       start_date = kpi_config.start_date
-      end_date = kpi_config.end_date
+      end_date = kpi_config.end_date || Time.now.to_date
       kpi_coefficient = kpi_config.kpi_coefficient.to_f
       if kpi_coefficient.blank? || kpi_coefficient == 0
         kpi_coefficient = 1
@@ -6089,27 +6089,26 @@ class OrganizationsController < ApplicationController
             @calculation_output << indicator_values.max_by{|k| k[:field_value] }
 
           when "average"
-            #@calculation_output = @projects_values.sum / nb_projects
-            average = indicator_values.group_by { |x| x[:field_value] }.sum / nb_projects
-            @calculation_output << [{ project_id: "",
+            average = @projects_values.sum / nb_projects
+            ###average = indicator_values.group_by { |x| x[:field_value] }.sum / nb_projects
+            @calculation_output << { project_id: "",
                                     selected_date: I18n.l(end_date.to_date),
                                     field_value: average.round(2),
                                     project_label: "",
                                     kpi_unit: kpi_config.kpi_unit
-                                    }]
-
+                                    }
           when "median"
             #@calculation_output = @projects_values.median
             sorted = @projects_values.sort
             m_pos = nb_projects / 2
-            #@calculation_output = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
-            median = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
-            @calculation_output = [{ project_id: "",
+            median = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
+            #median = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
+            @calculation_output << { project_id: "",
                                     selected_date: I18n.l(end_date.to_date),
                                     field_value: median.round(2),
                                     project_label: "",
                                     kpi_unit: kpi_config.kpi_unit
-            }]
+            }
 
           when "sum"
             #@calculation_output = @projects_values.sum
@@ -6124,12 +6123,12 @@ class OrganizationsController < ApplicationController
           when "counter"
             #@calculation_output = nb_projects
             counter = nb_projects
-            @calculation_output << [{ project_id: "",
+            @calculation_output << { project_id: "",
                                     selected_date: I18n.l(end_date.to_date),
                                     field_value: counter,
                                     project_label: "",
                                     kpi_unit: kpi_config.kpi_unit
-            }]
+            }
 
           when "graphic", "serie"
             #@res << ["Projet 123", 200]
