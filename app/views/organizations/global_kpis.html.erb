@@ -4,84 +4,84 @@
     google.charts.load('current', {packages: ['corechart', 'bar']});
 </script>
 
-<%# if controller.action_name == "edit" || controller.action_name == "update" %>
-<div class="row">
-  <div class="col-10">
+<% if @current_organization.activate_indicators_dashboard? %>
+    <div class="row">
+      <div class="col-10">
+        <% if @item_title.blank? %>
+            <div id="tabs-dashboard" class="edition-page-group py-4"><span id="item_title"><%= (I18n.t(:quote_creation_duration_kpi) rescue nil) %></span></div>
+        <% else %>
+            <div id="tabs-dashboard" class="edition-page-group py-4"><span id="item_title"><%= @is_a_dashboard=="true" ?  @item_title : I18n.t(@item_title) %></span></div>
+        <% end %>
 
-    <% if @item_title.blank? %>
-        <div id="tabs-dashboard" class="edition-page-group py-4"><span id="item_title"><%= I18n.t("#{@organization_show_kpi_keys.first}") %></span></div>
-    <% else %>
-        <div id="tabs-dashboard" class="edition-page-group py-4"><span id="item_title"><%= @is_a_dashboard=="true" ?  @item_title : I18n.t(@item_title) %></span></div>
-    <% end %>
+        <section class="card card-content-bloc estimancy-form">
+          <div class="mb-5">
+            <div class="effort-bloc">
+              <div class="tab-pane" id="pills-printing_extraction" role="tabpanel" aria-labelledby="pills-printing_extraction-tab">
+                <div id="kpi" class="card-body">
 
-    <section class="card card-content-bloc estimancy-form">
-      <div class="mb-5">
-        <div class="effort-bloc">
-          <div class="tab-pane" id="pills-printing_extraction" role="tabpanel" aria-labelledby="pills-printing_extraction-tab">
-            <div id="kpi" class="card-body">
+                  <% if @current_organization.activate_indicators_dashboard? %>
 
-              <% if @organization_show_kpi_keys.blank? %>
-               <h4><%= I18n.t('please_return_check_kpi_type')%></h4>
-              <% else %>
-                <% if params[:is_a_dashboard].to_s == "true" %>
-                  <% @indicator_dashboard = IndicatorDashboard.where(organization_id: @organization.id, name: params[:item_title]).first %>
-                  <%= render :partial => "indicator_dashboards/show", locals: {indicator_dashboard: @indicator_dashboard} %>
-                <% else %>
-                    <% if @partial_name.blank? %>
-                      <% tab_name = @organization_show_kpi_keys.first  %>
-                      <%= render :partial => "organizations/tabs_kpi_#{tab_name}" %>
+                    <% if params[:is_a_dashboard].to_s == "true" %>
+                      <% @indicator_dashboard = IndicatorDashboard.where(organization_id: @organization.id, name: params[:item_title]).first %>
+                      <%= render :partial => "indicator_dashboards/show", locals: {indicator_dashboard: @indicator_dashboard} %>
                     <% else %>
-                      <%= render :partial => "organizations/#{@partial_name}" %>
+                      <% if @partial_name.blank? %>
+                          <% tab_name = "quote_creation_duration_kpi"  %>
+                          <%= render :partial => "organizations/tabs_kpi_#{tab_name}" %>
+                      <% else %>
+                          <%= render :partial => "organizations/#{@partial_name}" %>
+                      <% end %>
                     <% end %>
-                <% end %>
-              <% end %>
+                  <% else %>
+                      <h4><%= I18n.t('please_return_check_kpi_type')%></h4>
+                  <% end %>
+                </div>
+              </div>
             </div>
           </div>
+        </section>
+      </div>
+
+      <div class="col-2">
+        <a href="<%= organization_global_kpis_path(@organization,
+                                                  partial_name: "tabs_kpi_indicator_dashboards",
+                                                  item_title: "indicator_dashboards",
+                                                  anchor: "tabs-dashboards") %>">
+          <h4 class="mb-0"><%= I18n.t(:indicator_dashboards) %></h4>
+        </a>
+
+        <div id="edition-sidebar">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link group" href="<%= organization_global_kpis_path(@organization,
+                                                                                partial_name: "tabs_kpi_quote_creation_duration_kpi",
+                                                                                item_title: "quote_creation_duration_kpi",
+                                                                                anchor: "tabs-quote_creation_duration_kpi") %>">
+                <span><%= I18n.t(:quote_creation_duration_kpi) %></span>
+              </a>
+            </li>
+
+            <!-- Les dashboards -->
+            <% @organization.indicator_dashboards.each do |dashboard| %>
+                <% dashboard_name = dashboard.name %>
+                <li class="nav-item">
+                  <a class="nav-link group" href="<%= organization_global_kpis_path(@organization,
+                                                                                    is_a_dashboard: true,
+                                                                                    partial_name: "tabs_dashboard_" + dashboard_name ,
+                                                                                    item_title: dashboard_name,
+                                                                                    anchor: "tabs-#{dashboard_name}") %>">
+                    <span><%= dashboard_name %></span>
+                  </a>
+                </li>
+            <% end %>
+          </ul>
         </div>
       </div>
-    </section>
-  </div>
-
-  <div class="col-2">
-    <!--<h4 class="mb-0">Dashboards</h4>-->
-
-    <a href="<%= organization_global_kpis_path(@organization,
-                                              partial_name: "tabs_kpi_indicator_dashboards",
-                                              item_title: "indicator_dashboards",
-                                              anchor: "tabs-dashboards") %>">
-      <h4 class="mb-0">Dashboards</h4>
-    </a>
-
-    <div id="edition-sidebar">
-      <ul class="nav flex-column">
-        <% @kpi_list.each do |kpi| %>
-          <% if @organization_show_kpi_keys.include?(kpi) %>
-            <li class="nav-item">
-              <a class="nav-link group" href="<%= organization_global_kpis_path(@organization,
-                                                                           partial_name: "tabs_kpi_" + kpi ,
-                                                                           item_title: kpi,
-                                                                           anchor: "tabs-") %>">
-                <span><%= I18n.t(kpi) %></span>
-              </a>
-            </li>
-          <% end %>
-        <% end %>
-
-        <!-- Les dashboards -->
-        <% @organization.indicator_dashboards.each do |dashboard| %>
-            <% dashboard_name = dashboard.name %>
-            <li class="nav-item">
-              <a class="nav-link group" href="<%= organization_global_kpis_path(@organization,
-                                                                                is_a_dashboard: true,
-                                                                                partial_name: "tabs_dashboard_" + dashboard_name ,
-                                                                                item_title: dashboard_name,
-                                                                                anchor: "tabs-#{dashboard_name}") %>">
-                <span><%= dashboard_name %></span>
-              </a>
-            </li>
-        <% end %>
-
-      </ul>
     </div>
-  </div>
-</div>
+
+<% else %>
+    <h4>
+      <%= I18n.t('error_access_denied')%> <br>
+      <%= I18n.t('please_return_check_kpi_type')%>
+    </h4>
+<% end %>

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200519084724) do
+ActiveRecord::Schema.define(version: 20200602095743) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1207,6 +1207,37 @@ ActiveRecord::Schema.define(version: 20200519084724) do
     t.text     "notes",                          limit: 65535
   end
 
+  create_table "iwidgets", force: :cascade do |t|
+    t.integer  "indicator_dashboard_id", limit: 4
+    t.string   "name",                   limit: 255
+    t.integer  "serie_a_kpi_id",         limit: 4
+    t.string   "serie_a_output_type",    limit: 255
+    t.integer  "serie_b_kpi_id",         limit: 4
+    t.string   "serie_b_output_type",    limit: 255
+    t.integer  "serie_c_kpi_id",         limit: 4
+    t.string   "serie_c_output_type",    limit: 255
+    t.integer  "serie_d_kpi_id",         limit: 4
+    t.string   "serie_d_output_type",    limit: 255
+    t.string   "icon_class",             limit: 255
+    t.string   "color",                  limit: 255
+    t.string   "position_x",             limit: 255
+    t.string   "position_y",             limit: 255
+    t.string   "width",                  limit: 255
+    t.string   "height",                 limit: 255
+    t.boolean  "is_label_widget"
+    t.text     "comment",                limit: 65535
+    t.boolean  "is_calculation_widget"
+    t.text     "equation",               limit: 65535
+    t.integer  "min_value",              limit: 4
+    t.integer  "max_value",              limit: 4
+    t.string   "validation_text",        limit: 255
+    t.boolean  "signalize"
+    t.string   "x_axis_label",           limit: 255
+    t.string   "y_axis_label",           limit: 255
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
+  end
+
   create_table "kb_kb_datas", force: :cascade do |t|
     t.string  "name",              limit: 255
     t.float   "size",              limit: 24
@@ -1673,6 +1704,7 @@ ActiveRecord::Schema.define(version: 20200519084724) do
     t.string   "default_estimations_sort_order",  limit: 255
     t.string   "show_reports",                    limit: 255
     t.string   "show_kpi",                        limit: 255
+    t.boolean  "activate_indicators_dashboard"
   end
 
   create_table "organizations_users", force: :cascade do |t|

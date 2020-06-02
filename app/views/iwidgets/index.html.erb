@@ -1,0 +1,75 @@
+<p id="notice"><%= notice %></p>
+
+<h1>Listing Iwidgets</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th>Indicator dashboard</th>
+      <th>Name</th>
+      <th>Kpi</th>
+      <th>Indicator output</th>
+      <th>Output type</th>
+      <th>Serie a kpi</th>
+      <th>Serie a output</th>
+      <th>Serie b kpi</th>
+      <th>Serie b output</th>
+      <th>Serie c kpi</th>
+      <th>Serie c output</th>
+      <th>Serie d kpi</th>
+      <th>Serie d output</th>
+      <th>Icon class</th>
+      <th>Color</th>
+      <th>Position x</th>
+      <th>Position y</th>
+      <th>Width</th>
+      <th>Height</th>
+      <th>Comment</th>
+      <th>Equation</th>
+      <th>Min value</th>
+      <th>Max value</th>
+      <th>Validation text</th>
+      <th>Signalize</th>
+      <th colspan="3"></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @iwidgets.each do |iwidget| %>
+      <tr>
+        <td><%= iwidget.indicator_dashboard_id %></td>
+        <td><%= iwidget.name %></td>
+        <td><%= iwidget.kpi_id %></td>
+        <td><%= iwidget.indicator_output_id %></td>
+        <td><%= iwidget.output_type %></td>
+        <td><%= iwidget.serie_a_kpi_id %></td>
+        <td><%= iwidget.serie_a_output %></td>
+        <td><%= iwidget.serie_b_kpi_id %></td>
+        <td><%= iwidget.serie_b_output %></td>
+        <td><%= iwidget.serie_c_kpi_id %></td>
+        <td><%= iwidget.serie_c_output %></td>
+        <td><%= iwidget.serie_d_kpi_id %></td>
+        <td><%= iwidget.serie_d_output %></td>
+        <td><%= iwidget.icon_class %></td>
+        <td><%= iwidget.color %></td>
+        <td><%= iwidget.position_x %></td>
+        <td><%= iwidget.position_y %></td>
+        <td><%= iwidget.width %></td>
+        <td><%= iwidget.height %></td>
+        <td><%= iwidget.comment %></td>
+        <td><%= iwidget.equation %></td>
+        <td><%= iwidget.min_value %></td>
+        <td><%= iwidget.max_value %></td>
+        <td><%= iwidget.validation_text %></td>
+        <td><%= iwidget.signalize %></td>
+        <td><%= link_to 'Show', iwidget %></td>
+        <td><%= link_to 'Edit', edit_iwidget_path(iwidget) %></td>
+        <td><%= link_to 'Destroy', iwidget, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+
+<br>
+
+<%= link_to 'New Iwidget', new_iwidget_path %>

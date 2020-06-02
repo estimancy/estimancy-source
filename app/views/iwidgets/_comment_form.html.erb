@@ -1,0 +1,139 @@
+<section class="card card-content-bloc estimancy-form">
+    <%= simple_form_for(@iwidget, is_label_widget: true, :remote => true) do |f| %>
+        <%= f.error_notification %>
+
+        <div class="card-body">
+
+          <%= f.input :indicator_dashboard_id, as: :hidden, :input_html => { value: @indicator_dashboard_id } %>
+          <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+          <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+          <%= f.input :is_label_widget, as: :hidden, :input_html => { value: true } %>
+
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                    <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-10">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :comment, label: false, input_html: { class: "mdl-textfield__input form-control", rows: 5 } %>
+                    <label class="mdl-textfield__label" for="comment"><%= I18n.t(:widget_comment) %></label>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="col-6">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
+                    <% if @iwidget.new_record? %>
+                        <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "color mdl-textfield__input form-control"} %>
+                    <% else %>
+                        <%= f.input :color, label: false, input_html: { class: "color mdl-textfield__input form-control"}  %>
+                    <% end %>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-12">
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+              </div>
+            </div>
+          </div>
+        </div>
+    <% end %>
+</section>
+
+<script>
+    // Update the view_widget show_min_max attribute according to the selected widget_type
+    var delete_min_max_on_widget_type = [ "line_chart", "bar_chart", "area_chart", "pie_chart", "timeline", "stacked_bar_chart", "histogram_effort_per_phase", "pie_chart_effort_per_phase", "histogram_cost_per_phase",
+        "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
+
+    var widget_type = $("#views_widget_widget_type").val();
+    if (widget_type == "text"){
+        $('#views_widget_show_min_max').removeAttr('disabled');
+    }
+    else {
+        $('#views_widget_show_min_max').attr('checked', false);
+        $('#views_widget_show_min_max').attr('disabled','disabled');
+        $("#views_widget_widget_type").value = 0;
+    }
+
+    // Update the view_widget attribute according to the selected module
+    $("#views_widget_module_project_id").change(function() {
+        if ($(this).val() !== ""){
+            return $.ajax({
+                url: "/update_widget_module_project_data",
+                method: "GET",
+                data: "module_project_id=" + $(this).val()
+            });
+        }
+    });
+
+    $("#views_widget_widget_type").change(function() {
+        var widget_type = $(this).val();
+        if (widget_type == "text"){
+            $('#views_widget_show_min_max').removeAttr('disabled');
+        }
+        else {
+            $('#views_widget_show_min_max').attr('checked', false);
+            $('#views_widget_show_min_max').attr('disabled','disabled');
+            $("#views_widget_widget_type").value = 0;
+        }
+//        if (widget_type !== ""){
+//            if (jQuery.inArray( widget_type, delete_min_max_on_widget_type) !== -1){
+//                $('#views_widget_show_min_max').attr('disabled','disabled');
+//                $("#views_widget_widget_type").value = 0;
+//            } else{
+//                $('#views_widget_show_min_max').removeAttr('disabled');
+//            }
+//        }
+    });
+
+
+    //manage the label widget
+    $("#views_widget_is_label_widget").change(function(){
+        if($(this).is(':checked')){
+            //alert(1);
+            //$("#new_views_widget").closest("tr").find(":input.inline_attr").attr("disabled", 'disabled');
+            $("form#new_views_widget select.inline_attr, input:checkbox.inline_attr ").attr("disabled", 'disabled');
+        } else{
+            //alert(0);
+            $("form#new_views_widget select.inline_attr, input:checkbox.inline_attr ").removeAttr('disabled');
+        }
+    });
+
+    $("#iwidget_color").spectrum({
+        showPaletteOnly: true,
+        showPalette:true,
+        hideAfterPaletteSelect:true,
+        showInitial: true,
+        preferredFormat: "hex",
+        replacerClassName: 'mycolorpicker',
+        //color: 'blanchedalmond',
+        <% if @iwidget.new_record? %>
+        color: 'blanchedalmond',
+        <% end %>
+
+        palette: [
+            ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
+            ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
+            ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
+            ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
+        ]
+    });
+
+    $('.sp-preview').css('width', '21rem');
+
+</script>
