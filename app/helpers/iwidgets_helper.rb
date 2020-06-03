@@ -134,14 +134,15 @@ module IwidgetsHelper
 
 
     series_options = {
-        legend: { position: 'top', maxLines: 5 },
+        #legend: { position: 'top', maxLines: 5 },
+        legend: { position: "right", alignment: 'start', orientation: 'horizontal' },
+        chartArea: { left: '10%', top: '3%', width:'70%', height:'85%'},
         hAxis: { title: iwidget.x_axis_label },
         vAxis: { title: iwidget.y_axis_label },
         #colors: chart_colors,
 
         seriesType: 'bars',
-        bar: { groupWidth: '75%' },
-
+        bar: { groupWidth: '65%' },
         isStacked: true,
         # series: {'<%= line_chart_position %>': { type: 'line', pointsVisible: true } }
         series: { }
@@ -158,39 +159,7 @@ module IwidgetsHelper
         line_chart_position = 0
 
 
-        #TEST
-        # Stacked-Bar chart
-        unless stacked_bar_chart.blank?
-
-          if bar_chart.blank?
-            series_options[:isStacked] = true
-            all_charts = all_charts.merge(stacked_bar_chart)
-          else
-            stacked_bar_chart_position = bar_chart.size
-            all_charts = all_charts.merge(stacked_bar_chart)
-
-            series_options[:series]["#{0}"] = { type: 'bars', isStacked: true }
-          end
-        end
-
-        # Bar chart
-        unless bar_chart.blank?
-          bar_chart_position = all_charts.size
-          all_charts = all_charts.merge(bar_chart)
-          series_options[:series]["#{bar_chart_position-1}"] = { type: 'bars', isStacked: false}
-
-        end
-
-        #FIN TEST
-
-
-        # # Bar chart
-        # unless bar_chart.blank?
-        #   bar_chart_position = all_charts.size
-        #   series_options[:series]["#{bar_chart_position}"] = { type: 'bars', isStacked: false}
-        #   all_charts = all_charts.merge(bar_chart)
-        # end
-        #
+        # #TEST
         # # Stacked-Bar chart
         # unless stacked_bar_chart.blank?
         #
@@ -201,12 +170,49 @@ module IwidgetsHelper
         #     stacked_bar_chart_position = bar_chart.size
         #     all_charts = all_charts.merge(stacked_bar_chart)
         #
-        #     series_options[:series]["#{stacked_bar_chart_position}"] = { type: 'bars', isStacked: true }
+        #     series_options[:series]["#{0}"] = { type: 'bars', isStacked: true }
         #   end
         # end
+        #
+        # # Bar chart
+        # unless bar_chart.blank?
+        #   bar_chart_position = all_charts.size
+        #   all_charts = all_charts.merge(bar_chart)
+        #   series_options[:series]["#{bar_chart_position-1}"] = { type: 'bars', isStacked: false}
+        #
+        # end
+        #
+        # #FIN TEST
+
+        # Bar chart
+        unless bar_chart.blank?
+          bar_chart_position = all_charts.size
+          #series_options[:series]["#{bar_chart_position}"] = { type: 'bars', isStacked: false}
+          series_options[:series]["#{0}"] = { targetAxisIndex: 0 }
+          all_charts = all_charts.merge(bar_chart)
+        end
+
+        # Stacked-Bar chart
+        unless stacked_bar_chart.blank?
+
+          if bar_chart.blank?
+            #series_options[:isStacked] = true
+            all_charts = all_charts.merge(stacked_bar_chart)
+          else
+            stacked_bar_chart_position = bar_chart.size
+            all_charts = all_charts.merge(stacked_bar_chart)
+
+            #series_options[:series]["#{stacked_bar_chart_position}"] = { type: 'bars', isStacked: true }
+            #series_options[:series]["#{all_charts.size-1}"] = { targetAxisIndex: 0 }
+          end
+        end
 
         # Line chart
-        unless line_chart.blank?
+        if line_chart.blank?
+          series_options[:series]["#{all_charts.size}"] = { targetAxisIndex: 0 }
+        else
+          series_options[:series]["#{all_charts.size - line_chart.size}"] = { targetAxisIndex: 0 }
+
           line_chart_position = all_charts.size
           all_charts = all_charts.merge(line_chart)
 

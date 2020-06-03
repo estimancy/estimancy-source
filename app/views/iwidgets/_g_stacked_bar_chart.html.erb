@@ -25,7 +25,8 @@
             //height: 400,
             //title: '<%#= iwidget.name %>',
             //subtitle: '<%#= widget_name %>',
-            legend: { position: 'top', maxLines: 3 },
+            legend: { position: "right", alignment: 'start', orientation: 'horizontal' },
+            chartArea: { left: '10%', top: '3%', width:'70%', height:'85%'},
             hAxis: {
                 title: '<%= iwidget.x_axis_label %>',
             },
@@ -47,4 +48,4 @@
 </script>
 
 <!--<div id='<%#= "stacked_bar_chart_div_#{widget_id}" %>' style="width: 900px; height: 300px;"></div>-->
-<div id='<%= "stacked_bar_chart_div_#{iwidget.id}" %>' style="min-width: 600px; min-height: 400px; max-width: 100%; max-height: 100%;"></div>
+<div id='<%= "stacked_bar_chart_div_#{iwidget.id}" %>' style="min-width: 900px; min-height: 600px; max-width: 100%; max-height: 100%;"></div>

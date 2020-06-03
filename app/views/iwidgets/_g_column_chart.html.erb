@@ -5,7 +5,7 @@
     function drawColumnChart() {
 
         <%# colors = ['#e5e4e2', '#C5A5CF', '#b87333', 'silver', 'gold', '#76A7FA', '#703593', '#871B47', '#C5A5CF', '#BC5679'] %>
-        <% colors = ViewsWidget::WIDGETS_COLORS %>
+        <%# colors = ViewsWidget::WIDGETS_COLORS %>
         <%# r_data.each_with_index { |value, i | value << colors[i] }  %>
         <%# r_data.insert(0, ["Date", "#{iwidget.name}", { role: "style" } ]) %>
 
@@ -27,7 +27,7 @@
             //width: 600,
             //height: 400,
             bar: { groupWidth: "95%" },
-            legend: { position: "none" },
+            legend: { position: "right", alignment: 'start', orientation: 'horizontal' },
 
             hAxis: {
                 title: '<%= iwidget.x_axis_label %>',
@@ -42,5 +42,5 @@
 </script>
 
 <!--<div id='<%#= "column_chart_div_#{widget_id}" %>' style="width: 900px; height: 300px;"></div>-->
-<div id='<%= "column_div_#{iwidget.id}" %>' style="min-width: 600px; min-height: 400px; max-width: 100%; max-height: 100%;"></div>
+<div id='<%= "column_div_#{iwidget.id}" %>' style="min-width: 800px; min-height: 400px; max-width: 100%; max-height: 100%;"></div>
 
