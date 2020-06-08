@@ -255,10 +255,7 @@ module IwidgetsHelper
           ##value_to_show << "\n\r"
           all_values_to_show << value_to_show
         end
-
       end
-
-
     end
 
     #======== FIN TEST
@@ -327,7 +324,7 @@ module IwidgetsHelper
       #   widget_data[:value_to_show] << value_to_show
       # end
 
-      widget_data[:value_to_show] = value_to_show
+      widget_data[:value_to_show] = all_values_to_show #value_to_show
 
     # rescue
     #   widget_data[:value_to_show] = "-"

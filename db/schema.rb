@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200602095743) do
+ActiveRecord::Schema.define(version: 20200608125220) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -2380,9 +2380,18 @@ ActiveRecord::Schema.define(version: 20200602095743) do
     t.integer  "estimation_status_id",         limit: 4
     t.boolean  "show_module_name"
     t.boolean  "is_organization_kpi_widget"
-    t.integer  "kpi_id",                       limit: 4
     t.boolean  "signalize"
     t.boolean  "lock_project"
+    t.integer  "serie_a_kpi_id",               limit: 4
+    t.string   "serie_a_output_type",          limit: 255
+    t.integer  "serie_b_kpi_id",               limit: 4
+    t.string   "serie_b_output_type",          limit: 255
+    t.integer  "serie_c_kpi_id",               limit: 4
+    t.string   "serie_c_output_type",          limit: 255
+    t.integer  "serie_d_kpi_id",               limit: 4
+    t.string   "serie_d_output_type",          limit: 255
+    t.string   "x_axis_label",                 limit: 255
+    t.string   "y_axis_label",                 limit: 255
   end
 
   add_index "views_widgets", ["module_project_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree
