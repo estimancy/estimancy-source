@@ -151,6 +151,13 @@ class IwidgetsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def iwidget_params
-      params.require(:iwidget).permit(:indicator_dashboard_id, :name, :serie_a_kpi_id, :serie_a_output_type, :serie_b_kpi_id, :serie_b_output_type, :serie_c_kpi_id, :serie_c_output_type, :serie_d_kpi_id, :serie_d_output_type, :icon_class, :color, :position_x, :position_y, :width, :height, :comment, :equation, :min_value, :max_value, :validation_text, :signalize, :x_axis_label, :y_axis_label)
+      params.require(:iwidget).permit(:indicator_dashboard_id, :name,
+                                      :serie_a_kpi_id, :serie_a_output_type,
+                                      :serie_b_kpi_id, :serie_b_output_type,
+                                      :serie_c_kpi_id, :serie_c_output_type,
+                                      :serie_d_kpi_id, :serie_d_output_type,
+                                      :icon_class, :color, :position_x, :position_y, :width, :height,
+                                      :is_label_widget, :comment, :is_calculation_widget, :equation,
+                                      :min_value, :max_value, :validation_text, :signalize, :x_axis_label, :y_axis_label)
     end
 end

@@ -5687,6 +5687,30 @@ class OrganizationsController < ApplicationController
     @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "general_dashboard"]
 
 
+    if @organization.activate_indicators_dashboard?
+      if @partial_name.blank?
+        @default_dashboard = IndicatorDashboard.where(organization_id: @organization.id, is_default_dashboard: true).first
+        if @default_dashboard.nil?
+          @default_dashboard = IndicatorDashboard.where(organization_id: @organization.id).first
+        end
+        tab_name = @default_dashboard.name rescue nil
+        @partial_name = "tabs_kpi_#{tab_name}"
+        @item_title = tab_name
+      end
+    end
+  end
+
+
+  def global_kpis_to_delete
+    @organization = Organization.find(params[:organization_id])
+
+    #@organization_show_kpi_keys = @organization.show_kpi.keys
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
+    @is_a_dashboard = params[:is_a_dashboard].to_s
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "general_dashboard"]
+
+
     # @attributes = PeAttribute.all
     # @attribute_settings = AttributeOrganization.where(:organization_id => @organization.id).all
     #

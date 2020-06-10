@@ -1,5 +1,16 @@
 class IndicatorDashboardsController < ApplicationController
-  before_action :set_indicator_dashboard, only: [:show, :edit, :update, :destroy]
+  before_action :set_indicator_dashboard, only: [:show, :edit, :update, :destroy, :update_default_dashboards]
+  after_action :update_default_dashboards, only: [:create, :update]
+
+  def update_default_dashboards
+    begin
+      if @indicator_dashboard.is_default_dashboard?
+       IndicatorDashboard.where(organization_id: @indicator_dashboard.organization_id).where.not(id: @indicator_dashboard.id).update_all(is_default_dashboard: false)
+      end
+    rescue
+    end
+  end
+
 
   # GET /indicator_dashboards
   # GET /indicator_dashboards.json
@@ -81,6 +92,6 @@ class IndicatorDashboardsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def indicator_dashboard_params
-      params.require(:indicator_dashboard).permit(:organization_id, :name, :description)
+      params.require(:indicator_dashboard).permit(:organization_id, :name, :description, :is_default_dashboard, :show_name_description)
     end
 end

@@ -26,7 +26,9 @@
             <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
             <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>  <!-- add_box -->
             <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_project_data_widget: true) %>" title="<%= I18n.t :label_add_new_project_data_widget %>"><i class="material-icons">list</i></a>
-            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_organization_kpi_widget: true) %>" title="<%= I18n.t :label_add_new_productivity_kpi_widget %>"><i class="material-icons">show_chart</i></a>
+            <% if @project.organization.activate_project_dashboard_indicators? %>
+                <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_organization_kpi_widget: true) %>" title="<%= I18n.t :label_add_new_productivity_kpi_widget %>"><i class="material-icons">show_chart</i></a>
+            <% end %>
             <!--<a href="#" onclick="save_position(); return false;"><i class="material-icons">save</i></a>  &lt;!&ndash; add_box &ndash;&gt;-->
         <% end %>
       </div>
@@ -220,13 +222,13 @@
                               <% if view_widget.is_organization_kpi_widget? %>
                                   <% value.each do |config_value| %>
                                       <div class="card-indicator-label">
-                                        <span class="<%= blink_value_class %>" style="margin-top: 0.9rem"><%= config_value.nil? ? '-' : config_value %></span>
+                                        <span style="margin-top: 0.9rem"><%= config_value.nil? ? '-' : config_value %></span>
                                       </div>
                                   <% end %>
 
                               <% else %>
                                   <div class="card-indicator-label">
-                                    <span class="<%= blink_value_class %>" style="margin-top: 0.9rem"><%= value.nil? ? '-' : value %></span>
+                                    <span style="margin-top: 0.9rem"><%= value.nil? ? '-' : value %></span>
                                   </div>
                               <% end %>
                             </div>

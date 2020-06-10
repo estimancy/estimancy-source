@@ -26,6 +26,13 @@
           </div>
         </div>
 
+        <h4 style="font-size: 20px;"><%= I18n.t('filters')%></h4>
+        <div class="form-row">
+          <div class="col-6">
+            <hr />
+          </div>
+        </div>
+
         <div class="form-row">
             <div class="col-3">
               <div class="select-estimancy">
@@ -38,22 +45,11 @@
               </div>
             </div>
 
-          <div class="col-3 select-estimancy">
-            <label for="field_id" class="label-estimancy"><%#= I18n.t 'field' %>Champs sur lequel se fait le calcul</label>
-            <%= f.association :field,
-                              :label => false,
-                              :as => :select,
-                              :collection => @kpi.get_estimation_model_fields(@organization), #@organization.fields,
-                              :input_html => { :class => 'mdl-textfield__input form-control' }, include_blank: false %>
-          </div>
-          <div class="col-2">
-            <label for="kpi_unit" class="label-estimancy"><%= I18n.t 'kpi_unit' %></label>
-            <%= f.input :kpi_unit, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
-          </div>
-
-          <div class="col-2">
-            <label for="kpi_coefficient" class="label-estimancy"><%= I18n.t 'coefficient_value' %></label>
-            <%= f.input :kpi_coefficient, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+          <div class="col-3" style="margin-top: 4em">
+            <%= f.input :include_historized, as: :boolean, label: false, input_html: {class: 'mdl-checkbox__input' } %>
+            <label class="mdl-textfield__label" for="include_historized" style="padding-left: 4rem; margin-top: -1.7em">
+              <%= I18n.t(:include_historized) %>
+            </label>
           </div>
         </div>
 
@@ -72,12 +68,6 @@
                         :input_html => { :class => 'mdl-textfield__input form-control' },
                         include_blank: false %>
           </div>
-          <div class="col-3" style="margin-top: 4em">
-            <%= f.input :include_historized, as: :boolean, label: false, input_html: {class: 'mdl-checkbox__input' } %>
-            <label class="mdl-textfield__label" for="include_historized" style="padding-left: 4rem; margin-top: -1.7em">
-                <%= I18n.t(:include_historized) %>
-            </label>
-          </div>
         </div>
 
         <div class="form-row">
@@ -85,9 +75,9 @@
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <%= f.input :start_date, as: :string, :label => false,
                   #:input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.start_date) }
-                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? nil : I18n.l(@kpi.start_date) } %>
+                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? nil : I18n.l(@kpi.start_date.to_date) } %>
 
-              <label class="mdl-textfield__label" ><%= I18n.t('start_date') %></label>
+              <label class="mdl-textfield__label" ><%= I18n.t('indicator_start_date') %></label>
             </div>
           </div>
 
@@ -95,8 +85,8 @@
             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
               <%= f.input :end_date, as: :string, :label => false,
                           #:input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.end_date) }
-                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? nil : I18n.l(@kpi.end_date) } %>
-              <label class="mdl-textfield__label" ><%= I18n.t('end_date') %></label>
+                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? nil : I18n.l(@kpi.end_date.to_date) } %>
+              <label class="mdl-textfield__label" ><%= I18n.t('indicator_end_date') %></label>
             </div>
           </div>
         </div>
@@ -130,16 +120,6 @@
                         :collection => [["Toutes versions", "all_versions"], ["Dernière version", "last_version"]],
                         :input_html => { :class => 'mdl-textfield__input form-control' } %>
           </div>
-
-          <div class="col-3 select-estimancy">
-            <label for="output_type" class="label-estimancy"><%= I18n.t 'output_type' %></label>
-            <%= f.input :output_type,
-                        :label => false,
-                        :as => :select,
-                        :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"], [I18n.t(:serie), "graphic"]],
-                        :input_html => { :class => 'mdl-textfield__input form-control' },
-                        include_blank: false %>
-          </div>
         </div>
 
         <div class="form-row">
@@ -166,7 +146,7 @@
             </div>
         </div>
 
-          <div class="form-row">
+        <div class="form-row">
             <div class="col-3">
               <div class="select-estimancy">
                 <label for="project_category" class="label-estimancy"><%= I18n.t 'project_category' %></label>
@@ -188,9 +168,9 @@
                                   :input_html => {:class => 'mdl-textfield__input form-control'} %>
               </div>
             </div>
-          </div>
+        </div>
 
-          <div class="form-row">
+        <div class="form-row">
             <div class="col-3">
               <div class="select-estimancy">
                 <label for="platformCategory" class="label-estimancy"><%= I18n.t 'platform_category' %></label>
@@ -212,9 +192,55 @@
                                   :input_html => {:class => 'mdl-textfield__input form-control'}%>
               </div>
             </div>
+        </div>
+
+
+        <h4 style="font-size: 20px;"><%= I18n.t('calculation')%></h4>
+        <div class="form-row">
+          <div class="col-6">
+            <hr />
+          </div>
+        </div>
+
+
+        <div class="form-row">
+            <div class="col-3 select-estimancy">
+              <label for="field_id" class="label-estimancy"><%#= I18n.t 'field' %>Champs sur lequel se fait le calcul</label>
+              <%= f.association :field,
+                                :label => false,
+                                :as => :select,
+                                :collection => @organization.fields.all,  #@kpi.get_estimation_model_fields(@organization)
+                                :input_html => { :class => 'mdl-textfield__input form-control' }, include_blank: false %>
+            </div>
           </div>
 
-          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <div class="form-row">
+            <div class="col-3">
+              <label for="kpi_unit" class="label-estimancy"><%= I18n.t 'kpi_unit' %></label>
+              <%= f.input :kpi_unit, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+            </div>
+
+            <div class="col-3">
+              <label for="kpi_coefficient" class="label-estimancy"><%= I18n.t 'coefficient_value' %></label>
+              <%= f.input :kpi_coefficient, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+            </div>
+          </div>
+
+          <br>
+          <div class="form-row">
+            <div class="col-3 select-estimancy">
+              <label for="output_type" class="label-estimancy"><%= I18n.t 'output_type' %></label>
+              <%= f.input :output_type,
+                          :label => false,
+                          :as => :select,
+                          :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"], [I18n.t(:serie), "graphic"]],
+                          :input_html => { :class => 'mdl-textfield__input form-control' },
+                          include_blank: false %>
+            </div>
+          </div>
+
+        <br>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
         <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary' %>
       <% end %>
     </div>
@@ -224,15 +250,15 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
     // Update the Field attribute according to the selected estimation_model
-    $("#kpi_estimation_model_id").change(function() {
-        if ($(this).val() !== ""){
-            return $.ajax({
-                url: "/update_productivity_kpi_field",
-                method: "GET",
-                data: "estimation_model_id=" + $(this).val()
-            });
-        }
-    });
+//    $("#kpi_estimation_model_id").change(function() {
+//        if ($(this).val() !== ""){
+//            return $.ajax({
+//                url: "/update_productivity_kpi_field",
+//                method: "GET",
+//                data: "estimation_model_id=" + $(this).val()
+//            });
+//        }
+//    });
 </script>
 
 <script>

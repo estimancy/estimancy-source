@@ -24,7 +24,8 @@ class Organization < ActiveRecord::Base
   attr_accessible :name, :description, :is_image_organization, :number_hours_per_day, :number_hours_per_month, :cost_per_hour, :currency_id, :inflation_rate,
                   :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history, :headband_title, :automatic_quotation_number, :support_contact,
                   :limit1_coef, :limit2_coef, :limit3_coef, :limit4_coef,
-                  :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit, :allow_demand, :show_reports, :show_kpi, :activate_indicators_dashboard
+                  :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit, :allow_demand, :show_reports, :show_kpi,
+                  :activate_indicators_dashboard, :activate_project_dashboard_indicators
 
 
   serialize :project_selected_columns, Array

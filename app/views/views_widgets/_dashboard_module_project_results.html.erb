@@ -5,7 +5,9 @@
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >exposure</i></a><!-- add_box -->
-          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_organization_kpi_widget: true) %>" title="<%= I18n.t :label_add_new_productivity_kpi_widget %>"><i class="material-icons">show_chart</i></a>
+          <% if @project.organization.activate_project_dashboard_indicators? %>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_organization_kpi_widget: true) %>" title="<%= I18n.t :label_add_new_productivity_kpi_widget %>"><i class="material-icons">show_chart</i></a>
+          <% end %>
       <% end %>
     </div>
   </div>
@@ -118,12 +120,12 @@
                       <div class="card-indicator-label'">
                         <% if view_widget.is_organization_kpi_widget? %>
                             <% value.each do |config_value| %>
-                              <span class="<%= blink_value_class %>">
+                              <span>
                                 <%= config_value.nil? ? '-' : config_value %>
                               </span>
                             <% end %>
                         <% else %>
-                          <span class="<%= blink_value_class %>">
+                          <span>
                             <%= value.nil? ? '-' : value %>
                           </span>
                         <% end %>

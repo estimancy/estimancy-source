@@ -99,7 +99,7 @@
                 <a class="dropdown-item account-item" href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>"><%= I18n.t(:report) %></a>
 
                 <% if @current_organization.activate_indicators_dashboard? %>
-                    <a class="dropdown-item account-item" href="<%= main_app.organization_global_kpis_path(@current_organization) %>" title="KPI"><%= I18n.t(:indicator_dashboards) %></a>
+                    <a class="dropdown-item account-item" href="<%= main_app.organization_global_kpis_path(@current_organization) %>" title="<%= I18n.t(:indicator_dashboards) %>"><%= I18n.t(:indicator_dashboards) %></a>
                 <% end %>
 
                 <div class="dropdown-divider"></div>

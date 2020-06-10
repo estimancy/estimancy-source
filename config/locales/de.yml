@@ -1773,7 +1773,7 @@ de:
   show_graph: "View graph"
 
   label_add_new_project_data_widget: "Project data"
-  label_add_new_productivity_kpi_widget: "KPI data"
+  label_add_new_productivity_kpi_widget: "Indicators data"
   organization_kpi_config: "KPI"
   organization_kpi_name: "KPI name"
   choose_kpi_config: "Choose KPI config"  #Choisir une configuration de KPI
@@ -1815,6 +1815,13 @@ de:
   table_values: "List of values"
   x_axis_label: "X-Axis label"
   y_axis_label: "Y-Axis label"
-  activate_indicators_dashboard: "Activate the indicators dashboard"
+  activate_indicators_dashboard: "Indicators to activate"
+  on_organization_dashboards: "On organization dashboards"
+  on_project_dashboard: "On project dashboard"
+  is_default_dashboard: "Default dashboard"
+  show_name_description: "Display name and description"
+  indicator_start_date: "Start date"
+  indicator_end_date: "End date"
+  calculation: "Calculation"
 
 

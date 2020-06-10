@@ -352,19 +352,45 @@
                 <div class="edition-bloc-left">
                   <div class="edition-bloc-title">
                     <h4>
-                      <%= I18n.t(:activate_indicators_dashboard) %>
+                      <%= I18n.t(:choose_kpis_to_show) %>
                     </h4>
                   </div>
                 </div>
 
                 <div class="edition-bloc-content">
                   <div class="edition-bloc-form">
-                    <%#= f.radio_button 'activate_indicators_dashboard', '1', :name => 'activate_indicators_dashboard' %> <%#= I18n.t(:yes)%><br/>
-                    <%#= f.radio_button 'activate_indicators_dashboard', '0', :name => 'activate_indicators_dashboard' %> <%#= I18n.t(:no)%>
-
-                    <%= f.input :activate_indicators_dashboard, as: :radio_buttons, label: false, collection: [[I18n.t(:yes), true] ,[I18n.t(:no), false]] %>
+                    <div class="form-row">
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%#= f.input :activate_indicators_dashboard, as: :radio_buttons, label: false, collection: [[I18n.t(:yes), true] ,[I18n.t(:no), false]] %>
+                          <%= f.input :activate_project_dashboard_indicators, as: :boolean, label: false %>
+                          <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
+                            <%= I18n.t(:on_project_dashboard) %>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
+
+                <div class="edition-bloc-content">
+                  <div class="edition-bloc-form">
+                    <div class="form-row">
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%#= f.input :activate_indicators_dashboard, as: :radio_buttons, label: false, collection: [[I18n.t(:yes), true] ,[I18n.t(:no), false]] %>
+                          <%= f.input :activate_indicators_dashboard, as: :boolean, label: false %>
+                          <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
+                            <%= I18n.t(:on_organization_dashboards) %>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <%#= f.input :activate_project_dashboard_indicators, as: :boolean, label: false %>
             </div>
 
             <div class="form-row">

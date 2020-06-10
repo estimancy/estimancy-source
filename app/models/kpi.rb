@@ -1,6 +1,7 @@
 class Kpi < ActiveRecord::Base
 
   validates :organization_id, presence: true
+  validates :name, presence: true
 
   has_many :kpi_statuses, :dependent=> :destroy
   has_many :estimation_statuses, through: :kpi_statuses, :dependent=> :destroy
