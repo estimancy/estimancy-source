@@ -233,11 +233,33 @@
               <%= f.input :output_type,
                           :label => false,
                           :as => :select,
-                          :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"], [I18n.t(:serie), "graphic"]],
+                          :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"], [I18n.t(:serie), "serie"]],
                           :input_html => { :class => 'mdl-textfield__input form-control' },
                           include_blank: false %>
             </div>
           </div>
+
+        <div class="form-row">
+          <div class="col-3 select-estimancy">
+            <label for="output_type" class="label-estimancy"><%= I18n.t 'x_axis_config' %></label>
+            <%= f.input :x_axis_config, :label => false,
+                        collection: Kpi.x_axis_config_collection, as: :grouped_select, group_method: :last, :group_label_method => :first,
+                        include_blank: false, input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
+
+          </div>
+
+          <div class="col-3 select-estimancy">
+            <label for="output_type" class="label-estimancy"><%= I18n.t 'y_axis_config' %></label>
+            <%= f.input :y_axis_config,
+                        :label => false,
+                        :as => :select,
+                        :collection => Kpi.y_axis_config_collection,
+                        :input_html => { :class => 'mdl-textfield__input form-control' },
+                        include_blank: false %>
+          </div>
+        </div>
+
+
 
         <br>
         <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
@@ -250,8 +272,8 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 <script>
     // Update the Field attribute according to the selected estimation_model
-//    $("#kpi_estimation_model_id").change(function() {
-//        if ($(this).val() !== ""){
+//    $("#kpi_output_type").change(function() {
+//        if ($(this).val() !== "serie"){
 //            return $.ajax({
 //                url: "/update_productivity_kpi_field",
 //                method: "GET",
@@ -259,6 +281,32 @@
 //            });
 //        }
 //    });
+
+    if ($("#kpi_output_type").val() == "serie"){
+        $('#kpi_x_axis_config').removeAttr('disabled');
+        $('#kpi_y_axis_config').removeAttr('disabled');
+    }else {
+        $('#kpi_x_axis_config').val("");
+        $('#kpi_y_axis_config').val("");
+
+        $('#kpi_x_axis_config').attr('disabled','disabled');
+        $('#kpi_y_axis_config').attr('disabled','disabled');
+    }
+
+    $("#kpi_output_type").change(function() {
+        if ($(this).val() == "serie"){
+            $('#kpi_x_axis_config').removeAttr('disabled');
+            $('#kpi_y_axis_config').removeAttr('disabled');
+        }
+        else {
+            $('#kpi_x_axis_config').val("");
+            $('#kpi_y_axis_config').val("");
+
+            $('#kpi_x_axis_config').attr('disabled','disabled');
+            $('#kpi_y_axis_config').attr('disabled','disabled');
+        }
+    });
+
 </script>
 
 <script>

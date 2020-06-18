@@ -17,6 +17,7 @@
                 title: '<%= iwidget.x_axis_label %> <%#= (kpi_config.selected_date == "created_at" ? I18n.t(:created_date) : I18n.t("#{kpi_config.selected_date}")) %>'
             },
             vAxis: {
+                minValue: 0,
                 title: '<%= iwidget.y_axis_label %>'
             },
 

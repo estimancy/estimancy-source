@@ -26,7 +26,7 @@ class ViewsWidget < ActiveRecord::Base
                   :is_kpi_widget, :is_project_data_widget, :is_organization_kpi_widget, :use_organization_effort_unit, :equation, :show_tjm,
                   :min_value, :max_value, :validation_text, :project_attribute_name, :estimation_status_id, :show_module_name,
                   :serie_a_kpi_id, :serie_a_output_type, :serie_b_kpi_id, :serie_b_output_type, :serie_c_kpi_id, :serie_c_output_type,
-                  :serie_d_kpi_id, :serie_d_output_type, :x_axis_label, :y_axis_label, :signalize, :lock_project
+                  :serie_d_kpi_id, :serie_d_output_type, :end_of_series, :x_axis_label, :y_axis_label, :signalize, :lock_project
 
   serialize :equation, Hash
 

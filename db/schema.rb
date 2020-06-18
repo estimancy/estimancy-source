@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200609142954) do
+ActiveRecord::Schema.define(version: 20200612104427) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1323,6 +1323,8 @@ ActiveRecord::Schema.define(version: 20200609142954) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.float    "kpi_coefficient",         limit: 24
+    t.string   "x_axis_config",           limit: 255
+    t.string   "y_axis_config",           limit: 255
   end
 
   create_table "labor_categories", force: :cascade do |t|
@@ -2395,6 +2397,7 @@ ActiveRecord::Schema.define(version: 20200609142954) do
     t.string   "serie_d_output_type",          limit: 255
     t.string   "x_axis_label",                 limit: 255
     t.string   "y_axis_label",                 limit: 255
+    t.string   "end_of_series",                limit: 255
   end
 
   add_index "views_widgets", ["module_project_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree

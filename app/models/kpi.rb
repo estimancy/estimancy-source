@@ -89,4 +89,33 @@ class Kpi < ActiveRecord::Base
 
     estimation_model_fields
   end
+
+
+  def self.x_axis_config_collection
+    [
+     [I18n.t(:label_date),
+        [ [I18n.t(:date_detail), "date_detail"],
+          [I18n.t(:date_week), "date_week"],
+          [I18n.t(:date_month), "date_month"],
+          [I18n.t(:date_trimester), "date_trimester"],
+          [I18n.t(:date_semester), "date_semester"],
+          [I18n.t(:date_year), "date_year"]
+        ]
+     ],
+
+     [ "Autres",
+       [
+         [I18n.t(:estimation_models), "original_model"], [I18n.t(:estimation_status), "estimation_status"],
+         [I18n.t(:application), "application"], [I18n.t(:project_area), "project_area"], [I18n.t(:project_category), "project_category"],
+         [I18n.t(:acquisition_category), "acquisition_category"], [I18n.t(:platform_category), "platform_category"],
+         [I18n.t(:provider), "provider"]
+       ]
+     ]
+    ]
+  end
+
+  def self.y_axis_config_collection
+    [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"],
+     [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"]]
+  end
 end

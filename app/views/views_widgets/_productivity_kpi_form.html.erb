@@ -4,7 +4,7 @@
         <div class="edition-bloc-content">
           <div class="edition-bloc-form">
 
-            <% output_type_collection = [[I18n.t(:first_value), "first_value"], [I18n.t(:last_value), "last_value"], [I18n.t(:table_values), "table_values"], [I18n.t(:line_chart), "line_chart"], [I18n.t(:bar_chart), "bar_chart"], [I18n.t(:stacked_bar_chart), "stacked_bar_chart"], [I18n.t(:pie_chart), "pie_chart"]] %>
+            <% output_type_collection = Iwidget.output_types #[[I18n.t(:first_value), "first_value"], [I18n.t(:last_value), "last_value"], [I18n.t(:table_values), "table_values"], [I18n.t(:line_chart), "line_chart"], [I18n.t(:bar_chart), "bar_chart"], [I18n.t(:stacked_bar_chart), "stacked_bar_chart"], [I18n.t(:pie_chart), "pie_chart"]] %>
 
             <%= f.error_notification %>
             <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
@@ -31,51 +31,52 @@
               </div>
             </div>
 
-            <!-- TEST  -->
-
             <!-- SERIES-->
-            <br>
-            <b>
-              <%= I18n.t(:choose_kpi_config)%>
-            </b>
+
+
             <!-- SERIE A -->
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.association :serie_a_kpi, label: false, collection: @current_organization.kpis, prompt: "Choisir une configuration", include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <%= f.association :serie_a_kpi, label: false, collection: @current_organization.kpis, prompt: I18n.t(:choose_indicator),
+                                    include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
                   <label class="mdl-textfield__label" for="module_project"><%= "Serie A" %></label>
                 </div>
               </div>
 
-              <div class="col-6 select-estimancy">
-                <label for="output_type" class="label-estimancy"><%= "Serie A : #{I18n.t('output_type')}"  %></label>
-                <%= f.input :serie_a_output_type,
-                            :label => false,
-                            :as => :select,
-                            :collection => output_type_collection,
-                            :input_html => { :class => 'mdl-textfield__input form-control' },
-                            include_blank: false %>
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :serie_a_output_type,
+                                :label => false,
+                                :as => :select,
+                                :collection => output_type_collection,
+                                :input_html => { :class => 'inline_attr mdl-textfield__input form-control' },
+                                include_blank: false %>
+                    <label  class="mdl-textfield__label" for="output_type"><%= "Serie A : #{I18n.t('output_type')}"  %></label>
+                </div>
               </div>
             </div>
-
 
             <!-- SERIE B -->
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.association :serie_b_kpi, label: false, collection: @current_organization.kpis, prompt: "Choisir une configuration", include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <%= f.association :serie_b_kpi, label: false, collection: @current_organization.kpis, prompt: I18n.t(:choose_indicator),
+                                    include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
                   <label class="mdl-textfield__label" for="module_project"><%= "Serie B" %></label>
                 </div>
               </div>
 
               <div class="col-6 select-estimancy">
-                <label for="output_type" class="label-estimancy"><%= "Serie B : #{I18n.t('output_type')}"  %></label>
-                <%= f.input :serie_b_output_type,
-                            :label => false,
-                            :as => :select,
-                            :collection => output_type_collection,
-                            :input_html => { :class => 'mdl-textfield__input form-control' },
-                            include_blank: true %>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="output_type"><%= "Serie B : #{I18n.t('output_type')}" %></label>
+                    <%= f.input :serie_b_output_type,
+                                :label => false,
+                                :as => :select,
+                                :collection => output_type_collection,
+                                :input_html => { :class => 'inline_attr mdl-textfield__input form-control' },
+                                include_blank: true %>
+                </div>
               </div>
             </div>
 
@@ -85,19 +86,22 @@
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.association :serie_c_kpi, label: false, collection: @current_organization.kpis, prompt: "Choisir une configuration", include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <%= f.association :serie_c_kpi, label: false, collection: @current_organization.kpis, prompt: I18n.t(:choose_indicator),
+                                    include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
                   <label class="mdl-textfield__label" for="module_project"><%= "Serie C" %></label>
                 </div>
               </div>
 
               <div class="col-6 select-estimancy">
-                <label for="output_type" class="label-estimancy"><%= "Serie C : #{I18n.t('output_type')}"  %></label>
-                <%= f.input :serie_c_output_type,
-                            :label => false,
-                            :as => :select,
-                            :collection => output_type_collection,
-                            :input_html => { :class => 'mdl-textfield__input form-control' },
-                            include_blank: true %>
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="output_type"><%= "Serie C : #{I18n.t('output_type')}"  %></label>
+                    <%= f.input :serie_c_output_type,
+                                :label => false,
+                                :as => :select,
+                                :collection => output_type_collection,
+                                :input_html => { :class => 'mdl-textfield__input form-control' },
+                                include_blank: true %>
+                </div>
               </div>
             </div>
 
@@ -106,19 +110,35 @@
             <div class="form-row">
               <div class="col-6">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                  <%= f.association :serie_d_kpi, label: false, collection: @current_organization.kpis, prompt: "Choisir une configuration", include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <%= f.association :serie_d_kpi, label: false, collection: @current_organization.kpis, prompt: I18n.t(:choose_indicator), include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
                   <label class="mdl-textfield__label" for="module_project"><%= "Serie D" %></label>
                 </div>
               </div>
 
               <div class="col-6 select-estimancy">
-                <label for="output_type" class="label-estimancy"><%= "Serie D : #{I18n.t('output_type')}"  %></label>
-                <%= f.input :serie_d_output_type,
-                            :label => false,
-                            :as => :select,
-                            :collection => output_type_collection,
-                            :input_html => { :class => 'mdl-textfield__input form-control' },
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="output_type"><%= "Serie D : #{I18n.t('output_type')}"  %></label>
+                    <%= f.input :serie_d_output_type,
+                                :label => false,
+                                :as => :select,
+                                :collection => output_type_collection,
+                                :input_html => { :class => 'mdl-textfield__input form-control' },
                             include_blank: true %>
+                </div>
+              </div>
+            </div>
+
+            <!-- Fin de serie -->
+            <div class="form-row">
+              <div class="col-8">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :end_of_series, label: false,
+                              collection: [[I18n.t(:end_of_series), "end_of_series"], [I18n.t(:project_date_included), "project_date_included"], [I18n.t(:project_date_not_included), "project_date_not_included"],  ["Date du jour", "current_date"]],
+                              include_blank: false, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <label class="mdl-textfield__label" for="module_project">
+                    <%= I18n.t(:end_of_series) %>
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -138,9 +158,6 @@
                 </div>
               </div>
             </div>
-
-            <!-- FIN TEST -->
-
 
             <div class="form-row">
               <div class="col-6">
