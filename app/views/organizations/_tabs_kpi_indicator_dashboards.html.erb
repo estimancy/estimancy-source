@@ -6,6 +6,8 @@
     <thead>
     <tr>
       <th><%= I18n.t(:name) %></th>
+      <th><%= I18n.t(:is_default_dashboard) %></th>
+      <th><%= I18n.t(:show_name_description) %></th>
       <th><%= I18n.t(:description) %></th>
 
       <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
@@ -17,12 +19,22 @@
         <tr>
           <!--<td><%#= check_box_tag "selected_kpi_configuration[#{productivity.id}]", nil, productivity.is_selected? %></td>-->
 
-          <td><%= dashboard.name %></td>
+
+          <td>
+            <% dashboard_name =  dashboard.name %>
+            <%= link_to dashboard_name, organization_global_kpis_path(@organization,
+                                                                      is_a_dashboard: true,
+                                                                      partial_name: "tabs_dashboard_" + dashboard_name ,
+                                                                      item_title: dashboard_name,
+                                                                      anchor: "tabs-#{dashboard_name}") %></td>
+
+          <td class="center"><%= check_box_tag "is_default_dashboard", dashboard.is_default_dashboard, dashboard.is_default_dashboard, disabled: true %></td>
+          <td class="center"><%= check_box_tag "show_name_description", dashboard.show_name_description, dashboard.show_name_description, disabled: true %></td>
+
           <td><%= dashboard.description %></td>
 
           <td class="align-center">
             <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_indicator_dashboard_path(@organization, dashboard), class: "material-icons", :title => I18n.t('edit') %>
-            <%= link_to raw("<i class='material-icons'>dashboard</i>"), organization_indicator_dashboard_path(@organization, dashboard), class: "material-icons", :title => I18n.t('show') %>
             <%= link_to raw("<i class='material-icons'>delete</i>"), organization_indicator_dashboard_path(@organization, dashboard), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
           </td>
         </tr>

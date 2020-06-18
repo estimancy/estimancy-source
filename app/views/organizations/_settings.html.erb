@@ -81,9 +81,11 @@
           <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_select_columns_list', item_title: 'select_columns_list', anchor: 'tabs-select-columns-list') %>"><span><%= I18n.t("select_columns_list") %></span></a>
         </li>
 
-        <li class="nav-item">
-          <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators') %>"><span><%= I18n.t("indicators") %></span></a>
-        </li>
+        <% if @current_organization.activate_indicators_dashboard? || @current_organization.activate_project_dashboard_indicators? %>
+            <li class="nav-item">
+              <a class="nav-link group" href="<%= organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators') %>"><span><%= I18n.t("indicators") %></span></a>
+            </li>
+        <% end %>
       </ul>
     </div>
   </div>

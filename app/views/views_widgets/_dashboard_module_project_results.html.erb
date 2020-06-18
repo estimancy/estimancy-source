@@ -5,7 +5,9 @@
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons" >dashboard</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons" >text_fields</i></a>
           <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons" >exposure</i></a><!-- add_box -->
-          <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_organization_kpi_widget: true) %>" title="<%= I18n.t :label_add_new_productivity_kpi_widget %>"><i class="material-icons">show_chart</i></a>
+          <% if @project.organization.activate_project_dashboard_indicators? %>
+            <a data-remote="true" href="<%= main_app.new_views_widget_path(module_project_id: module_project.id, view_id: module_project.view_id, is_organization_kpi_widget: true) %>" title="<%= I18n.t :label_add_new_productivity_kpi_widget %>"><i class="material-icons">show_chart</i></a>
+          <% end %>
       <% end %>
     </div>
   </div>
@@ -36,8 +38,13 @@
               <% @data_widget_hash[view_widget.name] = [view_widget, value_to_show] %>
 
           <% elsif view_widget.is_organization_kpi_widget? %>
-              <% view_widget_data = get_organization_kpi_data_widget_value(view_widget.id, @project.id) %>
-              <% value_to_show = "#{view_widget_data[:value_to_show]} #{view_widget.kpi_unit}" rescue nil %>
+              <% view_widget_data = get_iwidget_value(view_widget, @project.organization) %>
+              <% value_to_show_tmp =  view_widget_data[:value_to_show] %>
+              <% begin %>
+                  <% value_to_show = value_to_show_tmp %>
+              <% rescue %>
+                  <% value_to_show = "-" %>
+              <% end %>
               <% @data_widget_hash[view_widget.name] = [view_widget, value_to_show] %>
 
           <% else %>
@@ -111,9 +118,18 @@
                       </div>
 
                       <div class="card-indicator-label'">
-                        <span class="<%= blink_value_class %>">
-                          <%= value.nil? ? '-' : value %>
-                        </span>
+                        <% if view_widget.is_organization_kpi_widget? %>
+                            <% value.each do |config_value| %>
+                              <span>
+                                <%= config_value.nil? ? '-' : config_value %>
+                              </span>
+                            <% end %>
+                        <% else %>
+                          <span>
+                            <%= value.nil? ? '-' : value %>
+                          </span>
+                        <% end %>
+
                         <% if can?(:alter_estimation_plan, @project) || can?(:manage_estimation_widgets, @project) %>
                             <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_views_widget_path(view_widget, module_project_id: current_module_project.id, view_id: current_module_project.view_id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => view_widget.name), remote: true %>
                             <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.views_widget_path(view_widget), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>

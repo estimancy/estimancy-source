@@ -1,4 +1,5 @@
 class KpisController < ApplicationController
+
   def new
     set_page_title I18n.t(:new_kpi)
     @kpi = Kpi.new
@@ -29,6 +30,9 @@ class KpisController < ApplicationController
     set_page_title I18n.t(:new_kpi)
     #set_breadcrumbs I18n.t(:kpis) => organization_setting_path(@organization, anchor: "tabs-kpi"), I18n.t('new_kpi') => ""
 
+    @kpi.start_date = @kpi.start_date.beginning_of_day rescue nil
+    @kpi.end_date = @kpi.end_date.end_of_day rescue nil
+
     if @kpi.save
       #redirect_to organization_global_kpis_path(@organization, partial_name: "tabs_kpi_productivity")
       redirect_to organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators')
@@ -47,6 +51,11 @@ class KpisController < ApplicationController
     #set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", "#{@organization.to_s} / #{I18n.t(:kpis)} / #{@kpi.to_s}" => edit_organization_path(@organization)
 
     if @kpi.update_attributes(params[:kpi])
+
+      start_date = @kpi.start_date.beginning_of_day rescue nil
+      end_date = @kpi.end_date.end_of_day rescue nil
+      @kpi.update_attributes(start_date: start_date, end_date: end_date)
+
       flash[:notice] =  "#{I18n.t (:notice_kpi_successful_updated)}"
       #redirect_to organization_global_kpis_path(@organization, partial_name: "tabs_kpi_productivity")
       redirect_to organization_setting_path(@organization, partial_name: 'tabs_indicators', item_title: I18n.t('indicators'), anchor: 'tabs-indicators')

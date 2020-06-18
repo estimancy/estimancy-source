@@ -215,8 +215,8 @@ class ViewsWidgetsController < ApplicationController
     # end
     #
 
-    @views_widget.min_value = params[:views_widget][:min_value]
-    @views_widget.max_value = params[:views_widget][:max_value]
+    @views_widget.min_value = params[:views_widget][:min_value].blank? ? nil : params[:views_widget][:min_value].to_f
+    @views_widget.max_value = params[:views_widget][:max_value].blank? ? nil : params[:views_widget][:max_value].to_f
 
     if params[:views_widget][:is_kpi_widget].present?
       equation = Hash.new
@@ -246,6 +246,7 @@ class ViewsWidgetsController < ApplicationController
       @views_widget.is_project_data_widget = true
     end
 
+    #is_organization_kpi_widget
     respond_to do |format|
       if @views_widget.save
         unless params["field"].blank?# && @views_widget.min_value < @views_widget.max_value
@@ -294,8 +295,8 @@ class ViewsWidgetsController < ApplicationController
     @views_widget = ViewsWidget.find(params[:id])
     @view_id = @views_widget.view_id
 
-    @views_widget.min_value = params[:views_widget][:min_value]
-    @views_widget.max_value = params[:views_widget][:max_value]
+    @views_widget.min_value = params[:views_widget][:min_value].blank? ? nil : params[:views_widget][:min_value].to_f
+    @views_widget.max_value = params[:views_widget][:max_value].blank? ? nil : params[:views_widget][:max_value].to_f
 
     project = @project
 

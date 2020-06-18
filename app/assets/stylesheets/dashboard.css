@@ -1378,8 +1378,8 @@ table.table_effort_per_phase th{
 
 
 .blink:before, .blink {
-    -webkit-animation: 2s linear infinite condemed_blink_effect; // pour Safari 4.0-8.0
-    animation: 2s linear infinite condemed_blink_effect;
+    -webkit-animation: 1s linear infinite condemed_blink_effect; // pour Safari 4.0-8.0
+    animation: 1s linear infinite condemed_blink_effect;
 
 }
 @-webkit-keyframes condemed_blink_effect {

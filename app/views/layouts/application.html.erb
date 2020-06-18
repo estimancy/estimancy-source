@@ -97,7 +97,11 @@
                 <a class="dropdown-item account-item" href="<%= main_app.organization_authorization_path(@current_organization) %>"><%= I18n.t(:permission) %></a>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_users_path(@current_organization) %>"><%= I18n.t(:users) %></a>
                 <a class="dropdown-item account-item" href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>"><%= I18n.t(:report) %></a>
-                <a class="dropdown-item account-item" href="<%= main_app.organization_global_kpis_path(@current_organization) %>" title="KPI"><%= I18n.t(:indicator_dashboards) %></a>
+
+                <% if @current_organization.activate_indicators_dashboard? %>
+                    <a class="dropdown-item account-item" href="<%= main_app.organization_global_kpis_path(@current_organization) %>" title="<%= I18n.t(:indicator_dashboards) %>"><%= I18n.t(:indicator_dashboards) %></a>
+                <% end %>
+
                 <div class="dropdown-divider"></div>
                 <h6 class="dropdown-header">Configuration</h6>
                 <a class="dropdown-item account-item" href="<%= main_app.edit_organization_path(@current_organization)%>" title="<%= I18n.t(:report) %>"><%= @current_organization %></a>

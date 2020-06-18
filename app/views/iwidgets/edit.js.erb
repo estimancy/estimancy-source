@@ -1,0 +1,56 @@
+$("#notifications").html("");
+
+<% if @iwidget.is_label_widget? %>
+    $(".modal-body-inner").html("<%= j render(:partial => "iwidgets/comment_form") %>");
+<% elsif @iwidget.is_calculation_widget? %>
+    $(".modal-body-inner").html("<%= j render(:partial => "iwidgets/calculation_form") %>");
+<% else %>
+    $(".modal-body-inner").html("<%= j render(:partial => "iwidgets/form") %>");
+<% end %>
+
+$("#myModalLabel").css('font-size', 'larger');
+$("#myModalLabel").html('<%= "#{@iwidget.indicator_dashboard.name} : #{I18n.t(:edit_widget, value: @iwidget.name)}" %>');
+
+$(".modal .modal-body").css("height", "auto");
+
+$("#edit_component").modal({
+    keyboard: false,
+    backdrop: false,
+});
+
+$("#iwidget_icon_class").change(function(){
+    if ($(this).val() !== ""){
+        $("#view_icon_class_image").removeClass();
+        $("#view_icon_class_image").addClass( $(this).val());
+        $("#view_icon_class_image").addClass( "icon-large blue" );
+    }
+    else{
+        $("#view_icon_class_image").removeClass();
+    }
+    return false;
+});
+
+$("#iwidget_indicator_dashboard_id").change(function() {
+    if ($(this).val() !== ""){
+        return $.ajax({
+            url: "/update_iwidget_output_type_data",
+            method: "GET",
+            data: "module_project_id=" + $(this).val()
+        });
+    }
+});
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");
+
+//$('input, textarea, select').each(function () {
+//    if($(this).attr('type') != "submit")
+//        $(this).addClass('custom_margin');
+//})
+
+$("form.edit_iwidget").each(function(){
+    $(this).find(':input').each(function () {
+        //if($(this).attr('type') != "submit")
+        $(this).addClass('custom_margin');
+    })
+});
+

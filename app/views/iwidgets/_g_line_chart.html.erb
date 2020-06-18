@@ -1,0 +1,33 @@
+<script type="text/javascript">
+    google.charts.load("current", {packages:['corechart']});
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+        var imported_data = <%= r_data.to_json.html_safe %>;
+        //alert(imported_data);
+        var data_array = google.visualization.arrayToDataTable(imported_data);
+        var view = new google.visualization.DataView(data_array);
+
+        var options = {
+            title: '<%#= "#{I18n.t(:productivity)}" %>',
+            curveType: 'function',
+            legend: { position: "bottom", alignment: 'start', orientation: 'horizontal' },
+            //colors: ['black', 'blue', 'red', 'green', 'yellow', 'gray'],
+
+            hAxis: {
+                title: '<%= iwidget.x_axis_label %> <%#= (kpi_config.selected_date == "created_at" ? I18n.t(:created_date) : I18n.t("#{kpi_config.selected_date}")) %>'
+            },
+            vAxis: {
+                minValue: 0,
+                title: '<%= iwidget.y_axis_label %>'
+            },
+
+            pointsVisible: true,
+
+            width: 600,
+            chartArea: { width: 500, left: 100 }
+        };
+        var chart = new google.visualization.LineChart(document.getElementById('<%= "curve_chart_#{iwidget.id}" %>'));
+        chart.draw(view, options);
+    }
+</script>
+<div id='<%= "curve_chart_#{iwidget.id}" %>' style="width: 700px; height: 400px;"></div>

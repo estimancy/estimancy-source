@@ -5679,7 +5679,32 @@ class OrganizationsController < ApplicationController
 
   def global_kpis
     @organization = Organization.find(params[:organization_id])
-    @organization_show_kpi_keys = @organization.show_kpi.keys
+
+    #@organization_show_kpi_keys = @organization.show_kpi.keys
+    @partial_name = params[:partial_name]
+    @item_title = params[:item_title]
+    @is_a_dashboard = params[:is_a_dashboard].to_s
+    @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "general_dashboard"]
+
+
+    if @organization.activate_indicators_dashboard?
+      if @partial_name.blank?
+        @default_dashboard = IndicatorDashboard.where(organization_id: @organization.id, is_default_dashboard: true).first
+        if @default_dashboard.nil?
+          @default_dashboard = IndicatorDashboard.where(organization_id: @organization.id).first
+        end
+        tab_name = @default_dashboard.name rescue nil
+        @partial_name = "tabs_kpi_#{tab_name}"
+        @item_title = tab_name
+      end
+    end
+  end
+
+
+  def global_kpis_to_delete
+    @organization = Organization.find(params[:organization_id])
+
+    #@organization_show_kpi_keys = @organization.show_kpi.keys
     @partial_name = params[:partial_name]
     @item_title = params[:item_title]
     @is_a_dashboard = params[:is_a_dashboard].to_s
@@ -5696,9 +5721,9 @@ class OrganizationsController < ApplicationController
     # @work_element_types = @organization.work_element_types
 
 
-    unless @organization_show_kpi_keys.blank?
+    if @organization.activate_indicators_dashboard?
       if @partial_name.blank?
-        tab_name = @organization_show_kpi_keys.first
+        tab_name = "quote_creation_duration_kpi"
         @partial_name = "tabs_kpi_#{tab_name}"
       end
 
@@ -5896,22 +5921,657 @@ class OrganizationsController < ApplicationController
           kpi_config = []
           kpi_config = projects_productivity_indicators(@organization.id, kpi_id)
           @productivity_indicators["#{kpi_id}"] = kpi_config
-
-          # config_for_graph = "#{kpi.name} >>"
-          # application = "  " + "#{I18n.t(:application)}: #{kpi.application.name}" rescue ""
-          # project_area = "  -  " +  "#{I18n.t(:project_area)}: #{kpi.project_area.name}" rescue ""
-          # project_category = "  -  " +  "#{I18n.t(:project_category)}: #{kpi.project_category.name}" rescue ""
-          # acquisition_category = "  -  " + "#{I18n.t(:acquisition_category)}: #{kpi.acquisition_category.name}" rescue ""
-          # platform_category = "  -  " + "#{I18n.t(:platform_category)}: #{kpi.platform_category.name}" rescue ""
-          # provider = "  -  " + "#{I18n.t(:provider)}: #{kpi.provider.name}" rescue ""
-          #
-          # @config_for_graph_label["#{kpi_id}"] = config_for_graph + application + project_area + project_category + acquisition_category + platform_category + provider
         end
       end
     end
 
     #@productivity_indicators = projects_productivity_indicators(@current_organization.id, kpi_config_id)
     @productivity_indicators
+  end
+
+
+  #================================
+
+  # Retourne la liste des projets concernés en fonctions des filtes définis dans l'indicateur
+  def get_projects_with_indicator_filters(organization_id, kpi_config_id)
+  end
+
+
+  def indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, by_x_axis_values, y_axis_config, kpi_coefficient)
+
+    calculation_output = Array.new
+
+    by_x_axis_values.each do |key, project_records|
+      nb_projects = project_records.size
+      projects_values = Array.new
+      indicator_values = Array.new
+
+      project_records.each do |project|
+        project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
+        if project_field
+          value = project_field.value.to_f/kpi_coefficient
+        else
+          value = 0
+        end
+
+        projects_values << value
+        indicator_values << { project_id: project.id,
+                           #"#{x_axis_config}": "#{key}",
+                           selected_date: "#{key}",
+                           field_value: value.round(2),
+                           project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
+                           kpi_unit: kpi_config.kpi_unit
+        }
+      end
+
+      case y_axis_config.to_s
+
+        when "minimum"
+          #@calculation_output = @projects_values.min
+          #@calculation_output = indicator_values.group_by { |x| x[:field_value] }.min.last
+          calculation_output << indicator_values.min_by{|k| k[:field_value] }
+
+        when "maximum"
+          #@calculation_output = @projects_values.max
+          #@calculation_output = indicator_values.group_by { |x| x[:field_value] }.max.last
+          calculation_output << indicator_values.max_by{|k| k[:field_value] }
+
+        when "average"
+          average = (projects_values.sum / nb_projects) rescue 0
+          ###average = indicator_values.group_by { |x| x[:field_value] }.sum / nb_projects
+          calculation_output << { project_id: "",
+                                  #"#{x_axis_config}": "#{key}",
+                                  selected_date: "#{key}",
+                                  field_value: average.round(2),
+                                  project_label: "",
+                                  kpi_unit: kpi_config.kpi_unit
+          }
+        when "median"
+          #@calculation_output = @projects_values.median
+          sorted = projects_values.sort
+          m_pos = nb_projects / 2
+          median = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
+          #median = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
+          calculation_output << { project_id: "",
+                                  #"#{x_axis_config}": "#{key}",
+                                  selected_date: "#{key}",
+                                  field_value: median.round(2),
+                                  project_label: "",
+                                  kpi_unit: kpi_config.kpi_unit
+          }
+
+        when "sum"
+          #@calculation_output = @projects_values.sum
+          sum = projects_values.sum
+          calculation_output << { project_id: "",
+                                  #"#{x_axis_config}": "#{key}",
+                                  selected_date: "#{key}",
+                                  field_value: sum.round(2),
+                                  project_label: "",
+                                  kpi_unit: kpi_config.kpi_unit
+          }
+
+        when "counter"
+          counter = nb_projects
+          calculation_output << { project_id: "",
+                                  #"#{x_axis_config}": "#{key}",
+                                  selected_date: "#{key}",
+                                  field_value: counter,
+                                  project_label: "",
+                                  kpi_unit: kpi_config.kpi_unit
+          }
+
+        #else
+      end
+
+    end
+
+    calculation_output
+  end
+
+
+  # Retourne la liste des projets concernés en fonctions de la config de l'axe des X définis dans l'indicateur
+  def get_projects_with_indicator_x_axis_config(organization, kpi_config, projects, field_id, selected_date, kpi_coefficient, x_axis_config, y_axis_config)
+    #["date_detail", "date_week", "date_month", "date_trimester", "date_semester", "date_year"]
+    #["original_model", "estimation_status", "application", "project_area", "project_category", "acquisition_category", "platform_category", "provider"]
+
+    x_axis_output = []
+    x_y_axis_outputs = []
+    projects_values = []
+    x_axis_hash = Hash.new
+
+    case x_axis_config.to_s
+
+      when "date_detail"
+
+        projects.each do |project|
+          project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
+          if project_field
+            value = project_field.value.to_f/kpi_coefficient
+          else
+            value = 0
+          end
+
+          projects_values << value
+          x_y_axis_outputs << { project_id: project.id,
+                             selected_date: I18n.l(project.send("#{selected_date}").to_date),
+                             field_value: value.round(2),
+                             project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
+                             kpi_unit: kpi_config.kpi_unit
+          }
+        end
+
+      when "date_week"
+
+        dates = Project.where(organization_id: 63).pluck("distinct date(created_at)")
+        dates.group_by(&:year).map do |y, items|
+          [y, items.group_by(&:month).map { |m, days| [m, days.map(&:day)] }.to_h]
+        end.to_h
+
+        projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").beginning_of_week] }
+        x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
+
+
+      when "date_month"
+        #projects.group_by { |m| m.send("#{selected_date}").beginning_of_month }
+        projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").month] }
+        x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
+
+      when "date_trimester"
+
+
+      when "date_semester"
+        projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, (((p.send("#{selected_date}").month - 1) / 6) +1).floor ] }
+        x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
+
+      when "date_year"
+        projects_by_x_axis_config = projects.group_by{ |p| p.send("#{selected_date}").year }
+        x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
+
+
+      when "application", "original_model", "estimation_status", "project_area", "project_category", "acquisition_category", "platform_category", "provider"
+
+        projects_by_x_axis_config = projects.group_by(&:"#{x_axis_config.to_s}")
+        x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
+
+      # when "estimation_model"
+      # when "estimation_status"
+      # when "project_area"
+      # when "project_category"
+      # when "acquisition_category"
+      # when "platform_category"
+      # when "provider"
+      else
+    end
+
+    x_y_axis_outputs
+  end
+
+
+
+  #Obtenir les valeurs brutes sans formatage (Iwidget)
+  # Version qui prend en compte les limites de series dans les vignettes projet
+  # Avec les config de l'axe des X et des Y
+  def get_indicators_dashboard_kpi_values(organization_id, kpi_config_id, is_project_widget=false)
+    organization = Organization.find(organization_id)
+    @res_graphic = []
+    @projects_values = []
+    indicator_values = Array.new
+    @calculation_output = Array.new
+
+
+    #on récupère les elements de la vue non historisés
+    @projects = organization.organization_estimations.where(is_model: [nil, false])
+
+    if kpi_config_id.blank?
+      @projects = organization.projects
+      kpi_config = Kpi.where(organization_id: organization_id).first
+    else
+      kpi_config = Kpi.where(organization_id: organization_id, id: kpi_config_id).first
+    end
+
+    if kpi_config
+      estimation_model_id = kpi_config.estimation_model_id
+      application_id = kpi_config.application_id
+      project_area_id = kpi_config.project_area_id
+      project_category_id = kpi_config.project_category_id
+      acquisition_category_id = kpi_config.acquisition_category_id
+      platform_category_id = kpi_config.platform_category_id
+      provider_id = kpi_config.provider_id
+      estimation_status_ids = kpi_config.estimation_statuses.map(&:id)
+      field_id = kpi_config.field_id
+      output_type = kpi_config.output_type #(Min, Max, Moyenne, Mediane, Graphique)
+      nb_last_projects = kpi_config.nb_last_projects
+      include_historized = kpi_config.include_historized
+      project_versions = kpi_config.project_versions
+      selected_date = kpi_config.selected_date || "start_date"
+      start_date = kpi_config.start_date
+      end_date = kpi_config.end_date || Time.now.to_date
+      kpi_coefficient = kpi_config.kpi_coefficient.to_f
+      if kpi_coefficient.blank? || kpi_coefficient == 0
+        kpi_coefficient = 1
+      end
+
+      x_axis_config = kpi_config.x_axis_config
+      y_axis_config = kpi_config.y_axis_config
+
+
+      #Inclure ou pas les historisés
+      if include_historized == true
+        @projects = @projects = organization.projects.where(is_model: [nil, false])
+      end
+
+      # start_date
+      unless start_date.blank?
+        @projects = @projects.where("#{selected_date} >= ?", start_date)
+      end
+
+      #end_date
+      unless end_date.blank?
+        @projects = @projects.where("#{selected_date} <= ?", end_date)
+      end
+
+      #Modele
+      unless estimation_model_id.blank?
+        @projects = @projects.where(original_model_id: estimation_model_id)
+      end
+
+      #statuts
+      unless estimation_status_ids.size <= 0
+        @projects = @projects.where(estimation_status_id: estimation_status_ids)
+      end
+
+      config_for_graph = "#{kpi_config.name} >>"
+      unless application_id.blank?
+        @projects = @projects.where(application_id: application_id)
+        application = organization.applications.where(id: application_id).first
+        config_for_graph = config_for_graph + "  " + "#{I18n.t(:application)}: #{application.name}"
+      end
+
+      unless project_area_id.blank?
+        @projects = @projects.where(project_area_id: project_area_id)
+        project_area = organization.project_areas.where(id: project_area_id).first
+        config_for_graph = config_for_graph + "  -  " +  "#{I18n.t(:project_area)}: #{project_area.name}"
+      end
+
+      unless project_category_id.blank?
+        @projects = @projects.where(project_category_id: project_category_id)
+        project_category = organization.project_categories.where(id: project_category_id).first
+        config_for_graph = config_for_graph + "  -  " +  "#{I18n.t(:project_category)}: #{project_category.name}"
+      end
+
+      unless acquisition_category_id.blank?
+        @projects = @projects.where(acquisition_category_id: acquisition_category_id)
+        acquisition_category = organization.acquisition_categories.where(id: acquisition_category_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:acquisition_category)}: #{acquisition_category.name}"
+      end
+
+      unless platform_category_id.blank?
+        @projects = @projects.where(platform_category_id: platform_category_id)
+        platform_category = organization.platform_categories.where(id: platform_category_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:platform_category)}: #{platform_category.name}"
+      end
+
+      unless provider_id.blank?
+        @projects = @projects.where(provider_id: provider_id)
+        provider = organization.providers.where(id: provider_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:provider)}: #{provider.name}"
+      end
+
+      #@res_graphic << ["#{I18n.t(:productivity)} : #{kpi_config.name}", "#{config_for_graph}"]
+      @res_graphic << [I18n.t("#{selected_date}"), "#{config_for_graph}", { role: 'tooltip' } ]
+
+      # ordonner par ordre plus récents
+      if nb_last_projects.blank?
+        @projects = @projects.reorder("#{selected_date} asc")
+        nb_projects = @projects.all.size
+      else
+        @projects = @projects.reorder("#{selected_date} asc").last(nb_last_projects.to_i)
+        nb_projects = @projects.size
+      end
+
+      unless field_id.nil?
+
+        # lorsqu'on prend que les dernière versions
+        if project_versions.to_s == "last_version"
+          projects_to_keep = []
+          @projects.each do |project|
+            if project.is_childless?
+              projects_to_keep << project.id
+            end
+          end
+
+          @projects = @projects.where.not(id: projects_to_keep)
+        end
+
+
+        # On récupère les Données projets
+        @projects.each do |project|
+          project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
+          if project_field
+            value = project_field.value.to_f/kpi_coefficient
+          else
+            value = 0
+          end
+
+          @projects_values << value
+          indicator_values << { project_id: project.id,
+                                selected_date: I18n.l(project.send("#{selected_date}").to_date),
+                                field_value: value.round(2),
+                                project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
+                                kpi_unit: kpi_config.kpi_unit
+          }
+        end
+
+
+        #Mode de calcul
+        #["date_detail", "date_week", "date_month", "date_trimester", "date_semester", "date_year"]
+        #["estimation_model", "estimation_status", "application", "project_area", "project_category", "acquisition_category", "platform_category", "provider"]
+
+        if output_type.to_s == "serie" || output_type.to_s == "graphic"
+
+          x_y_axis_config_values = get_projects_with_indicator_x_axis_config(organization, kpi_config, @projects, field_id, selected_date, kpi_coefficient, x_axis_config, y_axis_config)
+
+          @calculation_output = x_y_axis_config_values
+
+        else
+
+          case output_type.to_s
+            when "minimum"
+              #@calculation_output = @projects_values.min
+              #@calculation_output = indicator_values.group_by { |x| x[:field_value] }.min.last
+              @calculation_output << indicator_values.min_by{|k| k[:field_value] }
+
+            when "maximum"
+              #@calculation_output = @projects_values.max
+              #@calculation_output = indicator_values.group_by { |x| x[:field_value] }.max.last
+              @calculation_output << indicator_values.max_by{|k| k[:field_value] }
+
+            when "average"
+              average = @projects_values.sum / nb_projects
+              ###average = indicator_values.group_by { |x| x[:field_value] }.sum / nb_projects
+              @calculation_output << { project_id: "",
+                                       selected_date: I18n.l(end_date.to_date),
+                                       field_value: average.round(2),
+                                       project_label: "",
+                                       kpi_unit: kpi_config.kpi_unit
+              }
+            when "median"
+              #@calculation_output = @projects_values.median
+              sorted = @projects_values.sort
+              m_pos = nb_projects / 2
+              median = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
+              #median = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
+              @calculation_output << { project_id: "",
+                                       selected_date: I18n.l(end_date.to_date),
+                                       field_value: median.round(2),
+                                       project_label: "",
+                                       kpi_unit: kpi_config.kpi_unit
+              }
+
+            when "sum"
+              #@calculation_output = @projects_values.sum
+              sum = @projects_values.sum
+              @calculation_output << { project_id: "",
+                                       selected_date: I18n.l(end_date.to_date),
+                                       field_value: sum.round(2),
+                                       project_label: "",
+                                       kpi_unit: kpi_config.kpi_unit
+              }
+
+            when "counter"
+              #@calculation_output = nb_projects
+              counter = nb_projects
+              @calculation_output << { project_id: "",
+                                       selected_date: I18n.l(end_date.to_date),
+                                       field_value: counter,
+                                       project_label: "",
+                                       kpi_unit: kpi_config.kpi_unit
+              }
+
+            # when "graphic", "serie"
+            #   #@res << ["Projet 123", 200]
+            #   #@calculation_output = render :partial => 'organizations/g_productivity_indicators', :locals => { :r_data => @res_graphic }
+            #   @calculation_output = indicator_values #@res_graphic
+            else
+          end
+        end
+
+      end
+    end
+
+    @calculation_output
+  end
+
+
+  #================================
+
+
+  #Obtenir les valeurs brutes sans formatage (Iwidget)
+  def get_indicators_dashboard_kpi_values_first_version(organization_id, kpi_config_id)
+    organization = Organization.find(organization_id)
+    @res_graphic = []
+    @projects_values = []
+    indicator_values = Array.new
+    @calculation_output = Array.new
+
+
+    #on récupère les elements de la vue non historisés
+    @projects = organization.organization_estimations.where(is_model: [nil, false])
+
+    if kpi_config_id.blank?
+      @projects = organization.projects
+      kpi_config = Kpi.where(organization_id: organization_id).first
+    else
+      kpi_config = Kpi.where(organization_id: organization_id, id: kpi_config_id).first
+    end
+
+    if kpi_config
+      estimation_model_id = kpi_config.estimation_model_id
+      application_id = kpi_config.application_id
+      project_area_id = kpi_config.project_area_id
+      project_category_id = kpi_config.project_category_id
+      acquisition_category_id = kpi_config.acquisition_category_id
+      platform_category_id = kpi_config.platform_category_id
+      provider_id = kpi_config.provider_id
+      estimation_status_ids = kpi_config.estimation_statuses.map(&:id)
+      field_id = kpi_config.field_id
+      output_type = kpi_config.output_type #(Min, Max, Moyenne, Mediane, Graphique)
+      nb_last_projects = kpi_config.nb_last_projects
+      include_historized = kpi_config.include_historized
+      project_versions = kpi_config.project_versions
+      selected_date = kpi_config.selected_date || "start_date"
+      start_date = kpi_config.start_date
+      end_date = kpi_config.end_date || Time.now.to_date
+      kpi_coefficient = kpi_config.kpi_coefficient.to_f
+      if kpi_coefficient.blank? || kpi_coefficient == 0
+        kpi_coefficient = 1
+      end
+
+      #Inclure ou pas les historisés
+      if include_historized == true
+        @projects = @projects = organization.projects.where(is_model: [nil, false])
+      end
+
+      # start_date
+      unless start_date.blank?
+        @projects = @projects.where("#{selected_date} >= ?", start_date)
+      end
+
+      #end_date
+      unless end_date.blank?
+        @projects = @projects.where("#{selected_date} <= ?", end_date)
+      end
+
+      #Modele
+      unless estimation_model_id.blank?
+        @projects = @projects.where(original_model_id: estimation_model_id)
+      end
+
+      #statuts
+      unless estimation_status_ids.size <= 0
+        @projects = @projects.where(estimation_status_id: estimation_status_ids)
+      end
+
+      config_for_graph = "#{kpi_config.name} >>"
+      unless application_id.blank?
+        @projects = @projects.where(application_id: application_id)
+        application = organization.applications.where(id: application_id).first
+        config_for_graph = config_for_graph + "  " + "#{I18n.t(:application)}: #{application.name}"
+      end
+
+      unless project_area_id.blank?
+        @projects = @projects.where(project_area_id: project_area_id)
+        project_area = organization.project_areas.where(id: project_area_id).first
+        config_for_graph = config_for_graph + "  -  " +  "#{I18n.t(:project_area)}: #{project_area.name}"
+      end
+
+      unless project_category_id.blank?
+        @projects = @projects.where(project_category_id: project_category_id)
+        project_category = organization.project_categories.where(id: project_category_id).first
+        config_for_graph = config_for_graph + "  -  " +  "#{I18n.t(:project_category)}: #{project_category.name}"
+      end
+
+      unless acquisition_category_id.blank?
+        @projects = @projects.where(acquisition_category_id: acquisition_category_id)
+        acquisition_category = organization.acquisition_categories.where(id: acquisition_category_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:acquisition_category)}: #{acquisition_category.name}"
+      end
+
+      unless platform_category_id.blank?
+        @projects = @projects.where(platform_category_id: platform_category_id)
+        platform_category = organization.platform_categories.where(id: platform_category_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:platform_category)}: #{platform_category.name}"
+      end
+
+      unless provider_id.blank?
+        @projects = @projects.where(provider_id: provider_id)
+        provider = organization.providers.where(id: provider_id).first
+        config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:provider)}: #{provider.name}"
+      end
+
+      #@res_graphic << ["#{I18n.t(:productivity)} : #{kpi_config.name}", "#{config_for_graph}"]
+      @res_graphic << [I18n.t("#{selected_date}"), "#{config_for_graph}", { role: 'tooltip' } ]
+
+      # ordonner par ordre plus récents
+      if nb_last_projects.blank?
+        @projects = @projects.reorder("#{selected_date} asc")
+        nb_projects = @projects.all.size
+      else
+        @projects = @projects.reorder("#{selected_date} asc").last(nb_last_projects.to_i)
+        nb_projects = @projects.size
+      end
+
+      unless field_id.nil?
+        if project_versions.to_s == "last_version"
+
+          @projects.each do |project|
+            if project.is_childless?
+              project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
+              if project_field
+                value = project_field.value.to_f/kpi_coefficient
+              else
+                value = 0
+              end
+
+              @projects_values << value
+              #@res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+              #@res_graphic << [I18n.l(project.send("#{selected_date}").to_date), value, "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}"]
+
+              indicator_values << { project_id: project.id,
+                                    selected_date: I18n.l(project.send("#{selected_date}").to_date),
+                                    field_value: value.round(2),
+                                    project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}"
+              }
+            end
+          end
+
+        else
+          @projects.each do |project|
+            project_field = ProjectField.where(project_id: project.id, field_id: field_id).first
+            if project_field
+              value = project_field.value.to_f/kpi_coefficient
+            else
+              value = 0
+            end
+
+            @projects_values << value
+            #@res_graphic << [I18n.l(project.start_date.to_date), value, "#{project.to_s} : #{value} (#{kpi_config.kpi_unit}) "]
+            #@res_graphic << [I18n.l(project.send("#{selected_date}").to_date), value, "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit} "]
+
+            indicator_values << { project_id: project.id,
+                                  selected_date: I18n.l(project.send("#{selected_date}").to_date),
+                                  field_value: value.round(2),
+                                  project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
+                                  kpi_unit: kpi_config.kpi_unit
+            }
+          end
+        end
+
+        #Mode de calcul
+        case output_type.to_s
+          when "minimum"
+            #@calculation_output = @projects_values.min
+            #@calculation_output = indicator_values.group_by { |x| x[:field_value] }.min.last
+            @calculation_output << indicator_values.min_by{|k| k[:field_value] }
+
+          when "maximum"
+            #@calculation_output = @projects_values.max
+            #@calculation_output = indicator_values.group_by { |x| x[:field_value] }.max.last
+            @calculation_output << indicator_values.max_by{|k| k[:field_value] }
+
+          when "average"
+            average = @projects_values.sum / nb_projects
+            ###average = indicator_values.group_by { |x| x[:field_value] }.sum / nb_projects
+            @calculation_output << { project_id: "",
+                                    selected_date: I18n.l(end_date.to_date),
+                                    field_value: average.round(2),
+                                    project_label: "",
+                                    kpi_unit: kpi_config.kpi_unit
+                                    }
+          when "median"
+            #@calculation_output = @projects_values.median
+            sorted = @projects_values.sort
+            m_pos = nb_projects / 2
+            median = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
+            #median = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
+            @calculation_output << { project_id: "",
+                                    selected_date: I18n.l(end_date.to_date),
+                                    field_value: median.round(2),
+                                    project_label: "",
+                                    kpi_unit: kpi_config.kpi_unit
+            }
+
+          when "sum"
+            #@calculation_output = @projects_values.sum
+            sum = @projects_values.sum
+            @calculation_output << { project_id: "",
+                                    selected_date: I18n.l(end_date.to_date),
+                                    field_value: sum.round(2),
+                                    project_label: "",
+                                    kpi_unit: kpi_config.kpi_unit
+            }
+
+          when "counter"
+            #@calculation_output = nb_projects
+            counter = nb_projects
+            @calculation_output << { project_id: "",
+                                    selected_date: I18n.l(end_date.to_date),
+                                    field_value: counter,
+                                    project_label: "",
+                                    kpi_unit: kpi_config.kpi_unit
+            }
+
+          when "graphic", "serie"
+            #@res << ["Projet 123", 200]
+            #@calculation_output = render :partial => 'organizations/g_productivity_indicators', :locals => { :r_data => @res_graphic }
+            @calculation_output = indicator_values #@res_graphic
+          else
+        end
+      end
+    end
+
+    @calculation_output
   end
 
 
@@ -5929,7 +6589,7 @@ class OrganizationsController < ApplicationController
 
     if kpi_config_id.blank?
       @projects = organization.projects
-      kpi_config = Kpi.where(organization_id: organization_id, kpi_type: "Productivity").first
+      kpi_config = Kpi.where(organization_id: organization_id).first
     else
       kpi_config = Kpi.where(organization_id: organization_id, id: kpi_config_id).first
     end
@@ -6077,8 +6737,9 @@ class OrganizationsController < ApplicationController
           when "median"
             #@calculation_output = @projects_values.median
             sorted = @projects_values.sort
-            len = sorted.length
-            @calculation_output = (sorted[(len - 1) / 2] + sorted[len / 2]) / 2.0
+            m_pos = nb_projects / 2
+            #@calculation_output = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
+            @calculation_output = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
 
           when "sum"
             @calculation_output = @projects_values.sum

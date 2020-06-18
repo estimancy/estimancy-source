@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200519084724) do
+ActiveRecord::Schema.define(version: 20200612104427) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1188,11 +1188,13 @@ ActiveRecord::Schema.define(version: 20200519084724) do
   end
 
   create_table "indicator_dashboards", force: :cascade do |t|
-    t.integer  "organization_id", limit: 4
-    t.string   "name",            limit: 255
-    t.text     "description",     limit: 65535
-    t.datetime "created_at",                    null: false
-    t.datetime "updated_at",                    null: false
+    t.integer  "organization_id",       limit: 4
+    t.string   "name",                  limit: 255
+    t.text     "description",           limit: 65535
+    t.datetime "created_at",                          null: false
+    t.datetime "updated_at",                          null: false
+    t.boolean  "show_name_description"
+    t.boolean  "is_default_dashboard"
   end
 
   create_table "input_cocomos", force: :cascade do |t|
@@ -1205,6 +1207,37 @@ ActiveRecord::Schema.define(version: 20200519084724) do
     t.datetime "created_at",                                   null: false
     t.datetime "updated_at",                                   null: false
     t.text     "notes",                          limit: 65535
+  end
+
+  create_table "iwidgets", force: :cascade do |t|
+    t.integer  "indicator_dashboard_id", limit: 4
+    t.string   "name",                   limit: 255
+    t.integer  "serie_a_kpi_id",         limit: 4
+    t.string   "serie_a_output_type",    limit: 255
+    t.integer  "serie_b_kpi_id",         limit: 4
+    t.string   "serie_b_output_type",    limit: 255
+    t.integer  "serie_c_kpi_id",         limit: 4
+    t.string   "serie_c_output_type",    limit: 255
+    t.integer  "serie_d_kpi_id",         limit: 4
+    t.string   "serie_d_output_type",    limit: 255
+    t.string   "icon_class",             limit: 255
+    t.string   "color",                  limit: 255
+    t.string   "position_x",             limit: 255
+    t.string   "position_y",             limit: 255
+    t.string   "width",                  limit: 255
+    t.string   "height",                 limit: 255
+    t.boolean  "is_label_widget"
+    t.text     "comment",                limit: 65535
+    t.boolean  "is_calculation_widget"
+    t.text     "equation",               limit: 65535
+    t.integer  "min_value",              limit: 4
+    t.integer  "max_value",              limit: 4
+    t.string   "validation_text",        limit: 255
+    t.boolean  "signalize"
+    t.string   "x_axis_label",           limit: 255
+    t.string   "y_axis_label",           limit: 255
+    t.datetime "created_at",                           null: false
+    t.datetime "updated_at",                           null: false
   end
 
   create_table "kb_kb_datas", force: :cascade do |t|
@@ -1287,9 +1320,11 @@ ActiveRecord::Schema.define(version: 20200519084724) do
     t.string   "height",                  limit: 255
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
-    t.date     "start_date"
-    t.date     "end_date"
+    t.datetime "start_date"
+    t.datetime "end_date"
     t.float    "kpi_coefficient",         limit: 24
+    t.string   "x_axis_config",           limit: 255
+    t.string   "y_axis_config",           limit: 255
   end
 
   create_table "labor_categories", force: :cascade do |t|
@@ -1638,41 +1673,43 @@ ActiveRecord::Schema.define(version: 20200519084724) do
   add_index "organization_profiles_wbs_activities", ["wbs_activity_id", "organization_profile_id"], name: "wbs_activity_organization_profiles", using: :btree
 
   create_table "organizations", force: :cascade do |t|
-    t.string   "name",                            limit: 255
-    t.string   "headband_title",                  limit: 255
-    t.text     "description",                     limit: 65535
+    t.string   "name",                                  limit: 255
+    t.string   "headband_title",                        limit: 255
+    t.text     "description",                           limit: 65535
     t.datetime "created_at"
     t.datetime "updated_at"
-    t.float    "number_hours_per_day",            limit: 24
-    t.float    "number_hours_per_month",          limit: 24
-    t.integer  "currency_id",                     limit: 4
-    t.float    "cost_per_hour",                   limit: 24
-    t.float    "inflation_rate",                  limit: 24
-    t.integer  "limit1",                          limit: 4
-    t.integer  "limit2",                          limit: 4
-    t.integer  "limit3",                          limit: 4
-    t.integer  "copy_number",                     limit: 4,     default: 0
-    t.integer  "limit4",                          limit: 4
-    t.float    "limit1_coef",                     limit: 24
-    t.float    "limit2_coef",                     limit: 24
-    t.float    "limit3_coef",                     limit: 24
-    t.float    "limit4_coef",                     limit: 24
-    t.string   "limit1_unit",                     limit: 255
-    t.string   "limit2_unit",                     limit: 255
-    t.string   "limit3_unit",                     limit: 255
-    t.string   "limit4_unit",                     limit: 255
+    t.float    "number_hours_per_day",                  limit: 24
+    t.float    "number_hours_per_month",                limit: 24
+    t.integer  "currency_id",                           limit: 4
+    t.float    "cost_per_hour",                         limit: 24
+    t.float    "inflation_rate",                        limit: 24
+    t.integer  "limit1",                                limit: 4
+    t.integer  "limit2",                                limit: 4
+    t.integer  "limit3",                                limit: 4
+    t.integer  "copy_number",                           limit: 4,     default: 0
+    t.integer  "limit4",                                limit: 4
+    t.float    "limit1_coef",                           limit: 24
+    t.float    "limit2_coef",                           limit: 24
+    t.float    "limit3_coef",                           limit: 24
+    t.float    "limit4_coef",                           limit: 24
+    t.string   "limit1_unit",                           limit: 255
+    t.string   "limit2_unit",                           limit: 255
+    t.string   "limit3_unit",                           limit: 255
+    t.string   "limit4_unit",                           limit: 255
     t.boolean  "is_image_organization"
-    t.text     "project_selected_columns",        limit: 65535
-    t.integer  "estimations_counter",             limit: 4
-    t.text     "estimations_counter_history",     limit: 65535
+    t.text     "project_selected_columns",              limit: 65535
+    t.integer  "estimations_counter",                   limit: 4
+    t.text     "estimations_counter_history",           limit: 65535
     t.boolean  "copy_in_progress"
-    t.string   "automatic_quotation_number",      limit: 255,   default: "0"
-    t.string   "support_contact",                 limit: 255
+    t.string   "automatic_quotation_number",            limit: 255,   default: "0"
+    t.string   "support_contact",                       limit: 255
     t.boolean  "allow_demand"
-    t.string   "default_estimations_sort_column", limit: 255
-    t.string   "default_estimations_sort_order",  limit: 255
-    t.string   "show_reports",                    limit: 255
-    t.string   "show_kpi",                        limit: 255
+    t.string   "default_estimations_sort_column",       limit: 255
+    t.string   "default_estimations_sort_order",        limit: 255
+    t.string   "show_reports",                          limit: 255
+    t.string   "show_kpi",                              limit: 255
+    t.boolean  "activate_indicators_dashboard"
+    t.boolean  "activate_project_dashboard_indicators"
   end
 
   create_table "organizations_users", force: :cascade do |t|
@@ -2348,9 +2385,19 @@ ActiveRecord::Schema.define(version: 20200519084724) do
     t.integer  "estimation_status_id",         limit: 4
     t.boolean  "show_module_name"
     t.boolean  "is_organization_kpi_widget"
-    t.integer  "kpi_id",                       limit: 4
     t.boolean  "signalize"
     t.boolean  "lock_project"
+    t.integer  "serie_a_kpi_id",               limit: 4
+    t.string   "serie_a_output_type",          limit: 255
+    t.integer  "serie_b_kpi_id",               limit: 4
+    t.string   "serie_b_output_type",          limit: 255
+    t.integer  "serie_c_kpi_id",               limit: 4
+    t.string   "serie_c_output_type",          limit: 255
+    t.integer  "serie_d_kpi_id",               limit: 4
+    t.string   "serie_d_output_type",          limit: 255
+    t.string   "x_axis_label",                 limit: 255
+    t.string   "y_axis_label",                 limit: 255
+    t.string   "end_of_series",                limit: 255
   end
 
   add_index "views_widgets", ["module_project_id", "estimation_value_id"], name: "module_project_views_widgets", using: :btree

@@ -23,6 +23,8 @@
 
 Projestimate::Application.routes.draw do
 
+  resources :iwidgets
+  get 'update_iwidget_positions' => 'iwidgets#update_iwidget_positions', :as => 'update_iwidget_positions'
   resources :indicator_dashboards
   get 'kpis/new'
 

@@ -24,7 +24,9 @@ class ViewsWidget < ActiveRecord::Base
                   :show_min_max, :view_id, :widget_id, :position, :position_x, :position_y, :width, :height, :widget_type,
                   :show_name, :show_wbs_activity_ratio, :from_initial_view, :is_label_widget, :comment, :formula, :kpi_unit,
                   :is_kpi_widget, :is_project_data_widget, :is_organization_kpi_widget, :use_organization_effort_unit, :equation, :show_tjm,
-                  :min_value, :max_value, :validation_text, :project_attribute_name, :estimation_status_id, :show_module_name, :kpi_id, :signalize, :lock_project
+                  :min_value, :max_value, :validation_text, :project_attribute_name, :estimation_status_id, :show_module_name,
+                  :serie_a_kpi_id, :serie_a_output_type, :serie_b_kpi_id, :serie_b_output_type, :serie_c_kpi_id, :serie_c_output_type,
+                  :serie_d_kpi_id, :serie_d_output_type, :end_of_series, :x_axis_label, :y_axis_label, :signalize, :lock_project
 
   serialize :equation, Hash
 
@@ -41,7 +43,11 @@ class ViewsWidget < ActiveRecord::Base
   belongs_to :pe_attribute
   belongs_to :pbs_project_element
   belongs_to :module_project
-  belongs_to :kpi
+
+  belongs_to :serie_a_kpi, class_name: 'Kpi', foreign_key: :serie_a_kpi_id
+  belongs_to :serie_b_kpi, class_name: 'Kpi', foreign_key: :serie_b_kpi_id
+  belongs_to :serie_c_kpi, class_name: 'Kpi', foreign_key: :serie_c_kpi_id
+  belongs_to :serie_d_kpi, class_name: 'Kpi', foreign_key: :serie_d_kpi_id
 
   has_many :project_fields, dependent: :delete_all
 
