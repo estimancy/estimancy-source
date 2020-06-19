@@ -6259,6 +6259,18 @@ class OrganizationsController < ApplicationController
         config_for_graph = config_for_graph + "  -  " + "#{I18n.t(:provider)}: #{provider.name}"
       end
 
+      # lorsqu'on prend que les dernière versions
+      if project_versions.to_s == "last_version"
+        projects_to_keep = []
+        @projects.each do |project|
+          if project.is_childless?
+            projects_to_keep << project.id
+          end
+        end
+
+        @projects = @projects.where(id: projects_to_keep)
+      end
+
       #@res_graphic << ["#{I18n.t(:productivity)} : #{kpi_config.name}", "#{config_for_graph}"]
       @res_graphic << [I18n.t("#{selected_date}"), "#{config_for_graph}", { role: 'tooltip' } ]
 
@@ -6272,19 +6284,6 @@ class OrganizationsController < ApplicationController
       end
 
       unless field_id.nil?
-
-        # lorsqu'on prend que les dernière versions
-        if project_versions.to_s == "last_version"
-          projects_to_keep = []
-          @projects.each do |project|
-            if project.is_childless?
-              projects_to_keep << project.id
-            end
-          end
-
-          @projects = @projects.where(id: projects_to_keep)
-        end
-
 
         # On récupère les Données projets
         @projects.each do |project|
