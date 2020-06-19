@@ -151,7 +151,7 @@ class IwidgetsController < ApplicationController
 
     # Never trust parameters from the scary internet, only allow the white list through.
     def iwidget_params
-      params.require(:iwidget).permit(:indicator_dashboard_id, :name,
+      params.require(:iwidget).permit(:indicator_dashboard_id, :name, :description,
                                       :serie_a_kpi_id, :serie_a_output_type,
                                       :serie_b_kpi_id, :serie_b_output_type,
                                       :serie_c_kpi_id, :serie_c_output_type,

@@ -1,7 +1,7 @@
 module IwidgetsHelper
 
   #get normal widget value
-  def get_iwidget_value(iwidget, organization)
+  def get_iwidget_value(iwidget, organization, is_project_widget=false, end_of_series=nil, project_id=nil)
     widget_data = {}
 
     #begin
@@ -59,7 +59,7 @@ module IwidgetsHelper
 
           if kpi_config
 
-            serie_values = orga_controller.get_indicators_dashboard_kpi_values(organization.id, kpi_config_id)
+            serie_values = orga_controller.get_indicators_dashboard_kpi_values(organization.id, kpi_config_id, is_project_widget, end_of_series, project_id)
             kpi_unit = kpi_config.kpi_unit
 
             case output_type

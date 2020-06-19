@@ -5919,13 +5919,28 @@ class OrganizationsController < ApplicationController
           kpi.update_attribute(:is_selected, true)
           @selected_kpi_config << kpi
           kpi_config = []
-          kpi_config = projects_productivity_indicators(@organization.id, kpi_id)
-          @productivity_indicators["#{kpi_id}"] = kpi_config
+
+          if kpi.output_type.to_s.in?(["graphic", "serie"])
+            kpi_config = get_indicators_dashboard_kpi_values(@organization.id, kpi_id)
+
+            chart_data = []
+            chart_data << [I18n.t(:x_axis_config), "#{kpi.get_config_label}", { role: 'tooltip' } ]
+
+            kpi_config.each do |project_data|
+              chart_data << [project_data[:selected_date], project_data[:field_value], project_data[:project_label]]
+            end
+
+            @productivity_indicators["#{kpi_id}"] = chart_data
+
+          else
+            kpi_config = projects_productivity_indicators(@organization.id, kpi_id)
+            @productivity_indicators["#{kpi_id}"] = kpi_config
+          end
+
         end
       end
     end
 
-    #@productivity_indicators = projects_productivity_indicators(@current_organization.id, kpi_config_id)
     @productivity_indicators
   end
 
@@ -6031,7 +6046,7 @@ class OrganizationsController < ApplicationController
 
 
   # Retourne la liste des projets concernés en fonctions de la config de l'axe des X définis dans l'indicateur
-  def get_projects_with_indicator_x_axis_config(organization, kpi_config, projects, field_id, selected_date, kpi_coefficient, x_axis_config, y_axis_config)
+  def get_projects_with_indicator_x_y_axis_config(organization, kpi_config, projects, field_id, selected_date, kpi_coefficient, x_axis_config, y_axis_config)
     #["date_detail", "date_week", "date_month", "date_trimester", "date_semester", "date_year"]
     #["original_model", "estimation_status", "application", "project_area", "project_category", "acquisition_category", "platform_category", "provider"]
 
@@ -6063,10 +6078,10 @@ class OrganizationsController < ApplicationController
 
       when "date_week"
 
-        dates = Project.where(organization_id: 63).pluck("distinct date(created_at)")
-        dates.group_by(&:year).map do |y, items|
-          [y, items.group_by(&:month).map { |m, days| [m, days.map(&:day)] }.to_h]
-        end.to_h
+        # dates = Project.where(organization_id: 63).pluck("distinct date(created_at)")
+        # dates.group_by(&:year).map do |y, items|
+        #   [y, items.group_by(&:month).map { |m, days| [m, days.map(&:day)] }.to_h]
+        # end.to_h
 
         projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").beginning_of_week] }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
@@ -6112,7 +6127,7 @@ class OrganizationsController < ApplicationController
   #Obtenir les valeurs brutes sans formatage (Iwidget)
   # Version qui prend en compte les limites de series dans les vignettes projet
   # Avec les config de l'axe des X et des Y
-  def get_indicators_dashboard_kpi_values(organization_id, kpi_config_id, is_project_widget=false)
+  def get_indicators_dashboard_kpi_values(organization_id, kpi_config_id, is_project_widget=false, end_of_series=nil, project_id=nil)
     organization = Organization.find(organization_id)
     @res_graphic = []
     @projects_values = []
@@ -6169,6 +6184,32 @@ class OrganizationsController < ApplicationController
       #end_date
       unless end_date.blank?
         @projects = @projects.where("#{selected_date} <= ?", end_date)
+      end
+
+      #limite des series
+      if is_project_widget == true
+        unless end_of_series.blank?
+          widget_project = Project.find(project_id)
+
+          if widget_project
+            widget_project_date = widget_project.send("#{selected_date}").to_date.end_of_day
+
+            case end_of_series.to_s
+
+              when "end_of_series"
+                # nothing to do
+
+              when "project_date_included"
+                @projects = @projects.where("#{selected_date} <= ?", widget_project_date)
+
+              when "project_date_not_included"
+                @projects = @projects.where("#{selected_date} < ?", widget_project_date)
+
+              when "current_date"
+                @projects = @projects.where("#{selected_date} <= ?", Time.now.to_date)
+            end
+          end
+        end
       end
 
       #Modele
@@ -6241,7 +6282,7 @@ class OrganizationsController < ApplicationController
             end
           end
 
-          @projects = @projects.where.not(id: projects_to_keep)
+          @projects = @projects.where(id: projects_to_keep)
         end
 
 
@@ -6270,26 +6311,24 @@ class OrganizationsController < ApplicationController
 
         if output_type.to_s == "serie" || output_type.to_s == "graphic"
 
-          x_y_axis_config_values = get_projects_with_indicator_x_axis_config(organization, kpi_config, @projects, field_id, selected_date, kpi_coefficient, x_axis_config, y_axis_config)
-
-          @calculation_output = x_y_axis_config_values
+          if  x_axis_config.blank? || y_axis_config.blank?
+            @calculation_output = indicator_values
+          else
+            x_y_axis_config_values = get_projects_with_indicator_x_y_axis_config(organization, kpi_config, @projects, field_id, selected_date, kpi_coefficient, x_axis_config, y_axis_config)
+            @calculation_output = x_y_axis_config_values
+          end
 
         else
 
           case output_type.to_s
             when "minimum"
-              #@calculation_output = @projects_values.min
-              #@calculation_output = indicator_values.group_by { |x| x[:field_value] }.min.last
               @calculation_output << indicator_values.min_by{|k| k[:field_value] }
 
             when "maximum"
-              #@calculation_output = @projects_values.max
-              #@calculation_output = indicator_values.group_by { |x| x[:field_value] }.max.last
               @calculation_output << indicator_values.max_by{|k| k[:field_value] }
 
             when "average"
               average = @projects_values.sum / nb_projects
-              ###average = indicator_values.group_by { |x| x[:field_value] }.sum / nb_projects
               @calculation_output << { project_id: "",
                                        selected_date: I18n.l(end_date.to_date),
                                        field_value: average.round(2),
@@ -6310,7 +6349,6 @@ class OrganizationsController < ApplicationController
               }
 
             when "sum"
-              #@calculation_output = @projects_values.sum
               sum = @projects_values.sum
               @calculation_output << { project_id: "",
                                        selected_date: I18n.l(end_date.to_date),
@@ -6575,6 +6613,7 @@ class OrganizationsController < ApplicationController
   end
 
 
+  #Fonction utilisée dans les Parametrages des indicateurs pour voir le résultats d'une configuration
   def projects_productivity_indicators(organization_id, kpi_config_id)
     organization = Organization.find(organization_id)
     @res_graphic = []
@@ -6738,8 +6777,8 @@ class OrganizationsController < ApplicationController
             #@calculation_output = @projects_values.median
             sorted = @projects_values.sort
             m_pos = nb_projects / 2
-            #@calculation_output = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
-            @calculation_output = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
+            @calculation_output = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
+            #@calculation_output = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
 
           when "sum"
             @calculation_output = @projects_values.sum

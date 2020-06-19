@@ -6,7 +6,7 @@
 
 <%= link_to I18n.t('create_button'), new_organization_kpi_path, :class => 'btn btn-primary btn-estimancy' %>
 
-<% @productivity_kpis = Kpi.where(organization_id: @current_organization.id, kpi_type: "Productivity") %>
+<% @productivity_kpis = Kpi.where(organization_id: @current_organization.id) %>
 <%= form_tag organization_get_projects_productivity_indicators_path, :class => 'simple_form', :method => :get, remote: true do  %>
 
   <div id="users" class="table-responsive-sm" style="width:100%;overflow:auto; white-space:nowrap;">

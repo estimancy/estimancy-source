@@ -39,7 +39,7 @@
       <!-- Les Vignettes graphiques -->
       <% vw_graph_types = ["line_chart", "bar_chart", "area_chart", "pie_chart", "stacked_bar_chart"] %>
 
-      <% indicator_dashboard_iwidgets = indicator_dashboard.iwidgets#.order('position_x', 'position_y').all %>
+      <% indicator_dashboard_iwidgets = indicator_dashboard.iwidgets #.order('position_x', 'position_y').all %>
 
       <% indicator_dashboard_iwidgets.each do |iwidget| %>
           
@@ -145,6 +145,7 @@
 
                               <%= k %>
                             </div>
+                            <span style="font-size: small"><%= iwidget.description %></span>
 
                             <% all_values.each do |value| %>
                                 <div class="card-indicator-label">

@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200612104427) do
+ActiveRecord::Schema.define(version: 20200618140734) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1238,6 +1238,7 @@ ActiveRecord::Schema.define(version: 20200612104427) do
     t.string   "y_axis_label",           limit: 255
     t.datetime "created_at",                           null: false
     t.datetime "updated_at",                           null: false
+    t.text     "description",            limit: 65535
   end
 
   create_table "kb_kb_datas", force: :cascade do |t|
