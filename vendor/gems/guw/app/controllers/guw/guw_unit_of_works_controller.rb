@@ -1199,11 +1199,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         array_pert = Array.new
 
-        # if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
-        guw_unit_of_work.selected = true
-        # else
-        #   guw_unit_of_work.selected = false
-        # end
+        if !params[:selected].nil? && params[:selected].join(",").include?(guw_unit_of_work.id.to_s)
+          guw_unit_of_work.selected = true
+        else
+          guw_unit_of_work.selected = false
+        end
 
         #reorder to keep good order
         #reorder guw_unit_of_work.guw_unit_of_work_group
@@ -1488,7 +1488,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                     pc = ce.value.to_f
                   end
                 else
-                  pc = ceuw.percent.to_f
+                  if ceuw.percent == 0
+                    pc = ceuw.percent = 1
+                  else
+                    pc = ceuw.percent.to_f
+                  end
                 end
               end
 
@@ -1599,9 +1603,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
 
               unless ceuw.nil?
+
                 ceuw.guw_coefficient_id = guw_coefficient.id
                 ceuw.guw_unit_of_work_id = guw_unit_of_work.id
                 ceuw.module_project_id = @module_project.id
+
                 if ceuw.changed?
                   ceuw.save
                 end
@@ -1714,7 +1720,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           inter_value = oa_value.compact.sum.to_f + (@oci.nil? ? 0 : @oci.init_value.to_f)
 
-          #Attention changement, a confirmer
+          #Attention changement, à confirmer
           unless @final_value.nil?
             if inter_value == 0
               tmp = @final_value.to_f * (guw_unit_of_work.quantity.nil? ? 1 : guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
@@ -1758,7 +1764,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.ajusted_size = tmp_hash_ares
         end
 
-        reorder guw_unit_of_work.guw_unit_of_work_group
+        # reorder guw_unit_of_work.guw_unit_of_work_group
 
         if guw_unit_of_work.changed?
           guw_unit_of_work.save
