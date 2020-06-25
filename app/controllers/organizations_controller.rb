@@ -6083,20 +6083,26 @@ class OrganizationsController < ApplicationController
         #   [y, items.group_by(&:month).map { |m, days| [m, days.map(&:day)] }.to_h]
         # end.to_h
 
-        projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").beginning_of_week] }
+        #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").beginning_of_week] }
+        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").beginning_of_week}/#{p.send("#{selected_date}").year}" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
 
       when "date_month"
         #projects.group_by { |m| m.send("#{selected_date}").beginning_of_month }
-        projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").month] }
+        #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").month] }
+        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").month}/#{p.send("#{selected_date}").year}" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_trimester"
 
+        #projects_by_x_axis_config = projects.group_by{ |p| "#{(((p.send("#{selected_date}").month - 1) / 3) + 1).floor}/#{p.send("#{selected_date}").year}" }
+        projects_by_x_axis_config = projects.group_by{ |p| "#{ (p.send("#{selected_date}").month / 3).ceil}/#{p.send("#{selected_date}").year}" }
+        x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_semester"
-        projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, (((p.send("#{selected_date}").month - 1) / 6) +1).floor ] }
+        #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, (((p.send("#{selected_date}").month - 1) / 6) +1).floor ] }
+        projects_by_x_axis_config = projects.group_by{ |p| "#{(((p.send("#{selected_date}").month - 1) / 6) + 1).floor}/#{p.send("#{selected_date}").year}" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_year"
@@ -6109,13 +6115,6 @@ class OrganizationsController < ApplicationController
         projects_by_x_axis_config = projects.group_by(&:"#{x_axis_config.to_s}")
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
-      # when "estimation_model"
-      # when "estimation_status"
-      # when "project_area"
-      # when "project_category"
-      # when "acquisition_category"
-      # when "platform_category"
-      # when "provider"
       else
     end
 

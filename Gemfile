@@ -270,5 +270,3 @@ gem 'order_as_specified'
 gem 'prometheus-client'
 
 gem 'jquery-tablesorter'
-
-gem 'groupdate'

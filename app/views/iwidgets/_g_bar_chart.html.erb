@@ -19,10 +19,10 @@
 //            }
 //        };
 
-        var chart = new google.visualization.ComboChart(document.getElementById('<%= "combo_chart_div_#{iwidget.id}" %>'));
-        chart.draw(data, options);
+        var chart = new google.charts.Bar(document.getElementById('<%= "combo_chart_div_#{iwidget.id}" %>'));
+        chart.draw(data, google.charts.Bar.convertOptions(options));
     }
     drawChart();
 
 </script>
-<div id='<%= "combo_chart_div_#{iwidget.id}" %>' style="width: 950px; height: 300px;"></div>
+<div id='<%= "combo_chart_div_#{iwidget.id}" %>' style="width: 900px; height: 300px;"></div>

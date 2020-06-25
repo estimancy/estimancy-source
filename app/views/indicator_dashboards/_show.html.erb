@@ -22,7 +22,7 @@
     <div class="col-2 tools float-right">
       <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons">show_chart</i></a>
       <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
-      <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id, is_kpi_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>
+      <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id, is_calculation_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>
     </div>
   </div>
 
@@ -51,7 +51,7 @@
               <% @label_widget_ids << iwidget.id %>
 
           <% elsif iwidget.is_calculation_widget? %>
-              <% iwidget_data = get_calculation_widget_value(iwidget) %>
+              <% iwidget_data = get_calculation_iwidget_value(iwidget, @organization) %>
               <% @widgets[iwidget.name] = [iwidget, iwidget_data] %>
 
           <% else %>
