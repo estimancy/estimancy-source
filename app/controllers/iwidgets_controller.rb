@@ -39,8 +39,8 @@ class IwidgetsController < ApplicationController
     @indicator_dashboard = @iwidget.indicator_dashboard
 
     # Add the position_x and position_y to params
-    position_x = 1
-    position_y = 1
+    position_x = 0
+    position_y = 0
 
     # Get the max (width, height) of the view's widgets : then add the widget in last positions
     unless @indicator_dashboard.nil? || @indicator_dashboard.iwidgets.empty?
@@ -52,8 +52,8 @@ class IwidgetsController < ApplicationController
       x_max = x_positions.max
       view_widget_max_position = widgets_on_ymax.where(position_x: x_max.to_s).first
 
-      position_x = view_widget_max_position.position_x.to_i+view_widget_max_position.width.to_i+1
-      position_y = y_max
+      #position_x = view_widget_max_position.position_x.to_i+view_widget_max_position.width.to_i+1
+      position_y = view_widget_max_position.position_y.to_i+view_widget_max_position.height.to_i+1  #y_max
     end
 
     #new widget with the default positions

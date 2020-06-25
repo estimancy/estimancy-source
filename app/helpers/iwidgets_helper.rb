@@ -295,6 +295,8 @@ module IwidgetsHelper
 
         else
           #series_options[:series]["#{all_charts.size - line_chart.size}"] = { targetAxisIndex: 0 }
+          series_options[:vAxis] =  { title: iwidget.y_axis_label }
+          series_options[:series]["#{0}"] = { targetAxisIndex: 0 }
 
           line_chart_position = all_charts.size
           all_charts = all_charts.merge(line_chart)
@@ -309,6 +311,7 @@ module IwidgetsHelper
           #value_to_show << "\n\r"
           all_values_to_show << value_to_show
         end
+
 
       else  # Pas de combinaison de graphes
         # Line chart
@@ -661,14 +664,11 @@ module IwidgetsHelper
                 }
 
                 number_values["#{letter}"] = [counter_value]
-
             end
 
           else
             serie_values = nil
           end
-
-          ###series_results["#{kpi_config_id}"] = serie_values
         end
       end
 
@@ -678,11 +678,6 @@ module IwidgetsHelper
         letter_value = value_first[:field_value] rescue 0
         first_letter_unit = value_first[:kpi_unit]  rescue nil
         formula = formula.gsub(letter, letter_value.to_s)
-
-        # unless eq["A"].blank?
-        #   a_value = get_ev_value(eq["A"].first, component.id, view_widget.id)
-        #   formula = formula.gsub("A", a_value)
-        # end
       end
 
 
