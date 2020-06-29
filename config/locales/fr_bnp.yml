@@ -2624,3 +2624,5 @@ fr_bnp:
   date_year: "Année"
   choose_indicator: "Choisir un indicateur"
 
+
+  additional_description: "Complément de libellé"

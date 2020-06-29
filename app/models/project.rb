@@ -336,6 +336,7 @@ class Project < ActiveRecord::Base
     # Puis on lui change de statut
     new_comments_for_version = "#{I18n.l(Time.now)} : #{I18n.t(:text_automatic_created_version)}  \r\n" + "#{I18n.t(:change_estimation_status_from_to, from_status: last_estimation_status_name, to_status: new_estimation_status_name, current_user_name: current_user.name)}. \r\n"  + "___________________________________________________________________________\r\n" + new_comments + self.status_comment
     new_project_version.update_attributes(estimation_status_id: next_status.id, status_comment: new_comments_for_version)
+
     new_project_version
   end
 
@@ -374,6 +375,7 @@ class Project < ActiveRecord::Base
       else
         new_version = "#{ version_ended }.1"
       end
+
     else
       #That means project has successor(s)/children, and a new branch need to be created
       branch_version = 1
@@ -404,6 +406,14 @@ class Project < ActiveRecord::Base
         new_version = "#{branch_name}-#{branch_version}.#{parent_version_ended_end}"
       end
     end
+
+    #On verifie que cette même version n'existe pour le même projet
+    same_project_version = Project.where(organization_id: project_to_checkout.organization_id, title: project_to_checkout.title,
+                                         version_number: new_version).first
+    unless same_project_version.nil?
+      new_version = "#{new_version}-a"
+    end
+
     new_version
   end
 
@@ -798,6 +808,39 @@ class Project < ActiveRecord::Base
                     new_guw_coeff_elt_uow.project_id = new_prj.id
                     new_guw_coeff_elt_uow.save
                   end
+                end
+
+                # Correction duplication critères attribute
+
+                old_mp.guw_unit_of_works.each do |old_guw|
+
+                  old_guw_guw_model = old_guw.guw_model
+                  old_guw_guw_model.guw_attributes.where( organization_id: old_guw_guw_model.organization_id,
+                                                          guw_model_id: old_guw_guw_model.id).all.each do |gac|
+
+                    guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: old_guw_guw_model.organization_id,
+                                                              guw_model_id: old_guw.guw_model_id,
+                                                              guw_attribute_id: gac.id,
+                                                              guw_type_id: old_guw.guw_type_id,
+                                                              project_id: old_mp.project_id,
+                                                              module_project_id: old_guw.module_project_id,
+                                                              guw_unit_of_work_id: old_guw.id).first
+
+                    unless guowa.nil?
+
+                      new_guowa = guowa.dup
+
+                      new_guowa.guw_unit_of_work_id = guw_uow.id
+                      new_guowa.guw_model_id = guw_uow.guw_model_id
+                      new_guowa.project_id = guw_uow.project_id
+                      new_guowa.module_project_id = guw_uow.module_project_id
+
+                      new_guowa.save
+
+                    end
+
+                  end
+
                 end
 
               end
