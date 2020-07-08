@@ -464,10 +464,20 @@ class Project < ActiveRecord::Base
                                               max_value: old_view_widget.max_value,
                                               validation_text: old_view_widget.validation_text,
                                               position_y: old_view_widget.position_y,
-                                              is_organization_kpi_widget: old_view_widget.is_organization_kpi_widget,
-                                              kpi_id: old_view_widget.kpi_id,
                                               signalize: old_view_widget.signalize,
-                                              lock_project: old_view_widget.lock_project)
+                                              lock_project: old_view_widget.lock_project,
+                                              is_organization_kpi_widget: old_view_widget.is_organization_kpi_widget,
+                                              serie_a_kpi_id: old_view_widget.serie_a_kpi_id,
+                                              serie_a_output_type: old_view_widget.serie_a_output_type,
+                                              serie_b_kpi_id: old_view_widget.serie_b_kpi_id,
+                                              serie_b_output_type: old_view_widget.serie_b_output_type,
+                                              serie_c_kpi_id: old_view_widget.serie_c_kpi_id,
+                                              serie_c_output_type: old_view_widget.serie_c_output_type,
+                                              serie_d_kpi_id: old_view_widget.serie_d_kpi_id,
+                                              serie_d_output_type: old_view_widget.serie_d_output_type,
+                                              x_axis_label: old_view_widget.x_axis_label,
+                                              y_axis_label: old_view_widget.y_axis_label,
+                                              end_of_series: old_view_widget.end_of_series)
 
             #Update KPI Widget aquation
             ["A", "B", "C", "D", "E"].each do |letter|
@@ -540,7 +550,17 @@ class Project < ActiveRecord::Base
                                                 max_value: old_view_widget.max_value,
                                                 validation_text: old_view_widget.validation_text,
                                                 is_organization_kpi_widget: old_view_widget.is_organization_kpi_widget,
-                                                kpi_id: old_view_widget.kpi_id,
+                                                serie_a_kpi_id: old_view_widget.serie_a_kpi_id,
+                                                serie_a_output_type: old_view_widget.serie_a_output_type,
+                                                serie_b_kpi_id: old_view_widget.serie_b_kpi_id,
+                                                serie_b_output_type: old_view_widget.serie_b_output_type,
+                                                serie_c_kpi_id: old_view_widget.serie_c_kpi_id,
+                                                serie_c_output_type: old_view_widget.serie_c_output_type,
+                                                serie_d_kpi_id: old_view_widget.serie_d_kpi_id,
+                                                serie_d_output_type: old_view_widget.serie_d_output_type,
+                                                x_axis_label: old_view_widget.x_axis_label,
+                                                y_axis_label: old_view_widget.y_axis_label,
+                                                end_of_series: old_view_widget.end_of_series,
                                                 signalize: old_view_widget.signalize,
                                                 lock_project: old_view_widget.lock_project)
               if new_view_widget.save
@@ -1273,9 +1293,19 @@ class Project < ActiveRecord::Base
                                           max_value: view_widget.max_value,
                                           validation_text: view_widget.validation_text,
                                           is_organization_kpi_widget: view_widget.is_organization_kpi_widget,
-                                          kpi_id: view_widget.kpi_id,
                                           signalize: view_widget.signalize,
-                                          lock_project: view_widget.lock_project)
+                                          lock_project: view_widget.lock_project,
+                                          serie_a_kpi_id: view_widget.serie_a_kpi_id,
+                                          serie_a_output_type: view_widget.serie_a_output_type,
+                                          serie_b_kpi_id: view_widget.serie_b_kpi_id,
+                                          serie_b_output_type: view_widget.serie_b_output_type,
+                                          serie_c_kpi_id: view_widget.serie_c_kpi_id,
+                                          serie_c_output_type: view_widget.serie_c_output_type,
+                                          serie_d_kpi_id: view_widget.serie_d_kpi_id,
+                                          serie_d_output_type: view_widget.serie_d_output_type,
+                                          x_axis_label: view_widget.x_axis_label,
+                                          y_axis_label: view_widget.y_axis_label,
+                                          end_of_series: view_widget.end_of_series)
             #Save and copy project_fields
             if widget_copy.save
               unless view_widget.project_fields.empty?
