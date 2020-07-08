@@ -1794,7 +1794,7 @@ de:
   average_value: "Average value"
   median_value: "Median value"
   sum_value: "The sum"
-  output_type: "Output type" #Sortie souhaité
+  output_type: "Output type"
   include_historized: "Include historized"  #Inclure les historisés
   selected_date: "Selected date"
   new_kpi: "New indicator"
@@ -1835,3 +1835,4 @@ de:
   date_semester: "Semester"
   date_year: "Year"
   choose_indicator: "Choose an indicator"
+  formula_output_type: "Formula output type"

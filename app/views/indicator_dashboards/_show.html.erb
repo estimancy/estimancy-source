@@ -22,7 +22,7 @@
     <div class="col-2 tools float-right">
       <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons">show_chart</i></a>
       <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
-      <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id, is_calculation_widget: true) %>" title="<%= I18n.t :dashboard %>"><i class="material-icons">exposure</i></a>
+      <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id, is_calculation_widget: true) %>" title="<%= I18n.t :new_widget_kpi %>"><i class="material-icons">exposure</i></a>
     </div>
   </div>
 
@@ -182,11 +182,9 @@
                         </div>
 
                         <div class="effort-table" style="margin-top: 0.9rem">
-
                           <%# iwidget_data = get_iwidget_data(iwidget.id) %>
                           <%#= iwidget_data[:value_to_show] %>
                           <%= "Graphique" %>
-
                         </div>
                       </div>
                     </div>

@@ -2071,4 +2071,5 @@ it:
   date_semester: "Semestre"
   date_year: "Année"
   choose_indicator: "Choisir un indicateur"
+  formula_output_type: "Formule :  sortie souhaitée"
 

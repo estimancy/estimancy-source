@@ -1,7 +1,7 @@
 module IwidgetsHelper
 
   #get normal widget value
-  def get_iwidget_value(iwidget, organization, is_project_widget=false, end_of_series=nil, project_id=nil)
+  def get_iwidget_value(iwidget, organization, is_project_widget=false, end_of_series=nil, project_id=nil, number_value_for_calculation_widget=false)
     widget_data = {}
 
     #begin
@@ -10,6 +10,7 @@ module IwidgetsHelper
       output_types = Hash.new
 
       number_values = Hash.new
+      number_values_for_calculation_widget = Hash.new
       first_value = Hash.new
       last_value = Hash.new
       table_values = Hash.new
@@ -181,17 +182,21 @@ module IwidgetsHelper
           end
 
           ###series_results["#{kpi_config_id}"] = serie_values
+          number_values_for_calculation_widget["#{letter}"] = number_values["#{kpi_config.name}"]
         end
       end
 
     #Table list of values
       unless number_values.blank?
-        value_to_show = render :partial => 'iwidgets/series_table_values', :locals => { :table_values => number_values, organization: organization }
+        if number_value_for_calculation_widget == true
+          value_to_show = number_values_for_calculation_widget
+        else
+          value_to_show = render :partial => 'iwidgets/series_table_values', :locals => { :table_values => number_values, organization: organization }
+        end
 
         #all_values_to_show << "\n\r"
         all_values_to_show << value_to_show
       end
-
 
       # serie_number = 0
       # series_results.each do |key, serie_hash|
@@ -203,8 +208,9 @@ module IwidgetsHelper
 
     series_options = {
         #legend: { position: 'top', maxLines: 5 },
-        legend: { position: "right", alignment: 'start', orientation: 'horizontal' },
-        chartArea: { left: '10%', top: '3%', width:'75%', height:'85%'},
+        legend: { position: "right", alignment: 'start', orientation: 'vertical' },
+        chartArea: { left: '10%', top: '3%', width:'70%', height:'80%'},
+
         hAxis: { title: iwidget.x_axis_label },
         vAxis: { title: iwidget.y_axis_label },
 
@@ -287,6 +293,7 @@ module IwidgetsHelper
         # Line chart
         if line_chart.blank?
           series_options[:series]["#{all_charts.size}"] = { targetAxisIndex: 0 }
+          series_options[:chartArea] = {  width:'100%', height:'70%'},
 
           graphic_data = get_combine_chart_values(iwidget, organization, all_charts)
           value_to_show = render :partial => 'iwidgets/g_bar_chart', :locals => { :r_data => graphic_data, iwidget: iwidget, series_options: series_options }
@@ -441,6 +448,7 @@ module IwidgetsHelper
     all_graph_data
   end
 
+
   #for Line, Bar, Stacked bar charts
   def get_combine_chart_values(iwidget, organization, line_chart_data_hash)
     graphic_data = Array.new
@@ -546,8 +554,8 @@ module IwidgetsHelper
     end
 
     graphic_data
-
   end
+
 
 
   def get_calculation_iwidget_value(iwidget, organization)
@@ -555,146 +563,363 @@ module IwidgetsHelper
       formula = iwidget.equation.to_s.downcase
       output_types = Hash.new
       number_values = Hash.new
-      user_number_precision = current_user.number_precision.nil? ? 2 : current_user.number_precision
+      final_letter_values = HashWithIndifferentAccess.new
+      final_hash = HashWithIndifferentAccess.new
+      equation_result_hash = HashWithIndifferentAccess.new
+      first_letter_unit = ""
 
+      user_number_precision = current_user.number_precision.nil? ? 2 : current_user.number_precision
       orga_controller = OrganizationsController.new
 
-      ['a', 'b', 'c', 'd'].each do |letter|
-        kpi_config_id = iwidget.send("serie_#{letter}_kpi_id")
-        kpi_config_output_type = iwidget.send("serie_#{letter}_output_type")
+      # ['a', 'b', 'c', 'd'].each do |letter|
+      #   kpi_config_id = iwidget.send("serie_#{letter}_kpi_id")
+      #   kpi_config_output_type = iwidget.send("serie_#{letter}_output_type")
+      #
+      #   unless kpi_config_id.blank? || kpi_config_output_type.blank?
+      #     kpi_config = organization.kpis.where(id: kpi_config_id).first
+      #     output_type = iwidget.send("serie_#{letter}_output_type")
+      #
+      #     if output_types[output_type]
+      #       output_types[output_type] << kpi_config_id
+      #     else
+      #       output_types[output_type] = Array.new
+      #       output_types[output_type] << kpi_config_id
+      #     end
+      #
+      #     if kpi_config
+      #
+      #       serie_values = orga_controller.get_indicators_dashboard_kpi_values(organization.id, kpi_config_id)
+      #       kpi_unit = kpi_config.kpi_unit
+      #
+      #       case output_type
+      #
+      #         #[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"]
+      #         when "minimum"
+      #           if kpi_config.output_type.to_s.in?(["graphic", "serie"])
+      #             min_value = serie_values.min{ |a, b| a[:field_value] <=> b[:field_value] }
+      #             number_values["#{letter}"] = [min_value]
+      #           else
+      #             number_values["#{letter}"] = serie_values
+      #           end
+      #
+      #         when "maximum"
+      #
+      #           if kpi_config.output_type.to_s.in?(["graphic", "serie"])
+      #             max_value = serie_values.max{ |a, b| a[:field_value] <=> b[:field_value] }
+      #             number_values["#{letter}"] = [max_value]
+      #           else
+      #             number_values["#{letter}"] = serie_values
+      #           end
+      #
+      #         when "average"
+      #
+      #           if kpi_config.output_type.to_s.in?(["graphic", "serie"])
+      #
+      #             average = (serie_values.map{ |k| k[:field_value]}.sum / serie_values.size) rescue nil
+      #             average_value = {  project_id: "",
+      #                                selected_date: I18n.l(Time.now.to_date),
+      #                                field_value: average.round(2),
+      #                                project_label: "",
+      #                                kpi_unit: kpi_unit
+      #             }
+      #
+      #             number_values["#{letter}"] = [average_value]
+      #           else
+      #             number_values["#{letter}"] = serie_values
+      #           end
+      #
+      #         when "median"
+      #
+      #           if kpi_config.output_type.to_s.in?(["graphic", "serie"])
+      #
+      #             sorted = serie_values.map{ |k| k[:field_value]}.sort
+      #             nb_projects = serie_values.size
+      #
+      #             median = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
+      #             median_value = {  project_id: "",
+      #                               selected_date: I18n.l(Time.now.to_date),
+      #                               field_value: median.round(2),
+      #                               project_label: "",
+      #                               kpi_unit: kpi_unit
+      #             }
+      #
+      #             number_values["#{letter}"] = [median_value]
+      #           else
+      #             number_values["#{letter}"] = serie_values
+      #           end
+      #
+      #         when "sum"
+      #
+      #           if kpi_config.output_type.to_s.in?(["graphic", "serie"])
+      #
+      #             sum = serie_values.map{ |k| k[:field_value]}.sum
+      #             sum_value = {  project_id: "",
+      #                            selected_date: I18n.l(Time.now.to_date),
+      #                            field_value: sum.round(2),
+      #                            project_label: "",
+      #                            kpi_unit: kpi_unit
+      #             }
+      #
+      #             number_values["#{letter}"] = [sum_value]
+      #           else
+      #             number_values["#{letter}"] = serie_values
+      #           end
+      #
+      #         when "counter"
+      #
+      #           counter = serie_values.size
+      #           counter_value = {  project_id: "",
+      #                              selected_date: I18n.l(Time.now.to_date),
+      #                              field_value: counter,
+      #                              project_label: "",
+      #                              kpi_unit: kpi_unit
+      #           }
+      #
+      #           number_values["#{letter}"] = [counter_value]
+      #
+      #         when "first_value"
+      #           if kpi_config.output_type.to_s.in?(["graphic", "serie"])
+      #             first_value = serie_values.first
+      #             number_values["#{letter}"] = [first_value]
+      #           else
+      #             number_values["#{letter}"] = serie_values
+      #           end
+      #
+      #         when "last_value"
+      #           if kpi_config.output_type.to_s.in?(["graphic", "serie"])
+      #             last_value = serie_values.last
+      #             number_values["#{letter}"] = [last_value]
+      #           else
+      #             number_values["#{letter}"] = serie_values
+      #           end
+      #
+      #         when "table_values"
+      #           number_values["#{letter}"] = serie_values
+      #       end
+      #
+      #     else
+      #       serie_values = [] #nil
+      #     end
+      #   end
+      # end
 
-        unless kpi_config_id.blank? || kpi_config_output_type.blank?
-          kpi_config = organization.kpis.where(id: kpi_config_id).first
-          output_type = iwidget.send("serie_#{letter}_output_type")
+      iwidget_number_value = get_iwidget_value(iwidget, organization, false, nil, nil, true)
+      number_values = iwidget_number_value[:value_to_show].first
 
-          if output_types[output_type]
-            output_types[output_type] << kpi_config_id
+
+      number_values.each do |letter, array_values|
+        data_by_date = Hash.new
+
+        array_values.each do |elt_hash|
+          selected_date = elt_hash[:selected_date]
+
+          if data_by_date["#{selected_date}"].blank?
+            project_value  = elt_hash[:field_value]
+
+            # data_by_date["#{selected_date}"] = {
+            #     project_id: [ elt_hash[:project_id] ],
+            #     selected_date: selected_date,
+            #     field_value: project_value,
+            #     project_label: "",
+            #     kpi_unit: elt_hash[:kpi_unit]
+            # }
+
+            first_letter_unit = elt_hash[:kpi_unit].to_s
+            data_by_date["#{selected_date}"] = project_value
           else
-            output_types[output_type] = Array.new
-            output_types[output_type] << kpi_config_id
+
+            #data_by_date["#{selected_date}"][:project_id] << elt_hash[:project_id]
+            #data_by_date["#{selected_date}"][:project_label] << elt_hash[:project_label]
+
+            field_value = data_by_date["#{selected_date}"][:field_value]
+            project_value = field_value + elt_hash[:field_value]
+            data_by_date["#{selected_date}"] = project_value
           end
+        end
 
-          if kpi_config
+        final_letter_values["#{letter}"] = data_by_date
 
-            serie_values = orga_controller.get_indicators_dashboard_kpi_values(organization.id, kpi_config_id)
-            kpi_unit = kpi_config.kpi_unit
 
-            case output_type
+        # first_letter_unit = ""
+        # value_first = value_array.first
+        # letter_value = value_first[:field_value] rescue 0
+        # first_letter_unit = value_first[:kpi_unit]  rescue nil
+        # formula = formula.gsub(letter, letter_value.to_s)
 
-              #[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"]
-              when "minimum"
-                if kpi_config.output_type.to_s.in?(["graphic", "serie"])
-                  min_value = serie_values.min{ |a, b| a[:field_value] <=> b[:field_value] }
-                  number_values["#{letter}"] = [min_value]
-                else
-                  number_values["#{letter}"] = serie_values
-                end
+      end
 
-              when "maximum"
+      #a_hash.merge(b_hash){ |k, a_value, b_value| a_value + b_value }
+      #final_hash.merge(letter_hash){ |k, a_value, b_value| a_value + b_value }
 
-                if kpi_config.output_type.to_s.in?(["graphic", "serie"])
-                  max_value = serie_values.max{ |a, b| a[:field_value] <=> b[:field_value] }
-                  number_values["#{letter}"] = [max_value]
-                else
-                  number_values["#{letter}"] = serie_values
-                end
+      final_letter_values.each do |letter, letter_hash|
 
-              when "average"
-
-                if kpi_config.output_type.to_s.in?(["graphic", "serie"])
-
-                  average = (serie_values.map{ |k| k[:field_value]}.sum / serie_values.size) rescue nil
-                  average_value = {  project_id: "",
-                                     selected_date: I18n.l(Time.now.to_date),
-                                     field_value: average.round(2),
-                                     project_label: "",
-                                     kpi_unit: kpi_unit
-                  }
-
-                  number_values["#{letter}"] = [average_value]
-                else
-                  number_values["#{letter}"] = serie_values
-                end
-
-              when "median"
-
-                if kpi_config.output_type.to_s.in?(["graphic", "serie"])
-
-                  sorted = serie_values.map{ |k| k[:field_value]}.sort
-                  nb_projects = serie_values.size
-
-                  median = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
-                  median_value = {  project_id: "",
-                                    selected_date: I18n.l(Time.now.to_date),
-                                    field_value: median.round(2),
-                                    project_label: "",
-                                    kpi_unit: kpi_unit
-                  }
-
-                  number_values["#{letter}"] = [median_value]
-                else
-                  number_values["#{letter}"] = serie_values
-                end
-
-              when "sum"
-
-                if kpi_config.output_type.to_s.in?(["graphic", "serie"])
-
-                  sum = serie_values.map{ |k| k[:field_value]}.sum
-                  sum_value = {  project_id: "",
-                                 selected_date: I18n.l(Time.now.to_date),
-                                 field_value: sum.round(2),
-                                 project_label: "",
-                                 kpi_unit: kpi_unit
-                  }
-
-                  number_values["#{letter}"] = [sum_value]
-                else
-                  number_values["#{letter}"] = serie_values
-                end
-
-              when "counter"
-
-                counter = serie_values.size
-                counter_value = {  project_id: "",
-                                   selected_date: I18n.l(Time.now.to_date),
-                                   field_value: counter,
-                                   project_label: "",
-                                   kpi_unit: kpi_unit
-                }
-
-                number_values["#{letter}"] = [counter_value]
-            end
-
+        letter_hash.each do |key, value|
+          if final_hash["#{key}"].blank?
+            final_hash["#{key}"] = { :"#{letter}" => value }
           else
-            serie_values = nil
+            final_hash["#{key}"]["#{letter}"] = value
           end
         end
       end
 
-      first_letter_unit = ""
-      number_values.each do |letter, value_array|
-        value_first = value_array.first
-        letter_value = value_first[:field_value] rescue 0
-        first_letter_unit = value_first[:kpi_unit]  rescue nil
-        formula = formula.gsub(letter, letter_value.to_s)
-      end
+      # on calcule la formule
+      final_hash.each do |selected_date, hash_value|
+        selected_date_formula = formula
 
+        final_letter_values.keys.each do |letter|
+          letter_value = hash_value[:"#{letter}"].to_f
+          selected_date_formula = selected_date_formula.gsub(letter.to_s, letter_value.to_s)
+        end
 
-      if correct_syntax?(formula)
-        result_value = eval(formula).round(user_number_precision)
-        if result_value.is_a?(Float) && result_value.nan?
-          '-'
+        if correct_syntax?(selected_date_formula)
+          selected_date_result_value = eval(selected_date_formula)#.round(user_number_precision)
+
+          if selected_date_result_value.is_a?(Float) && selected_date_result_value.nan?
+            selected_date_result_value = nil
+          end
         else
-          #"#{ActionController::Base.helpers.number_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr"))} #{iwidget.kpi_unit.to_s}"
-          ["#{result_value.to_f} #{first_letter_unit.to_s}"]
+          selected_date_result_value = nil
         end
-      else
-        '-'
+        equation_result_hash["#{selected_date}"] = selected_date_result_value
       end
+
+      equation_result_hash_values = equation_result_hash.values
+      equation_result_nb_elts = equation_result_hash.size
+      equation_output_type = iwidget.equation_output_type
+      case equation_output_type
+
+        when "minimum"
+          #result_value = equation_result_hash_values.min
+          result_value = equation_result_hash.group_by{|k, v| v}.min_by{|k, v| k}.last.to_h
+          value_to_show = ""
+          result_value.each do |key, val|
+            value_to_show << "#{key}  : #{val.to_f.round(user_number_precision)} #{first_letter_unit}"
+          end
+          return [value_to_show]
+
+        when "maximum"
+
+          result_value = equation_result_hash.group_by{|k, v| v}.max_by{|k, v| k}.last.to_h
+          value_to_show = ""
+          result_value.each do |key, val|
+            value_to_show << "#{key}  : #{val.to_f.round(user_number_precision)} #{first_letter_unit}"
+          end
+          return [value_to_show]
+
+        when "average"
+          result_value = equation_result_hash_values.sum / equation_result_nb_elts rescue nil
+          return ["#{result_value.to_f.round(user_number_precision)} #{first_letter_unit}"]
+
+        when "median"
+
+          result_value = equation_result_hash_values.sum / equation_result_nb_elts rescue nil
+          return ["#{result_value.to_f.round(user_number_precision)} #{first_letter_unit}"]
+
+        when "sum"
+          result_value = equation_result_hash_values.sum
+          return ["#{result_value.to_f.round(user_number_precision)} #{first_letter_unit}"]
+
+        when "counter"
+          return [equation_result_hash.size]
+
+        when "first_value"
+          result_value = equation_result_hash.first
+          value_to_show = "#{result_value.first}  : #{result_value.last.to_f.round(user_number_precision)} #{first_letter_unit}"
+          return [value_to_show]
+
+        when "last_value"
+          last_key = equation_result_hash.keys.last
+          value_to_show = "#{last_key}  : #{equation_result_hash[last_key].to_f.round(user_number_precision)} #{first_letter_unit}"
+          return [value_to_show]
+
+        when "table_values"
+          result_value = equation_result_hash
+
+          value_to_show = ""
+
+          result_value.each do |key, val|
+            value_to_show << "#{key}  :  #{val.to_f.round(user_number_precision)} #{first_letter_unit} \n\r"
+            value_to_show << "</br>"
+          end
+          return [raw(value_to_show)]
+
+        when "line_chart"
+          graphic_data_with_options = calculation_iwidget_graphic_values(iwidget, equation_result_hash, false, false)
+          graphic_data = graphic_data_with_options.first
+          series_options = graphic_data_with_options.last
+          value_to_show = raw (render :partial => 'iwidgets/g_line_chart', :locals => { :r_data => graphic_data, iwidget: iwidget })
+          return [value_to_show]
+
+        when "bar_chart"
+          graphic_data_with_options = calculation_iwidget_graphic_values(iwidget, equation_result_hash, false, false)
+          graphic_data = graphic_data_with_options.first
+          series_options = graphic_data_with_options.last
+          value_to_show = render :partial => 'iwidgets/g_bar_chart', :locals => { :r_data => graphic_data, iwidget: iwidget, series_options: series_options }
+          return [value_to_show]
+
+        when "stacked_bar_chart"
+          graphic_data_with_options = calculation_iwidget_graphic_values(iwidget, equation_result_hash, false, false)
+          graphic_data = graphic_data_with_options.first
+          series_options = graphic_data_with_options.last
+
+          value_to_show = render :partial => 'iwidgets/g_stacked_bar_chart', :locals => { :r_data => graphic_data, iwidget: iwidget }
+          return [value_to_show]
+
+        when "pie_chart"
+          graphic_data_with_options = calculation_iwidget_graphic_values(iwidget, equation_result_hash, false, false)
+          graphic_data = graphic_data_with_options.first
+          series_options = graphic_data_with_options.last
+
+          value_to_show = render :partial => 'iwidgets/g_pie_chart', :locals => { :multiple_r_data => { "#{iwidget.name}" => graphic_data }, iwidget: iwidget }
+          return [value_to_show]
+        else
+          return equation_result_hash
+      end
+
+
+      # if correct_syntax?(formula)
+      #   result_value = eval(formula).round(user_number_precision)
+      #   if result_value.is_a?(Float) && result_value.nan?
+      #     '-'
+      #   else
+      #     #"#{ActionController::Base.helpers.number_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr"))} #{iwidget.kpi_unit.to_s}"
+      #     ["#{result_value.to_f} #{first_letter_unit.to_s}"]
+      #   end
+      # else
+      #   '-'
+      # end
     # rescue
     #   '-'
     # end
+
+  end
+
+  def calculation_iwidget_graphic_values(iwidget, calculation_iwidget_hash_values, is_bar=false, is_stacked=false)
+
+    series_options = {
+      legend: { position: "right", alignment: 'start', orientation: 'vertical' },
+      chartArea: { left: '10%', top: '3%', width:'70%', height:'80%'},
+
+      hAxis: { title: iwidget.x_axis_label },
+      vAxis: { title: iwidget.y_axis_label }
+    }
+
+    if is_bar == true
+      series_options[:seriesType] = 'bars'
+      series_options[:bar] = { groupWidth: '65%' }
+    end
+
+    if is_stacked == true
+      series_options[:isStacked] = true
+    end
+
+    graphic_data = Array.new
+    graphic_data << ['Selected data', 'Values']
+    calculation_iwidget_hash_values.each do |key, value|
+      graphic_data << [key, value]
+    end
+
+    [graphic_data, series_options]
   end
 
   def get_calculation_widget_value_without_unit(iwidget, component = nil)

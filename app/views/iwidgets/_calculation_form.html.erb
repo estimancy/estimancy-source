@@ -12,6 +12,7 @@
             <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
             <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
             <% output_type_collection = Iwidget.equation_output_types %>
+            <% equation_output_type_collection = Iwidget.output_types %>
 
             <div class="form-row">
               <div class="col-6">
@@ -130,6 +131,19 @@
               </div>
             </div>
 
+
+            <div class="col-6 select-estimancy">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <label class="mdl-textfield__label" for="output_type"><%= I18n.t('formula_output_type')  %></label>
+                <%= f.input :equation_output_type,
+                            :label => false,
+                            :as => :select,
+                            :collection => equation_output_type_collection,
+                            :input_html => { :class => 'mdl-textfield__input form-control' },
+                            include_blank: true %>
+              </div>
+            </div>
+
             <!-- END SERIES -->
             <div class="form-row">
               <div class="col-6">
@@ -161,8 +175,6 @@
             </div>
 
             <br>
-
-
             <hr>
 
             <b>

@@ -85,9 +85,10 @@ class IwidgetsController < ApplicationController
 
     respond_to do |format|
       if @iwidget.update(iwidget_params)
+        #flash[:notice] = 'Iwidget was successfully updated.'
         #format.js { render :js => "window.location.replace('#{organization_global_kpis_path(@current_organization, is_a_dashboard: true, partial_name: partial_name, item_title: @indicator_dashboard.name, anchor: 'tabs-indicator_dashboards')}');"}
         format.js { render :js => "window.location.replace('#{organization_global_kpis_path(@current_organization, is_a_dashboard: true, partial_name: partial_name, item_title: @indicator_dashboard.name)}');"}
-        format.html { redirect_to @iwidget, notice: 'Iwidget was successfully updated.' }
+        format.html { redirect_to @iwidget }
         format.json { head :no_content }
       else
         format.js { render action: :edit }
@@ -158,6 +159,6 @@ class IwidgetsController < ApplicationController
                                       :serie_d_kpi_id, :serie_d_output_type,
                                       :icon_class, :color, :position_x, :position_y, :width, :height,
                                       :is_label_widget, :comment, :is_calculation_widget, :equation,
-                                      :min_value, :max_value, :validation_text, :signalize, :x_axis_label, :y_axis_label)
+                                      :min_value, :max_value, :validation_text, :signalize, :x_axis_label, :y_axis_label, :equation_output_type)
     end
 end
