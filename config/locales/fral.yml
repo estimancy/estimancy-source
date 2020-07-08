@@ -2572,3 +2572,5 @@ fral:
   choose_indicator: "Choisir un indicateur"
   formula_output_type: "Formule :  sortie souhaitée"
 
+
+  additional_description: "Complément de libellé"

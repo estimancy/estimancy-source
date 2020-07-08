@@ -1,6 +1,8 @@
 .bundle
 .project
 .rvmrc
+.bundle/
+/.bundle/
 /db/*.sqlite3
 /log/*.log
 /log/*.pid
@@ -13,8 +15,24 @@ Gemfile.lock
 /coverage
 /solr/*
 # Gemnasium gem configuration file
-config/gemnasium.yml
+/config/gemnasium.yml
 /config/license_finder.yml
-config/license_finder_SAVE.yml
+/config/license_finder_SAVE.yml
 /config/database.yml
 /config/sensitive_settings.yml
+/docker-compose/
+.travis.yml
+.saas-cache/
+/.saas-cache/
+/data-identification
+/data_identification
+.gitignore~
+.DS_Store
+/config/database.travis.yml
+/config/newrelic.yml
+/config/sensitive_settings.travis.yml
+/config/sidekiq.yml
+/config/tinymce.yml
+/tmp
+./tmp
+./tmp/

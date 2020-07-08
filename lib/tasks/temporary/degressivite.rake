@@ -22,7 +22,7 @@ namespace :change do
 
         rtu_ris_outputs = Guw::GuwOutput.where(organization_id: o.id,
                                                guw_model_id: guw_model.id,
-                                               name: ["Charge RIS (jh)", "Charge RTU (jh)", "Assiette Test (jh)", "Charge RTU Avec Dégr."])
+                                               name: ["Charge RIS (jh)", "Charge RTU (jh)", "Assiette Test (jh)", "Charge RTU Avec Dégr.", "Charge RTU avec prod. (jh)"])
 
         t_outputs = Guw::GuwOutput.where(organization_id: o.id,
                                          guw_model_id: guw_model.id,

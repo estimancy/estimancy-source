@@ -2254,8 +2254,8 @@ fr_smals:
         one: "%{count} %{model} affiché(e)"
         other: "%{count} %{model} affiché(e)s"
     page_gap: "&hellip;"
-    previous_label: "← précédent"  
-  
+    previous_label: "← précédent"
+
   warning_intermediate_project_version_cannot_be_deleted: "Impossible de supprimer une version intermédiaire."
   multiple_delete: "Suppression multiple"
   hide_wbs_header: "Masquer l'entête de la WBS"
@@ -2604,6 +2604,8 @@ fr_smals:
   selected_application: "Application sélectionnée"
   show_coefficient_label: "Afficher le libellé du coefficient"
   show_coefficient_application_label: "Afficher le libellé de l'application"
+  additional_description: "Complément de libellé"
+
 
   use_slider: "Use the slider to adjust costs and deadlines."
   use_slider_comments: "Plus le délai souhaité est court, plus l'équipe est grande, plus le projet est cher et inversement."
