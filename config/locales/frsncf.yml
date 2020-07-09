@@ -250,7 +250,7 @@ frsncf:
   create_new_project: "Nouvelle devis"
 
   # Devis dashboard
-  create_project: "Créer une devis"
+  create_project: "Créer un devis"
   projects_list: "Liste des devis"
   quick_access: "Accès rapide"
   to_the_latest_devis_consulted: "aux dernières devis consultées"
@@ -2669,6 +2669,6 @@ frsncf:
   date_year: "Année"
   choose_indicator: "Choisir un indicateur"
   formula_output_type: "Formule :  sortie souhaitée"
-
-
   additional_description: "Complément de libellé"
+  localization: "Localisation"
+  input_value: "Valeur d'entrée"

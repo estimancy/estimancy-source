@@ -2692,5 +2692,7 @@ fr_smals:
   date_year: "Année"
   choose_indicator: "Choisir un indicateur"
   formula_output_type: "Formule :  sortie souhaitée"
+  localization: "Localisation"
+  input_value: "Valeur d'entrée"
 
 

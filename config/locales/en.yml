@@ -2639,8 +2639,7 @@ en:
   date_year: "Year"
   choose_indicator: "Choose an indicator"
   formula_output_type: "Formula output type"
-
-
-
   additional_description: "Additional description"
+  localization: "Localization"
+  input_value: "Input value"
 

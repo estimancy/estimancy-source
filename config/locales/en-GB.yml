@@ -2105,4 +2105,6 @@ en-gb:
   date_year: "Year"
   choose_indicator: "Choose an indicator"
   formula_output_type: "Formula output type"
+  localization: "Localization"
+  input_value: "Input value"
 

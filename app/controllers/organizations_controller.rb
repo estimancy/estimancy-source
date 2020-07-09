@@ -246,9 +246,25 @@ class OrganizationsController < ApplicationController
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:show_wbs_activity_ratio))
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:fields))  #project_fields
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:is_organization_kpi_widget))
-        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:organization_kpi_name))
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:signalize))
         worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:lock_project))
+
+        #worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:organization_kpi_name))
+        worksheet_view_widgets.add_cell(0, vw += 1, "Serie A")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:serie_a_output_type))
+
+        worksheet_view_widgets.add_cell(0, vw += 1, "Serie B")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:serie_b_output_type))
+
+        worksheet_view_widgets.add_cell(0, vw += 1, "Serie C")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:serie_c_output_type))
+
+        worksheet_view_widgets.add_cell(0, vw += 1, "Serie D")
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:serie_d_output_type))
+
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:x_axis_label))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:y_axis_label))
+        worksheet_view_widgets.add_cell(0, vw += 1, I18n.t(:end_of_series))
 
         #Then copy the widgets of the dafult view
         widget_index = 0
@@ -333,9 +349,25 @@ class OrganizationsController < ApplicationController
               worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.show_wbs_activity_ratio ? 1 : 0))
               worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.project_fields.last.field.name rescue nil))
               worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.is_organization_kpi_widget ? 1 : 0))
-              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.kpi.name rescue nil))
               worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.signalize ? 1 : 0))
               worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.lock_project ? 1 : 0))
+
+              #worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.kpi.name rescue nil))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.serie_a_kpi.name rescue nil))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.serie_a_output_type)
+
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.serie_b_kpi.name rescue nil))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.serie_b_output_type)
+
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.serie_c_kpi.name rescue nil))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.serie_c_output_type)
+
+              worksheet_view_widgets.add_cell(widget_index, k += 1, (view_widget.serie_d_kpi.name rescue nil))
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.serie_d_output_type)
+
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.x_axis_label)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.y_axis_label)
+              worksheet_view_widgets.add_cell(widget_index, k += 1, view_widget.end_of_series)
             end
           end
         end
