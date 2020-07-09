@@ -813,18 +813,40 @@ class OrganizationsController < ApplicationController
                           show_wbs_activity_ratio = row.cells[27].value rescue nil
                           project_field = row.cells[28].value rescue nil
                           is_organization_kpi_widget = row.cells[29].value rescue nil
-                          organization_kpi_name = row.cells[30].value rescue nil
-                          signalize = row.cells[31].value rescue nil
-                          lock_project = row.cells[32].value rescue nil
+                          signalize = row.cells[30].value rescue nil
+                          lock_project = row.cells[31].value rescue nil
 
+                          x_axis_label = row.cells[40].value rescue nil
+                          y_axis_label = row.cells[41].value rescue nil
+                          end_of_series = row.cells[42].value rescue nil
 
-                          kpi_id = nil
-                          unless organization_kpi_name.blank?
-                            kpi_config = @organization.kpis.where(name: organization_kpi_name).first
-                            if kpi_config
-                              kpi_id = kpi_config.id
+                          #organization_kpi_name = row.cells[30].value rescue nil
+                          kpi_names = Hash.new ; output_types = Hash.new; kpi_ids = Hash.new
+
+                          kpi_names['a'] = row.cells[32].value rescue nil
+                          output_types['a'] = row.cells[33].value rescue nil
+
+                          kpi_names['b'] = row.cells[34].value rescue nil
+                          output_types['b'] = row.cells[35].value rescue nil
+
+                          kpi_names['c'] = row.cells[36].value rescue nil
+                          output_types['c'] = row.cells[37].value rescue nil
+
+                          kpi_names['d'] = row.cells[38].value rescue nil
+                          output_types['d'] = row.cells[39].value rescue nil
+
+                          ['a', 'b', 'c', 'd'].each do |letter|
+                            kpi_name = kpi_names["#{letter}"]
+
+                            unless kpi_name.blank?
+                              kpi_config = @organization.kpis.where(name: kpi_name).first
+                              if kpi_config
+                                #kpi_id = kpi_config.id
+                                kpi_ids["#{letter}"] = kpi_config.id
+                              end
                             end
                           end
+
 
                           field_id = @organization.fields.where(name: project_field).first.id rescue nil
                           estimation_value_id = nil
@@ -979,9 +1001,24 @@ class OrganizationsController < ApplicationController
                                                               validation_text: validation_text,
                                                               position_y: position_y,
                                                               is_organization_kpi_widget: is_organization_kpi_widget,
-                                                              kpi_id: kpi_id,
                                                               signalize: signalize,
-                                                              lock_project: lock_project)
+                                                              lock_project: lock_project,
+
+                                                              serie_a_kpi_id: kpi_ids['a'],
+                                                              serie_a_output_type: output_types['a'],
+
+                                                              serie_b_kpi_id: kpi_ids['b'],
+                                                              serie_b_output_type: output_types['b'],
+
+                                                              serie_c_kpi_id: kpi_ids['c'],
+                                                              serie_c_output_type: output_types['c'],
+
+                                                              serie_d_kpi_id: kpi_ids['d'],
+                                                              serie_d_output_type: output_types['d'],
+
+                                                              x_axis_label: x_axis_label,
+                                                              y_axis_label: y_axis_label,
+                                                              end_of_series: end_of_series)
 
                             #new_view_widget.save
                             if new_view_widget.save

@@ -129,14 +129,14 @@ class IwidgetsController < ApplicationController
             if iwidget.id == dragged_widget_id.to_i
 
               iwidget.update_attributes(position_x: params[:x_position],
-                                            position_y: params[:y_position],
-                                            width: params[:item_width],
-                                            height: params[:item_height])
+                                        position_y: params[:y_position],
+                                        width: params[:item_width],
+                                        height: params[:item_height])
             else
               iwidget.update_attributes(position_x: iwidget_item[:x_position],
-                                            position_y: iwidget_item[:y_position],
-                                            width: iwidget_item[:item_width],
-                                            height: iwidget_item[:item_height])
+                                        position_y: iwidget_item[:y_position],
+                                        width: iwidget_item[:item_width],
+                                        height: iwidget_item[:item_height])
             end
           end
         end
