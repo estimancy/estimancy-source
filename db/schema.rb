@@ -1889,6 +1889,27 @@ ActiveRecord::Schema.define(version: 20200625150419) do
     t.datetime "updated_at"
   end
 
+  create_table "peicons", force: :cascade do |t|
+    t.string   "name",              limit: 255
+    t.string   "icon_file_name",    limit: 255
+    t.string   "icon_content_type", limit: 255
+    t.integer  "icon_file_size",    limit: 4
+    t.datetime "icon_updated_at"
+    t.string   "uuid",              limit: 255
+    t.integer  "record_status_id",  limit: 4
+    t.string   "custom_value",      limit: 255
+    t.integer  "owner_id",          limit: 4
+    t.text     "change_comment",    limit: 65535
+    t.integer  "reference_id",      limit: 4
+    t.string   "reference_uuid",    limit: 255
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+  end
+
+  add_index "peicons", ["record_status_id"], name: "index_peicons_on_record_status_id", using: :btree
+  add_index "peicons", ["reference_id"], name: "index_peicons_on_parent_id", using: :btree
+  add_index "peicons", ["uuid"], name: "index_peicons_on_uuid", unique: true, using: :btree
+
   create_table "pemodules", force: :cascade do |t|
     t.string   "title",                    limit: 255
     t.string   "alias",                    limit: 255
@@ -2182,6 +2203,25 @@ ActiveRecord::Schema.define(version: 20200625150419) do
     t.float    "value_most_likely",      limit: 24
     t.float    "value_high",             limit: 24
   end
+
+  create_table "record_statuses", force: :cascade do |t|
+    t.string   "name",             limit: 255
+    t.string   "description",      limit: 255
+    t.string   "uuid",             limit: 255
+    t.integer  "record_status_id", limit: 4
+    t.integer  "status_id",        limit: 4
+    t.string   "custom_value",     limit: 255
+    t.integer  "owner_id",         limit: 4
+    t.text     "change_comment",   limit: 65535
+    t.integer  "reference_id",     limit: 4
+    t.string   "reference_uuid",   limit: 255
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  add_index "record_statuses", ["record_status_id"], name: "index_record_statuses_on_record_status_id", using: :btree
+  add_index "record_statuses", ["reference_id"], name: "index_record_statuses_on_parent_id", using: :btree
+  add_index "record_statuses", ["uuid"], name: "index_record_statuses_on_uuid", unique: true, using: :btree
 
   create_table "size_unit_type_complexities", force: :cascade do |t|
     t.integer  "size_unit_type_id",              limit: 4
