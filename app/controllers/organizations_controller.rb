@@ -6044,7 +6044,7 @@ class OrganizationsController < ApplicationController
 
           projects_values << value
           x_y_axis_outputs << { project_id: project.id,
-                             selected_date: I18n.l(project.send("#{selected_date}").to_date),
+                             selected_date: project.send("#{selected_date}").to_date.beginning_of_month.to_s, #I18n.l(project.send("#{selected_date}").to_date),
                              field_value: value.round(2),
                              project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
                              kpi_unit: kpi_config.kpi_unit
@@ -6059,14 +6059,16 @@ class OrganizationsController < ApplicationController
         # end.to_h
 
         #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").beginning_of_week] }
-        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").beginning_of_week}/#{p.send("#{selected_date}").year}" }
+        #projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").to_date.beginning_of_week}/#{p.send("#{selected_date}").year}" }
+        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").to_date.beginning_of_week}" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
 
       when "date_month"
         #projects.group_by { |m| m.send("#{selected_date}").beginning_of_month }
         #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").month] }
-        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").month} / #{p.send("#{selected_date}").year}" }
+
+        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").to_date.beginning_of_month}" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_trimester"
