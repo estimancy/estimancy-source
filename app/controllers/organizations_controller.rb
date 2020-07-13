@@ -6070,14 +6070,17 @@ class OrganizationsController < ApplicationController
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_trimester"
-
+        #projects_by_x_axis_config = projects.group_by{ |p| "T#{ (p.send("#{selected_date}").month / 3).ceil} / #{p.send("#{selected_date}").year}" }
         #projects_by_x_axis_config = projects.group_by{ |p| "#{(((p.send("#{selected_date}").month - 1) / 3) + 1).floor}/#{p.send("#{selected_date}").year}" }
-        projects_by_x_axis_config = projects.group_by{ |p| "T#{ (p.send("#{selected_date}").month / 3).ceil} / #{p.send("#{selected_date}").year}" }
+
+        projects_by_x_axis_config = projects.group_by{ |p| "#{get_trimester_beginning_month( (((p.send("#{selected_date}").month - 1) / 3) + 1).floor, p.send("#{selected_date}").year) }" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_semester"
         #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, (((p.send("#{selected_date}").month - 1) / 6) +1).floor ] }
-        projects_by_x_axis_config = projects.group_by{ |p| "S#{(((p.send("#{selected_date}").month - 1) / 6) + 1).floor} / #{p.send("#{selected_date}").year}" }
+        #projects_by_x_axis_config = projects.group_by{ |p| "S#{(((p.send("#{selected_date}").month - 1) / 6) + 1).floor} / #{p.send("#{selected_date}").year}" }
+
+        projects_by_x_axis_config = projects.group_by{ |p| "#{get_semester_beginning_month( (((p.send("#{selected_date}").month - 1) / 6) + 1).floor, p.send("#{selected_date}").year ) }" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_year"
@@ -6095,6 +6098,41 @@ class OrganizationsController < ApplicationController
 
     x_y_axis_outputs
   end
+
+
+  #get Trimester beginning of month from trimester number
+  def get_trimester_beginning_month(trimester_number, year)
+    case trimester_number
+
+      when 1
+        beginning_month = Date.new(year, 1)
+
+      when 2
+        beginning_month = Date.new(year, 4)
+
+      when 3
+        beginning_month = Date.new(year, 7)
+
+      when 4
+        beginning_month = Date.new(year, 10)
+    end
+
+    #I18n.l(beginning_month)
+    beginning_month
+  end
+
+
+  #get semester beginning of month from semester number
+  def get_semester_beginning_month(semester_number, year)
+    case semester_number
+      when 1
+        beginning_month = Date.new(year, 1)
+      when 2
+        beginning_month = Date.new(year, 7)
+    end
+    beginning_month
+  end
+
 
 
 
