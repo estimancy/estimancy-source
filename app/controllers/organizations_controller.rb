@@ -6310,7 +6310,7 @@ class OrganizationsController < ApplicationController
 
           @projects_values << value
           indicator_values << { project_id: project.id,
-                                selected_date: I18n.l(project.send("#{selected_date}").to_date),
+                                selected_date: project.send("#{selected_date}").to_date.to_s, #I18n.l(project.send("#{selected_date}").to_date),
                                 field_value: value.round(2),
                                 project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
                                 kpi_unit: kpi_config.kpi_unit
@@ -6343,7 +6343,7 @@ class OrganizationsController < ApplicationController
             when "average"
               average = @projects_values.sum / nb_projects
               @calculation_output << { project_id: "",
-                                       selected_date: I18n.l(end_date.to_date),
+                                       selected_date: end_date.to_date.to_s,
                                        field_value: average.round(2),
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
@@ -6355,7 +6355,7 @@ class OrganizationsController < ApplicationController
               median = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
               #median = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
               @calculation_output << { project_id: "",
-                                       selected_date: I18n.l(end_date.to_date),
+                                       selected_date: end_date.to_date.to_s,
                                        field_value: median.round(2),
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
@@ -6364,7 +6364,7 @@ class OrganizationsController < ApplicationController
             when "sum"
               sum = @projects_values.sum
               @calculation_output << { project_id: "",
-                                       selected_date: I18n.l(end_date.to_date),
+                                       selected_date: end_date.to_date.to_s,
                                        field_value: sum.round(2),
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
@@ -6374,7 +6374,7 @@ class OrganizationsController < ApplicationController
               #@calculation_output = nb_projects
               counter = nb_projects
               @calculation_output << { project_id: "",
-                                       selected_date: I18n.l(end_date.to_date),
+                                       selected_date: end_date.to_date.to_s,
                                        field_value: counter,
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
