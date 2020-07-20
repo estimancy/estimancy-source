@@ -3436,7 +3436,7 @@ class OrganizationsController < ApplicationController
     end
 
     #Indicateurs
-    @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
+    @all_kpi_config = Kpi.where(organization_id: @organization.id)
     @productivity_indicators = Hash.new
   end
 
@@ -5775,7 +5775,7 @@ class OrganizationsController < ApplicationController
 
         # KPI config / Productivité
         when "tabs_kpi_general_dashboard"
-          @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
+          @all_kpi_config = Kpi.where(organization_id: @organization.id)
           @productivity_indicators = Hash.new
         #@productivity_indicators = projects_productivity_indicators(@organization.id, nil)
         else
@@ -5879,7 +5879,7 @@ class OrganizationsController < ApplicationController
     @selected_kpi_config = []
     kpi_config_id = params['kpi_configuration']
     selected_configs = params[:selected_kpi_configuration]
-    orga_productivity_kpis = @organization.kpis.where(kpi_type: "Productivity")
+    orga_productivity_kpis = @organization.kpis
 
     if selected_configs.blank?
       orga_productivity_kpis.update_all(is_selected: false)
@@ -6332,7 +6332,6 @@ class OrganizationsController < ApplicationController
           end
 
         else
-
           case output_type.to_s
             when "minimum"
               @calculation_output << indicator_values.min_by{|k| k[:field_value] }
@@ -6387,8 +6386,10 @@ class OrganizationsController < ApplicationController
             else
           end
         end
-
       end
+
+      # #on sauvegarde les valeurs du KPI
+      # kpi_config.update_attributes(indicator_result: @calculation_output)
     end
 
     @calculation_output

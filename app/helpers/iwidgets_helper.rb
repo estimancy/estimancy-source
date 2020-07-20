@@ -282,7 +282,7 @@ module IwidgetsHelper
 
             bars_max = bar_chart.values.flatten.map{|k| k[:field_value] }.max
             stacked_bars_max = stacked_bar_chart.values.flatten.map{|k| k[:field_value] }.sum
-            vAxis_max_value = [bars_max, stacked_bars_max].max
+            vAxis_max_value = [bars_max.to_f, stacked_bars_max.to_f].max.floor
 
             series_options[:vAxis][:viewWindow] = { min: 0, max: vAxis_max_value }
           end
@@ -291,7 +291,8 @@ module IwidgetsHelper
         # Line chart
         if line_chart.blank?
           series_options[:series]["#{all_charts.size}"] = { targetAxisIndex: 0 }
-          series_options[:chartArea] = {  width:'100%', height:'70%'},
+          series_options[:chartArea] = { width:'100%', height:'70%'}
+          series_options[:legend] = { position: "bottom", alignment: 'start'}
 
           graphic_data = get_combine_chart_values(iwidget, organization, all_charts)
           value_to_show = render :partial => 'iwidgets/g_bar_chart', :locals => { :r_data => graphic_data, iwidget: iwidget, series_options: series_options }

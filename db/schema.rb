@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200625150419) do
+ActiveRecord::Schema.define(version: 20200715122726) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1356,38 +1356,42 @@ ActiveRecord::Schema.define(version: 20200625150419) do
   end
 
   create_table "kpis", force: :cascade do |t|
-    t.string   "kpi_type",                limit: 255
-    t.integer  "organization_id",         limit: 4
-    t.string   "name",                    limit: 255
-    t.text     "description",             limit: 65535
-    t.integer  "project_id",              limit: 4
-    t.integer  "estimation_model_id",     limit: 4
-    t.integer  "field_id",                limit: 4
-    t.string   "output_type",             limit: 255
-    t.integer  "application_id",          limit: 4
-    t.integer  "project_area_id",         limit: 4
-    t.integer  "project_category_id",     limit: 4
-    t.integer  "platform_category_id",    limit: 4
-    t.integer  "acquisition_category_id", limit: 4
-    t.integer  "provider_id",             limit: 4
-    t.integer  "nb_last_projects",        limit: 4
+    t.integer  "organization_id",           limit: 4
+    t.string   "name",                      limit: 255
+    t.text     "description",               limit: 65535
+    t.integer  "project_id",                limit: 4
+    t.integer  "estimation_model_id",       limit: 4
+    t.integer  "field_id",                  limit: 4
+    t.string   "output_type",               limit: 255
+    t.integer  "application_id",            limit: 4
+    t.integer  "project_area_id",           limit: 4
+    t.integer  "project_category_id",       limit: 4
+    t.integer  "platform_category_id",      limit: 4
+    t.integer  "acquisition_category_id",   limit: 4
+    t.integer  "provider_id",               limit: 4
+    t.integer  "nb_last_projects",          limit: 4
     t.boolean  "include_historized"
-    t.string   "project_versions",        limit: 255
-    t.integer  "copy_id",                 limit: 4
+    t.string   "project_versions",          limit: 255
+    t.integer  "copy_id",                   limit: 4
     t.boolean  "is_selected"
-    t.string   "selected_date",           limit: 255
-    t.string   "kpi_unit",                limit: 255
-    t.string   "position_x",              limit: 255
-    t.string   "position_y",              limit: 255
-    t.string   "width",                   limit: 255
-    t.string   "height",                  limit: 255
-    t.datetime "created_at",                            null: false
-    t.datetime "updated_at",                            null: false
+    t.string   "selected_date",             limit: 255
+    t.string   "kpi_unit",                  limit: 255
+    t.string   "position_x",                limit: 255
+    t.string   "position_y",                limit: 255
+    t.string   "width",                     limit: 255
+    t.string   "height",                    limit: 255
+    t.datetime "created_at",                              null: false
+    t.datetime "updated_at",                              null: false
     t.datetime "start_date"
     t.datetime "end_date"
-    t.float    "kpi_coefficient",         limit: 24
-    t.string   "x_axis_config",           limit: 255
-    t.string   "y_axis_config",           limit: 255
+    t.float    "kpi_coefficient",           limit: 24
+    t.string   "x_axis_config",             limit: 255
+    t.string   "y_axis_config",             limit: 255
+    t.string   "period_start_date",         limit: 255
+    t.integer  "period_start_date_history", limit: 4
+    t.string   "period_end_date",           limit: 255
+    t.integer  "period_end_date_history",   limit: 4
+    t.text     "indicator_result",          limit: 65535
   end
 
   create_table "labor_categories", force: :cascade do |t|

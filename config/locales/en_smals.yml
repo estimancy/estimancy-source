@@ -2641,5 +2641,8 @@ en_smals:
   formula_output_type: "Formula output type"
   localization: "Localization"
   input_value: "Input value"
+  current_date: "Today's date"
+  enter_date: "Enter a date"
+  history: "History"
 
 

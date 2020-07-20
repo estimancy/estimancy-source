@@ -1,5 +1,7 @@
 class Kpi < ActiveRecord::Base
 
+  serialize :indicator_result, Array
+
   validates :organization_id, presence: true
   validates :name, presence: true
 
@@ -88,6 +90,18 @@ class Kpi < ActiveRecord::Base
     end
 
     estimation_model_fields
+  end
+
+
+  def self.period_dates_collection
+    [[I18n.t(:current_date), "current_date"],
+     [I18n.t(:date_week), "date_week"],
+     [I18n.t(:date_month), "date_month"],
+     [I18n.t(:date_trimester), "date_trimester"],
+     [I18n.t(:date_semester), "date_semester"],
+     [I18n.t(:date_year), "date_year"],
+     [I18n.t(:enter_date), "enter_date"]
+    ]
   end
 
 
