@@ -44,16 +44,12 @@
             </div>
           </div>
 
-          <h6><%= guw_type.description %></h6>
-
-          <%# guw_type_guw_complexities = guw_type.guw_complexities %>
-          <%# guw_type_guw_type_complexities = guw_type.guw_type_complexities %>
+          <h6><%= simple_format(guw_type.description) %></h6>
 
           <br>
           <br>
 
-
-          <div style="overflow: auto">
+          <div class="col mt-4">
             <%= form_tag guw_complexity_work_units_save_complexity_work_units_path, style: "width: 100%;" do %>
             <%= hidden_field_tag :guw_type_id, guw_type.id %>
             <table class="table table-list">
@@ -326,19 +322,19 @@
 
 
                         <td class="align-center">
-                        <%= check_box_tag "enable[#{guw_attribute.id}][#{type_complexity.id}]", "enable", ac.nil? ? false : ac.enable_value, class: "" %>
+                        <%= check_box_tag "enable[#{guw_attribute.id}][#{type_complexity.id}]", "enable", ac.nil? ? false : ac.enable_value, class: "", style: "width: 40px;" %>
                       </td>
                       <td class="align-center">
-                        <%= text_field_tag "bottom[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.bottom_range, class: "" %>
+                        <%= text_field_tag "bottom[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.bottom_range, class: "", style: "width: 40px;" %>
                       </td>
                       <td class="align-center">
-                        <%= text_field_tag "top[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.top_range, class: "" %>
+                        <%= text_field_tag "top[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.top_range, class: "", style: "width: 40px;" %>
                       </td>
                       <td class="align-center">
-                        <%= text_field_tag "coefficient[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value, class: "" %>
+                        <%= text_field_tag "coefficient[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value, class: "", style: "width: 40px;" %>
                       </td>
                       <td class="align-center">
-                        <%= text_field_tag "value_b[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value_b, class: "" %>
+                        <%= text_field_tag "value_b[#{guw_attribute.id}][#{type_complexity.id}]", ac.nil? ? '' : ac.value_b, class: "", style: "width: 40px;" %>
                       </td>
                     <% end %>
                   </tr>
