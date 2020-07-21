@@ -21,11 +21,6 @@
                 <div id="kpi" class="card-body">
 
                   <% if @current_organization.activate_indicators_dashboard? %>
-
-                      <%# if @partial_name.blank? %>
-                          <%#= render :partial => "indicator_dashboards/show", locals: {indicator_dashboard: @default_dashboard_name} %>
-                      <%# else %>
-                          <%# @indicator_dashboard = IndicatorDashboard.where(organization_id: @organization.id, name: params[:item_title]).first %>
                       <% if @item_title == "indicator_dashboards" %>
                           <%= render :partial => "organizations/#{@partial_name}" %>
                       <% else %>
@@ -36,18 +31,6 @@
                             <h4><%= I18n.t('please_return_check_kpi_type')%></h4>
                           <% end %>
                       <% end %>
-
-                    <%# if params[:is_a_dashboard].to_s == "true" %>
-                      <%# @indicator_dashboard = IndicatorDashboard.where(organization_id: @organization.id, name: params[:item_title]).first %>
-                      <%#= render :partial => "indicator_dashboards/show", locals: {indicator_dashboard: @indicator_dashboard} %>
-                    <%# else %>
-                      <%# if @partial_name.blank? %>
-                          <%#= render :partial => "indicator_dashboards/show", locals: {indicator_dashboard: @default_dashboard_name} %>
-                      <%# else %>
-                          <%#= render :partial => "organizations/#{@partial_name}" %>
-                      <%# end %>
-                    <%# end %>
-
 
                   <% else %>
                       <h4><%= I18n.t('please_return_check_kpi_type')%></h4>

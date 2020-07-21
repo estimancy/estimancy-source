@@ -813,18 +813,40 @@ class OrganizationsController < ApplicationController
                           show_wbs_activity_ratio = row.cells[27].value rescue nil
                           project_field = row.cells[28].value rescue nil
                           is_organization_kpi_widget = row.cells[29].value rescue nil
-                          organization_kpi_name = row.cells[30].value rescue nil
-                          signalize = row.cells[31].value rescue nil
-                          lock_project = row.cells[32].value rescue nil
+                          signalize = row.cells[30].value rescue nil
+                          lock_project = row.cells[31].value rescue nil
 
+                          x_axis_label = row.cells[40].value rescue nil
+                          y_axis_label = row.cells[41].value rescue nil
+                          end_of_series = row.cells[42].value rescue nil
 
-                          kpi_id = nil
-                          unless organization_kpi_name.blank?
-                            kpi_config = @organization.kpis.where(name: organization_kpi_name).first
-                            if kpi_config
-                              kpi_id = kpi_config.id
+                          #organization_kpi_name = row.cells[30].value rescue nil
+                          kpi_names = Hash.new ; output_types = Hash.new; kpi_ids = Hash.new
+
+                          kpi_names['a'] = row.cells[32].value rescue nil
+                          output_types['a'] = row.cells[33].value rescue nil
+
+                          kpi_names['b'] = row.cells[34].value rescue nil
+                          output_types['b'] = row.cells[35].value rescue nil
+
+                          kpi_names['c'] = row.cells[36].value rescue nil
+                          output_types['c'] = row.cells[37].value rescue nil
+
+                          kpi_names['d'] = row.cells[38].value rescue nil
+                          output_types['d'] = row.cells[39].value rescue nil
+
+                          ['a', 'b', 'c', 'd'].each do |letter|
+                            kpi_name = kpi_names["#{letter}"]
+
+                            unless kpi_name.blank?
+                              kpi_config = @organization.kpis.where(name: kpi_name).first
+                              if kpi_config
+                                #kpi_id = kpi_config.id
+                                kpi_ids["#{letter}"] = kpi_config.id
+                              end
                             end
                           end
+
 
                           field_id = @organization.fields.where(name: project_field).first.id rescue nil
                           estimation_value_id = nil
@@ -979,9 +1001,24 @@ class OrganizationsController < ApplicationController
                                                               validation_text: validation_text,
                                                               position_y: position_y,
                                                               is_organization_kpi_widget: is_organization_kpi_widget,
-                                                              kpi_id: kpi_id,
                                                               signalize: signalize,
-                                                              lock_project: lock_project)
+                                                              lock_project: lock_project,
+
+                                                              serie_a_kpi_id: kpi_ids['a'],
+                                                              serie_a_output_type: output_types['a'],
+
+                                                              serie_b_kpi_id: kpi_ids['b'],
+                                                              serie_b_output_type: output_types['b'],
+
+                                                              serie_c_kpi_id: kpi_ids['c'],
+                                                              serie_c_output_type: output_types['c'],
+
+                                                              serie_d_kpi_id: kpi_ids['d'],
+                                                              serie_d_output_type: output_types['d'],
+
+                                                              x_axis_label: x_axis_label,
+                                                              y_axis_label: y_axis_label,
+                                                              end_of_series: end_of_series)
 
                             #new_view_widget.save
                             if new_view_widget.save
@@ -3399,7 +3436,7 @@ class OrganizationsController < ApplicationController
     end
 
     #Indicateurs
-    @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
+    @all_kpi_config = Kpi.where(organization_id: @organization.id)
     @productivity_indicators = Hash.new
   end
 
@@ -5738,7 +5775,7 @@ class OrganizationsController < ApplicationController
 
         # KPI config / Productivité
         when "tabs_kpi_general_dashboard"
-          @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity")
+          @all_kpi_config = Kpi.where(organization_id: @organization.id)
           @productivity_indicators = Hash.new
         #@productivity_indicators = projects_productivity_indicators(@organization.id, nil)
         else
@@ -5842,7 +5879,7 @@ class OrganizationsController < ApplicationController
     @selected_kpi_config = []
     kpi_config_id = params['kpi_configuration']
     selected_configs = params[:selected_kpi_configuration]
-    orga_productivity_kpis = @organization.kpis.where(kpi_type: "Productivity")
+    orga_productivity_kpis = @organization.kpis
 
     if selected_configs.blank?
       orga_productivity_kpis.update_all(is_selected: false)
@@ -6007,7 +6044,7 @@ class OrganizationsController < ApplicationController
 
           projects_values << value
           x_y_axis_outputs << { project_id: project.id,
-                             selected_date: I18n.l(project.send("#{selected_date}").to_date),
+                             selected_date: project.send("#{selected_date}").to_date.beginning_of_month.to_s, #I18n.l(project.send("#{selected_date}").to_date),
                              field_value: value.round(2),
                              project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
                              kpi_unit: kpi_config.kpi_unit
@@ -6022,25 +6059,30 @@ class OrganizationsController < ApplicationController
         # end.to_h
 
         #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").beginning_of_week] }
-        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").beginning_of_week}/#{p.send("#{selected_date}").year}" }
+        #projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").to_date.beginning_of_week}/#{p.send("#{selected_date}").year}" }
+        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").to_date.beginning_of_week}" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
 
       when "date_month"
         #projects.group_by { |m| m.send("#{selected_date}").beginning_of_month }
         #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, p.send("#{selected_date}").month] }
-        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").month} / #{p.send("#{selected_date}").year}" }
+
+        projects_by_x_axis_config = projects.group_by{ |p| "#{p.send("#{selected_date}").to_date.beginning_of_month}" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_trimester"
-
+        #projects_by_x_axis_config = projects.group_by{ |p| "T#{ (p.send("#{selected_date}").month / 3).ceil} / #{p.send("#{selected_date}").year}" }
         #projects_by_x_axis_config = projects.group_by{ |p| "#{(((p.send("#{selected_date}").month - 1) / 3) + 1).floor}/#{p.send("#{selected_date}").year}" }
-        projects_by_x_axis_config = projects.group_by{ |p| "T#{ (p.send("#{selected_date}").month / 3).ceil} / #{p.send("#{selected_date}").year}" }
+
+        projects_by_x_axis_config = projects.group_by{ |p| "#{get_trimester_beginning_month( (((p.send("#{selected_date}").month - 1) / 3) + 1).floor, p.send("#{selected_date}").year) }" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_semester"
         #projects_by_x_axis_config = projects.group_by{ |p| [p.send("#{selected_date}").year, (((p.send("#{selected_date}").month - 1) / 6) +1).floor ] }
-        projects_by_x_axis_config = projects.group_by{ |p| "S#{(((p.send("#{selected_date}").month - 1) / 6) + 1).floor} / #{p.send("#{selected_date}").year}" }
+        #projects_by_x_axis_config = projects.group_by{ |p| "S#{(((p.send("#{selected_date}").month - 1) / 6) + 1).floor} / #{p.send("#{selected_date}").year}" }
+
+        projects_by_x_axis_config = projects.group_by{ |p| "#{get_semester_beginning_month( (((p.send("#{selected_date}").month - 1) / 6) + 1).floor, p.send("#{selected_date}").year ) }" }
         x_y_axis_outputs = indicator_y_axis_config_values(kpi_config, field_id, x_axis_config, projects_by_x_axis_config, y_axis_config, kpi_coefficient)
 
       when "date_year"
@@ -6058,6 +6100,41 @@ class OrganizationsController < ApplicationController
 
     x_y_axis_outputs
   end
+
+
+  #get Trimester beginning of month from trimester number
+  def get_trimester_beginning_month(trimester_number, year)
+    case trimester_number
+
+      when 1
+        beginning_month = Date.new(year, 1)
+
+      when 2
+        beginning_month = Date.new(year, 4)
+
+      when 3
+        beginning_month = Date.new(year, 7)
+
+      when 4
+        beginning_month = Date.new(year, 10)
+    end
+
+    #I18n.l(beginning_month)
+    beginning_month
+  end
+
+
+  #get semester beginning of month from semester number
+  def get_semester_beginning_month(semester_number, year)
+    case semester_number
+      when 1
+        beginning_month = Date.new(year, 1)
+      when 2
+        beginning_month = Date.new(year, 7)
+    end
+    beginning_month
+  end
+
 
 
 
@@ -6233,7 +6310,7 @@ class OrganizationsController < ApplicationController
 
           @projects_values << value
           indicator_values << { project_id: project.id,
-                                selected_date: I18n.l(project.send("#{selected_date}").to_date),
+                                selected_date: project.send("#{selected_date}").to_date.to_s, #I18n.l(project.send("#{selected_date}").to_date),
                                 field_value: value.round(2),
                                 project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
                                 kpi_unit: kpi_config.kpi_unit
@@ -6255,7 +6332,6 @@ class OrganizationsController < ApplicationController
           end
 
         else
-
           case output_type.to_s
             when "minimum"
               @calculation_output << indicator_values.min_by{|k| k[:field_value] }
@@ -6266,7 +6342,7 @@ class OrganizationsController < ApplicationController
             when "average"
               average = @projects_values.sum / nb_projects
               @calculation_output << { project_id: "",
-                                       selected_date: I18n.l(end_date.to_date),
+                                       selected_date: end_date.to_date.to_s,
                                        field_value: average.round(2),
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
@@ -6278,7 +6354,7 @@ class OrganizationsController < ApplicationController
               median = (sorted[(nb_projects - 1) / 2] + sorted[nb_projects / 2]) / 2.0
               #median = nb_projects % 2 == 1 ? sorted[m_pos] : mean(sorted[m_pos-1..m_pos])
               @calculation_output << { project_id: "",
-                                       selected_date: I18n.l(end_date.to_date),
+                                       selected_date: end_date.to_date.to_s,
                                        field_value: median.round(2),
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
@@ -6287,7 +6363,7 @@ class OrganizationsController < ApplicationController
             when "sum"
               sum = @projects_values.sum
               @calculation_output << { project_id: "",
-                                       selected_date: I18n.l(end_date.to_date),
+                                       selected_date: end_date.to_date.to_s,
                                        field_value: sum.round(2),
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
@@ -6297,7 +6373,7 @@ class OrganizationsController < ApplicationController
               #@calculation_output = nb_projects
               counter = nb_projects
               @calculation_output << { project_id: "",
-                                       selected_date: I18n.l(end_date.to_date),
+                                       selected_date: end_date.to_date.to_s,
                                        field_value: counter,
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
@@ -6310,8 +6386,10 @@ class OrganizationsController < ApplicationController
             else
           end
         end
-
       end
+
+      # #on sauvegarde les valeurs du KPI
+      # kpi_config.update_attributes(indicator_result: @calculation_output)
     end
 
     @calculation_output

@@ -77,9 +77,10 @@ class IndicatorDashboardsController < ApplicationController
   # DELETE /indicator_dashboards/1
   # DELETE /indicator_dashboards/1.json
   def destroy
+    @organization = @indicator_dashboard.organization
     @indicator_dashboard.destroy
     respond_to do |format|
-      format.html { redirect_to indicator_dashboards_url }
+      format.html { redirect_to organization_global_kpis_path(@organization) }
       format.json { head :no_content }
     end
   end

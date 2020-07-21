@@ -10,7 +10,8 @@
         var options = <%= series_options.to_json.html_safe %>;
 
 //        var options = {
-//            legend: {position: "none"},
+//            legend: {position: "right", alignment: "start", orientation: "vertical"},
+//            chartArea:{left:20,top:0, width:'100%',height:'100%'}
 //            isStacked: true,
 //            series: {
 //                0: {
@@ -19,10 +20,10 @@
 //            }
 //        };
 
-        var chart = new google.charts.Bar(document.getElementById('<%= "combo_chart_div_#{iwidget.id}" %>'));
+        var chart = new google.charts.Bar(document.getElementById('<%= "bar_chart_div_#{iwidget.id}" %>'));
         chart.draw(data, google.charts.Bar.convertOptions(options));
     }
     drawChart();
 
 </script>
-<div id='<%= "combo_chart_div_#{iwidget.id}" %>' style="width: 900px; height: 300px;"></div>
+<div id='<%= "bar_chart_div_#{iwidget.id}" %>' style="width: 90rem; height: 300px;"></div>

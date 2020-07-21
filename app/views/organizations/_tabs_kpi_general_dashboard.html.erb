@@ -6,8 +6,8 @@
   <%= link_to I18n.t('create_button'), new_organization_kpi_path, :class => 'btn btn-primary btn-estimancy' %>
   <br>
 
-  <% @productivity_kpis = Kpi.where(organization_id: @current_organization.id, kpi_type: "Productivity") %>
-  <%# @all_kpi_config = Kpi.where(organization_id: @organization.id, kpi_type: "Productivity") %>
+  <% @productivity_kpis = Kpi.where(organization_id: @current_organization.id) %>
+  <%# @all_kpi_config = Kpi.where(organization_id: @organization.id) %>
   <%= form_tag organization_get_projects_productivity_indicators_path, :class => 'simple_form', :method => :get, remote: true do  %>
 
       <div id="users" class="table-responsive-sm" style="width:100%;overflow:auto; white-space:nowrap;">
@@ -16,7 +16,6 @@
 
       <br><br><br>
       <%= hidden_field_tag :organization_id, @current_organization.id %>
-      <%= hidden_field_tag :kpi_type, "Productivity" %>
 
       <%#= select_tag "kpi_configuration", options_for_select(@productivity_kpis.map{|i| [i.name, i.id] }),
                      :prompt => "Choisir une configuration" , :class => 'btn btn-secondary' %>

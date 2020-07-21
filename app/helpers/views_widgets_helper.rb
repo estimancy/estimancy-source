@@ -392,7 +392,7 @@ module ViewsWidgetsHelper
       project = Project.find(project_id)
       organization = project.organization
       productivity_config_id = view_widget.kpi_id
-      productivity_config = organization.kpis.where(kpi_type: "Productivity", id: productivity_config_id).first
+      productivity_config = organization.kpis.where(id: productivity_config_id).first
 
       if productivity_config
         orga_controller = OrganizationsController.new
