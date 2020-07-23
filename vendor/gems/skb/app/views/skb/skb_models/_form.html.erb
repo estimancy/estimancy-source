@@ -94,43 +94,52 @@
                 </div>
 
                 <div class="form-row">
-                  <div class="col-4">
+                  <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <%= f.input :date_min, label: I18n.t(:start_date) do %>
+                      <%= f.input :date_min, label: false do %>
                         <% if @skb_model.date_min.nil? %>
-                          <%= text_field_tag "skb_model[date_min]", :class => 'form-control date-picker' %>
-                          <label class="mdl-textfield__label" for="user_subs_end_date" style="margin-top: -30px;"><%= "" %></label>
+                          <%= text_field_tag "skb_model[date_min]", "", :class => 'form-control date-picker' %>
                         <% else %>
-                          <%= text_field_tag "skb_model[date_min]", :class => 'form-control date-picker' %>
-                          <label class="mdl-textfield__label" for="user_subs_end_date" style="margin-top: -30px;"><%= I18n.l(@skb_model.date_min) %></label>
+                          <%= text_field_tag "skb_model[date_min]", I18n.l(@skb_model.date_min), class: "form-control date-picker" %>
                         <% end %>
                       <% end %>
+                      <label class="mdl-textfield__label" for="skb_model_date_min" style="margin-top: -30px;"><%= I18n.t(:start_date) %></label>
                     </div>
                   </div>
                 </div>
 
-              </div>
-            </div>
-              <div class="form-inputs">
-                <%= f.input :date_min, label: I18n.t(:start_date) do %>
-                  <% if @skb_model.date_min.nil? %>
-                    <%= text_field_tag "skb_model[date_min]", "", :class => 'form-control date-picker' %>
-                  <% else %>
-                    <%= text_field_tag "skb_model[date_min]", I18n.l(@skb_model.date_min), class: "date-picker" %>
-                  <% end %>
-                <% end %>
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :date_max, label:false do %>
+                        <% if @skb_model.date_max.nil? %>
+                          <%= text_field_tag "skb_model[date_max]", "", class: "form-control date-picker" %>
+                        <% else %>
+                          <%= text_field_tag "skb_model[date_max]", I18n.l(@skb_model.date_max), class: "form-control date-picker" %>
+                        <% end %>
+                      <% end %>
+                      <label class="mdl-textfield__label" for="skb_model_date_min" style="margin-top: -30px;"><%= I18n.t(:end_date) %></label>
+                    </div>
+                  </div>
+                </div>
 
-                <%= f.input :date_max, label: I18n.t(:end_date) do %>
-                  <% if @skb_model.date_max.nil? %>
-                    <%= text_field_tag "skb_model[date_max]", "", class: "date-picker" %>
-                  <% else %>
-                    <%= text_field_tag "skb_model[date_max]", I18n.l(@skb_model.date_max), class: "date-picker" %>
-                  <% end %>
-                <% end %>
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :n_max, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="n_max"><%= I18n.t(:N_last_projects) %></label>
+                    </div>
+                  </div>
+                </div>
 
-                <%= f.input :n_max, label: "N derniers projets" %>
-
-                <%= f.input :size_unit, label: I18n.t(:size_unit) %>
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :size_unit, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="size_unit"><%= I18n.t(:size_unit) %></label>
+                    </div>
+                  </div>
+                </div>
 
                 <% unless @skb_model.skb_datas.empty? %>
                   <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
@@ -150,7 +159,10 @@
                     <% end %>
                     <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn btn-secondary" %>
                   </div>
-          <% end %>
+            <% end %>
+
+          </div>
+
         </div>
 
       </div>
@@ -166,11 +178,12 @@
                 <%= hidden_field_tag :organization_id, @organization.id %>
               </div>
               <%= submit_tag I18n.t(:import), :class => 'btn btn-primary' %>
+              <%= link_to I18n.t(:export), skb.skb_model_data_export_path(@skb_model), :class => 'btn btn-primary' %>
             <% end %>
           </div>
-          <div class="span1">
-            <%= link_to I18n.t(:export), skb.skb_model_data_export_path(@skb_model), :class => 'btn btn-primary' %>
-          </div>
+
+          <br>
+
           <div class="span8">
           <%= form_tag skb.skb_model_save_filters_path(@skb_model) do %>
             <% unless @skb_model.skb_datas.empty? %>
