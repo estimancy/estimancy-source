@@ -4,7 +4,7 @@
     <% if @item_title.blank? %>
         <div id="tabs-applications" class="edition-page-group py-4"><span id="item_title"><%= I18n.t('applications') %></span></div>
     <% else %>
-        <div id="tabs-applications" class="edition-page-group py-4"><span id="item_title"><%= @item_title %></span></div>
+        <div id="tabs-applications" class="edition-page-group py-4"><span id="item_title"><%= I18n.t(@item_title) %></span></div>
     <% end %>
 
     <section class="card card-content-bloc estimancy-form">
