@@ -207,19 +207,19 @@
           </div>
           <div class="edition-bloc-content pb-4">
             <table id="table" class="table phases-table">
-            <% if wbs_activity.enabled_input %>
-              <tr class="hide_wbs_header">
-                <% if wbs_activity.three_points_estimation? %>
-                    <th colspan="3" scope="colgroup"><%= I18n.t(:initial_input_value) %></th>
-                    <th colspan="3" scope="colgroup"><%= I18n.t(:retained_input_value) %></th>
-                <% else %>
-                    <th rowspan="2"><%= I18n.t(:initial_input_value) %></th>
-                    <th><%= I18n.t(:retained_input_value) %></th>
-                <% end %>
+              <% if wbs_activity.enabled_input %>
+                  <tr class="hide_wbs_header">
+                    <% if wbs_activity.three_points_estimation? %>
+                        <th colspan="3" scope="colgroup"><%= I18n.t(:initial_input_value) %></th>
+                        <th colspan="3" scope="colgroup"><%= I18n.t(:retained_input_value) %></th>
+                    <% else %>
+                        <th rowspan="2"><%= I18n.t(:initial_input_value) %></th>
+                        <th><%= I18n.t(:retained_input_value) %></th>
+                    <% end %>
 
-                <th colspan="9"></th>
-              </tr>
-            <% end %>
+                    <th colspan="9"></th>
+                  </tr>
+              <% end %>
 
               <% current_mp_wbs_activity_root_id = wbs_activity.root_element.id %>
 
