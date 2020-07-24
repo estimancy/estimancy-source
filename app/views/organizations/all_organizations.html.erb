@@ -60,7 +60,7 @@
                       </i>
                     </a>
                     <%= link_to raw("<i class='material-icons'>file_copy</i>"), create_organization_from_image_path(organization_id: organization.id, action_name: "copy_organization"), class: "icon-copy copy_an_organization", method: "POST" %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), confirm_organization_deletion_path(organization.id), :class => 'icon icon-trash', :title => I18n.t('delete'), method: "POST" %>
+                    <%= link_to raw("<i class='material-icons'>delete</i>"), confirm_organization_deletion_path(organization.id), :class => 'icon icon-trash', :title => I18n.t('delete') %>
                   <% end %>
                 </div>
             <% end %>
