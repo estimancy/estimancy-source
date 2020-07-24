@@ -6,7 +6,7 @@
 
       <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) %>
         <span style="color:#23A4FF; float: left; margin-left: 0px; margin-right: 10px;">
-            Estimation Actions
+            <%= I18n.t(:estimate_history) %>
         </span>
 
         <%= link_to '', '', :class => 'node_link_to button_attribute_tooltip icon-pencil pull-left', :id => 'edit_node_path', :title => I18n.t('edit'), :remote => true %>

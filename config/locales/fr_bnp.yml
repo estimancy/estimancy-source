@@ -2631,3 +2631,4 @@ fr_bnp:
   enter_date: "Entrer une date"
   history: "Historique"
   revised_effort: "Effort révisé"
+  estimate_history: "Historique de l'estimation"
