@@ -2698,5 +2698,4 @@ fr:
   history: "Historique"
   revised_effort: "Effort révisé"
   estimate_history: "Historique de l'estimation"
-
-
+  allow_correction_before_change: "Autoriser la correction avant le changement"
