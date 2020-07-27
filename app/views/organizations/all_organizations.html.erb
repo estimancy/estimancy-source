@@ -1,74 +1,72 @@
-
-  <!--<div class="d-flex align-items-center mt-4">-->
-  <div class="row mt-3">
-    <div class="col" style="flex: 1">
-      <h1><%= I18n.t :select_an_organization %></h1>
-    </div>
-
-
-    <div class="col">
-      <% if can? :create_organizations, Organization %>
-        <div class="group_button">
-          <%# link_to "Exporter l'ensemble des champs", export_organization_reference_path, class: 'btn' %>
-          <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn btn-primary mr-5' %>
-          <%= link_to I18n.t('create_new_organization'), new_organization_path, :class => 'btn btn-primary mr-3' %>
-        </div>
-
-        <div id="display_copy_message" style="display: none; text-align: center">
-          <p id="syncStarted" style="display:none">
-            <strong><h4 style="color: green">La copie de l'organisation a démaré, merci de patienter...</h4></strong>
-          </p>
-        </div>
-      <% end %>
-    </div>
+<div class="row mt-3">
+  <div class="col" style="flex: 1">
+    <h1><%= I18n.t :select_an_organization %></h1>
   </div>
 
-  <p>
-    <%= I18n.t :welcome %> <span class="font-weight-bold"><%= current_user %></span>
-  </p>
 
-  <ul class="portal-page-widget-list mt-5 mb-6">
-    <% @organizations.each do |organization| %>
+  <div class="col">
+    <% if can? :create_organizations, Organization %>
+      <div class="group_button">
+        <%# link_to "Exporter l'ensemble des champs", export_organization_reference_path, class: 'btn' %>
+        <%= link_to I18n.t('new_organization_from_image'), new_organization_from_image_path(action_name: "new_organization_from_image"), :class => 'btn btn-primary mr-5' %>
+        <%= link_to I18n.t('create_new_organization'), new_organization_path, :class => 'btn btn-primary mr-3' %>
+      </div>
 
-      <li>
-        <div class="card card-cliquable organisation-widget">
-          <div class="card-body">
-            <% if !current_user.super_admin? && current_user.subscription_end_date && current_user.subscription_end_date <= Time.now %>
-                <span>
-                  <div class="organisation-widget-title"><%= organization.name %></div>
-                  <div class="organisation-widget-subtitle"><%= organization.headband_title %></div>
-                  <p class="organisation-widget-text mt-3 mb-4">
-                    <%= organization.description.truncate(110) %>
-                  </p>
-                </span>
-
-            <% else %>
-
-                <a href="<%= main_app.organization_estimations_path(organization) %>">
-                  <div class="organisation-widget-title"><%= organization.name %></div>
-                  <div class="organisation-widget-subtitle"><%= organization.headband_title %></div>
-                  <p class="organisation-widget-text mt-3 mb-4">
-                    <%= organization.description.truncate(110) %>
-                  </p>
-                </a>
-                <div class="organisation-widget-buttons">
-                  <a href="#"></a>
-                  <% if can? :manage, Organization %>
-                    <a href="<%= edit_organization_path(organization) %>" title="<%= I18n.t :edit %>">
-                      <i class="material-icons">
-                        edit
-                      </i>
-                    </a>
-                    <%= link_to raw("<i class='material-icons'>file_copy</i>"), create_organization_from_image_path(organization_id: organization.id, action_name: "copy_organization"), class: "icon-copy copy_an_organization", method: "POST" %>
-                    <%= link_to raw("<i class='material-icons'>delete</i>"), confirm_organization_deletion_path(organization.id), :class => 'icon icon-trash', :title => I18n.t('delete') %>
-                  <% end %>
-                </div>
-            <% end %>
-          </div>
-        </div>
-      </li>
+      <div id="display_copy_message" style="display: none; text-align: center">
+        <p id="syncStarted" style="display:none">
+          <strong><h4 style="color: green">La copie de l'organisation a démaré, merci de patienter...</h4></strong>
+        </p>
+      </div>
     <% end %>
-  </ul>
+  </div>
+</div>
+
+<p>
+  <%= I18n.t :welcome %> <span class="font-weight-bold"><%= current_user %></span>
+</p>
+
+<ul class="portal-page-widget-list mt-5 mb-6">
+  <% @organizations.each do |organization| %>
+
+    <li>
+      <div class="card card-cliquable organisation-widget">
+        <div class="card-body">
+          <% if !current_user.super_admin? && current_user.subscription_end_date && current_user.subscription_end_date <= Time.now %>
+              <span>
+                <div class="organisation-widget-title"><%= organization.name %></div>
+                <div class="organisation-widget-subtitle"><%= organization.headband_title %></div>
+                <p class="organisation-widget-text mt-3 mb-4">
+                  <%= organization.description.truncate(110) %>
+                </p>
+              </span>
+
+          <% else %>
+
+              <a href="<%= main_app.organization_estimations_path(organization) %>">
+                <div class="organisation-widget-title"><%= organization.name %></div>
+                <div class="organisation-widget-subtitle"><%= organization.headband_title %></div>
+                <p class="organisation-widget-text mt-3 mb-4">
+                  <%= organization.description.truncate(110) %>
+                </p>
+              </a>
+              <div class="organisation-widget-buttons">
+                <a href="#"></a>
+                <% if can? :manage, Organization %>
+                  <a href="<%= edit_organization_path(organization) %>" title="<%= I18n.t :edit %>">
+                    <i class="material-icons">
+                      edit
+                    </i>
+                  </a>
+                  <%= link_to raw("<i class='material-icons'>file_copy</i>"), create_organization_from_image_path(organization_id: organization.id, action_name: "copy_organization"), class: "icon-copy copy_an_organization", method: "POST" %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), confirm_organization_deletion_path(organization.id), :class => 'icon icon-trash', :title => I18n.t('delete') %>
+                <% end %>
+              </div>
+          <% end %>
+        </div>
+      </div>
+    </li>
+  <% end %>
+</ul>
 
 
 <%# link_to '', edit_organization_path(i), :class => 'icon icon-pencil', :title => I18n.t('edit') %>
