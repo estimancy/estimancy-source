@@ -116,6 +116,7 @@ class ProjectsController < ApplicationController
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+
         end
 
         # @organization_projects = [Project.where(id: 15297).first]
@@ -157,6 +158,9 @@ class ProjectsController < ApplicationController
 
         @total_cost = Hash.new {|h,k| h[k] = [] }
         @total_effort = Hash.new {|h,k| h[k] = [] }
+        @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] }
+        @project_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] }
+        @guow_guw_unit_of_work_attributes = Hash.new {|h,k| h[k] = [] }
         @pfs = Hash.new {|h,k| h[k] = [] }
         @pf_hash = Hash.new
         @app_hash = Hash.new
@@ -193,8 +197,32 @@ class ProjectsController < ApplicationController
 
           pmp = project.module_projects.select{|i| i.guw_model_id != nil }.first
 
+          @project_guw_coefficient_element_unit_of_works = project.guw_coefficient_element_unit_of_works
+
           unless pmp.nil?
             @guw_model = pmp.guw_model
+
+            ### Localisation ###
+            guw_coefficient_localisation = Guw::GuwCoefficient.where( organization_id: @organization.id,
+                                                                      guw_model_id: @guw_model.id,
+                                                                      name: "Localisation").first
+
+            ### Métrique ###
+            guw_coefficient_metrique_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                           guw_model_id: @guw_model.id,
+                                                                           name: "Métrique Quantité").first
+
+            guw_coefficient_nbj_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                      guw_model_id: @guw_model.id,
+                                                                      name: "Nb de jours").first
+
+            guw_coefficient_quantite_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                           guw_model_id: @guw_model.id,
+                                                                           name: "Quantité").first
+
+            guw_coefficient_service_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
+                                                                          guw_model_id: @guw_model.id,
+                                                                          name: "Service").first
 
             @guow_guw_coefficient_element_unit_of_works_with_coefficients = {}
 
@@ -238,8 +266,20 @@ class ProjectsController < ApplicationController
 
             @guow_guw_types = Hash.new
 
-            #project.guw_unit_of_works.order("display_order ASC").each do |guow|
-            project.guw_unit_of_works.each do |guow|
+            project_guw_unit_of_works = project.guw_unit_of_works
+            project_guw_unit_of_works.each do |guow|
+              @guow_guw_coefficient_element_unit_of_works[guow.id] << @project_guw_coefficient_element_unit_of_works[project.id]
+            end
+
+            project.guw_unit_of_work_attributes.each do |guowa|
+              @guow_guw_unit_of_work_attributes[guowa.guw_unit_of_work_id] << guowa
+            end
+
+            project_guw_unit_of_works.includes(:guw_coefficient_element_unit_of_works).each do |guow|
+
+              guow_guw_type = guow.guw_type
+              guow_guw_coefficient_element_unit_of_works = @guow_guw_coefficient_element_unit_of_works[guow.id]
+              # guow.guw_coefficient_element_unit_of_works
 
               worksheet_cf.add_cell(i, 0, project.title)
               worksheet_cf.add_cell(i, 1, project_application.to_s)
@@ -266,7 +306,8 @@ class ProjectsController < ApplicationController
               if guow.intermediate_percent.nil? && guow.intermediate_weight.nil?
                 @guw_coefficients.each do |gc|
                   if gc.coefficient_type == "Liste" && gc.name == "Taille"
-                    ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id && i.module_project_id == guow.module_project_id && i.guw_unit_of_work_id == guow.id }.last
+                    ceuw = @project_guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id && i.module_project_id == guow.module_project_id && i.guw_unit_of_work_id == guow.id }.last
+
                     unless ceuw.nil?
                       guw_coefficient_element_name = ceuw.guw_coefficient_element.nil? ? nil : ceuw.guw_coefficient_element.name
                     end
@@ -283,11 +324,12 @@ class ProjectsController < ApplicationController
               j = 0
               @guw_coefficients.each do |gc|
                 if gc.coefficient_type == "Pourcentage"
-                  unless guow.guw_type.nil?
-                    unless guow.guw_type.name.include?("SRV") || guow.guw_type.name.include?("MCO")
+                  unless guow_guw_type.nil?
+                    unless guow_guw_type.name.include?("SRV") || guow_guw_type.name.include?("MCO")
 
                       default = @guw_coefficient_elements.select{ |i| (i.default == true && i.guw_coefficient_id == gc.id ) }.first
-                      ceuw = project.guw_coefficient_element_unit_of_works.select{|i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+                      ceuw = @project_guw_coefficient_element_unit_of_works.select{ |i| i.guw_coefficient_id == gc.id }.select{|i| i.module_project_id == guow.module_project_id }.last
+
                       worksheet_cf.add_cell(i, 16 + j, default.nil? ? 100 : default.value.to_f)
                       worksheet_cf.add_cell(i, 16 + j + 1, ceuw.nil? ? nil : ceuw.percent.to_f)
                       j = j + 2
@@ -300,40 +342,38 @@ class ProjectsController < ApplicationController
                     #=== Test ====
                     #results = []
                     #results = @guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
-                    # .includes(:guw_coefficient_element)
-                    # .where(organization_id: @organization.id, guw_model_id: @guw_model.id, guw_type_id: guow.guw_type_id)
-                    # .select{|ct| ct.value != nil }
-                    # .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+                                                                                    # .includes(:guw_coefficient_element)
+                                                                                    # .where(organization_id: @organization.id, guw_model_id: @guw_model.id, guw_type_id: guow.guw_type_id)
+                                                                                    # .select{|ct| ct.value != nil }
+                                                                                    # .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
                     #=== Test ====
 
                     #unless results.empty?
-                    begin
-                      ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{gc.id}"]
-                    rescue
-                      ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
-                                                                        guw_model_id: @guw_model.id,
-                                                                        guw_coefficient_id: gc.id,
-                                                                        project_id: project.id,
-                                                                        module_project_id: pmp.id,
-                                                                        guw_unit_of_work_id: guow.id).order("updated_at ASC").last
-                    end
-                    # project = Project.find(2077)
-                    # project.guw_coefficient_element_unit_of_works.where(guw_model_id: 494, module_project_id: 5053, guw_unit_of_work_id: 18606, guw_coefficient_id: 637).first
-                    #####################
-                    worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent))  # « Charge ss prod. (jh) » en colonne AI
+                      begin
+                        ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{gc.id}"]
+                      rescue
+                        ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
+                                                                          guw_model_id: @guw_model.id,
+                                                                          guw_coefficient_id: gc.id,
+                                                                          project_id: project.id,
+                                                                          module_project_id: pmp.id,
+                                                                          guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+                      end
+
+                      worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, (ceuw.nil? ? nil : ceuw.percent))  # « Charge ss prod. (jh) » en colonne AI
                     #end
                   end
                 end
               end
 
-              guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
+              # guow.guw_unit_of_work_attributes.each_with_index do |uowa, j|
+              @guow_guw_unit_of_work_attributes[guow.id].each_with_index do |uowa, j|
                 worksheet_cf.add_cell(i, 20 + j, uowa.most_likely)
               end
 
               @guw_model_guw_attributes.each_with_index do |guw_attribute, ii|
                 worksheet_cf.add_cell(0, 20+ii, guw_attribute.name)
               end
-
 
               worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size, "Charge ss prod. (jh)")
               worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 1, "Charge avec prod. (jh)")
@@ -346,7 +386,6 @@ class ProjectsController < ApplicationController
                 guw_output_charge_ss_prod_value = (guw_output_charge_ss_prod_value_tmp.blank? ? nil : guw_output_charge_ss_prod_value_tmp.to_f)
                 guw_output_charge_ss_prod_value_rounded = (guw_output_charge_ss_prod_value.nil? || guw_output_charge_ss_prod_value == 0) ? nil : guw_output_charge_ss_prod_value.round(2)
                 worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size, guw_output_charge_ss_prod_value_rounded)  # « Charge ss prod. (jh) » en colonne AI
-
               end
 
               #On recuperer les sorties avec "Charge (jh)" avec productivité
@@ -371,7 +410,6 @@ class ProjectsController < ApplicationController
 
 
               begin
-
                 worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 3, "Service")
 
                 worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 4, "Quantité")
@@ -383,12 +421,6 @@ class ProjectsController < ApplicationController
                 worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 8, "Coût (€)")
 
                 worksheet_cf.add_cell(0, 20 + @max_guw_model_attributes_size + 9, "Localisation SRV")
-
-
-                ###
-                guw_coefficient_service_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
-                                                                              guw_model_id: @guw_model.id,
-                                                                              name: "Service").first
 
                 unless guw_coefficient_service_migration.nil?
                   service_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
@@ -408,14 +440,7 @@ class ProjectsController < ApplicationController
               end
 
 
-
-
               begin
-                ###
-                guw_coefficient_quantite_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
-                                                                               guw_model_id: @guw_model.id,
-                                                                               name: "Quantité").first
-
                 unless guw_coefficient_quantite_migration.nil?
                   nbj_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                                              guw_model_id: @guw_model.id,
@@ -439,20 +464,11 @@ class ProjectsController < ApplicationController
                   end
 
                 end
-
               rescue
               end
 
 
-
-
               begin
-
-                ###
-                guw_coefficient_nbj_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
-                                                                          guw_model_id: @guw_model.id,
-                                                                          name: "Nb de jours").first
-
                 unless guw_coefficient_nbj_migration.nil?
                   nbj_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                                              guw_model_id: @guw_model.id,
@@ -465,9 +481,9 @@ class ProjectsController < ApplicationController
 
                   unless ce.nil?
                     cces = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
-                                                                      guw_model_id: @guw_model.id,
-                                                                      guw_type_id: guow.guw_type_id,
-                                                                      guw_coefficient_element_id: ce.id)
+                                                                     guw_model_id: @guw_model.id,
+                                                                     guw_type_id: guow.guw_type_id,
+                                                                     guw_coefficient_element_id: ce.id)
 
                     if !cces.map(&:value).empty?
                       worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 5, nbj_migration.percent) # Nb de jours
@@ -476,18 +492,10 @@ class ProjectsController < ApplicationController
                   end
 
                 end
-
               rescue
               end
 
-
-
               begin
-                ### Métrique ###
-                guw_coefficient_metrique_migration = Guw::GuwCoefficient.where(organization_id: @organization.id,
-                                                                               guw_model_id: @guw_model.id,
-                                                                               name: "Métrique Quantité").first
-
                 unless guw_coefficient_metrique_migration.nil?
                   metrique_migration = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                                                   guw_model_id: @guw_model.id,
@@ -496,16 +504,15 @@ class ProjectsController < ApplicationController
                                                                                   module_project_id: pmp.id,
                                                                                   guw_unit_of_work_id: guow.id).order("updated_at ASC").last
 
-                  unless metrique_migration.guw_coefficient_element.nil?
-                    worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 6, metrique_migration.guw_coefficient_element.name) # Métrique
+                  metrique_migration_guw_coefficient_element = metrique_migration.guw_coefficient_element
+                  unless metrique_migration_guw_coefficient_element.nil?
+                    worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 6, metrique_migration_guw_coefficient_element.name) # Métrique
                   end
                 end
               rescue
               end
 
-
               begin
-
                 ### Charge ###
                 guw_output_charge_migration = Guw::GuwOutput.where( organization_id: @organization.id,
                                                                     guw_model_id: @guw_model.id,
@@ -522,14 +529,7 @@ class ProjectsController < ApplicationController
               rescue
               end
 
-
-
               begin
-                ### Localisation ###
-                guw_coefficient_localisation = Guw::GuwCoefficient.where( organization_id: @organization.id,
-                                                                          guw_model_id: @guw_model.id,
-                                                                          name: "Localisation").first
-
                 unless guw_coefficient_localisation.nil?
                   # gceuw_localisation = Guw::GuwCoefficientElementUnitOfWork.where( organization_id: @organization.id,
                   #                                                                  guw_model_id: @guw_model.id,
@@ -538,17 +538,17 @@ class ProjectsController < ApplicationController
                   #                                                                  module_project_id: pmp.id,
                   #                                                                  guw_unit_of_work_id: guow.id).first
 
-                  gceuw_localisation = guow.guw_coefficient_element_unit_of_works.where(guw_coefficient_id: guw_coefficient_localisation.id).first
+                  gceuw_localisation = guow_guw_coefficient_element_unit_of_works.select{ |i| i.guw_coefficient_id == guw_coefficient_localisation.id }.first
+                  gceuw_localisation_guw_coefficient_element = gceuw_localisation.guw_coefficient_element
 
-                  unless gceuw_localisation.guw_coefficient_element.nil?
-                    gceuw_name = gceuw_localisation.guw_coefficient_element.name
+                  unless gceuw_localisation_guw_coefficient_element.nil?
+                    gceuw_name = gceuw_localisation_guw_coefficient_element.name
                   end
 
                   worksheet_cf.add_cell(i, 20 + @max_guw_model_attributes_size + 9, gceuw_name) # Localisation
                 end
 
               rescue
-                #
               end
 
               i = i + 1
@@ -606,6 +606,7 @@ class ProjectsController < ApplicationController
 
           mpre_project = mpre.module_project.project
           module_project = mpre.module_project
+          mpre_wbs_activity_ratio = mpre.wbs_activity_ratio
 
           if module_project.wbs_activity_ratio_id == mpre.wbs_activity_ratio_id
 
@@ -642,7 +643,7 @@ class ProjectsController < ApplicationController
               worksheet_wbs.add_cell(wbs_iii, 9, project_provider.nil? ? '' : project_provider)
               worksheet_wbs.add_cell(wbs_iii, 10, mpre_project.start_date.to_s)
               worksheet_wbs.add_cell(wbs_iii, 11, project_estimation_status.to_s)
-              worksheet_wbs.add_cell(wbs_iii, 12, mpre.wbs_activity_ratio.nil? ? nil : mpre.wbs_activity_ratio.name)
+              worksheet_wbs.add_cell(wbs_iii, 12, mpre_wbs_activity_ratio.nil? ? nil : mpre_wbs_activity_ratio.name)
               worksheet_wbs.add_cell(wbs_iii, 13, mpre.name)
               worksheet_wbs.add_cell(wbs_iii, 14, mpre.tjm)
               worksheet_wbs.add_cell(wbs_iii, 15, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
@@ -745,6 +746,11 @@ class ProjectsController < ApplicationController
         end
 
         workbook.write("#{Rails.root}/public/#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx")
+
+        # send_data(workbook.stream.string,
+        #           filename: "#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx",
+        #           type: "application/vnd.ms-excel")
+
         UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
       end
     end
