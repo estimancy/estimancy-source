@@ -23,6 +23,7 @@ class Kpi < ActiveRecord::Base
     enable
     customize(lambda { |original_kpi, new_kpi|
                 new_kpi.copy_id = original_kpi.id
+                new_kpi.indicator_result = nil
               })
   end
 
