@@ -91,7 +91,7 @@
                             <div class="row-fluid" style="margin-bottom: 2rem;">
                               <div class="col-6">
                                 <div class="row">
-                                  <div class="col-2"><%= "Modules : " %></div>
+                                  <div class="col-2"><%= "Modules" %></div>
                                   <div class="col-4">
                                     <% selected_module_project = cev.associated_estimation_value.module_project_id unless cev.associated_estimation_value.nil? %>
                                     <%= select_tag "preceding_module_project[#{cev.id}]",
@@ -104,7 +104,7 @@
 
                               <div class="col-6">
                                 <div class="row">
-                                  <div class="col-2"><%= cev %> :</div>
+                                  <div class="col-2"><%= cev %> </div>
                                   <div class="col-4">
                                     <%#= select_tag "preceding[#{cev.id}]", options_for_select(@module_project.preceding.last.estimation_values.where(in_out: "output").map{|i| [i.pe_attribute.name, i.id]}, selected: cev.estimation_value_id), :include_blank => true %>
                                     <%= select_tag "preceding[#{cev.id}]",

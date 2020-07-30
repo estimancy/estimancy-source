@@ -44,7 +44,7 @@
 
                         <% if controller.action_name == 'edit' and @wbs_activity.retired? %>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :state, as: :select, collection: WbsActivity.aasm.states_for_select, label: "#{I18n.t :type_of_configuration}", input_html: { class: "form-control", rows: "5" } %>
                               <label class="mdl-textfield__label" for="state"><%= I18n.t(:state) %></label>
@@ -52,7 +52,7 @@
                           </div>
 
                         <% else %>
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
                               <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
@@ -63,42 +63,42 @@
                                exist_wbs_for_config = other_wbs_for_config.nil? ? false : true
                           %>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :wbs_for_config, as: :boolean, :label => false %>
                               <label class="mdl-textfield__label" for="wbs_for_config" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:wbs_for_config) %></label>
                             </div>
                           </div>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :use_real_profiles, as: :boolean, :label => false %>
                               <label class="mdl-textfield__label" for="use_real_profiles" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:use_real_profiles) %></label>
                             </div>
                           </div>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :description, label: false, input_html: { class: 'mdl-textfield__input', rows: "5"} %>
                               <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
                             </div>
                           </div>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :three_points_estimation, label: false %>
                               <label class="mdl-textfield__label" for="three_points_estimation" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:three_points_estimation) %></label>
                             </div>
                           </div>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :enabled_input, label: false %>
                               <label class="mdl-textfield__label" for="enabled_input" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:modification_entry_valur) %></label>
                             </div>
                           </div>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :hide_wbs_header, as: :select,
                                           collection: [[I18n.t(:hide_all), "hide_all"],
@@ -109,21 +109,21 @@
                             </div>
                           </div>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :effort_unit, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
                               <label class="mdl-textfield__label" for="effort_unit"><%= I18n.t(:Wording_of_the_module_unit_effort) %></label>
                             </div>
                           </div>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :effort_unit_coefficient, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
                               <label class="mdl-textfield__label" for="effort_unit_coefficient"><%= I18n.t(:Conversion_factor_standard_effort) %></label>
                             </div>
                           </div>
 
-                          <div class="col-5">
+                          <div class="col-7">
                             <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                               <%= f.input :average_rate_wording, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
                               <label class="mdl-textfield__label" for="average_rate_wording"><%= I18n.t(:average_rate_wording) %></label>
