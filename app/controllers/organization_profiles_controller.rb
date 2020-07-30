@@ -120,7 +120,7 @@ class OrganizationProfilesController < ApplicationController
 
   def maj_mix_profil
     # MIX_PROFIL
-    project = Project.where(title: "EBE001 (Calcul Mix Profil)").first
+    project = Project.where(organization_id: params[:organization_id], title: "EBE001 (Calcul Mix Profil)").first
     organization = project.organization
     module_project = project.module_projects.last
     project_pbs_project_element = project.pbs_project_elements.first
@@ -198,7 +198,7 @@ class OrganizationProfilesController < ApplicationController
 
   def maj_pe
     #PETITES EVOLUTIONS
-    project = Project.where(title: "EBE0001 TJM Petites Evol.").first
+    project = Project.where(organization_id: params[:organization_id], title: "EBE0001 TJM Petites Evol.").first
     organization = project.organization
     module_project = project.module_projects.last
 
