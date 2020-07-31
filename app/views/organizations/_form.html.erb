@@ -18,10 +18,10 @@
         <a class="nav-link"  data-toggle="pill" id="pills-technical_informations-tab" href="#pills-technical_informations" role="tab" aria-selected="false"><%= I18n.t(:technical_informations) %></a>
       </li>
 
-      <% if @organization.name == "CDS DISTRIBUTION TRANSPORTEUR" || @organization.name == "06_DSI Voyage_CdS Distribution Transporteur" %>
+      <% if @organization.name.downcase.include?("distribution transporteur") || @organization.name.downcase.include?("boreale") %>
           <li class="nav-item">
             <a class="nav-link"  data-toggle="pill" id="pills-dt-tab" href="#pills-dt" role="tab" aria-selected="false">
-              MaJ des prix (CDS DT)
+              MaJ des prix (<%= @organization.name  %>)
             </a>
           </li>
       <% end %>
@@ -280,29 +280,29 @@
                     <% end %>
 
 
-                    <h5>
-                      <% project = Project.where(title: "EBE001 (Calcul Mix Profil)").first %>
-                      <% unless project.nil? %>
-                          <strong>#2</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
-                      <% end %>
-                    </h5>
+            <h5>
+              <% project = Project.where(organization_id: @organization.id, title: "EBE001 (Calcul Mix Profil)").first %>
+              <% unless project.nil? %>
+                <strong>#2</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
+              <% end %>
+            </h5>
 
-                    <h5>
-                      <strong>#3</strong>
-                      <%= link_to "Mettre à jour des TJM Dire d'Expert, MCO & Services Abaques", maj_mix_profil_path %>
-                    </h5>
+            <h5>
+              <strong>#3</strong>
+              <%= link_to "Mettre à jour des TJM Dire d'Expert, MCO & Services Abaques", maj_mix_profil_path(organization_id: @organization.id) %>
+            </h5>
 
-                    <h5>
-                      <% project = Project.where(title: "EBE0001 TJM Petites Evol.").first %>
-                      <% unless project.nil? %>
-                          <strong>#4</strong> <%= link_to "Calculer les TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
-                      <% end %>
-                    </h5>
+            <h5>
+              <% project = Project.where(organization_id: @organization.id, title: "EBE0001 TJM Petites Evol.").first %>
+              <% unless project.nil? %>
+                <strong>#4</strong> <%= link_to "Calculer les TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
+              <% end %>
+            </h5>
 
-                    <h5>
-                      <strong>#5</strong>
-                      <%= link_to "Mettre à jour les TJM Petites Evolutions", maj_pe_path %>
-                    </h5>
+            <h5>
+              <strong>#5</strong>
+              <%= link_to "Mettre à jour les TJM Petites Evolutions", maj_pe_path(organization_id: @organization.id) %>
+            </h5>
 
                     <h5>
                       <strong>#6</strong>
