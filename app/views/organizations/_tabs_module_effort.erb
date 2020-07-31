@@ -36,6 +36,7 @@
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to raw("<i class='material-icons'>file_copy</i>"), ge.ge_model_duplicate_path(i, organization_id: @organization.id),
                             :class => 'material-icons', :title => I18n.t('duplicate_module'), method: "post" %>
+                <%= link_to raw("<i class='material-icons'>place</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'ge_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), ge.ge_model_path(i, organization_id: @organization.id),
                             confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
               <% end %>
@@ -88,6 +89,7 @@
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to raw("<i class='material-icons'>file_copy</i>"), kb.kb_model_duplicate_path(i,organization_id: @organization.id),
                             :class => 'material-icons', :title => I18n.t("Duplicate knowledge base"), method: "post" %>
+                <%= link_to raw("<i class='material-icons'>place</i>"), { :controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'kb_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), kb.kb_model_path(i, organization_id: @organization.id),
                             confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
               <% end %>
@@ -146,6 +148,7 @@
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to raw("<i class='material-icons'>file_copy</i>"), operation.operation_model_duplicate_path(i, organization_id: @organization.id),
                             :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
+                <%= link_to raw("<i class='material-icons'>place</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'operation_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), operation.operation_model_path(i, organization_id: @organization.id),
                             confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
               <% end %>
@@ -198,6 +201,7 @@
               <%= link_to raw("<i class='material-icons'>file_copy</i>"), expert_judgement.instance_duplicate_expert_judgment_path(i, organization_id: @organization.id),
                           :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
               <%#= link_to I18n.t(:delete), expert_judgement.instance_path(i, organization_id: @organization.id),  confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
+              <%= link_to raw("<i class='material-icons'>place</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'expert_judgement_instance_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
               <%= link_to raw("<i class='material-icons'>delete</i>"), expert_judgement.instance_path(i, organization_id: @organization.id),
                           confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
             <% end %>
