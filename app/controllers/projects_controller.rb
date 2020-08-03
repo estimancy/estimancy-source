@@ -119,6 +119,10 @@ class ProjectsController < ApplicationController
 
         end
 
+        if params[:is_historized]
+          @organization_projects = @organization_projects.where(is_historicized: true)
+        end
+
         # @organization_projects = [Project.where(id: 15297).first]
 
         worksheet_cf = workbook.worksheets[0]
