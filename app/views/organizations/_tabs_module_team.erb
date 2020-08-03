@@ -33,6 +33,7 @@
               <% if can? :manage_modules_instances, ModuleProject %>
                 <%= link_to raw("<i class='material-icons'>file_copy</i>"), staffing.staffing_model_duplicate_path(i, organization_id: @organization.id),
                             :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
+                <%= link_to raw("<i class='material-icons'>place</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'staffing_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), staffing.staffing_model_path(i, organization_id: @organization.id),
                             confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
               <% end %>
