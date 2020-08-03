@@ -119,8 +119,6 @@ class ProjectsController < ApplicationController
 
         end
 
-        # @organization_projects = [Project.where(id: 15297).first]
-
         worksheet_cf = workbook.worksheets[0]
         worksheet_cf.sheet_name = 'Comp. Abaques & Serv. Dire Exp'
         worksheet_wbs = workbook.add_worksheet('Services avec ratio')
