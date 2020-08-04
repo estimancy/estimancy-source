@@ -18,6 +18,7 @@ class Kpi < ActiveRecord::Base
   belongs_to :acquisition_category
   belongs_to :platform_category
   belongs_to :provider
+  belongs_to :project
 
   amoeba do
     enable
@@ -40,22 +41,22 @@ class Kpi < ActiveRecord::Base
     config_for_graph = "#{self.name} ( "
 
     selected_date = self.selected_date || "start_date"
-    selected_date_label = selected_date == "start_date" ?  I18n.t(selected_date) : I18n.t(:created_date)
+    selected_date_label = selected_date == "start_date" ? I18n.t(selected_date) : I18n.t(:created_date)
     config_for_graph = config_for_graph + "  " + "Date" + " = "  + selected_date_label
 
     unless application_id.blank?
       application = organization.applications.where(id: application_id).first
-      config_for_graph = config_for_graph + " -  " + "#{I18n.t(:application)}: #{application.name}"
+      config_for_graph = config_for_graph + " - " + "#{I18n.t(:application)}: #{application.name}"
     end
 
     unless project_area_id.blank?
       project_area = organization.project_areas.where(id: project_area_id).first
-      config_for_graph = config_for_graph + "  -  " +  "#{I18n.t(:project_area)}: #{project_area.name}"
+      config_for_graph = config_for_graph + " - " +  "#{I18n.t(:project_area)}: #{project_area.name}"
     end
 
     unless project_category_id.blank?
       project_category = organization.project_categories.where(id: project_category_id).first
-      config_for_graph = config_for_graph + "  -  " +  "#{I18n.t(:project_category)}: #{project_category.name}"
+      config_for_graph = config_for_graph + " - " +  "#{I18n.t(:project_category)}: #{project_category.name}"
     end
 
     unless acquisition_category_id.blank?
