@@ -71,10 +71,13 @@ class EstimationStatus < ActiveRecord::Base
       errors.add(:status_alias, I18n.t(:text_invalid_status_alias))
     end
 
-    if self.is_historization_status == true
-      if self.nb_day_before_historization.blank?
-        errors.add(:nb_day_before_historization, I18n.t('errors.messages.blank'))
+    begin
+      if self.is_historization_status == true
+        if self.nb_day_before_historization.blank?
+          errors.add(:nb_day_before_historization, I18n.t('errors.messages.blank'))
+        end
       end
+    rescue
     end
   end
 

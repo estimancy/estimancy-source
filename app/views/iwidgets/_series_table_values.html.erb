@@ -6,11 +6,13 @@
       </span>
       <br />
       <% project_array.each do |project_hash| %>
-          <% project_selected_date = project_hash[:selected_date]%>
-          <p>
-            <span title="<%= project_hash[:project_label] %>"><%= project_selected_date.blank? ? "" : "#{project_selected_date} : " %></span>
-            <span><%= project_hash[:field_value] %> <%= project_hash[:kpi_unit] %></span>
-          </p>
+          <% unless project_hash.blank? %>
+            <% project_selected_date = project_hash[:selected_date]%>
+            <p>
+              <span title="<%= project_hash[:project_label] %>"><%= project_selected_date.blank? ? "" : "#{project_selected_date} : " %></span>
+              <span><%= project_hash[:field_value] %> <%= project_hash[:kpi_unit] %></span>
+            </p>
+          <% end %>
       <% end %>
     </div>
 

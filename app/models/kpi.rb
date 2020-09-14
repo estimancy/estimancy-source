@@ -28,6 +28,12 @@ class Kpi < ActiveRecord::Base
               })
   end
 
+
+  def to_s
+    self.name
+  end
+
+
   def get_config_label
     organization = self.organization
     application_id = self.application_id

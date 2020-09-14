@@ -28,6 +28,15 @@ module Ge
     belongs_to :ge_factor
     belongs_to :ge_model
 
+
+    amoeba do
+      enable
+      #exclude_association []
+
+      customize(lambda { |original_ge_factor_value, new_ge_factor_value|
+                  new_ge_factor_value.copy_id = original_ge_factor_value.id
+                })
+    end
   end
 
 end

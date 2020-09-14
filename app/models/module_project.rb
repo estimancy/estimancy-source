@@ -31,7 +31,7 @@ class ModuleProject < ActiveRecord::Base
   belongs_to :project, :touch => true
   belongs_to :organization
   belongs_to :organization_estimation, class_name: "OrganizationEstimation", :foreign_key => 'project_id'
-  belongs_to :view, dependent: :destroy    # the current selected view
+  belongs_to :view#, dependent: :destroy    # the current selected view
 
   belongs_to :guw_model, class_name: "Guw::GuwModel"
   belongs_to :ge_model, class_name: "Ge::GeModel"
