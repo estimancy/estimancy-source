@@ -15,7 +15,7 @@ COPY . /app
 WORKDIR /app
 RUN bundle install --jobs 20 --retry 5
 
-# configuring application
+# configuring application
 RUN mv config/database.example.yml config/database.yml && \
 	mv config/sensitive_settings.example.yml config/sensitive_settings.yml && \
 	mkdir log && \
