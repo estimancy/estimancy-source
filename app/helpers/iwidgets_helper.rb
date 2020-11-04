@@ -182,7 +182,7 @@ module IwidgetsHelper
           end
 
           ###series_results["#{kpi_config_id}"] = serie_values
-          number_values_for_calculation_widget["#{letter}"] = number_values["#{kpi_config.name}"]
+          number_values_for_calculation_widget["#{letter}"] = number_values["#{kpi_config}"]
         end
       end
 

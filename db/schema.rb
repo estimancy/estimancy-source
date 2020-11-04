@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20200715122726) do
+ActiveRecord::Schema.define(version: 20200911152233) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -27,12 +27,12 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   create_table "acquisition_categories", force: :cascade do |t|
     t.string   "name",              limit: 255
     t.text     "description",       limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",      limit: 255
     t.integer  "owner_id",          limit: 4
     t.text     "change_comment",    limit: 65535
     t.string   "reference_uuid",    limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id",   limit: 4
     t.integer  "copy_id",           limit: 4
     t.float    "coefficient",       limit: 24
@@ -48,17 +48,107 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.datetime "updated_at"
   end
 
+  create_table "activity_profiles", force: :cascade do |t|
+    t.integer  "project_id",              limit: 4
+    t.integer  "wbs_project_element_id",  limit: 4
+    t.integer  "organization_profile_id", limit: 4
+    t.float    "ratio_percentage",        limit: 24
+    t.datetime "created_at",                         null: false
+    t.datetime "updated_at",                         null: false
+  end
+
   create_table "admin_settings", force: :cascade do |t|
     t.string   "key",            limit: 255
     t.text     "value",          limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",   limit: 255
     t.integer  "owner_id",       limit: 4
     t.text     "change_comment", limit: 65535
     t.string   "reference_uuid", limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.text     "description",    limit: 65535
     t.string   "category",       limit: 255
+  end
+
+  create_table "amoa_amoa_applications", force: :cascade do |t|
+    t.string  "name",          limit: 255
+    t.integer "amoa_model_id", limit: 4
+  end
+
+  create_table "amoa_amoa_context_types", force: :cascade do |t|
+    t.string "name", limit: 255
+  end
+
+  create_table "amoa_amoa_contexts", force: :cascade do |t|
+    t.string  "name",                      limit: 255
+    t.float   "weight",                    limit: 24
+    t.integer "amoa_application_id",       limit: 4
+    t.integer "amoa_amoa_context_type_id", limit: 4
+  end
+
+  create_table "amoa_amoa_criteria_services", force: :cascade do |t|
+    t.integer "amoa_amoa_criteria_id", limit: 4
+    t.integer "amoa_amoa_service_id",  limit: 4
+    t.float   "weight",                limit: 24
+  end
+
+  create_table "amoa_amoa_criteria_unit_of_works", force: :cascade do |t|
+    t.integer "amoa_amoa_criteria_id",     limit: 4
+    t.integer "amoa_amoa_unit_of_work_id", limit: 4
+    t.integer "quantity",                  limit: 4
+  end
+
+  create_table "amoa_amoa_criterias", force: :cascade do |t|
+    t.string "name", limit: 255
+  end
+
+  create_table "amoa_amoa_models", force: :cascade do |t|
+    t.string  "name",                    limit: 255
+    t.float   "three_points_estimation", limit: 24
+    t.integer "organization_id",         limit: 4
+  end
+
+  create_table "amoa_amoa_services", force: :cascade do |t|
+    t.string "name", limit: 255
+  end
+
+  create_table "amoa_amoa_unit_of_works", force: :cascade do |t|
+    t.string  "name",                 limit: 255
+    t.string  "description",          limit: 255
+    t.string  "tracability",          limit: 255
+    t.float   "result",               limit: 24
+    t.integer "amoa_amoa_service_id", limit: 4
+  end
+
+  create_table "amoa_amoa_weightings", force: :cascade do |t|
+    t.string  "name",                 limit: 255
+    t.float   "weight",               limit: 24
+    t.integer "amoa_amoa_service_id", limit: 4
+  end
+
+  create_table "amoa_amoa_weightings_unit_of_works", force: :cascade do |t|
+    t.integer "amoa_amoa_weighting_id",    limit: 4
+    t.integer "amoa_amoa_unit_of_work_id", limit: 4
+  end
+
+  create_table "application_budget_types", force: :cascade do |t|
+    t.integer  "organization_id",      limit: 4
+    t.integer  "budget_id",            limit: 4
+    t.integer  "application_id",       limit: 4
+    t.integer  "budget_type_id",       limit: 4
+    t.integer  "estimation_status_id", limit: 4
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
+
+  create_table "application_budgets", force: :cascade do |t|
+    t.integer  "organization_id", limit: 4
+    t.integer  "budget_id",       limit: 4
+    t.integer  "application_id",  limit: 4
+    t.float    "montant",         limit: 24
+    t.boolean  "is_used"
+    t.datetime "created_at",                 null: false
+    t.datetime "updated_at",                 null: false
   end
 
   create_table "applications", force: :cascade do |t|
@@ -74,6 +164,7 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "month_number",      limit: 4
     t.datetime "start_date"
     t.datetime "end_date"
+    t.integer  "copy_id",           limit: 4
   end
 
   add_index "applications", ["organization_id", "name"], name: "by_organization_name", using: :btree
@@ -108,6 +199,8 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   create_table "attribute_modules", force: :cascade do |t|
     t.integer  "pe_attribute_id",     limit: 4
     t.integer  "pemodule_id",         limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "is_mandatory",                      default: false
     t.string   "in_out",              limit: 255
     t.text     "description",         limit: 65535
@@ -121,8 +214,6 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "owner_id",            limit: 4
     t.text     "change_comment",      limit: 65535
     t.string   "reference_uuid",      limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "display_order",       limit: 4
     t.integer  "guw_model_id",        limit: 4
     t.integer  "operation_model_id",  limit: 4
@@ -163,12 +254,12 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "port",                         limit: 4
     t.string   "base_dn",                      limit: 255
     t.string   "user_name_attribute",          limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",                 limit: 255
     t.integer  "owner_id",                     limit: 4
     t.text     "change_comment",               limit: 65535
     t.string   "reference_uuid",               limit: 255
-    t.datetime "created_at",                                                 null: false
-    t.datetime "updated_at",                                                 null: false
     t.boolean  "on_the_fly_user_creation",                   default: false
     t.string   "ldap_bind_dn",                 limit: 255
     t.string   "ldap_bind_encrypted_password", limit: 255
@@ -213,6 +304,14 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.boolean  "from_direct_trigger"
   end
 
+  create_table "budget_budget_types", force: :cascade do |t|
+    t.integer  "organization_id", limit: 4
+    t.integer  "budget_id",       limit: 4
+    t.integer  "budget_type_id",  limit: 4
+    t.datetime "created_at",                null: false
+    t.datetime "updated_at",                null: false
+  end
+
   create_table "budget_type_statuses", force: :cascade do |t|
     t.integer  "organization_id",      limit: 4
     t.integer  "budget_type_id",       limit: 4
@@ -250,12 +349,12 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.string   "iso_code_number", limit: 255
     t.string   "sign",            limit: 255
     t.float    "conversion_rate", limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",    limit: 255
     t.integer  "owner_id",        limit: 4
     t.text     "change_comment",  limit: 65535
     t.string   "reference_uuid",  limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "demand_types", force: :cascade do |t|
@@ -345,6 +444,17 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   add_index "estimation_values", ["module_project_id"], name: "ev_mp_id", using: :btree
   add_index "estimation_values", ["organization_id", "module_project_id", "pe_attribute_id", "in_out"], name: "organization_estimation_values", using: :btree
 
+  create_table "events", force: :cascade do |t|
+    t.string   "name",          limit: 255
+    t.text     "description",   limit: 65535
+    t.date     "start_date"
+    t.date     "end_date"
+    t.integer  "event_type_id", limit: 4
+    t.integer  "project_id",    limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "expert_judgement_instance_estimates", force: :cascade do |t|
     t.integer "pbs_project_element_id",       limit: 4
     t.integer "module_project_id",            limit: 4
@@ -382,6 +492,17 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   end
 
   add_index "expert_judgement_instances", ["organization_id", "name"], name: "index_expert_judgement_instances_on_organization_id_and_name", unique: true, using: :btree
+
+  create_table "factor_translations", force: :cascade do |t|
+    t.integer  "factor_id",  limit: 4
+    t.string   "locale",     limit: 255,   null: false
+    t.datetime "created_at",               null: false
+    t.datetime "updated_at",               null: false
+    t.text     "helps",      limit: 65535
+  end
+
+  add_index "factor_translations", ["factor_id"], name: "index_factor_translations_on_factor_id", using: :btree
+  add_index "factor_translations", ["locale"], name: "index_factor_translations_on_locale", using: :btree
 
   create_table "factors", force: :cascade do |t|
     t.string   "name",             limit: 255
@@ -423,6 +544,7 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "ge_model_id",       limit: 4
     t.datetime "created_at",                    null: false
     t.datetime "updated_at",                    null: false
+    t.integer  "copy_id",           limit: 4
   end
 
   add_index "ge_ge_factor_values", ["ge_model_id", "factor_scale_prod", "factor_type", "ge_factor_id"], name: "by_geModel_scaleProd_factorType_factor", using: :btree
@@ -459,15 +581,13 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   add_index "ge_ge_inputs", ["organization_id", "ge_model_id", "module_project_id"], name: "by_organization_geModel_mp", using: :btree
 
   create_table "ge_ge_model_factor_descriptions", force: :cascade do |t|
-    t.integer  "ge_model_id",       limit: 4
-    t.integer  "ge_factor_id",      limit: 4
-    t.string   "factor_alias",      limit: 255
-    t.text     "description",       limit: 65535
-    t.integer  "organization_id",   limit: 4
-    t.datetime "created_at",                      null: false
-    t.datetime "updated_at",                      null: false
-    t.integer  "project_id",        limit: 4
-    t.integer  "module_project_id", limit: 4
+    t.integer "ge_model_id",       limit: 4
+    t.integer "ge_factor_id",      limit: 4
+    t.string  "factor_alias",      limit: 255
+    t.text    "description",       limit: 65535
+    t.integer "organization_id",   limit: 4
+    t.integer "project_id",        limit: 4
+    t.integer "module_project_id", limit: 4
   end
 
   add_index "ge_ge_model_factor_descriptions", ["organization_id", "ge_model_id", "ge_factor_id", "project_id", "module_project_id", "factor_alias"], name: "by_organization_project_mp_gemodel_factor_alias", using: :btree
@@ -492,10 +612,10 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.string   "p_calculation_method",                    limit: 255
     t.string   "s_calculation_method",                    limit: 255
     t.string   "c_calculation_method",                    limit: 255
-    t.integer  "input_pe_attribute_id",                   limit: 4
-    t.integer  "output_pe_attribute_id",                  limit: 4
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "input_pe_attribute_id",                   limit: 4
+    t.integer  "output_pe_attribute_id",                  limit: 4
     t.string   "ent1_unit",                               limit: 255
     t.float    "ent1_unit_coefficient",                   limit: 24,    default: 1.0
     t.string   "ent2_unit",                               limit: 255
@@ -530,14 +650,14 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.string   "name",                  limit: 255
     t.text     "description",           limit: 65535
     t.string   "code_group",            limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "for_global_permission"
     t.boolean  "for_project_security"
     t.string   "custom_value",          limit: 255
     t.integer  "owner_id",              limit: 4
     t.text     "change_comment",        limit: 65535
     t.string   "reference_uuid",        limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "copy_id",               limit: 4
     t.integer  "originator_id",         limit: 4
     t.integer  "event_organization_id", limit: 4
@@ -1276,15 +1396,40 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.text     "indicator_result",          limit: 65535
   end
 
+  create_table "labor_categories", force: :cascade do |t|
+    t.string   "name",             limit: 255
+    t.text     "description",      limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "uuid",             limit: 255
+    t.integer  "record_status_id", limit: 4
+    t.string   "custom_value",     limit: 255
+    t.integer  "owner_id",         limit: 4
+    t.text     "change_comment",   limit: 65535
+    t.integer  "reference_id",     limit: 4
+    t.string   "reference_uuid",   limit: 255
+  end
+
+  add_index "labor_categories", ["record_status_id"], name: "index_labor_categories_on_record_status_id", using: :btree
+  add_index "labor_categories", ["reference_id"], name: "index_labor_categories_on_parent_id", using: :btree
+  add_index "labor_categories", ["uuid"], name: "index_labor_categories_on_uuid", unique: true, using: :btree
+
+  create_table "labor_categories_project_areas", id: false, force: :cascade do |t|
+    t.integer  "labor_category_id", limit: 4
+    t.integer  "project_area_id",   limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "languages", force: :cascade do |t|
     t.string   "name",           limit: 255
     t.string   "locale",         limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",   limit: 255
     t.integer  "owner_id",       limit: 4
     t.text     "change_comment", limit: 65535
     t.string   "reference_uuid", limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   create_table "module_project_guw_unit_of_work_groups", id: false, force: :cascade do |t|
@@ -1448,10 +1593,10 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "copy_id",                      limit: 4
     t.datetime "created_at"
     t.datetime "updated_at"
+    t.integer  "guw_model_id",                 limit: 4
     t.integer  "view_id",                      limit: 4
     t.boolean  "show_results_view",                        default: true
     t.string   "color",                        limit: 255
-    t.integer  "guw_model_id",                 limit: 4
     t.integer  "ge_model_id",                  limit: 4
     t.integer  "expert_judgement_instance_id", limit: 4
     t.integer  "wbs_activity_id",              limit: 4
@@ -1548,6 +1693,29 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "event_organization_id",          limit: 4
     t.text     "transaction_id",                 limit: 65535
     t.boolean  "is_new_created_record"
+    t.date     "change_date"
+    t.integer  "time_count",                     limit: 4
+    t.boolean  "allow_export_pdf"
+    t.integer  "demand_id",                      limit: 4
+    t.boolean  "urgent_project"
+    t.boolean  "is_valid",                                     default: true
+    t.datetime "historization_time"
+    t.boolean  "is_historized"
+  end
+
+  create_table "organization_labor_categories", force: :cascade do |t|
+    t.integer  "organization_id",   limit: 4
+    t.integer  "labor_category_id", limit: 4
+    t.string   "level",             limit: 255
+    t.string   "name",              limit: 255
+    t.text     "description",       limit: 65535
+    t.float    "cost_per_hour",     limit: 24
+    t.integer  "base_year",         limit: 4
+    t.integer  "currency_id",       limit: 4
+    t.float    "hour_per_day",      limit: 24
+    t.integer  "days_per_year",     limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "organization_profiles", force: :cascade do |t|
@@ -1558,6 +1726,7 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.datetime "created_at",                            null: false
     t.datetime "updated_at",                            null: false
     t.integer  "copy_id",                 limit: 4
+    t.float    "coefficient",             limit: 24
     t.boolean  "is_real_profile"
     t.boolean  "use_dynamic_coefficient"
     t.string   "associated_services",     limit: 255
@@ -1578,6 +1747,47 @@ ActiveRecord::Schema.define(version: 20200715122726) do
 
   add_index "organization_profiles_wbs_activities", ["organization_profile_id", "wbs_activity_id"], name: "wbs_activity_profiles_index", unique: true, using: :btree
   add_index "organization_profiles_wbs_activities", ["wbs_activity_id", "organization_profile_id"], name: "wbs_activity_organization_profiles", using: :btree
+
+  create_table "organization_technologies", force: :cascade do |t|
+    t.integer  "organization_id",    limit: 4
+    t.string   "name",               limit: 255
+    t.string   "alias",              limit: 255
+    t.text     "description",        limit: 65535
+    t.float    "productivity_ratio", limit: 24
+    t.datetime "created_at",                       null: false
+    t.datetime "updated_at",                       null: false
+    t.string   "state",              limit: 20
+    t.integer  "copy_id",            limit: 4
+  end
+
+  create_table "organization_technologies_unit_of_works", id: false, force: :cascade do |t|
+    t.integer  "organization_technology_id", limit: 4
+    t.integer  "unit_of_work_id",            limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "organization_uow_complexities", force: :cascade do |t|
+    t.integer  "organization_id",            limit: 4
+    t.string   "name",                       limit: 255
+    t.text     "description",                limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "display_order",              limit: 4
+    t.string   "state",                      limit: 20
+    t.integer  "factor_id",                  limit: 4
+    t.integer  "unit_of_work_id",            limit: 4
+    t.float    "value",                      limit: 24
+    t.string   "uuid",                       limit: 255
+    t.integer  "record_status_id",           limit: 4
+    t.string   "custom_value",               limit: 255
+    t.integer  "owner_id",                   limit: 4
+    t.text     "change_comment",             limit: 65535
+    t.integer  "reference_id",               limit: 4
+    t.string   "reference_uuid",             limit: 255
+    t.boolean  "is_default",                               default: false
+    t.integer  "organization_technology_id", limit: 4
+  end
 
   create_table "organizations", force: :cascade do |t|
     t.string   "name",                                  limit: 255
@@ -1661,13 +1871,13 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.string   "attr_type",              limit: 255
     t.text     "options",                limit: 65535
     t.text     "aggregation",            limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",           limit: 255
     t.integer  "owner_id",               limit: 4
     t.text     "change_comment",         limit: 65535
     t.string   "reference_uuid",         limit: 255
     t.integer  "precision",              limit: 4
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "attribute_category_id",  limit: 4
     t.boolean  "single_entry_attribute"
     t.integer  "guw_model_id",           limit: 4
@@ -1691,14 +1901,14 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.text     "description",              limit: 65535
     t.string   "with_activities",          limit: 255,   default: "0"
     t.integer  "type_id",                  limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.text     "compliant_component_type", limit: 65535
     t.boolean  "is_typed"
     t.string   "custom_value",             limit: 255
     t.integer  "owner_id",                 limit: 4
     t.text     "change_comment",           limit: 65535
     t.string   "reference_uuid",           limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
   end
 
   add_index "pemodules", ["alias"], name: "index_pemodules_on_alias", using: :btree
@@ -1707,13 +1917,13 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.string   "object_associated",     limit: 255
     t.string   "name",                  limit: 255
     t.text     "description",           limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.boolean  "is_permission_project"
     t.string   "custom_value",          limit: 255
     t.integer  "owner_id",              limit: 4
     t.text     "change_comment",        limit: 65535
     t.string   "reference_uuid",        limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.string   "alias",                 limit: 255
     t.boolean  "is_master_permission"
     t.string   "category",              limit: 255,   default: "Admin"
@@ -1736,15 +1946,22 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   add_index "permissions_project_security_levels", ["permission_id", "project_security_level_id"], name: "by_permission_psl", using: :btree
   add_index "permissions_project_security_levels", ["project_security_level_id", "permission_id"], name: "by_psl_permission", using: :btree
 
+  create_table "permissions_users", id: false, force: :cascade do |t|
+    t.integer  "permission_id", limit: 4
+    t.integer  "user_id",       limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "platform_categories", force: :cascade do |t|
     t.string   "name",              limit: 255
     t.text     "description",       limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",      limit: 255
     t.integer  "owner_id",          limit: 4
     t.text     "change_comment",    limit: 65535
     t.string   "reference_uuid",    limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id",   limit: 4
     t.integer  "copy_id",           limit: 4
     t.float    "coefficient",       limit: 24
@@ -1752,6 +1969,28 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   end
 
   add_index "platform_categories", ["organization_id", "name"], name: "by_organization_platform_name", using: :btree
+
+  create_table "platform_categories_project_areas", id: false, force: :cascade do |t|
+    t.integer  "platform_category_id", limit: 4
+    t.integer  "project_area_id",      limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "profile_categories", force: :cascade do |t|
+    t.string   "name",             limit: 255
+    t.text     "description",      limit: 65535
+    t.integer  "organization_id",  limit: 4
+    t.string   "uuid",             limit: 255
+    t.integer  "record_status_id", limit: 4
+    t.string   "custom_value",     limit: 255
+    t.integer  "owner_id",         limit: 4
+    t.text     "change_comment",   limit: 65535
+    t.integer  "reference_id",     limit: 4
+    t.string   "reference_uuid",   limit: 255
+    t.datetime "created_at",                     null: false
+    t.datetime "updated_at",                     null: false
+  end
 
   create_table "profiles", force: :cascade do |t|
     t.string   "name",           limit: 255
@@ -1768,12 +2007,12 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   create_table "project_areas", force: :cascade do |t|
     t.string   "name",              limit: 255
     t.text     "description",       limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",      limit: 255
     t.integer  "owner_id",          limit: 4
     t.text     "change_comment",    limit: 65535
     t.string   "reference_uuid",    limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id",   limit: 4
     t.integer  "copy_id",           limit: 4
     t.float    "coefficient",       limit: 24
@@ -1782,15 +2021,29 @@ ActiveRecord::Schema.define(version: 20200715122726) do
 
   add_index "project_areas", ["organization_id", "name"], name: "by_organization_area_name", using: :btree
 
+  create_table "project_areas_project_categories", id: false, force: :cascade do |t|
+    t.integer  "project_category_id", limit: 4
+    t.integer  "project_area_id",     limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "project_areas_work_element_types", id: false, force: :cascade do |t|
+    t.integer  "project_area_id",      limit: 4
+    t.integer  "work_element_type_id", limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "project_categories", force: :cascade do |t|
     t.string   "name",              limit: 255
     t.text     "description",       limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",      limit: 255
     t.integer  "owner_id",          limit: 4
     t.text     "change_comment",    limit: 65535
     t.string   "reference_uuid",    limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id",   limit: 4
     t.integer  "copy_id",           limit: 4
     t.float    "coefficient",       limit: 24
@@ -1837,11 +2090,11 @@ ActiveRecord::Schema.define(version: 20200715122726) do
 
   create_table "project_security_levels", force: :cascade do |t|
     t.string   "name",                  limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "custom_value",          limit: 255
     t.text     "change_comment",        limit: 65535
     t.string   "reference_uuid",        limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.text     "description",           limit: 65535
     t.integer  "organization_id",       limit: 4
     t.integer  "copy_id",               limit: 4
@@ -1903,6 +2156,7 @@ ActiveRecord::Schema.define(version: 20200715122726) do
   end
 
   add_index "projects", ["ancestry"], name: "index_projects_on_ancestry", using: :btree
+  add_index "projects", ["organization_id", "is_model", "version_number", "title"], name: "organization_projects_title_uniqueness", unique: true, using: :btree
   add_index "projects", ["organization_id", "is_model"], name: "index_projects_on_organization_id_and_is_model", using: :btree
 
   create_table "projects_users", id: false, force: :cascade do |t|
@@ -2111,6 +2365,16 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.datetime "updated_at",                          null: false
   end
 
+  create_table "subcontractors", force: :cascade do |t|
+    t.integer  "organization_id", limit: 4
+    t.string   "name",            limit: 255
+    t.string   "alias",           limit: 255
+    t.text     "description",     limit: 65535
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.string   "state",           limit: 20
+  end
+
   create_table "technologies", force: :cascade do |t|
     t.string   "name",             limit: 255
     t.text     "description",      limit: 65535
@@ -2125,6 +2389,25 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.datetime "updated_at",                     null: false
   end
 
+  create_table "technology_size_types", force: :cascade do |t|
+    t.integer  "organization_technology_id", limit: 4
+    t.integer  "size_unit_id",               limit: 4
+    t.integer  "size_unit_type_id",          limit: 4
+    t.integer  "organization_id",            limit: 4
+    t.float    "value",                      limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "technology_size_units", force: :cascade do |t|
+    t.integer  "size_unit_id",               limit: 4
+    t.integer  "organization_technology_id", limit: 4
+    t.integer  "organization_id",            limit: 4
+    t.float    "value",                      limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "unit_of_works", force: :cascade do |t|
     t.integer  "organization_id", limit: 4
     t.string   "name",            limit: 255
@@ -2136,10 +2419,33 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "display_order",   limit: 4
   end
 
+  create_table "uow_inputs", force: :cascade do |t|
+    t.integer  "module_project_id",      limit: 4
+    t.integer  "technology_id",          limit: 4
+    t.integer  "unit_of_work_id",        limit: 4
+    t.integer  "complexity_id",          limit: 4
+    t.string   "flag",                   limit: 255
+    t.string   "name",                   limit: 255
+    t.float    "weight",                 limit: 24
+    t.float    "size_low",               limit: 24
+    t.float    "size_most_likely",       limit: 24
+    t.float    "size_high",              limit: 24
+    t.float    "gross_low",              limit: 24
+    t.float    "gross_most_likely",      limit: 24
+    t.float    "gross_high",             limit: 24
+    t.datetime "created_at"
+    t.datetime "updated_at"
+    t.integer  "pbs_project_element_id", limit: 4
+    t.integer  "size_unit_type_id",      limit: 4
+    t.integer  "display_order",          limit: 4
+  end
+
   create_table "users", force: :cascade do |t|
     t.string   "email",                       limit: 255,   default: "",    null: false
     t.string   "password_hash",               limit: 255
     t.string   "password_salt",               limit: 255
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.string   "login_name",                  limit: 255
     t.string   "first_name",                  limit: 255
     t.string   "last_name",                   limit: 255
@@ -2154,8 +2460,6 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "auth_type",                   limit: 4
     t.text     "ten_latest_projects",         limit: 65535
     t.integer  "organization_id",             limit: 4
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "object_per_page",             limit: 4
     t.string   "encrypted_password",          limit: 255,   default: "",    null: false
     t.string   "reset_password_token",        limit: 255
@@ -2299,6 +2603,8 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.string   "state",                    limit: 255
     t.text     "description",              limit: 65535
     t.integer  "organization_id",          limit: 4
+    t.datetime "created_at",                                         null: false
+    t.datetime "updated_at",                                         null: false
     t.integer  "record_status_id",         limit: 4
     t.string   "custom_value",             limit: 255
     t.integer  "owner_id",                 limit: 4
@@ -2307,8 +2613,6 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.string   "reference_uuid",           limit: 255
     t.integer  "copy_number",              limit: 4,     default: 0
     t.integer  "copy_id",                  limit: 4
-    t.datetime "created_at",                                         null: false
-    t.datetime "updated_at",                                         null: false
     t.boolean  "three_points_estimation"
     t.string   "cost_unit",                limit: 255
     t.float    "cost_unit_coefficient",    limit: 24
@@ -2333,17 +2637,17 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.text     "description",        limit: 65535
     t.string   "ancestry",           limit: 255
     t.integer  "ancestry_depth",     limit: 4,     default: 0
+    t.datetime "created_at",                                   null: false
+    t.datetime "updated_at",                                   null: false
     t.integer  "record_status_id",   limit: 4
     t.string   "custom_value",       limit: 255
     t.text     "change_comment",     limit: 65535
     t.integer  "reference_id",       limit: 4
     t.string   "reference_uuid",     limit: 255
-    t.integer  "copy_id",            limit: 4
     t.string   "dotted_id",          limit: 255
+    t.integer  "copy_id",            limit: 4
     t.boolean  "is_root"
     t.string   "master_ancestry",    limit: 255
-    t.datetime "created_at",                                   null: false
-    t.datetime "updated_at",                                   null: false
     t.float    "position",           limit: 24
     t.string   "phase_short_name",   limit: 255
     t.boolean  "allow_modif_effort"
@@ -2370,14 +2674,14 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.integer  "wbs_activity_element_id", limit: 4
     t.float    "ratio_value",             limit: 24
     t.boolean  "simple_reference"
+    t.datetime "created_at",                                            null: false
+    t.datetime "updated_at",                                            null: false
     t.integer  "record_status_id",        limit: 4
     t.string   "custom_value",            limit: 255
     t.text     "change_comment",          limit: 65535
     t.integer  "reference_id",            limit: 4
     t.string   "reference_uuid",          limit: 255
     t.boolean  "multiple_references"
-    t.datetime "created_at",                                            null: false
-    t.datetime "updated_at",                                            null: false
     t.string   "ancestry",                limit: 255
     t.boolean  "is_optional"
     t.string   "formula",                 limit: 255
@@ -2424,14 +2728,14 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.text     "description",                        limit: 65535
     t.integer  "wbs_activity_id",                    limit: 4
     t.boolean  "do_not_show_cost"
+    t.datetime "created_at",                                                   null: false
+    t.datetime "updated_at",                                                   null: false
     t.integer  "record_status_id",                   limit: 4
     t.string   "custom_value",                       limit: 255
     t.text     "change_comment",                     limit: 65535
     t.integer  "reference_id",                       limit: 4
     t.string   "reference_uuid",                     limit: 255
     t.integer  "copy_number",                        limit: 4,     default: 0
-    t.datetime "created_at",                                                   null: false
-    t.datetime "updated_at",                                                   null: false
     t.integer  "copy_id",                            limit: 4
     t.boolean  "allow_modify_retained_effort"
     t.boolean  "do_not_show_phases_with_zero_value"
@@ -2480,13 +2784,13 @@ ActiveRecord::Schema.define(version: 20200715122726) do
     t.string   "alias",           limit: 255
     t.text     "description",     limit: 65535
     t.integer  "project_area_id", limit: 4
+    t.datetime "created_at"
+    t.datetime "updated_at"
     t.integer  "peicon_id",       limit: 4
     t.string   "custom_value",    limit: 255
     t.integer  "owner_id",        limit: 4
     t.text     "change_comment",  limit: 65535
     t.string   "reference_uuid",  limit: 255
-    t.datetime "created_at"
-    t.datetime "updated_at"
     t.integer  "organization_id", limit: 4
   end
 

@@ -18,16 +18,17 @@
         <a class="nav-link"  data-toggle="pill" id="pills-technical_informations-tab" href="#pills-technical_informations" role="tab" aria-selected="false"><%= I18n.t(:technical_informations) %></a>
       </li>
 
-      <% if @organization.name.downcase.include?("distribution transporteur") || @organization.name.downcase.include?("boreale") %>
-          <li class="nav-item">
-            <a class="nav-link"  data-toggle="pill" id="pills-dt-tab" href="#pills-dt" role="tab" aria-selected="false">
-              MaJ des prix (<%= @organization.name  %>)
-            </a>
-          </li>
-      <% end %>
-
       <% unless @organization.new_record? %>
-        <li class="nav-item">
+
+          <% if @organization.name.downcase.include?("distribution transporteur") || @organization.name.downcase.include?("boreale") %>
+              <li class="nav-item">
+                <a class="nav-link"  data-toggle="pill" id="pills-dt-tab" href="#pills-dt" role="tab" aria-selected="false">
+                  MaJ des prix (<%= @organization.name  %>)
+                </a>
+              </li>
+          <% end %>
+
+          <li class="nav-item">
           <a class="nav-link"  data-toggle="pill" id="pills-kpi-tab" href="#pills-kpi" role="tab" aria-selected="false">
             Restitution
           </a>

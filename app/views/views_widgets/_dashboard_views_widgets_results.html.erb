@@ -243,6 +243,7 @@
 
 
               <!-- Les Vignettes de type Tableau -->
+              <%# initialization_module_project = @project_module_projects.where(pemodule_id: @initialization_module.id).first unless @initialization_module.nil? %>
               <% project_table_view_widgets = @project.views_widgets.where(widget_type: [vw_table_types, vw_graph_types]) %>
               <!-- Les Vignettes graphiques -->
               <%# project_graph_view_widgets = @project.views_widgets.where(widget_type: vw_graph_types) %>
