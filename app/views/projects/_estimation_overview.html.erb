@@ -43,7 +43,7 @@
 
         <tbody>
           <% @projects.each_with_index do |project, index| %>
-            <% if (project.private != true && current_user.id == project.creator_id) || current_user.super_admin == true %>
+            <%# if (project.private != true && current_user.id == project.creator_id) || current_user.super_admin == true %>
               <tr data-project_id="<%= project.id %>">
 
                 <% selected_inline_columns.each do |column| %>
@@ -80,7 +80,7 @@
                   <div class="card estimation-overview" id="<%= project.id %>_overview"></div>
                 </td>
               </tr>
-            <% end %>
+            <%# end %>
           <% end %>
         </tbody>
 
