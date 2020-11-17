@@ -14,15 +14,11 @@ sed -i 's/${HOST_URL}/HOST_URL_TO_REPLACE/g' config/sensitive_settings.yml
 sed -i 's/${SMTP_FROM}/SMTP_FROM_TO_REPLACE/g' config/sensitive_settings.yml
 
 # precompiling assets
-<<<<<<< HEAD
 bundle exec rake assets:precompile
 
 # If database exists, migrate. Otherweise setup (create and migrate)
 bundle exec rake db:migrate 2>/dev/null || bundle exec rake db:create db:migrate
 
-=======
-rake assets:precompile
->>>>>>> [Docker] Rebasing work on master
 # launching server
 rails server --daemon --binding=0.0.0.0 $@
 # displaying logs
