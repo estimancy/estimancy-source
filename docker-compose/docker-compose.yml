@@ -11,8 +11,6 @@ services:
       RAILS_ENV: development
       DATABASE_HOST: mysql
     command:
-      - -f
-      - /dev/null
       - -e development
   
   mysql:
