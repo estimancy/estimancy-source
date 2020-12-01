@@ -15,10 +15,14 @@ COPY . /app
 WORKDIR /app
 RUN bundle install --jobs 20 --retry 5
 
-# configuring application
+# configuring application
 RUN mv config/database.example.yml config/database.yml && \
 	mv config/sensitive_settings.example.yml config/sensitive_settings.yml && \
-	mkdir log && \
+	mkdir log
+
+# precompiling assets
+RUN bundle exec rake assets:precompile && \
+	rm -rf ./tmp/ && \
 	chown -R nobody:nogroup .
 
 EXPOSE 3000
