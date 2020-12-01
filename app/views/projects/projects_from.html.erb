@@ -64,9 +64,9 @@
                     <%= link_to(raw("<i class='material-icons'>map</i>"), {:controller => 'projects', :action => 'find_use_estimation_model', :project_id => project.id}, :remote => true, 'data-project_id' => project.id, :class => 'icon icon-map-marker', :id => 'find_use_estimation_model', :title => I18n.t('button_find_use')) %>
                   <% end %>
 
-                  <% if can? :manage_estimation_models, Project %>
-                    <%= link_to(raw("<i class='material-icons'>clear</i>"), confirm_deletion_path(project_id: project.id), :title => I18n.t('delete')) %>
-                  <% end %>
+                  <%# if can? :manage_estimation_models, Project %>
+                    <%=# link_to(raw("<i class='material-icons'>delete</i>"), confirm_deletion_path(project_id: project.id), :title => I18n.t('delete')) %>
+                  <%# end %>
 
                 </div>
               </td>
