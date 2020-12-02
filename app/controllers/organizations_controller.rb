@@ -6100,6 +6100,8 @@ class OrganizationsController < ApplicationController
     calculation_output = Array.new
 
     by_x_axis_values.each do |key, project_records|
+      key = key.to_date
+
       nb_projects = project_records.size
       projects_values = Array.new
       indicator_values = Array.new
@@ -6115,7 +6117,7 @@ class OrganizationsController < ApplicationController
         projects_values << value
         indicator_values << { project_id: project.id,
                            #"#{x_axis_config}": "#{key}",
-                           selected_date: "#{key.to_date}",
+                           selected_date: "#{key}",
                            field_value: value.round(2),
                            project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
                            kpi_unit: kpi_config.kpi_unit
