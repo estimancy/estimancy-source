@@ -6115,7 +6115,7 @@ class OrganizationsController < ApplicationController
         projects_values << value
         indicator_values << { project_id: project.id,
                            #"#{x_axis_config}": "#{key}",
-                           selected_date: "#{key}",
+                           selected_date: "#{key.to_date}",
                            field_value: value.round(2),
                            project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
                            kpi_unit: kpi_config.kpi_unit
@@ -6479,7 +6479,6 @@ class OrganizationsController < ApplicationController
 
           @projects_values << value
           indicator_values << { project_id: project.id,
-                                # selected_date: project.send("#{selected_date}").to_date, #I18n.l(project.send("#{selected_date}").to_date),
                                 selected_date: I18n.l(project.send("#{selected_date}").to_date),
                                 field_value: value.round(2),
                                 project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
@@ -6847,12 +6846,12 @@ class OrganizationsController < ApplicationController
 
       # start_date
       unless start_date.blank?
-        @projects = @projects.where("#{selected_date} >= ?", start_date).order("start_date asc")
+        @projects = @projects.where("#{selected_date} >= ?", start_date)
       end
 
       #end_date
       unless end_date.blank?
-        @projects = @projects.where("#{selected_date} <= ?", end_date).order("start_date asc")
+        @projects = @projects.where("#{selected_date} <= ?", end_date)
       end
 
       #Modele
