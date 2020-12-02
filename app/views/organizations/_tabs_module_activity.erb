@@ -23,10 +23,10 @@
           <tr>
             <td><%= link_to(wbs_activity.name, edit_wbs_activity_path(wbs_activity), data: {confirm: I18n.t(:warning_edit_instance_module)}) %></td>
             <td><%= wbs_activity.description %></td>
-            <td class="span2 align-center">
+            <td class="align-center">
               <%= wbs_activity.created_at.nil? ? '-' : I18n.l(wbs_activity.created_at) %>
             </td>
-            <td class="center" style="width:100px;">
+            <td class="center" style="width:150px;">
               <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_wbs_activity_path(@organization, wbs_activity, :anchor => 'tabs-1'),
                           confirm: I18n.t(:warning_edit_instance_module), :class => 'material-icons', :title => I18n.t('edit') %>
               <% if can? :manage_modules_instances, ModuleProject %>

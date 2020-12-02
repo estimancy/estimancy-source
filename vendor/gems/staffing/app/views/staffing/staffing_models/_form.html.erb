@@ -49,7 +49,7 @@
 
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                      <%= f.input :config_type, as: :select, collection: [["Standard", "old"], ["Time Cost Tradeoff", "new"]],
+                      <%= f.input :config_type, as: :select, collection: [["Time Cost Tradeoff", "new"]],
                                   selected: @staffing_model.config_type, label: I18n.t(:type_of_configuration), input_html: { class: "form-control" } %>
                     </div>
                   </div>
