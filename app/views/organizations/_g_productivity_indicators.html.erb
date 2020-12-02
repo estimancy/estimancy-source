@@ -1,3 +1,4 @@
+<!--Vignettes-->
 <script type="text/javascript">
     google.charts.load("current", {packages:['corechart']});
     google.charts.setOnLoadCallback(drawChart);
@@ -16,6 +17,7 @@
                 title: '<%= I18n.t("#{kpi_config.x_axis_config}") rescue (kpi_config.selected_date == "created_at" ? I18n.t(:created_date) : I18n.t("#{kpi_config.selected_date}")) %>'
             },
             vAxis: {
+                minValue: 0,
                 title: '<%= kpi_config.field.name %>'
             },
 

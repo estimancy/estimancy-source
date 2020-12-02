@@ -6845,12 +6845,12 @@ class OrganizationsController < ApplicationController
 
       # start_date
       unless start_date.blank?
-        @projects = @projects.where("#{selected_date} >= ?", start_date)
+        @projects = @projects.where("#{selected_date} >= ?", start_date).order("start_date asc")
       end
 
       #end_date
       unless end_date.blank?
-        @projects = @projects.where("#{selected_date} <= ?", end_date)
+        @projects = @projects.where("#{selected_date} <= ?", end_date).order("start_date asc")
       end
 
       #Modele
