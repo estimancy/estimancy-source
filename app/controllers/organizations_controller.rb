@@ -6342,7 +6342,7 @@ class OrganizationsController < ApplicationController
       nb_last_projects = kpi_config.nb_last_projects
       include_historized = kpi_config.include_historized
       project_versions = kpi_config.project_versions
-      selected_date = kpi_config.selected_date || "start_date"
+      selected_date = "start_date"
       start_date = kpi_config.start_date
       end_date = kpi_config.end_date || Time.now.to_date
       kpi_coefficient = kpi_config.kpi_coefficient.to_f
@@ -6383,13 +6383,13 @@ class OrganizationsController < ApplicationController
                 # nothing to do
 
               when "project_date_included"
-                @projects = @projects.where("#{selected_date} <= ?", widget_project_date)
+                @projects = @projects.where("#{selected_date} <= ?", widget_project_date).order("start_date asc")
 
               when "project_date_not_included"
-                @projects = @projects.where("#{selected_date} < ?", widget_project_date)
+                @projects = @projects.where("#{selected_date} < ?", widget_project_date).order("start_date asc")
 
               when "current_date"
-                @projects = @projects.where("#{selected_date} <= ?", Time.now.to_date)
+                @projects = @projects.where("#{selected_date} <= ?", Time.now.to_date).order("start_date asc")
             end
           end
         end
@@ -6457,7 +6457,7 @@ class OrganizationsController < ApplicationController
       #@res_graphic << ["#{I18n.t(:productivity)} : #{kpi_config.name}", "#{config_for_graph}"]
       @res_graphic << [I18n.t("#{selected_date}"), "#{config_for_graph}", { role: 'tooltip' } ]
 
-      # ordonner par ordre plus récents
+      # ordonner par ordre plus récents (vignette)
       if nb_last_projects.blank?
         @projects = @projects.reorder("#{selected_date} asc")
         nb_projects = @projects.all.size
@@ -6479,7 +6479,7 @@ class OrganizationsController < ApplicationController
 
           @projects_values << value
           indicator_values << { project_id: project.id,
-                                selected_date: project.send("#{selected_date}").to_date.to_s, #I18n.l(project.send("#{selected_date}").to_date),
+                                selected_date: project.send("#{selected_date}").to_date, #I18n.l(project.send("#{selected_date}").to_date),
                                 field_value: value.round(2),
                                 project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
                                 kpi_unit: kpi_config.kpi_unit
