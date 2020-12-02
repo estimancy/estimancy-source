@@ -6548,12 +6548,13 @@ class OrganizationsController < ApplicationController
                                        project_label: "",
                                        kpi_unit: kpi_config.kpi_unit
               }
+          else
 
             # when "graphic", "serie"
-            #   #@res << ["Projet 123", 200]
-            #   #@calculation_output = render :partial => 'organizations/g_productivity_indicators', :locals => { :r_data => @res_graphic }
-            #   @calculation_output = indicator_values #@res_graphic
-            else
+              #@res << ["Projet 123", 200]
+              #@calculation_output = render :partial => 'organizations/g_productivity_indicators', :locals => { :r_data => @res_graphic }
+              @calculation_output = @res_graphic #indicator_values
+            # else
           end
         end
       end
