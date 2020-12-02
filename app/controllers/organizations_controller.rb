@@ -6215,7 +6215,7 @@ class OrganizationsController < ApplicationController
           projects_values << value
           x_y_axis_outputs << { project_id: project.id,
                              # selected_date: project.send("#{selected_date}").to_date.beginning_of_month.to_s, #I18n.l(project.send("#{selected_date}").to_date),
-                             selected_date: project.send("#{selected_date}").to_date.strftime("%d/%m/%Y").to_s,
+                             selected_date: project.send("#{selected_date}").to_date,
                              field_value: value.round(2),
                              project_label: "#{project.to_s} : #{value.round(2)} #{kpi_config.kpi_unit}",
                              kpi_unit: kpi_config.kpi_unit
