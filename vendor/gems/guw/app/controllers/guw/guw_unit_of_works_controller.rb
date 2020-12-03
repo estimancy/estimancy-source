@@ -2450,7 +2450,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                       tmp_val = row[ind].value
 
-                      val = tmp_val.is_a?(Numeric) ? tmp_val.toi : nil
+                      val = tmp_val.is_a?(Numeric) ? tmp_val.to_i : nil
 
                       if gac.name == (tab[0][ind].nil? ? '' : tab[0][ind].value)
                         unless @guw_type.nil?
