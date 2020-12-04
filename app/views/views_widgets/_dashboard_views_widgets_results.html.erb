@@ -220,14 +220,14 @@
                                 <% unless value.nil? %>
                                   <% value.each do |config_value| %>
                                     <div class="card-indicator-label">
-                                      <span style="margin-top: 0.9rem; white-space: pre-wrap;"><%= config_value.nil? ? '-' : config_value %></span>
+                                      <span style="margin-top: 0.9rem;"><%= config_value.nil? ? '-' : config_value %></span>
                                     </div>
                                   <% end %>
                                 <% end %>
 
                               <% else %>
                                   <div class="card-indicator-label">
-                                    <span style="margin-top: 0.9rem"><%= value.nil? ? '-' : value %></span>
+                                    <span style="margin-top: 0.9rem; white-space: pre-wrap;"><%= value.nil? ? '-' : value %></span>
                                   </div>
                               <% end %>
                             </div>
@@ -270,7 +270,7 @@
                               <%= view_widget.name %>
                             </div>
 
-                            <div class="effort-table" style="margin-top: 0.9rem">
+                            <div class="effort-table" style="margin-top: 0.9rem;">
                               <%#= get_view_widget_data(view_widget.module_project_id, view_widget.id)[:value_to_show] %>
                               <% if view_widget.is_label_widget? %>
                                   <% view_widget_data = get_label_widget_data(view_widget.id) %>
