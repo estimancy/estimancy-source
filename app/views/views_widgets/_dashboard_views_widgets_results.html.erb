@@ -128,7 +128,7 @@
                   <% unless value.is_a?(Hash) %>
 
                     <% if view_widget.is_label_widget? %>
-                      <div class="grid-stack-item label_widget" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="1" style="<% view_widget.project_attribute_name == "description" ? 'height: 300px;' : '' %>;">
+                      <div class="grid-stack-item label_widget" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="1" style="<%= view_widget.project_attribute_name == "description" ? 'height: 300px;' : '' %>;">
                           <div class=" row" style="padding-top: 2.5rem;">
                             <div class="col-10 widget-group-label">
                               <span class="label_widget_title" style="--widget-text-color: <%= view_widget.color %>">
@@ -162,7 +162,7 @@
                           <% view_widget_height = 1 %>
                       <% end %>
 
-                      <div class="grid-stack-item" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="<%= view_widget_height %>" style="<% view_widget.project_attribute_name == "description" ? 'height: 300px;' : '' %>;">
+                      <div class="grid-stack-item" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="<%= view_widget_height %>" style="<%= view_widget.project_attribute_name == "description" ? 'height: 300px;' : '' %>;">
                         <div class="grid-stack-item-content">
 
                           <% borne_min = view_widget.min_value
@@ -246,7 +246,7 @@
               <%# project_graph_view_widgets = @project.views_widgets.where(widget_type: vw_graph_types) %>
 
               <% project_table_view_widgets.each_with_index do |view_widget, index| %>
-                  <div class="grid-stack-item table_graph" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="<%= view_widget.height.to_i %>" style="<% view_widget.project_attribute_name == "description" ? 'height: 300px;' : '' %>;">
+                  <div class="grid-stack-item table_graph" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="<%= view_widget.height.to_i %>" style="<%= view_widget.project_attribute_name == "description" ? 'height: 300px;' : '' %>;">
                     <div class="grid-stack-item-content">
                         <div class="card card-widget card-indicator card-indicator-with-module" style="--widget-color: <%= view_widget.color %>;">
                           <div class="card-body">
