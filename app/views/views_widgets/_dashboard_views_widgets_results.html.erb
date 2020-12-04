@@ -220,7 +220,7 @@
                                 <% unless value.nil? %>
                                   <% value.each do |config_value| %>
                                     <div class="card-indicator-label">
-                                      <span style="margin-top: 0.9rem"><%= config_value.nil? ? '-' : config_value %></span>
+                                      <span style="margin-top: 0.9rem; white-space: pre-wrap;"><%= config_value.nil? ? '-' : config_value %></span>
                                     </div>
                                   <% end %>
                                 <% end %>
@@ -277,7 +277,7 @@
                               <% elsif view_widget.is_kpi_widget? %>
                                   <% view_widget_data = get_kpi_widget_data(view_widget.id) %>
                               <% elsif view_widget.is_project_data_widget? %>
-                                  <% view_widget_data = raw simple_format(get_project_data_widget_value(view_widget.id, @project.id)).to_s %>
+                                  <% view_widget_data = simple_format(get_project_data_widget_value(view_widget.id, @project.id)).to_s %>
                               <% else %>
                                   <% if module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
                                     <% view_widget_data = get_view_widget_data(view_widget.module_project_id, view_widget.id) %>

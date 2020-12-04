@@ -233,7 +233,7 @@
 
               <% unless @project.description.blank? %>
                   <small>
-                    <%= @project.description %>
+                    <%= @project.description.to_s.truncate(200) %>
                   </small>
               <% end %>
 
@@ -259,7 +259,7 @@
 
               <% unless @project.description.blank? %>
                 <small>
-                  <%= @project.description %>
+                  <%= @project.description.to_s.truncate(200) %>
                 </small>
               <% end %>
 
