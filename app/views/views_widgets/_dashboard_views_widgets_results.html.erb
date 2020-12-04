@@ -217,11 +217,13 @@
                               </div>
 
                               <% if view_widget.is_organization_kpi_widget? %>
+                                <% unless value.nil? %>
                                   <% value.each do |config_value| %>
-                                      <div class="card-indicator-label">
-                                        <span style="margin-top: 0.9rem"><%= config_value.nil? ? '-' : config_value %></span>
-                                      </div>
+                                    <div class="card-indicator-label">
+                                      <span style="margin-top: 0.9rem"><%= config_value.nil? ? '-' : config_value %></span>
+                                    </div>
                                   <% end %>
+                                <% end %>
 
                               <% else %>
                                   <div class="card-indicator-label">
