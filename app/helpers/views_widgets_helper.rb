@@ -421,14 +421,13 @@ module ViewsWidgetsHelper
       view_widget = ViewsWidget.find(view_widget_id)
       project = Project.find(project_id)
       attribute_name = view_widget.project_attribute_name
-
-      element_id =  project.send(attribute_name)
-
-      begin
+      value_to_show = ""
+      if attribute_name ==  "description"
+        value_to_show = project.description
+      else
+        element_id =  project.send(attribute_name)
         element_class_name = attribute_name.gsub('_id', '').classify
         value_to_show = element_class_name.constantize.find(element_id)
-      rescue
-        # ?
       end
 
       widget_data[:value_to_show] = value_to_show
