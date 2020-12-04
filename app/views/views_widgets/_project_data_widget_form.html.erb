@@ -37,7 +37,13 @@
                   <% end %>
                   <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                     <%= f.input :project_attribute_name, as: :select, label: false,
-                                :collection => [ [I18n.t(:application), 'application_id'], [I18n.t(:project_areas), 'project_area_id'], [I18n.t(:project_category), 'project_category_id'], ["#{platform_category_name}", 'platform_category_id'], [I18n.t(:acquisition_category), 'acquisition_category_id'], [I18n.t(:provider), 'provider_id'] ],
+                                :collection => [ [I18n.t(:application), 'application_id'],
+                                                 [I18n.t(:project_areas), 'project_area_id'],
+                                                 [I18n.t(:project_category), 'project_category_id'],
+                                                 ["#{platform_category_name}", 'platform_category_id'],
+                                                 [I18n.t(:acquisition_category), 'acquisition_category_id'],
+                                                 [I18n.t(:provider), 'provider_id'],
+                                                 ["Description", 'description'] ],
                                 input_html: { class: "mdl-textfield__input form-control", include_blank: false } %>
                     <label class="mdl-textfield__label" for="project_attribute_name"><%= I18n.t(:project_attribute_name) %></label>
                   </div>
