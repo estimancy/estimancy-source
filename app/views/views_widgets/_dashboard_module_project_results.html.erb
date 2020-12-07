@@ -70,7 +70,7 @@
   <div class="widget-list-content">
     <div class="widget-group">
       <ul class="results-sidebar-after-calculation flex-column">
-        <% @widgets.keys.each do |k| %>
+        <% @widgets.sort_by{|i| i.last.first.position }.map(&:first).each do |k| %>
             <% view_widget = @widgets[k].first %>
             <% value = @widgets[k].last %>
             <% unless value.is_a?(Hash) %>

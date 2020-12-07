@@ -699,7 +699,7 @@ fr_smals:
   full_control: "Contrôle total"
   define: "Définir"
   modify: "Modifier"
-  comment: "Commenter"
+  comment: "Commentaire"
   read_only: "Lecture seule"
 
   #project_security_levels

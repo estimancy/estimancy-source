@@ -415,7 +415,7 @@ class WbsActivitiesController < ApplicationController
     level_estimation_value = Hash.new
     current_pbs_estimations = current_module_project.estimation_values.where(organization_id: @organization.id)
     input_effort_for_global_ratio = 0.0
-    effort_total_for_global_ratio = 0.0
+    @effort_total_for_global_ratio = 0.0
     initialize_calculation = false
 
     just_changed_values = params['is_just_changed'] || []
@@ -1021,10 +1021,13 @@ class WbsActivitiesController < ApplicationController
             #Update current pbs estimation values
             est_val.update_attributes(@results)
 
-            # Recupere effort global pour ratio global
-            if est_val.pe_attribute.alias == "effort"
-              root_element = wbs_activity_elements.first.root
-              effort_total_for_global_ratio = probable_estimation_value[@pbs_project_element.id][root_element.id][:value]
+            begin
+              # Recupere effort global pour ratio global
+              # if est_val.pe_attribute.alias == "effort" || est_val.pe_attribute.alias == "ratio"
+                root_element = wbs_activity_elements.first.root
+                @effort_total_for_global_ratio = probable_estimation_value[@pbs_project_element.id][root_element.id][:value]
+              # end
+            rescue
             end
 
             #=========== Update Module-Project-Ratio-Elements Theoretical and Retained PROBABLE-values  ======
@@ -1125,15 +1128,19 @@ class WbsActivitiesController < ApplicationController
         elsif est_val.pe_attribute.alias == "ratio"
           ratio_global = @ratio_reference.wbs_activity_ratio_elements.reject{|i| i.ratio_value.nil? or i.ratio_value.blank? }.compact.sum(&:ratio_value)
 
-          #nouveau calcul du ratio
-          input_effort = input_effort_for_global_ratio
-          effort_total = effort_total_for_global_ratio
-          if input_effort.nil? || input_effort == 0
-            new_ratio_global = nil
-          else
-            new_ratio_global = (effort_total.to_f / input_effort.to_f) * 100.0
+          begin
+            #nouveau calcul du ratio
+            input_effort = input_effort_for_global_ratio
+            effort_total = @effort_total_for_global_ratio
+            if input_effort.nil? || input_effort == 0
+              new_ratio_global = nil
+            else
+              new_ratio_global = (effort_total.to_f / input_effort.to_f) * 100.0
+            end
+            est_val.update_attribute(:"string_data_probable", { current_component_id => new_ratio_global })
+          rescue
+            # to do
           end
-          est_val.update_attribute(:"string_data_probable", { current_component_id => new_ratio_global })
         end
       end
     end
