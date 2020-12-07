@@ -20,7 +20,7 @@
 
   <% module_project_view = module_project.view %>
   <% unless module_project_view.nil? %>
-      <% module_project_view_widgets = module_project_view.views_widgets.where(widget_type: "text").order('position').all %>
+      <% module_project_view_widgets = module_project_view.views_widgets.where(widget_type: "text").order('position ASC').all %>
       <% module_project_view_widgets.each do |view_widget| %>
           <% if view_widget.is_label_widget? %>
               <% view_widget_data = get_label_widget_data(view_widget.id) %>
