@@ -49,20 +49,20 @@
 
             <% elsif view_widget.is_organization_kpi_widget? %>
 
-              <% if !view_widget.kpi.output_type.in?(["graphic", "serie"]) %>
-                  <% view_widget_data = get_organization_kpi_data_widget_value(view_widget.id, @project.id) %>
-                  <% value_to_show_tmp =  view_widget_data[:value_to_show] %>
-                  <% begin %>
-                      <% if view_widget.kpi.output_type == "graphic" %>
-                          <% value_to_show = render(:partial => "organizations/g_productivity_indicators", :locals => {kpi_config: view_widget.kpi, :r_data => value_to_show_tmp }) %>
-                      <% else %>
-                          <% value_to_show = "#{value_to_show_tmp} #{view_widget.kpi_unit}" rescue nil %>
-                      <% end %>
-                  <% rescue %>
-                      <% value_to_show = "-" %>
-                  <% end %>
-                  <% @widgets[view_widget.name] = [view_widget, value_to_show] %>
-              <% end %>
+              <%# if !view_widget.kpi.output_type.in?(["graphic", "serie"]) %>
+                <%# view_widget_data = get_organization_kpi_data_widget_value(view_widget.id, @project.id) %>
+                <%# value_to_show_tmp =  view_widget_data[:value_to_show] %>
+                <%# begin %>
+                    <%# if view_widget.kpi.output_type == "graphic" %>
+                        <%# value_to_show = render(:partial => "organizations/g_productivity_indicators", :locals => {kpi_config: view_widget.kpi, :r_data => value_to_show_tmp }) %>
+                    <%# else %>
+                        <%# value_to_show = "#{value_to_show_tmp} #{view_widget.kpi_unit}" rescue nil %>
+                    <%# end %>
+                <%# rescue %>
+                    <%# value_to_show = "-" %>
+                <%# end %>
+                <%# @widgets[view_widget.name] = [view_widget, value_to_show] %>
+              <%# end %>
 
             <% else %>
                 <% if module_project.pemodule.alias == initialization_module_name %>
