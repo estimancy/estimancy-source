@@ -159,7 +159,7 @@
                         <% elsif view_widget.project_attribute_name == "description_3" %>
                           <% view_widget_height = (@project.description_3.size.to_i / 140) %>
                         <% else %>
-                          <% view_widget_height = 1 %>
+                          <% view_widget_height = view_widget.height.to_i %>
                         <% end %>
                       <% rescue %>
                           <% view_widget_height = 1 %>
