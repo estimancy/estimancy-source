@@ -94,7 +94,9 @@
                         <div class="card-body">
                           <span><%= k %></span>
                           <div class="quantity overview-value">
-                            <span><%= value.nil? ? '-' : value %></span>
+                            <span>
+                              <%= simple_format(value.nil? ? '-' : value) %>
+                            </span>
                           </div>
                         </div>
                       </div>
@@ -105,13 +107,13 @@
                         <div class="card-body">
                           <span><%= k %></span>
                           <div class="quantity overview-value">
-                                <span>
-                                  <% begin %>
-                                    <%= (value.values.first.values.first).round(2) %>
-                                  <% rescue %>
-                                    -
-                                  <% end %>
-                                </span>
+                            <span>
+                              <% begin %>
+                                <%= (value.values.first.values.first).round(2) %>
+                              <% rescue %>
+                                -
+                              <% end %>
+                            </span>
                           </div>
                         </div>
                       </div>
