@@ -95,7 +95,11 @@
                           <span><%= k %></span>
                           <div class="quantity overview-value">
                             <span>
-                              <%= simple_format(value.nil? ? '-' : value) %>
+                              <% begin %>
+                                <%= simple_format(value.nil? ? '-' : value.to_s) %>
+                              <% rescue %>
+                                <%= value.nil? ? '-' : value.to_s %>
+                              <% end %>
                             </span>
                           </div>
                         </div>
