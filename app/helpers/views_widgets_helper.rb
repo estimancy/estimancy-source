@@ -424,6 +424,10 @@ module ViewsWidgetsHelper
       value_to_show = ""
       if attribute_name ==  "description"
         value_to_show = project.description
+      elsif attribute_name ==  "description_2"
+        value_to_show = project.description_2
+      elsif attribute_name ==  "description_3"
+        value_to_show = project.description_3
       else
         element_id =  project.send(attribute_name)
         element_class_name = attribute_name.gsub('_id', '').classify

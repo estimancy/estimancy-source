@@ -21,7 +21,7 @@
 
 class Project < ActiveRecord::Base
 
-  attr_accessible :title, :description, :version_number, :alias, :state, :estimation_status_id, :status_comment,
+  attr_accessible :title, :description, :description_2, :description_3, :version_number, :alias, :state, :estimation_status_id, :status_comment,
                   :start_date, :is_model, :organization_id, :project_area_id, :project_category_id,
                   :acquisition_category_id, :platform_category_id, :parent_id, :application_id, :creator_id,
                   :private, :provider_id, :request_number, :use_automatic_quotation_number, :business_need, :transaction_id,
