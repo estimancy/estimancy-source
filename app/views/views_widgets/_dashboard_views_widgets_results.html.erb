@@ -165,8 +165,12 @@
                           <% view_widget_height = 1 %>
                       <% end %>
 
-                      <% view_widget_project_attribute_name = @project.send(view_widget.project_attribute_name) %>
-                      <div class="grid-stack-item" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="<%= view_widget_height %>" style="<%= view_widget.project_attribute_name.in?(["description", "description_2", "description_3"]) ? "height: #{view_widget_project_attribute_name.nil? ? '' : view_widget_project_attribute_name.size.to_i};" : '' %>;">
+                      <% begin %>
+                        <% view_widget_project_attribute_name = @project.send(view_widget.project_attribute_name) %>
+                      <% rescue %>
+                        <% view_widget_project_attribute_name = nil %>
+                      <% end %>
+                      <div class="grid-stack-item" data-view_widget_id="<%= view_widget.id %>" data-gs-x="<%= view_widget.position_x %>" data-gs-y="<%= view_widget.position_y %>" data-gs-width="<%= view_widget.width.to_i %>" data-gs-height="<%= view_widget_height %>" style="<%= view_widget.project_attribute_name.in?(["description", "description_2", "description_3"]) ? "height: #{(view_widget_project_attribute_name.nil? ? '' : view_widget_project_attribute_name.size.to_i)};" : '' %>;">
                         <div class="grid-stack-item-content">
 
                           <% borne_min = view_widget.min_value
