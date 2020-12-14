@@ -71,12 +71,12 @@
     <div class="widget-group">
       <ul class="results-sidebar-after-calculation flex-column">
         <% begin %>
-          <% @widgets = @widgets.sort_by{|i| i.last.first.position } %>
+          <% @sorted_widgets = @widgets.sort_by{|i| i.last.first.position } %>
         <% rescue %>
-          <% @widgets %>
+          <% @sorted_widgets %>
         <% end %>
-        <% begin %>
-          <% @widgets.map(&:first).each do |k| %>
+        <%# begin %>
+          <% @sorted_widgets.map(&:first).each do |k| %>
             <% view_widget = @widgets[k].first %>
             <% value = @widgets[k].last %>
             <% unless value.is_a?(Hash) %>
@@ -151,8 +151,8 @@
                 </li>
               <% end %>
           <% end %>
-        <% rescue %>
-        <% end %>
+        <%# rescue %>
+        <%# end %>
       </ul>
     </div>
   </div>
