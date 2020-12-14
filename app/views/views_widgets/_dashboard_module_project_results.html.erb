@@ -73,7 +73,7 @@
         <% begin %>
           <% @sorted_widgets = @widgets.sort_by{|i| i.last.first.position } %>
         <% rescue %>
-          <% @sorted_widgets %>
+          <% @sorted_widgets = @widgets %>
         <% end %>
         <%# begin %>
           <% @sorted_widgets.map(&:first).each do |k| %>
