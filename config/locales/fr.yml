@@ -1667,7 +1667,7 @@ fr:
   original_model: "Modèle d'origine"
   is_used_view: "Vue utilisée ?"
   displayed_data: "Données affichées"
-  is_archive_status: "Statut d'archive ou fin de workflow"
+  is_archive_status: "Statut d'accueil lors d'un changement de version"
   archive_status: "Statut d'accueil lors d'un changement de version"
   only_one_archive_status_possible: "Il n'est pas possible de définir plus d'un statut d'archive dans une même organisation"
   dont_archive_last_project_versions: "Ne pas archiver les versions précédentes de ce projet ?"
