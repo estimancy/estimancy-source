@@ -717,7 +717,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @coeff_elts_with_application = Hash.new
       #guw_coefficient_for_application = @guw_coefficients.where(coefficient_type: "Application").first
 
-      @guw_coefficients.where(coefficient_type: "Application").each do |guw_coefficient_for_application|
+      @guw_coefficients.where(coefficient_type: ["Application", "Provider", "ProjectArea", "ProjectCategory", "PlatformCategory", "AcquisitionCategory"]).each do |guw_coefficient_for_application|
         @coeff_elt_with_application_criticality["#{guw_coefficient_for_application.id}"] = nil
 
         #unless guw_coefficient_for_application.nil?
@@ -1126,7 +1126,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               ce = @coeff_elt_with_application_criticality["#{guw_coefficient.id}"]
               # ce = Guw::GuwCoefficientElement.find_by_id(params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"])
 
-              if ce.nil?
+              # unless ce.nil?
                 #selected_coefficient_values["#{guw_output.id}"] << 0
 
                 # savoir si l'uo utilise l'application ou non
@@ -1159,7 +1159,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                   selected_coefficient_values["#{guw_output.id}"] << coefficient_value
 
-                end
+                # end
               else
                 # cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
                 #                                                  guw_model_id: @guw_model.id,
