@@ -328,7 +328,7 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data.t_max_staffing = t_max_staffing
 
     for t in 0..@duration
-      t_staffing = (@staffing_custom_data.global_effort_value * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit) * form_coef * t * Math.exp(-form_coef*t*t)
+      t_staffing = (@staffing_custom_data.global_effort_value.to_f * @staffing_model.standard_unit_coefficient.to_f / @staffing_model.effort_week_unit.to_f) * form_coef * t * Math.exp(-form_coef*t*t)
       rayleigh_chart_theoretical_coordinates << ["#{t}", (2 * t_staffing)]
     end
 
