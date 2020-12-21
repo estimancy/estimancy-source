@@ -168,6 +168,13 @@
 
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :effort_week_unit, label: false, input_html: { class: 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="effort_unit"><%= I18n.t(:effort_week_unit) %></label>
+                    </div>
+                  </div>
+
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :standard_unit_coefficient, label: false, input_html: { class: 'mdl-textfield__input'} %>
                       <label class="mdl-textfield__label" for="standard_unit_coefficient"><%= I18n.t(:standard_coef_conv) %></label>
                     </div>
