@@ -132,8 +132,9 @@
 
     <% if @wbs_activity_ratio.do_not_show_phases_with_zero_value %>
         <% @module_project_ratio_elements = @module_project_ratio_elements.reject { |element|
-          (element.retained_effort_probable==0 || element.retained_effort_most_likely==0) &&
-          (element.retained_cost_probable==0 || element.retained_cost_most_likely==0) }
+          (element.retained_effort_probable == 0 || element.retained_effort_most_likely == 0) &&
+          (element.retained_cost_probable == 0 || element.retained_cost_most_likely == 0)
+        }
         %>
     <% end %>
 
@@ -171,7 +172,7 @@
                 <% is_optional = mp_ratio_element.wbs_activity_ratio_element.is_optional %>
             <% end %>
 
-            <tr>
+            <tr class="<%= (mp_ratio_element.wbs_activity_ratio_element.formula.blank?) ? 'hide' : 'show' %>" >
               <td class="flagged <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>" data-mp_ratio_element="<%= mp_ratio_element.id %>"
                   data-effort_is_modifiable="<%= allow_modify_retained_effort %>" data-cost_is_modifiable="<%= allow_modify_retained_cost %>"
                   style="border-left: 6px solid <%= (mp_ratio_element.flagged == true) ? 'red' : 'green' %>">
