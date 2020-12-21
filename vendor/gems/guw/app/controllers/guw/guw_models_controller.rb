@@ -1372,13 +1372,14 @@ class Guw::GuwModelsController < ApplicationController
         end
       end
 
+      ii = 0
+      @guw_model.guw_attributes.where(organization_id: organization_id).each do |guw_attribute|
+        @worksheet.add_cell(0, jj + ii, guw_attribute.name)
+        @worksheet.add_cell(0, jj + ii + 1, "Commentaires")
+        ii = ii + 2
+      end
+
       if params[:action] == "export_with_wbs"
-        ii = 0
-        @guw_model.guw_attributes.where(organization_id: organization_id).each do |guw_attribute|
-          @worksheet.add_cell(0, jj + ii, guw_attribute.name)
-          @worksheet.add_cell(0, jj + ii + 1, "Commentaires")
-          ii = ii + 2
-        end
 
         kk = header.size - (@guw_model.guw_attributes.where(organization_id: organization_id).order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten).size - (@wbs_activity.nil? ? 0 : @wbs_activity.wbs_activity_elements.where(organization_id: organization_id).select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten.size) - 1 #-1 for TJM moyen
         @wbs_activity_ratio = @wbs_activity.nil? ? nil : @wbs_activity.wbs_activity_ratios.where(organization_id: organization_id).first
