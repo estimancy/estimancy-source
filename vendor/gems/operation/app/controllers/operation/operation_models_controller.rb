@@ -304,51 +304,51 @@ class Operation::OperationModelsController < ApplicationController
     redirect_to main_app.dashboard_path(@project)
   end
 
-  def save_efforts_save
-    authorize! :execute_estimation_plan, @project
-
-    @operation_model = Operation::OperationModel.find(params[:operation_model_id])
-
-    current_module_project.pemodule.attribute_modules.each do |am|
-      tmp_prbl = Array.new
-
-      ev = EstimationValue.where(:organization_id => @project.organization_id, :module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id, in_out: "output").first
-      ["low", "most_likely", "high"].each do |level|
-
-        if @operation_model.three_points_estimation?
-          effort = params[:"effort_#{level}"].to_f
-        else
-          effort = params[:"effort_most_likely"].to_f
-        end
-
-        if am.pe_attribute.alias == "effort"
-          total_effort = effort * @operation_model.standard_unit_coefficient
-          ev.send("string_data_#{level}")[current_component.id] = total_effort
-          ev.save
-          tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
-        end
-      end
-
-      unless @operation_model.three_points_estimation?
-        tmp_prbl[0] = tmp_prbl[1]
-        tmp_prbl[2] = tmp_prbl[1]
-      end
-
-      ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
-    end
-
-    @module_project = current_module_project
-    @project = @module_project.project
-
-    ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
-
-    # Reset all view_widget results
-    ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
-    @module_project.all_nexts_mp_with_links.each do |module_project|
-      ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
-    end
-
-    redirect_to main_app.dashboard_path(@project)
-  end
+  # def save_efforts_save
+  #   authorize! :execute_estimation_plan, @project
+  #
+  #   @operation_model = Operation::OperationModel.find(params[:operation_model_id])
+  #
+  #   current_module_project.pemodule.attribute_modules.each do |am|
+  #     tmp_prbl = Array.new
+  #
+  #     ev = EstimationValue.where(:organization_id => @project.organization_id, :module_project_id => current_module_project.id, :pe_attribute_id => am.pe_attribute.id, in_out: "output").first
+  #     ["low", "most_likely", "high"].each do |level|
+  #
+  #       if @operation_model.three_points_estimation?
+  #         effort = params[:"effort_#{level}"].to_f
+  #       else
+  #         effort = params[:"effort_most_likely"].to_f
+  #       end
+  #
+  #       if am.pe_attribute.alias == "effort"
+  #         total_effort = effort * @operation_model.standard_unit_coefficient
+  #         ev.send("string_data_#{level}")[current_component.id] = total_effort
+  #         ev.save
+  #         tmp_prbl << ev.send("string_data_#{level}")[current_component.id]
+  #       end
+  #     end
+  #
+  #     unless @operation_model.three_points_estimation?
+  #       tmp_prbl[0] = tmp_prbl[1]
+  #       tmp_prbl[2] = tmp_prbl[1]
+  #     end
+  #
+  #     ev.update_attribute(:"string_data_probable", { current_component.id => ((tmp_prbl[0].to_f + 4 * tmp_prbl[1].to_f + tmp_prbl[2].to_f)/6) } )
+  #   end
+  #
+  #   @module_project = current_module_project
+  #   @project = @module_project.project
+  #
+  #   ViewsWidget::update_field(@module_project, @current_organization, @project, current_component)
+  #
+  #   # Reset all view_widget results
+  #   ViewsWidget.reset_nexts_mp_estimation_values(@module_project, current_component)
+  #   @module_project.all_nexts_mp_with_links.each do |module_project|
+  #     ViewsWidget::update_field(module_project, @current_organization, @project, current_component, true)
+  #   end
+  #
+  #   redirect_to main_app.dashboard_path(@project)
+  # end
 
 end
