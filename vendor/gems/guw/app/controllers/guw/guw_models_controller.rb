@@ -1090,9 +1090,7 @@ class Guw::GuwModelsController < ApplicationController
   end
 
   def export_with_wbs
-
     data_export
-
     send_data(@workbook.stream.string, filename: "#{@current_organization.name[0..4]}-#{@project.title}-#{@project.version_number}-#{@guw_model.name}(#{("A".."Z").to_a[current_module_project.position_x.to_i]},#{current_module_project.position_y})-Export_UO-#{Time.now.strftime('%Y-%m-%d_%H-%M')}.xlsx", type: "application/vnd.ms-excel")
   end
 
@@ -1372,12 +1370,31 @@ class Guw::GuwModelsController < ApplicationController
         end
       end
 
+
       ii = 0
-      @guw_model.guw_attributes.where(organization_id: organization_id).each do |guw_attribute|
-        @worksheet.add_cell(0, jj + ii, guw_attribute.name)
-        @worksheet.add_cell(0, jj + ii + 1, "Commentaires")
+      @guw_model.guw_attributes.where(organization_id: organization_id).order("name ASC").each_with_index do |guw_attribute, i|
+        guw_type = guow.guw_type
+        guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: organization_id,
+                                                  guw_model_id: @guw_model.id,
+                                                  guw_attribute_id: guw_attribute.id,
+                                                  guw_type_id: guw_type.nil? ? nil : guw_type.id,
+                                                  project_id: project_id,
+                                                  module_project_id: guow.module_project.id,
+                                                  guw_unit_of_work_id: guow.id).first
+
+        unless guowa.nil?
+          gat = Guw::GuwAttributeType.where(organization_id: organization_id,
+                                            guw_model_id: @guw_model.id,
+                                            guw_attribute_id: guowa.guw_attribute_id,
+                                            guw_type_id: guw_type.id).first
+          @worksheet.add_cell(ind, jj + ii, guowa.most_likely.nil? ? (gat.nil? ? "N/A" : gat.default_value.to_s) : guowa.most_likely)
+          @worksheet.add_cell(ind, jj + ii + 1, guowa.nil? ? '' : guowa.comments)
+        else
+          # p "GUOWA is nil"
+        end
         ii = ii + 2
       end
+
 
       if params[:action] == "export_with_wbs"
 
