@@ -208,7 +208,7 @@
               <div class="timecost-indicator">
                 <div class="indicator-title"><%= I18n.t :revised_effort %></div>
                 <div class="indicator-value">
-                  <span class="effort">
+                  <span class="effort staffing-indicator-value">
                     <% if @module_project.done == true %>
                       <% unless @staffing_custom_data.global_effort_value.nil? %>
                         <%= @staffing_custom_data.global_effort_value.round(user_number_precision) %>
@@ -241,7 +241,7 @@
               <div class="timecost-indicator">
                 <div class="indicator-title"><%= I18n.t :duration_in_week %></div>
                 <div class="indicator-value">
-                  <span class="duration">
+                  <span class="duration staffing-indicator-value">
                     <% if @module_project.done == true %>
                       <% unless @staffing_custom_data.duration.nil? %>
                         <%= @staffing_custom_data.duration.round(user_number_precision) %>
@@ -262,7 +262,7 @@
                 </div>
                 <div class="indicator-optimal"><%= I18n.t :optimal_duration_in_week %></div>
                 <div class="indicator-optimal-value">
-                  <span class="reference_duration">
+                  <span class="reference_duration staffing-indicator-value">
                     <% unless @md_duration.nil? %>
                       <%= @md_duration.to_f.round(user_number_precision) %>
                     <% end %>
@@ -275,7 +275,7 @@
               <div class="timecost-indicator">
                 <div class="indicator-title"><%= I18n.t :end_date %></div>
                 <div class="indicator-value">
-                  <span class="end_date">
+                  <span class="end_date staffing-indicator-value">
                     <% if @module_project.done == true %>
                       <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
                         <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: "%d/%m/%Y") %>
@@ -307,7 +307,7 @@
                   <%= I18n.t :trapeze_staffing %>
                 </div>
                 <div class="indicator-value">
-                  <span class="staffing_trapeze">
+                  <span class="staffing_trapeze staffing-indicator-value">
                     <% if @module_project.done == true %>
                       <% unless @staffing_custom_data.max_staffing.nil? %>
                         <%= @staffing_custom_data.max_staffing.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
@@ -337,7 +337,7 @@
               <div class="timecost-indicator">
                 <div class="indicator-title">Rayleigh (pers.)</div>
                 <div class="indicator-value">
-                  <span class="staffing_rayleigh">
+                  <span class="staffing_rayleigh staffing-indicator-value">
                     <% if @module_project.done == true %>
                       <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
                         <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
