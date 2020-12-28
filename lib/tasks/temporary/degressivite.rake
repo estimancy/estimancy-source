@@ -32,7 +32,7 @@ namespace :change do
 
         guw_model.guw_coefficients.each do |guw_coefficient|
           guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
-            if guw_coefficient_element.name == 'A3'
+            if guw_coefficient_element.name == 'A4'
 
               guw_coefficient_element.default = true
               guw_coefficient_element.save
@@ -88,7 +88,7 @@ namespace :change do
 
               end
 
-            elsif guw_coefficient_element.name.in?(%w(A1 A2 A4 A5 A6 A7 A8))
+            elsif guw_coefficient_element.name.in?(%w(A3 A4 A6 A7 A8 A9 A10))
 
               guw_coefficient_element.default = false
                 guw_coefficient_element.save
