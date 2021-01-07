@@ -391,6 +391,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.guw_type_id = @guw_type.id
     @guw_unit_of_work.effort = nil
     @guw_unit_of_work.guw_complexity_id = nil
+    @guw_unit_of_work.project_id = @project.id
     @guw_unit_of_work.save
 
     #Changer le libelle du popup avec la description du nouveau type d'UO sélectionne
