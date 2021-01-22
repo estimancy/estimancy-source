@@ -375,8 +375,8 @@
               <%= hidden_field_tag "standard_effort", (@staffing_custom_data.standard_effort.blank? ? effort : @staffing_custom_data.standard_effort), class: "standard_effort" %>
               <%= hidden_field_tag "new_effort", (@staffing_custom_data.global_effort_value.blank? ? effort : @staffing_custom_data.global_effort_value), class: "new_effort" %> <%#= hidden_field_tag "new_effort", effort, class: "new_effort" %>
               <%= hidden_field_tag "new_duration", (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f), class: "new_duration" %>
-              <%= hidden_field_tag "new_staffing_rayleigh", @staffing_custom_data.max_staffing.to_f.round(user_number_precision), class: "new_staffing_rayleigh" %>
-              <%= hidden_field_tag "new_staffing_trapeze", @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision), class: "new_staffing_trapeze" %>
+              <%= hidden_field_tag "new_staffing_trapeze", @staffing_custom_data.max_staffing.to_f.round(user_number_precision), class: "new_staffing_rayleigh" %>
+              <%= hidden_field_tag "new_staffing_rayleigh", @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision), class: "new_staffing_trapeze" %>
             <% rescue %>
               <span>
                 Mettez à jour le module.
