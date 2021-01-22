@@ -138,7 +138,7 @@ gem "audited-activerecord"#, "~> 3.0"
 
 #Authentication gem
 gem 'devise'
-gem 'omniauth'
+gem 'omniauth', '~> 1.9.0'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-saml'
 #gem 'devise_saml_authenticatable'
