@@ -53,8 +53,8 @@ class ViewsWidget < ActiveRecord::Base
 
   validates :name, :module_project_id, :estimation_value_id, :presence => { :unless => lambda { self.is_label_widget? || self.is_kpi_widget? || self.is_project_data_widget? || self.is_organization_kpi_widget? }}
 
-  validates :max_value, numericality: {:greater_than => :min_value}, :allow_nil => true
-  validates :min_value, numericality: {:lower_than => :max_value}, :allow_nil => true
+  validates :max_value, numericality: {:greater_than => :min_value}, :allow_nil => true, allow_blank: true
+  validates :min_value, numericality: {:lower_than => :max_value}, :allow_nil => true, allow_blank: true
 
   amoeba do
     enable
