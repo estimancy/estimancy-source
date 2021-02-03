@@ -673,7 +673,7 @@ module IwidgetsHelper
           return ["#{result_value.to_f.round(user_number_precision)} #{first_letter_unit}"]
 
         when "sum"
-          result_value = equation_result_hash_values.sum
+          result_value = equation_result_hash_values.sum rescue nil
           return ["#{result_value.to_f.round(user_number_precision)} #{first_letter_unit}"]
 
         when "counter"
