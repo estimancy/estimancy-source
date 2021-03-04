@@ -259,6 +259,9 @@ Projestimate::Application.routes.draw do
 
   resources :currencies
 
+  get 'service_on_demand' => 'organizations#service_on_demand', :as => 'service_on_demand'
+  post 'save_sod' => 'organizations#save_sod', :as => 'save_sod'
+
   resources :organizations do
     get 'projects_stability_indicators' => 'organizations#projects_stability_indicators'
     get 'get_projects_stability_indicators' => 'organizations#get_projects_stability_indicators'

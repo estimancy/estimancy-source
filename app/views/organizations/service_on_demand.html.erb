@@ -1,0 +1,99 @@
+<section class="card card-content-bloc estimancy-form">
+  <%= form_tag save_sod_path, multipart: true  do %>
+
+    <div class="card-body">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h1>
+            Service à la demande
+          </h1>
+        </div>
+      </div>
+
+      <%= hidden_field_tag :organization_id, @organization.id %>
+
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+              <div class="">
+                <label class="bold_class">Contact</label>
+                <%= text_field_tag "contact", current_user, class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Email</label>
+                <%= email_field_tag "email", current_user.email, class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Téléphone</label>
+                <%= phone_field_tag "phone_number", "", class: "form-control" %>
+
+                <br>
+
+                <b>Nature de la demande : </b>
+
+                <label class="" >Chiffrage</label>
+                <%= check_box_tag "chiffrage", 'yes', false, class: "" %>
+
+                <label class="" >Contre-Chiffrage</label>
+                <%= check_box_tag "contre_chiffrage", 'yes', false, class: "" %>
+
+                <label class="" >Mesure de vélocité</label>
+                <%= check_box_tag "velocite", 'yes', false, class: "" %>
+
+                <br>
+                <label class="bold_class" >Date de livraison souhaitée</label>
+                <%= date_field_tag "date_livraison", "", class: "form-control date-picker" %>
+
+                <br>
+                <label class="bold_class" >Disponibilités</label>
+                <%= date_field_tag "dispo1", "", class: "form-control" %><br>
+                <%= date_field_tag "dispo2", "", class: "form-control" %><br>
+                <%= date_field_tag "dispo3", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Devis du fournisseur</label>
+                <%= file_field_tag "devis" %>
+
+                <br>
+
+                <b>Liste des exigences : </b>
+
+                <label class="" >Excel</label>
+                <%= check_box_tag "excel", 'yes', false, class: "" %>
+
+                <label class="" >Jira</label>
+                <%= check_box_tag "jira", 'yes', false, class: "" %>
+
+                <label class="" >HP-ALM</label>
+                <%= check_box_tag "hpalm", 'yes', false,  class: "" %>
+
+                <br>
+
+                <label class="bold_class" >Liens (Jira ou HP-ALM)</label>
+                <%= text_field_tag "links", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Documents complémentaires</label>
+                <%= file_field_tag "other_documents[]", :multiple => true %>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="actions-tabs">
+        <%= submit_tag "Envoyer", :class => 'btn btn-primary' %>
+      </div>
+
+    </div>
+  <% end %>
+</section>

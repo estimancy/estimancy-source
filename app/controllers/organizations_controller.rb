@@ -31,6 +31,14 @@ class OrganizationsController < ApplicationController
   include OrganizationsHelper
   include ActionView::Helpers::NumberHelper
 
+  def service_on_demand
+    @organization = Organization.find(params[:organization_id])
+  end
+
+  def save_sod
+    UserMailer.send_sod(params).deliver_now!
+    redirect_to :back
+  end
 
   #====================  IMPORT/EXPORT  MODELE D'ESTIMATION  =======================#
   #Pour Exporter un modèle d'estimation

@@ -5,10 +5,19 @@
     <h1><%= I18n.t("projects_list") %></h1>
   </div>
   <a href="<%= projects_from_path(organization_id: @organization.id) %>">
-    <button type="button" class="btn btn-primary">
+    <button type="button" class="btn btn-primary mr-1">
       <%= I18n.t("create_project") %>
     </button>
   </a>
+
+  <% if @organization.name == "EDF-UNITEP" %>
+    <a href="<%= service_on_demand_path(organization_id: @organization.id) %>">
+      <button type="button" class="btn btn-primary">
+        Demande de service
+      </button>
+    </a>
+  <% end %>
+
   <% unless "saas".in?(request.original_url) || "demo".in?(request.original_url) %>
       <%# link_to I18n.t(:extract_raw_data), raw_data_extraction_path(organization_id: @organization.id), :class => 'btn', method: 'post' %>
   <% end %>

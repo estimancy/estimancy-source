@@ -1,0 +1,53 @@
+<h4>
+  Demande de service A-M-E
+</h4>
+
+<p>
+  Contact : <%= @elements[:contact] %>
+</p>
+
+<p>
+  Email : <%= @elements[:email] %>
+</p>
+
+<p>
+  Numéro de téléphone : <%= @elements[:phone_number] %>
+</p>
+
+<p>
+  Nature de la demande
+  <br>
+  <%= @elements[:chiffrage] == "yes" ? "Chiffrage \n" : "" %>
+  <%= @elements[:contre_chiffrage] == "yes" ? "Contre-chiffrage \n" : "" %>
+  <%= @elements[:velocite] == "yes" ? "Vélocité \n" : "" %>
+</p>
+
+<p>
+  Date de livraison souhaitée : <%= @elements[:date_livraison] %>
+</p>
+
+<p>
+  Disponibilité :
+  <% if @elements[:dispo1].nil? && @elements[:dispo2].nil? && @elements[:dispo3].nil? %>
+    Aucune disponibilité indiquée
+  <% else %>
+    <br>
+    <%= @elements[:dispo1] %>
+    <br>
+    <%= @elements[:dispo2] %>
+    <br>
+    <%= @elements[:dispo3] %>
+  <% end %>
+</p>
+
+<p>
+  Liste des exigences
+  <br>
+  <%= @elements[:excel] == "yes" ? "Excel \n" : "" %>
+  <%= @elements[:jira] == "yes" ? "JIRA \n" : "" %>
+  <%= @elements[:hpalm] == "yes" ? "HP-ALM \n" : "" %>
+</p>
+
+<p>
+  Liens : <%= @elements[:links] %>
+</p>

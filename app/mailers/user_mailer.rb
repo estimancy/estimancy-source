@@ -152,6 +152,19 @@ class UserMailer < ActionMailer::Base
     reset_locale
   end
 
+  def send_sod(elements)
+    @elements = elements
+    @organization = Organization.find(@elements[:organization_id])
+
+    attachments[elements[:devis].original_filename] = elements[:devis].tempfile
+
+    elements[:other_documents].each do |od|
+      attachments[od.original_filename] = od.tempfile
+    end
+
+    mail(:to => "nicolas.renard@estimancy.com", :subject => "Demande de service #{@organization.name} - #{@elements[:contact]}")
+  end
+
   protected
   def reset_locale
     I18n.locale = OLD_LOCALE
