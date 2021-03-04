@@ -5,6 +5,13 @@
       <b>
         <%= guw_coefficient.name %> (<%= guw_coefficient.coefficient_type %>)
       </b>
+
+      <b>
+        <% if can? :manage_modules_instances, ModuleProject %>
+          <%= link_to "Créer un élement", guw.new_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient), class: "pt-3 float-md-right" %>
+        <% end %>
+      </b>
+
       <%= link_to raw("<i class='material-icons'>edit</i>"), guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), :class => 'material-icons', :title => I18n.t('edit') %>
       <% if can? :manage_modules_instances, ModuleProject %>
         <%= link_to raw("<i class='material-icons'>delete</i>"), guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
@@ -12,9 +19,7 @@
 
       <br>
 
-      <% if can? :manage_modules_instances, ModuleProject %>
-        <%= link_to "#{I18n.t(:create_button)}", guw.new_guw_model_guw_coefficient_guw_coefficient_element_path(@guw_model, guw_coefficient), class: "btn btn-primary float-md-right", style: 'margin-bottom:1rem;' %>
-      <% end %>
+      <hr>
 
       <table class="table table-sm table-bordered table-list" %>
         <tr>

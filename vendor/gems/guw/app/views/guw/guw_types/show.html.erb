@@ -17,9 +17,9 @@
               <%= I18n.t('size') %>
               <%= ": " + " #{@guw_model.name}" %>
             </h4>
-            <h6>
+            <p>
               <%= @guw_model.description %>
-            </h6>
+            </p>
         </div>
       </div>
 
@@ -34,22 +34,16 @@
       <div class="card card-content-bloc estimation-edition">
         <div class="card-body">
           <div class="edition-bloc-title">
-            <%#= link_to "< Back", guw.edit_guw_model_path(@guw_model, organization_id: @organization.id) %>
-            <h4><%= I18n.t(:unit_of_work_types) %> >> <span style="color:initial"></span>
-            <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type), style: "color:initial", title: I18n.t(:edit) + " #{guw_type}" %></h4>
-            <div>
-              <% if can? :manage_modules_instances, ModuleProject %>
-                <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
-              <% end %>
-            </div>
+            <h4>
+              <%= I18n.t(:unit_of_work_types) %> >> <span style="color:initial"></span>
+              <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type), style: "color:initial", title: I18n.t(:edit) + " #{guw_type}" %>
+            </h4>
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
+            <% end %>
           </div>
 
-          <h6><%= simple_format(guw_type.description) %></h6>
-
-          <br>
-          <br>
-
-          <div class="col mt-4">
+          <div class="col-12 mt-4">
             <%= form_tag guw_complexity_work_units_save_complexity_work_units_path, style: "width: 100%;" do %>
             <%= hidden_field_tag :guw_type_id, guw_type.id %>
             <table class="table table-list">
@@ -252,7 +246,7 @@
           <div class="row">
             <% if guw_type.allow_criteria == true %>
 
-              <div class="col">
+              <div class="col-12">
 
                 <%= form_tag guw_model_guw_type_guw_attribute_complexities_save_attributs_complexities_path(@guw_model, guw_type.id), method: "POST" do %>
 
@@ -262,7 +256,11 @@
 
                   <hr>
 
-                  <table class="table table-list" style="width: 100%">
+                  <%= link_to I18n.t(:new_attribute_thresold), guw.new_guw_model_guw_type_guw_type_complexity_path(@guw_model, @guw_type), class: "btn btn-primary" %>
+
+                  <hr>
+
+                  <table class="table table-list" style="width:100%;">
                     <tr>
                       <th>
                         Seuils de complexité

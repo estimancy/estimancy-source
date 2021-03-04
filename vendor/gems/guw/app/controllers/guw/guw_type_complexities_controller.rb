@@ -43,7 +43,8 @@ class Guw::GuwTypeComplexitiesController < ApplicationController
   def update
     @guw_type_complexity = Guw::GuwTypeComplexity.find(params[:id])
     @guw_type_complexity.update_attributes(params[:guw_type_complexity])
-    redirect_to guw.guw_model_path(@guw_type_complexity.guw_type.guw_model, anchor: "tabs-#{@guw_type_complexity.guw_type.name.gsub(" ", "-")}")
+
+    redirect_to guw.guw_type_path(@guw_type_complexity.guw_type)
   end
 
   def destroy

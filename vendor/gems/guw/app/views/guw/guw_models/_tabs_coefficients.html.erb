@@ -11,11 +11,6 @@
 
             <div class="col-9">
 
-              <%# if can? :manage_modules_instances, ModuleProject %>
-              <%#= link_to "", guw.guw_model_guw_coefficient_path(@guw_model, guw_coefficient), method: :delete, class: "fa fa-trash pull-right", data: {confirm: I18n.t(:are_you_sure)} %>
-              <%# end %>
-              <%#= link_to "", guw.edit_guw_model_guw_coefficient_path(@guw_model, guw_coefficient), class: "fa fa-pencil pull-right" %>
-
               <div id="guw_coefficients_tab">
                 <% if @guw_coefficient %>
                   <%= render :partial => "guw/guw_coefficients/show", object: [@guw_coefficient] %>
@@ -29,7 +24,7 @@
             </div>
 
             <div class="col-3">
-              <div id="edition-sidebar" style="overflow-x: scroll">
+              <div id="edition-sidebar">
                 <h4 class="mb-0"><%= I18n.t(:coefficients_list) %></h4>
                 <ul class="nav" style="display: block;">
                   <% @guw_coefficients.each do |guw_coefficient| %>
