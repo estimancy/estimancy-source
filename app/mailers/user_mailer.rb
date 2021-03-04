@@ -156,10 +156,13 @@ class UserMailer < ActionMailer::Base
     @elements = elements
     @organization = Organization.find(@elements[:organization_id])
 
-    attachments[elements[:devis].original_filename] = elements[:devis].tempfile
+    begin
+      attachments[elements[:devis].original_filename] = elements[:devis].tempfile
 
-    elements[:other_documents].each do |od|
-      attachments[od.original_filename] = od.tempfile
+      elements[:other_documents].each do |od|
+        attachments[od.original_filename] = od.tempfile
+      end
+    rescue
     end
 
     mail(:to => "nicolas.renard@estimancy.com", :subject => "Demande de service #{@organization.name} - #{@elements[:contact]}")
