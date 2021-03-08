@@ -7,7 +7,7 @@ namespace :view_widgets do
 
   task recalculate_widgets_positions: :environment do
 
-    widgets_name = ["Abaque", "Localisation", "Charge RTU (jh)", "Charge RIS (jh)", "Coût (€)", "Répartition des Charges", "Dire d'expert", "Charge (jh)", "Coût services (€)", "Synthèse devis", "Synthese devis", "Charge totale", "coût total", "Prix Moyen Pondéré (€/jh)", "prix moyen pondéré"]
+    # widgets_name = ["Abaque", "Localisation", "Charge RTU (jh)", "Charge RIS (jh)", "Coût (€)", "Répartition des Charges", "Dire d'expert", "Charge (jh)", "Coût services (€)", "Synthèse devis", "Synthese devis", "Charge totale", "coût total", "Prix Moyen Pondéré (€/jh)", "prix moyen pondéré"]
     data = []
     #ViewsWidget.first do |view_widget|
     ViewsWidget.all.each do |view_widget|
@@ -49,7 +49,7 @@ namespace :view_widgets do
         when "coût services (€)"
           data = [9,1,3,1]
 
-        when "charge services (jh)"
+        when "charge services (jh)" || "Charge Services (jh)"
           data = [6,1,3,1]
 
         when "synthèse devis", "synthese devis"
