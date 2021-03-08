@@ -49,6 +49,9 @@ namespace :view_widgets do
         when "coût services (€)"
           data = [9,1,3,1]
 
+        when "charge services (€)"
+          data = [6,1,3,1]
+
         when "synthèse devis", "synthese devis"
           data = [6,2,6,1]
 
