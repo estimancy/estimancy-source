@@ -49,7 +49,7 @@ namespace :view_widgets do
         when "coût services (€)"
           data = [9,1,3,1]
 
-        when "charge services (€)"
+        when "charge services (jh)"
           data = [6,1,3,1]
 
         when "synthèse devis", "synthese devis"
