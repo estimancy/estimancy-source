@@ -17,6 +17,6 @@ sed -i 's/${SMTP_FROM}/SMTP_FROM_TO_REPLACE/g' config/sensitive_settings.yml
 # bundle exec rake db:migrate 2>/dev/null || bundle exec rake db:create db:migrate
 
 # launching server
-rails server --daemon --binding=0.0.0.0 $@
+rails server --daemon --binding=0.0.0.0 -e ${RAILS_ENV} $@
 # displaying logs
 tail -f ./log/${RAILS_ENV}.log
