@@ -21,7 +21,7 @@ RUN mv config/database.example.yml config/database.yml && \
 	mkdir log
 
 # precompiling assets
-RUN bundle exec rake assets:precompile && \
+RUN bundle exec rake assets:precompile RAILS_ENV=production && \
 	rm -rf ./tmp/ && \
 	chown -R nobody:nogroup .
 

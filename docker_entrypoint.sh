@@ -1,8 +1,5 @@
 #!/bin/bash -xe
 
-# configuring database.yml
-sed -i 's/${RAILS_ENV}/RAILS_ENV_TO_REPLACE/g' config/database.yml
-
 # configuring sensitive_settings.yml
 sed -i 's/${SECRET_TOKEN}/SECRET_TOKEN_TO_REPLACE/g' config/sensitive_settings.yml
 sed -i 's/${SMTP_ADDRESS}/SMTP_ADDRESS_TO_REPLACE/g' config/sensitive_settings.yml
