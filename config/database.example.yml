@@ -5,7 +5,7 @@ production:
   username: <%= ENV['DATABASE_USERNAME'].blank? ? "estimancy" : ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'].blank? ? "password" : ENV['DATABASE_PASSWORD'] %>
   encoding: <%= ENV['DATABASE_ENCODING'].blank? ? "utf8" : ENV['DATABASE_ENCODING'] %>
-  ssl_mode: <%= ENV['DATABASE_SSL_MODE'].blank? ? "prefer" : ENV['DATABASE_SSL_MODE'] %>
+  ssl_mode: <%= ENV['DATABASE_SSL_MODE'].blank? ? "preferred" : ENV['DATABASE_SSL_MODE'] %>
 
 development:
   adapter: <%= ENV['DATABASE_ADAPTER'].blank? ? "mysql2" : ENV['DATABASE_ADAPTER'] %>
@@ -14,7 +14,7 @@ development:
   username: <%= ENV['DATABASE_USERNAME'].blank? ? "estimancy" : ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'].blank? ? "password" : ENV['DATABASE_PASSWORD'] %>
   encoding: <%= ENV['DATABASE_ENCODING'].blank? ? "utf8" : ENV['DATABASE_ENCODING'] %>
-  ssl_mode: <%= ENV['DATABASE_SSL_MODE'].blank? ? "prefer" : ENV['DATABASE_SSL_MODE'] %>
+  ssl_mode: <%= ENV['DATABASE_SSL_MODE'].blank? ? "preferred" : ENV['DATABASE_SSL_MODE'] %>
 
 test:
   adapter: <%= ENV['DATABASE_ADAPTER'].blank? ? "mysql2" : ENV['DATABASE_ADAPTER'] %>
@@ -23,4 +23,4 @@ test:
   username: <%= ENV['DATABASE_USERNAME'].blank? ? "estimancy" : ENV['DATABASE_USERNAME'] %>
   password: <%= ENV['DATABASE_PASSWORD'].blank? ? "password" : ENV['DATABASE_PASSWORD'] %>
   encoding: <%= ENV['DATABASE_ENCODING'].blank? ? "utf8" : ENV['DATABASE_ENCODING'] %>
-  ssl_mode: <%= ENV['DATABASE_SSL_MODE'].blank? ? "prefer" : ENV['DATABASE_SSL_MODE'] %>
+  ssl_mode: <%= ENV['DATABASE_SSL_MODE'].blank? ? "preferred" : ENV['DATABASE_SSL_MODE'] %>
