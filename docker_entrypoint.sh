@@ -13,10 +13,5 @@ sed -i "s/SMTP_PASSWORD_TO_REPLACE/${SMTP_PASSWORD}/g" config/sensitive_settings
 sed -i "s/HOST_URL_TO_REPLACE/${HOST_URL}/g" config/sensitive_settings.yml
 sed -i "s/SMTP_FROM_TO_REPLACE/${SMTP_FROM}/g" config/sensitive_settings.yml
 
-# If database exists, migrate. Otherweise setup (create and migrate)
-# bundle exec rake db:migrate 2>/dev/null || bundle exec rake db:create db:migrate
-
 # launching server
-rails server --daemon --binding=0.0.0.0 -e ${RAILS_ENV} $@
-# displaying logs
-tail -f ./log/${RAILS_ENV}.log
+rails server --binding=0.0.0.0 -e ${RAILS_ENV} $@
