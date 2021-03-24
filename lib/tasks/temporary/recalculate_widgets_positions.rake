@@ -25,7 +25,7 @@ namespace :view_widgets do
             view_widget.save(validate: false)
           end
 
-        when "localisation"
+        when "localisation" || "ratio"
           data = [0,1,5,1]
 
         when "charge rtu (jh)"
@@ -40,13 +40,13 @@ namespace :view_widgets do
         when "répartition des charges", "répartion des charges", "repartion des charges"
           data = [0,3,5,6]
 
-        when "dire d'expert"
+        when "dire d'expert" || "dire d'expet"
           data = [6,0,6,1]
 
         when "charge (jh)"
           data = [6,1,3,1]
 
-        when "coût services (€)"
+        when "coût services (€)" || "coût service (€)"
           data = [9,1,3,1]
 
         when "charge services (jh)" || "Charge Services (jh)"

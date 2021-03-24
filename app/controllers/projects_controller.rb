@@ -758,6 +758,25 @@ class ProjectsController < ApplicationController
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
     redirect_to :back
 
+
+    # swift_client = SwiftClient.new(
+    #     :auth_url => "https://auth.cloud.ovh.net/v3",
+    #     :storage_url => "https://horizon.cloud.ovh.net/project/containers/container/production-backups-db",
+    #     :user_id => "user-Y3Zn858yeDUh",
+    #     :password => "txg3NXfsBFfha9A6nbUFdnqqP6wnbSUt",
+    #     :interface => "internal"
+    # )
+
+
+    # swift_client = SwiftClient.new(
+    #     :auth_url => "https://auth.cloud.ovh.net/v3",
+    #     :username => "user-Y3Zn858yeDUh",
+    #     :password => "txg3NXfsBFfha9A6nbUFdnqqP6wnbSUt",
+    #     :user_domain => "estimancy.com", # :user_domain_id => "..." is valid as well
+    #     :project_id => "9ca25543184d48c7a638927226db067d", # :project_name => "..." is valid as well
+    #     :project_domain_name => "3591642396410325"
+    # )
+
   end
 
 
@@ -5326,3 +5345,20 @@ public
   end
 
 end
+
+
+    # Organization.all.each do |organization|
+    #   organization.module_projects.each do |mp|
+    #     if mp.to_s.include?("nombrement")
+    #       mp.display_order = 0
+    #     else
+    #       mp.display_order = 10
+    #     end
+    #     mp.save(validate: false)
+    #   end
+    # end
+
+# User.all.each do |user|
+#   user.subscription_end_date = Time.now + 4.years
+#   user.save(validate: false)
+# end
