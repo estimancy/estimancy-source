@@ -16,7 +16,7 @@ namespace :view_widgets do
       case view_widget.name.to_s.downcase
 
         when "abaque"
-          data = [0,0,5,1]
+          data = [0,1,5,1]
 
         when ""
           data = [0,0,5,1]
@@ -26,7 +26,7 @@ namespace :view_widgets do
           end
 
         when "localisation", "ratio"
-          data = [0,1,5,1]
+          data = [0,0,5,1]
 
         when "charge rtu (jh)"
           data = [0,2,3,1] #[0,2,2,1]
