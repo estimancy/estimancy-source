@@ -1,4 +1,4 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 # gem 'rails', '3.2.22'
 gem 'rails', '4.2.11.1'
@@ -167,13 +167,11 @@ gem 'groupdate'
 #Dentaku is a parser and evaluator for mathematical formulas
 gem 'dentaku', '~> 2.0', '>= 2.0.9'
 
-
 #Faker
 #gem 'faker'
 
 gem 'passenger'
 gem 'turbolinks'
-
 gem 'delocalize'
 
 # Gems used only for assets and not required
@@ -196,10 +194,8 @@ group :development do
   #gem 'ruby-debug19', :require => 'ruby-debug'
   gem 'meta_request'
   # gem 'localtower'
-
   # Generates diagrams using Graphviz
   #gem 'rails-erd', require: false, group: :development
-
   #gem 'byebug'
 end
 

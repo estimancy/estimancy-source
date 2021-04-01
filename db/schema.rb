@@ -604,7 +604,7 @@ ActiveRecord::Schema.define(version: 20201208100559) do
     t.boolean  "is_protected_group"
   end
 
-  add_index "groups", ["organization_id", "name"], name: "by_organization_name", unique: true, using: :btree
+  add_index "groups", ["organization_id", "name"], name: "by_organization_name_2", unique: true, using: :btree
 
   create_table "groups_permissions", force: :cascade do |t|
     t.integer  "group_id",              limit: 4
@@ -1966,7 +1966,7 @@ ActiveRecord::Schema.define(version: 20201208100559) do
     t.text     "transaction_id",        limit: 65535
   end
 
-  add_index "project_security_levels", ["organization_id", "name"], name: "by_organization_name", unique: true, using: :btree
+  add_index "project_security_levels", ["organization_id", "name"], name: "by_organization_name_3", unique: true, using: :btree
 
   create_table "projects", force: :cascade do |t|
     t.string   "title",                          limit: 255
