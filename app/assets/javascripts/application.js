@@ -9,7 +9,7 @@
 // require_tree .
 //= require cookies_eu
 // require Chart.bundle
-//= require chartkick
+// require chartkick
 //= require jquery
 //= require jquery.remotipart
 //= require jquery_ujs
