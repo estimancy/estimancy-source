@@ -49,41 +49,42 @@
 
                 <br>
                 <label class="bold_class" >Disponibilités</label>
-                <%= datetime_field_tag "dispo1", "", class: "form-control" %><br>
-                <%= datetime_field_tag "dispo2", "", class: "form-control" %><br>
-                <%= datetime_field_tag "dispo3", "", class: "form-control" %>
-
+                <%= date_field_tag "dispo1", nil, class: "form-control" %>
+                <%= time_field_tag "time1", nil, class: "form-control" %>
                 <br>
+                <%= date_field_tag "dispo2", "", class: "form-control" %>
+                <%= time_field_tag "time2", nil, class: "form-control" %>
+                <br>
+                <%= date_field_tag "dispo3", "", class: "form-control" %>
+                <%= time_field_tag "time3", nil, class: "form-control" %>
+
+
+                <hr>
+
+                <b>Listes des exigences</b>
+                <hr>
 
                 <label class="" >Excel</label>
                 <%= check_box_tag "excel", 'yes', false, class: "" %>
-
-                <br>
-
-                <b>Liste des exigences : </b>
-
-                <label class="bold_class" >Devis du fournisseur</label>
                 <%= file_field_tag "devis" %>
 
-                <br>
+                <hr>
 
                 <label class="" >Jira</label>
                 <%= check_box_tag "jira", 'yes', false, class: "" %>
 
                 <label class="" >HP-ALM</label>
                 <%= check_box_tag "hpalm", 'yes', false,  class: "" %>
-
                 <br>
-
                 <label class="bold_class" >Liens (Jira ou HP-ALM)</label>
                 <%= text_field_tag "links", "", class: "form-control" %>
 
-                <br>
+                <hr>
 
-                <label class="bold_class" >Documents complémentaires</label>
-                <%= file_field_tag "other_documents[]", :multiple => true %>
-                <%= file_field_tag "other_documents2[]", :multiple => true %>
-                <%= file_field_tag "other_documents3[]", :multiple => true %>
+                <label class="bold_class" >Documents complémentaires</label><br>
+                <%= file_field_tag "other_documents[]", :multiple => true %><br>
+                <%= file_field_tag "other_documents2[]", :multiple => true %><br>
+                <%= file_field_tag "other_documents3[]", :multiple => true %><br>
 
               </div>
 
@@ -101,3 +102,29 @@
     </div>
   <% end %>
 </section>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    //$(document).ready(function () {
+    $(document).ready(function() {
+        $(".date-picker").datepicker({
+            language: '<%= set_user_language_for_datepicker %>',
+            autoclose: true,
+            todayHighlight: true,
+            todayBtn: true,
+            dateFormat: "yy-mm-dd hh:mm"
+        });
+
+        //
+        // const checkbox = document.getElementById('excel');
+        // checkbox.addEventListener('change', (event) => {
+        //     if (event.currentTarget.checked) {
+        //         $(".exigence").hide();
+        //         $(".jira").show();
+        //     } else {
+        //         $(".exigence").show();
+        //         $(".jira").hide();
+        //     }
+        // });
+    });
+</script>

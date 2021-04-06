@@ -171,7 +171,7 @@ class UserMailer < ActionMailer::Base
     rescue
     end
 
-    mail(:to => "nicolas.renard@estimancy.com", :subject => "Demande de service #{@organization.name} - #{@elements[:contact]}")
+    mail(:to => "nicolas.renard@estimancy.com, eric.bellet@estimancy.com, patrick.hamon@estimancy.com", :subject => "Demande de service #{@organization.name} - #{@elements[:contact]}")
   end
 
   protected
