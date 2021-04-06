@@ -15,8 +15,8 @@ gem 'useragent'
 
 # Include database gems for the adapters found in the database
 # configuration file
-gem 'mysql2', '~> 0.4.9' #'~> 0.3.11'
-# gem 'pg'
+# gem 'mysql2', '~> 0.4.9' #'~> 0.3.11'
+gem 'pg','~> 0.15'
 # require 'erb'
 # require 'yaml'
 # database_file = File.join(File.dirname(__FILE__), 'config/database.yml')
