@@ -45,7 +45,7 @@
 
                 <br>
                 <label class="bold_class" >Date de livraison souhaitée</label>
-                <%= date_field_tag "date_livraison", "", class: "form-control date-picker" %>
+                <%= datetime_field_tag "date_livraison", "", class: "form-control date-picker" %>
 
                 <br>
                 <label class="bold_class" >Disponibilités</label>
@@ -80,6 +80,8 @@
 
                 <label class="bold_class" >Documents complémentaires</label>
                 <%= file_field_tag "other_documents[]", :multiple => true %>
+                <%= file_field_tag "other_documents2[]", :multiple => true %>
+                <%= file_field_tag "other_documents3[]", :multiple => true %>
 
               </div>
 

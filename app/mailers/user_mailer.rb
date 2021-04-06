@@ -162,6 +162,12 @@ class UserMailer < ActionMailer::Base
       elements[:other_documents].each do |od|
         attachments[od.original_filename] = od.tempfile
       end
+      elements[:other_documents2].each do |od|
+        attachments[od.original_filename] = od.tempfile
+      end
+      elements[:other_documents3].each do |od|
+        attachments[od.original_filename] = od.tempfile
+      end
     rescue
     end
 
