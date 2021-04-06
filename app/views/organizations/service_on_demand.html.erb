@@ -45,25 +45,27 @@
 
                 <br>
                 <label class="bold_class" >Date de livraison souhaitée</label>
-                <%= datetime_field_tag "date_livraison", "", class: "form-control date-picker" %>
+                <%= date_field_tag "date_livraison", "", class: "form-control" %>
 
                 <br>
                 <label class="bold_class" >Disponibilités</label>
-                <%= date_field_tag "dispo1", "", class: "form-control" %><br>
-                <%= date_field_tag "dispo2", "", class: "form-control" %><br>
-                <%= date_field_tag "dispo3", "", class: "form-control" %>
+                <%= datetime_field_tag "dispo1", "", class: "form-control" %><br>
+                <%= datetime_field_tag "dispo2", "", class: "form-control" %><br>
+                <%= datetime_field_tag "dispo3", "", class: "form-control" %>
 
                 <br>
 
-                <label class="bold_class" >Devis du fournisseur</label>
-                <%= file_field_tag "devis" %>
+                <label class="" >Excel</label>
+                <%= check_box_tag "excel", 'yes', false, class: "" %>
 
                 <br>
 
                 <b>Liste des exigences : </b>
 
-                <label class="" >Excel</label>
-                <%= check_box_tag "excel", 'yes', false, class: "" %>
+                <label class="bold_class" >Devis du fournisseur</label>
+                <%= file_field_tag "devis" %>
+
+                <br>
 
                 <label class="" >Jira</label>
                 <%= check_box_tag "jira", 'yes', false, class: "" %>
