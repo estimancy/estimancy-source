@@ -10,19 +10,6 @@
 
       <% guw_type = Guw::GuwType.find(params[:id]) %>
 
-      <div class="edition-bloc-left">
-        <div class="edition-bloc-title">
-
-            <h4>
-              <%= I18n.t('size') %>
-              <%= ": " + " #{@guw_model.name}" %>
-            </h4>
-            <p>
-              <%= @guw_model.description %>
-            </p>
-        </div>
-      </div>
-
       <div class="group_button">
         <% if can? :manage_modules_instances, ModuleProject %>
           <%= link_to I18n.t(:new_uw_type), guw.new_guw_model_guw_type_path(@guw_model), class: "btn btn-secondary" %>
@@ -38,10 +25,17 @@
               <%= I18n.t(:unit_of_work_types) %> >> <span style="color:initial"></span>
               <%= link_to guw_type, guw.edit_guw_model_guw_type_path(@guw_model, guw_type), style: "color:initial", title: I18n.t(:edit) + " #{guw_type}" %>
             </h4>
+
             <% if can? :manage_modules_instances, ModuleProject %>
               <%= link_to I18n.t(:new_type_thresold), new_guw_model_guw_type_guw_complexity_path(@guw_model, guw_type), class: "btn btn-primary" %>
             <% end %>
           </div>
+
+          <hr>
+
+          <p>
+            <%= guw_type.description %>
+          </p>
 
           <div class="col-12 mt-4">
             <%= form_tag guw_complexity_work_units_save_complexity_work_units_path, style: "width: 100%;" do %>
