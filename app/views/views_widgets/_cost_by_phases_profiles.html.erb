@@ -45,13 +45,13 @@
         <% if project_organization_profiles.length > 0 %>
             <% mp_profiles_length = project_organization_profiles.length+1 %>
             <% project_organization_profiles.each do |profile| %>
-                <th class="text_center"><%= profile.name %></th>
+                <td class="text_center"><%= profile.name %></td>
             <% end %>
-            <th></th>
+            <td></td>
         <% else %>
             <% mp_profiles_length = 2 %>
-            <th><%= I18n.t(:no_profiles_for_wbs_activity_organization) %></th>
-            <th></th>
+            <td><%= I18n.t(:no_profiles_for_wbs_activity_organization) %></td>
+            <td></td>
         <% end %>
       </tr>
 
