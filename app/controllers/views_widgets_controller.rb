@@ -585,7 +585,6 @@ class ViewsWidgetsController < ApplicationController
     if widget.widget_type.in?(["table_effort_per_phase", "table_effort_per_phase_without_zero"])
       unless widget.estimation_value.string_data_probable.empty?
         worksheet.add_cell(0, 5, I18n.t(:effort_import))
-        worksheet.add_cell(0, 6, I18n.t(:unit_value))
         widget.module_project.wbs_activity.wbs_activity_elements.each  do |element|
           worksheet.add_cell(ind_y, 0, @project.title)
           worksheet.add_cell(ind_y, 1, @project.version_number)
@@ -647,7 +646,6 @@ class ViewsWidgetsController < ApplicationController
 
                 begin
                   worksheet.add_cell(ind_y, 6, widget.estimation_value.string_data_probable[current_component.id][element.id]["profiles"]["profile_id_#{profil.id}"]["ratio_id_#{ratio.id}"][:value]).set_number_format('.##')
-                  worksheet.add_cell(ind_y, 7, convert_label(widget.estimation_value.string_data_probable[current_component.id][element.id][:value], @project.organization))
                 rescue
                   #worksheet.add_cell(ind_y, 6, "".set_number_format('.##'))
                   worksheet.add_cell(ind_y, 6, "")
