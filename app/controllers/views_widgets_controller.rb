@@ -615,7 +615,6 @@ class ViewsWidgetsController < ApplicationController
       unless widget.estimation_value.string_data_probable.empty?
         worksheet.add_cell(0, 5, I18n.t(:profile))
         worksheet.add_cell(0, 6, I18n.t(:effort_import))
-        worksheet.add_cell(0, 7, I18n.t(:unit_value))
         attribute = widget.pe_attribute
         activity = widget.module_project.wbs_activity
         ratio = widget.module_project.wbs_activity_ratio
