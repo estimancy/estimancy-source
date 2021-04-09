@@ -202,9 +202,6 @@
 
               <tr style="height: 0px;">
                 <td colspan="3">
-                  <b>
-                    Sous total
-                  </b>
                 </td>
                 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                   <% unless i[1].blank? %>
