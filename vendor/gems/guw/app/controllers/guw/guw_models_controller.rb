@@ -1295,7 +1295,7 @@ class Guw::GuwModelsController < ApplicationController
     if @guw_model.name == "SNAP Size"
       jj = 23 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
     elsif @guw_model.name == "FP GARTNER Size"
-      jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
+      jj = 22 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
     else
       jj = 23 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
     end
