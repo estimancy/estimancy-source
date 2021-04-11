@@ -1245,6 +1245,8 @@ class Guw::GuwModelsController < ApplicationController
     hash = @guw_model.orders
     hash.delete("Critères")
     hash.delete("Coeff. de Complexité")
+    hash.delete("Coeff. complexity")
+    hash.delete("Criteria")
 
     @guw_unit_of_works.each do |i|
       if i.nil?
@@ -1292,7 +1294,7 @@ class Guw::GuwModelsController < ApplicationController
       @worksheet.add_cell(0, index, val)
     end
 
-    jj = 23 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
+    jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
 
     @guw_unit_of_works.each_with_index do |guow, i|
 
