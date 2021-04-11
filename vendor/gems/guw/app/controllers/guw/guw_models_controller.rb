@@ -1292,7 +1292,7 @@ class Guw::GuwModelsController < ApplicationController
       @worksheet.add_cell(0, index, val)
     end
 
-    jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
+    jj = 21 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
 
     @guw_unit_of_works.each_with_index do |guow, i|
 
@@ -1347,14 +1347,14 @@ class Guw::GuwModelsController < ApplicationController
                                                                 guw_unit_of_work_id: guow.id).first
 
               if guw_coefficient.coefficient_type == "Pourcentage"
-                @worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f).to_s)
+                @worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f).to_s)
               elsif guw_coefficient.coefficient_type == "Coefficient"
-                @worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f).to_s)
+                @worksheet.add_cell(ind, 20+j, (ceuw.nil? ? 100 : ceuw.percent.to_f).to_s)
               else
-                @worksheet.add_cell(ind, 19+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
+                @worksheet.add_cell(ind, 20+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
 
-              @worksheet.add_dropdown(ind, 19+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
+              @worksheet.add_dropdown(ind, 20+j, nil, 'Commentaire', ceuw.nil? ? '' : ceuw.comments)
 
             end
           end
@@ -1364,7 +1364,7 @@ class Guw::GuwModelsController < ApplicationController
           unless guow.guw_type.nil?
             unless guw_output.nil?
               v = (guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output.id}"].to_f))
-              @worksheet.add_cell(ind, 19 + j, v.to_s)
+              @worksheet.add_cell(ind, 20 + j, v.to_s)
             end
           end
         end
