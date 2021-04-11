@@ -1245,8 +1245,6 @@ class Guw::GuwModelsController < ApplicationController
     hash = @guw_model.orders
     hash.delete("Critères")
     hash.delete("Coeff. de Complexité")
-    hash.delete("Coeff. complexity")
-    hash.delete("Criteria")
 
     @guw_unit_of_works.each do |i|
       if i.nil?
@@ -1287,7 +1285,8 @@ class Guw::GuwModelsController < ApplicationController
         I18n.t(:description),
         I18n.t(:quantity),
         I18n.t(:tracability),
-        I18n.t(:cotation)] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + (@wbs_activity.nil? ? [] : (@wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten) + ["TJM Moyen"])
+        I18n.t(:cotation),
+        "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + (@wbs_activity.nil? ? [] : (@wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten) + ["TJM Moyen"])
 
     header.each_with_index do |val, index|
       @worksheet.add_cell(0, index, val)
