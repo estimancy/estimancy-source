@@ -498,7 +498,7 @@ fr_edf:
   #Project settings
   activity_categories: "Catégories d'activités"
   acquisition_categories: "Catégories d'acquisitions"
-  platform_categories: "Catégories de plates-formes"
+  platform_categories: "Programmes"
   project_categories: "Catégories de projets"
   project_areas: "Portefeuilles"
   acquisition_category: "Catégorie d'acquisition"
