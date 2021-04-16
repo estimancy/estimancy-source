@@ -5,7 +5,7 @@
       <div class="edition-bloc-left">
         <div class="edition-bloc-title">
           <h1>
-            Service à la demande
+            Demande de Service
           </h1>
         </div>
       </div>
@@ -29,6 +29,16 @@
 
                 <label class="bold_class" >Téléphone</label>
                 <%= phone_field_tag "phone_number", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Nom du Projet Harmonie</label>
+                <%= phone_field_tag "project_name", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Description</label>
+                <%= text_area_tag "description", "", class: "form-control", row: "5" %>
 
                 <br>
 
