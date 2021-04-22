@@ -53,7 +53,7 @@ class Project < ActiveRecord::Base
   has_many :status_histories
 
   has_many :views_widgets, :through => :module_projects
-  has_many :project_securities, :dependent => :destroy
+  has_many :project_securities, inverse_of: :project, :dependent => :destroy
   has_many :project_fields, :dependent => :destroy
 
   has_many :projects_from_model, foreign_key: "original_model_id", class_name: "Project"

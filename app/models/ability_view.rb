@@ -122,16 +122,21 @@ class AbilityView
                                                                                           is_model_permission: false,
                                                                                           is_estimation_permission: true).all
             unless prj_scrts.empty?
-              specific_permissions_array = []
+
+              hash_organization_projects = Hash.new(Array.new())
+
+              organization_projects.each do |op|
+                hash_organization_projects[op.project_id] = op
+              end
+
               prj_scrts.each do |prj_scrt|
                 prj_scrt_project_security_level = prj_scrt.project_security_level
                 unless prj_scrt_project_security_level.nil?
                   prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
-                  #project = prj_scrt.project
 
                   begin
-                    organization_project = organization_projects.find(prj_scrt.project_id)
-                    project = organization_project.project
+                    organization_project = hash_organization_projects[prj_scrt.project_id]
+                    project = prj_scrt.project
                   rescue
                     project = nil
                   end
@@ -183,6 +188,13 @@ class AbilityView
             end
 
             unless prj_scrts.empty?
+
+              hash_organization_projects = Hash.new(Array.new())
+
+              organization_projects.each do |op|
+                hash_organization_projects[op.project_id] = op
+              end
+
               prj_scrts.each do |prj_scrt|
 
                 prj_scrt_project_security_level = prj_scrt.project_security_level
@@ -191,10 +203,9 @@ class AbilityView
 
                   prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
 
-                  #project = prj_scrt.project
                   begin
-                    organization_project = organization_projects.find(prj_scrt.project_id)
-                    project = organization_project.project
+                    organization_project = hash_organization_projects[prj_scrt.project_id]
+                    project = prj_scrt.project
                   rescue
                     project = nil
                   end
@@ -224,16 +235,22 @@ class AbilityView
                                                                                             group_id: grp.id,
                                                                                             is_model_permission: false,
                                                                                             is_estimation_permission: true).all
+
               unless prj_scrts.empty?
-                specific_permissions_array = []
+
+                hash_organization_projects = Hash.new(Array.new())
+
+                organization_projects.each do |op|
+                  hash_organization_projects[op.project_id] = op
+                end
+
                 prj_scrts.each do |prj_scrt|
 
                   prj_scrt_project_security_level = prj_scrt.project_security_level
-                  #project = prj_scrt.project
 
                   begin
-                    organization_project = organization_projects.find(prj_scrt.project_id)
-                    project = organization_project.project
+                    organization_project = hash_organization_projects[prj_scrt.project_id]
+                    project = prj_scrt.project
                   rescue
                     project = nil
                   end
