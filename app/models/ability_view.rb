@@ -130,7 +130,7 @@ class AbilityView
                   #project = prj_scrt.project
 
                   begin
-                    organization_project = organization_projects.find(prj_scrt.project.id)
+                    organization_project = organization_projects.find(prj_scrt.project_id)
                     project = organization_project.project
                   rescue
                     project = nil
@@ -193,7 +193,7 @@ class AbilityView
 
                   #project = prj_scrt.project
                   begin
-                    organization_project = organization_projects.find(prj_scrt.project.id)
+                    organization_project = organization_projects.find(prj_scrt.project_id)
                     project = organization_project.project
                   rescue
                     project = nil
@@ -232,7 +232,7 @@ class AbilityView
                   #project = prj_scrt.project
 
                   begin
-                    organization_project = organization_projects.find(prj_scrt.project.id)
+                    organization_project = organization_projects.find(prj_scrt.project_id)
                     project = organization_project.project
                   rescue
                     project = nil
