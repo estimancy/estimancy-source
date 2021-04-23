@@ -1348,8 +1348,7 @@ class ProjectsController < ApplicationController
       # Uitilisation de la vue ModuleProjectGuwUnitOfWorkGroup
       @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: @module_project.organization.id,
                                                            project_id: @project.id,
-                                                           module_project_id: @module_project.id,
-                                                           pbs_project_element_id: @pbs_project_element.id).all
+                                                           module_project_id: @module_project.id).all
 
       # @unit_of_work_groups = ModuleProjectGuwUnitOfWorkGroup.where(organization_id: @project_organization.id, project_id: @project.id,
       #                                                              module_project_id: @module_project.id, pbs_project_element_id: @pbs_project_element.id).all
