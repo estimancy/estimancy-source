@@ -1346,7 +1346,7 @@ class ProjectsController < ApplicationController
       # @guw_model = GuwModel.includes(:guw_unit_of_works, :organization_technology, :guw_type, :guw_complexity).find(@module_project)
       #end
       # Uitilisation de la vue ModuleProjectGuwUnitOfWorkGroup
-      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: @project_organization.id,
+      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: @module_project.organization.id,
                                                            project_id: @project.id,
                                                            module_project_id: @module_project.id,
                                                            pbs_project_element_id: @pbs_project_element.id).all
@@ -5150,6 +5150,7 @@ public
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@current_organization.id}", @current_organization.to_s => organization_estimations_path(@current_organization), "#{@project}" => "#{main_app.edit_project_path(@project)}", "<span class='badge' style='background-color: #{@project.status_background_color}'> #{@project.status_name}" => status_comment_link
 
     @project_organization = @project.organization
+    @module_project_organization = @module_project.organization
     @module_projects = @project.module_projects
     #Get the initialization module_project
     #@initialization_module_project = ModuleProject.where(:organization_id => @project_organization.id, pemodule_id: @initialization_module.id, project_id: @project.id).first_or_create unless @initialization_module.nil?
@@ -5255,7 +5256,8 @@ public
       #else
       @guw_model = current_mp.guw_model
       #end
-      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_mp.id).all
+      @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id,
+                                                           module_project_id: current_mp.id).all
 
     elsif @module_project.pemodule.alias == "staffing"
       @staffing_model = current_mp.staffing_model
