@@ -4,33 +4,6 @@
       <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
         <div class="row-fluid">
           <div class="col-12">
-            <%= label_tag 'Date min' %>
-            <%= text_field_tag 'date_min', "", :class => 'date-picker form-control'%>
-          </div>
-        </div>
-
-        <br>
-
-        <div class="row-fluid">
-          <div class="col-12">
-            <%= label_tag 'Date max' %>
-            <%= text_field_tag 'date_max', "", :class => 'date-picker form-control' %>
-          </div>
-        </div>
-
-        <br>
-
-        <div class="row-fluid">
-          <div class="col-12">
-              <%= check_box_tag 'is_historized' %>
-              <%= label_tag I18n.t(:is_historized) %>
-          </div>
-        </div>
-
-        <br>
-
-        <div class="row-fluid">
-          <div class="col-12">
             <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary btn-estimancy" %>
           </div>
         </div>
