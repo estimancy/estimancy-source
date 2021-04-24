@@ -212,20 +212,20 @@
 
                           $("#complexity_coeff_ajusted_" + <%= guow.id %>).on("change", function(event){
 
-<!--                            var currentValue = $(this).val();-->
+                            var currentValue = $(this).val();
 
-<!--                            if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {-->
+                            if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {
 
-<!--                              $("#guw_form").bind("submit");-->
-<!--                              $(".guw_submit").prop("disabled", true);-->
+                              $("#guw_form").bind("submit");
+                              $(".guw_submit").prop("disabled", true);
 
-<!--                              $.ajax({-->
-<!--                                  url: "<%= guw.load_cplx_comments_path %>",-->
-<!--                                  data: "guw_unit_of_work_id=" + $(this).attr("guw") +-->
-<!--                                "&value=" + currentValue +-->
-<!--                                "&previousValue=" + parseFloat(previousSavedValue)-->
-<!--                              });-->
-<!--                            }-->
+                              $.ajax({
+                                  url: "<%= guw.load_cplx_comments_path %>",
+                                  data: "guw_unit_of_work_id=" + $(this).attr("guw") +
+                                "&value=" + currentValue +
+                                "&previousValue=" + parseFloat(previousSavedValue)
+                              });
+                            }
                           });
                         });
                       </script>
@@ -334,22 +334,22 @@
 
                       $("#guw input.coeff_<%= guow.id %>_<%= @guw_coefficient.id %>_<%= @guw_coefficient_guw_coefficient_elements.first.id %>").on("change", function(event){
 
-<!--                        currentValue = $(this).val();-->
+                        currentValue = $(this).val();
 
-<!--                        if(parseFloat(currentValue) != parseFloat(defaultValue)) {-->
+                        if(parseFloat(currentValue) != parseFloat(defaultValue)) {
 
-<!--                          $("#guw_form").bind("submit");-->
-<!--                          $(".guw_submit").prop("disabled", true);-->
+                          $("#guw_form").bind("submit");
+                          $(".guw_submit").prop("disabled", true);
 
-<!--                          $.ajax({-->
-<!--                            url: "<%# guw.load_coefficient_comments_path %>",-->
-<!--                            data: "coeff_id=" + $(this).attr("coeff_id") +-->
-<!--                            "&guw_unit_of_work_id=" + $(this).attr("guw") +-->
-<!--                            "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +-->
-<!--                            "&value=" + $(this).val() +-->
-<!--                            "&previousValue=" + parseFloat(previousSavedValue)-->
-<!--                          });-->
-                        // }
+                          $.ajax({
+                            url: "<%= guw.load_coefficient_comments_path %>",
+                            data: "coeff_id=" + $(this).attr("coeff_id") +
+                            "&guw_unit_of_work_id=" + $(this).attr("guw") +
+                            "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
+                            "&value=" + $(this).val() +
+                            "&previousValue=" + parseFloat(previousSavedValue)
+                          });
+                        }
                       });
                     });
                   </script>

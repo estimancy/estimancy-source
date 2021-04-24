@@ -1,4 +1,6 @@
-<%= form_tag guw.guw_unit_of_work_save_cplx_comments_path(guw_unit_of_work), method: "post", remote: true do %>
+<div class="modal-dialog modal-lg">
+<div class="modal-content">
+  <%= form_tag guw.guw_unit_of_work_save_cplx_comments_path(guw_unit_of_work), method: "post", remote: true do %>
 
   <%= hidden_field_tag "guw_unit_of_work_id", guw_unit_of_work.nil? ? nil : guw_unit_of_work.id %>
   <%= hidden_field_tag "value", @value %>
@@ -21,7 +23,7 @@
       </b>
     </label>
 
-    <%= text_area_tag "cplx_comments", guw_unit_of_work.nil? ? "" : guw_unit_of_work.cplx_comments, class: "attribute_note_area", rows: 4  %>
+    <%= text_area_tag "cplx_comments", guw_unit_of_work.nil? ? "" : guw_unit_of_work.cplx_comments, class: "attribute_note_area form-control", rows: 4  %>
 
   </div>
   <div class="modal-footer">
@@ -49,3 +51,5 @@
     }
   });
 </script>
+</div>
+</div>
