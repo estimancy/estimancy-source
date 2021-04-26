@@ -217,7 +217,7 @@
                             if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {
 
                               $("#guw_form").bind("submit");
-                              $(".guw_submit").prop("disabled", true);
+                              $(".submit_comments").prop("disabled", true);
 
                               $.ajax({
                                   url: "<%= guw.load_cplx_comments_path %>",

@@ -5,12 +5,12 @@ $("#cplx_comments").html("<%= j(render 'guw/guw_unit_of_works/cplx_comments_moda
 
 $("#cplx_comments").modal({
   keyboard: false,
-  backdrop: true
+  backdrop: false
 });
 
 $("#cplx_comments").on("shown.bs.modal", function () {
   $("#guw_form").unbind('submit');
-  $(".guw_submit").prop("disabled", false);
+  $(".submit_comments").prop("disabled", true);
 });
 
-$(".guw_submit").prop("disabled", false);
+$(".submit_comments").prop("disabled", true);
