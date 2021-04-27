@@ -204,8 +204,9 @@ class ApplicationController < ActionController::Base
           when "estimations"
             @current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized], @min, @max, @object_per_page)
         when "sort", "search"
-          @current_ability ||= AbilityView.new(user, @current_organization, @current_organization.organization_estimations.includes(:project))
-          when "projects_from"
+          # @current_ability ||= AbilityView.new(user, @current_organization, @current_organization.organization_estimations.includes(:project))
+          @current_ability ||= AbilityProject.new(user, @current_organization, @current_organization.projects)
+        when "projects_from"
             estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
             @current_ability ||= AbilityProject.new(current_user, @current_organization, estimation_models)
         else
