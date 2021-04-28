@@ -4361,7 +4361,6 @@ public
   end
 
   def projects_list_search
-
     @organization = @current_organization
 
     @object_per_page = (current_user.object_per_page || 10)
@@ -4414,9 +4413,9 @@ public
     end
 
     # filtre sur la version des estimations
-    # if !@filter_version.to_s.in?(['4', ''])
-    #   @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
-    # end
+    if !@filter_version.to_s.in?(['4', ''])
+      @organization_estimations = filter_estimation_versions(@organization_estimations, @filter_version)
+    end
 
     res = []
     @organization_estimations.each do |p|
@@ -4426,19 +4425,6 @@ public
     end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
-    # @projects = res
-
-    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
-    @last_page_min = (last_page.to_i-1) * @object_per_page
-    @last_page_max = @last_page_min + @object_per_page
-
-    if params[:is_last_page] == "true" || (@min == @last_page_min)
-      @is_last_page = "true"
-    else
-      @is_last_page = "false"
-    end
-
-    # p @projects
 
     if @projects.length <= @object_per_page
       @is_last_page = "true"
@@ -4446,12 +4432,13 @@ public
       @is_last_page = "false"
     end
 
-    # session[:sort_column] = @sort_column
-    # session[:sort_order] = @sort_order
-    # session[:sort_action] = @sort_action
-    # session[:is_last_page] = @is_last_page
-    # session[:search_column] = @search_column
-    # session[:search_value] = @search_value
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = @sort_action
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
+
 
     build_footer
 
