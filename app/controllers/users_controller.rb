@@ -377,7 +377,12 @@ public
     @user.subscription_end_date = params[:user][:subscription_end_date].nil? ? (Time.now + 1.year) : user_params[:subscription_end_date]
     @user.email = params[:user][:email]
 
+    # @user.skip_confirmation!
+
     @user.save(validate: false)
+
+    # @user.skip_confirmation!
+    # @user.confirm
 
     #validation conditions
     if params[:user][:password].blank?
