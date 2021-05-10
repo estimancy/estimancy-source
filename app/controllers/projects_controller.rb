@@ -98,7 +98,7 @@ class ProjectsController < ApplicationController
     #   ActiveRecord::Base.connection_pool.with_connection do
 
         workbook = RubyXL::Workbook.new
-        timeago = 2.years
+        timeago = 1.year
 
         @organization = Organization.where(id: params[:organization_id]).first
 
