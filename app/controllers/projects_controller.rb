@@ -94,8 +94,8 @@ class ProjectsController < ApplicationController
   end
 
   def raw_data_extraction
-    # Thread.new do
-    #   ActiveRecord::Base.connection_pool.with_connection do
+    Thread.new do
+      ActiveRecord::Base.connection_pool.with_connection do
 
         workbook = RubyXL::Workbook.new
         timeago = 1.year
@@ -746,16 +746,16 @@ class ProjectsController < ApplicationController
 
         workbook.write("#{Rails.root}/public/#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx")
 
-        send_data(workbook.stream.string,
-                  filename: "#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx",
-                  type: "application/vnd.ms-excel")
+        # send_data(workbook.stream.string,
+        #           filename: "#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx",
+        #           type: "application/vnd.ms-excel")
 
-        # UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
-    #   end
-    # end
-    #
-    # flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
-    # redirect_to :back
+        UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
+      end
+    end
+
+    flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
+    redirect_to :back
     #
     #
     # swift_client = SwiftClient.new(
