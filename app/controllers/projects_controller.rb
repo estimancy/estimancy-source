@@ -98,25 +98,26 @@ class ProjectsController < ApplicationController
       ActiveRecord::Base.connection_pool.with_connection do
 
         workbook = RubyXL::Workbook.new
+        timeago = 1.year
 
         @organization = Organization.where(id: params[:organization_id]).first
 
         # if params[:date_min].present? && params[:date_min].present?
-        #   @organization_projects = @organization.projects
-        #                                .where(is_model: false)
-        #                                .where(created_at: Time.parse(params[:date_min])..Time.parse(params[:date_max]))
-        #                                .where(is_historized: (params[:is_historized] == "1"))
-        #                                .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
-        #                                          :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
-        #                                          :guw_types, :guw_unit_of_works, :module_projects,
-        #                                          :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
-        # else
+        #                                        # .where(is_historized: (params[:is_historized] == "1"))
           @organization_projects = @organization.projects
                                        .where(is_model: false)
+                                       .where("created_at > ?", timeago.ago)
                                        .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
                                                  :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+        # else
+        #   @organization_projects = @organization.projects
+        #                                .where(is_model: false)
+        #                                .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
+        #                                          :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
+        #                                          :guw_types, :guw_unit_of_works, :module_projects,
+        #                                          :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
         # end
 
 
@@ -560,31 +561,31 @@ class ProjectsController < ApplicationController
 
         #################
 
-        worksheet_wbs.add_cell(0, 0, "Devis")
-        worksheet_wbs.add_cell(0, 1, "Application")
-        worksheet_wbs.add_cell(0, 2, "Besoin Métier")
-        worksheet_wbs.add_cell(0, 3, "Numero de demande")
-        worksheet_wbs.add_cell(0, 4, "Domaine")
-        worksheet_wbs.add_cell(0, 5, "Service")
-        worksheet_wbs.add_cell(0, 6, "Localisation WBS")
-
-        if "cds voyageurs".in?(@organization.name.to_s.downcase)
-          worksheet_wbs.add_cell(0, 7, "Urgence Devis")
-        else
-          worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
-        end
-
-        worksheet_wbs.add_cell(0, 8, "Catégorie")
-        worksheet_wbs.add_cell(0, 9, "Fournisseur")
-        worksheet_wbs.add_cell(0, 10, "Date")
-        worksheet_wbs.add_cell(0, 11, "Statut")
-        worksheet_wbs.add_cell(0, 12, "Ratio")
-        worksheet_wbs.add_cell(0, 13, "Phase")
-        worksheet_wbs.add_cell(0, 14, "TJM")
-        worksheet_wbs.add_cell(0, 15, "Charge calculée")
-        worksheet_wbs.add_cell(0, 16, "Charge retenue")
-        worksheet_wbs.add_cell(0, 17, "Coût calculé (€)")
-        worksheet_wbs.add_cell(0, 18, "Coût retenu (€)")
+        # worksheet_wbs.add_cell(0, 0, "Devis")
+        # worksheet_wbs.add_cell(0, 1, "Application")
+        # worksheet_wbs.add_cell(0, 2, "Besoin Métier")
+        # worksheet_wbs.add_cell(0, 3, "Numero de demande")
+        # worksheet_wbs.add_cell(0, 4, "Domaine")
+        # worksheet_wbs.add_cell(0, 5, "Service")
+        # worksheet_wbs.add_cell(0, 6, "Localisation WBS")
+        #
+        # if "cds voyageurs".in?(@organization.name.to_s.downcase)
+        #   worksheet_wbs.add_cell(0, 7, "Urgence Devis")
+        # else
+        #   worksheet_wbs.add_cell(0, 7, "Localisation Modèle")
+        # end
+        #
+        # worksheet_wbs.add_cell(0, 8, "Catégorie")
+        # worksheet_wbs.add_cell(0, 9, "Fournisseur")
+        # worksheet_wbs.add_cell(0, 10, "Date")
+        # worksheet_wbs.add_cell(0, 11, "Statut")
+        # worksheet_wbs.add_cell(0, 12, "Ratio")
+        # worksheet_wbs.add_cell(0, 13, "Phase")
+        # worksheet_wbs.add_cell(0, 14, "TJM")
+        # worksheet_wbs.add_cell(0, 15, "Charge calculée")
+        # worksheet_wbs.add_cell(0, 16, "Charge retenue")
+        # worksheet_wbs.add_cell(0, 17, "Coût calculé (€)")
+        # worksheet_wbs.add_cell(0, 18, "Coût retenu (€)")
 
 
         fe = Field.where(organization_id: @organization.id,
@@ -593,65 +594,64 @@ class ProjectsController < ApplicationController
         fc = Field.where(organization_id: @organization.id,
                          name: ["Coût (k€)", "Coût total (k€)"]).first
 
-        if params[:date_min].present? && params[:date_min].present?
-          mpres = ModuleProjectRatioElement.where(organization_id: @organization.id,
-                                                  created_at: Time.parse(params[:date_min])..Time.parse(params[:date_max])).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
-        else
-          mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
-        end
+        # if params[:date_min].present? && params[:date_min].present?
+        #   mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("created_at > ?", timeago).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
+        # else
+        #   mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
+        # end
 
-        wbs_iii = 0
-        mpres.each do |mpre|
-
-          mpre_project = mpre.module_project.project
-          module_project = mpre.module_project
-          mpre_wbs_activity_ratio = mpre.wbs_activity_ratio
-
-          if module_project.wbs_activity_ratio_id == mpre.wbs_activity_ratio_id
-
-            project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
-            project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
-            project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
-            project_project_category = mpre_project.project_category.nil? ? nil : mpre_project.project_category.name
-            project_platform_category = mpre_project.platform_category.nil? ? nil : mpre_project.platform_category.name
-            project_provider = mpre_project.provider.nil? ? nil : mpre_project.provider.name
-            project_estimation_status = mpre_project.estimation_status.nil? ? nil : mpre_project.estimation_status.name
-
-            unless mpre_project.is_model == true
-
-              wbs_iii = wbs_iii+1
-              worksheet_wbs.add_cell(wbs_iii, 0, mpre_project.title)
-              worksheet_wbs.add_cell(wbs_iii, 1, project_application.nil? ? mpre_project.application_name : project_application)
-              worksheet_wbs.add_cell(wbs_iii, 2, mpre_project.business_need)
-              worksheet_wbs.add_cell(wbs_iii, 3, mpre_project.request_number)
-              worksheet_wbs.add_cell(wbs_iii, 4, project_project_area.nil? ? '' : project_project_area)
-              worksheet_wbs.add_cell(wbs_iii, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
-
-              unless field.nil?
-                pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
-
-                unless field.nil?
-                  value = pf.nil? ? nil : pf.value
-                  worksheet_wbs.add_cell(wbs_iii, 6, value)
-                end
-              end
-
-              worksheet_wbs.add_cell(wbs_iii, 7, project_platform_category.nil? ? '' : project_platform_category.to_s)
-
-              worksheet_wbs.add_cell(wbs_iii, 8, project_project_category.to_s)
-              worksheet_wbs.add_cell(wbs_iii, 9, project_provider.nil? ? '' : project_provider)
-              worksheet_wbs.add_cell(wbs_iii, 10, mpre_project.start_date.to_s)
-              worksheet_wbs.add_cell(wbs_iii, 11, project_estimation_status.to_s)
-              worksheet_wbs.add_cell(wbs_iii, 12, mpre_wbs_activity_ratio.nil? ? nil : mpre_wbs_activity_ratio.name)
-              worksheet_wbs.add_cell(wbs_iii, 13, mpre.name)
-              worksheet_wbs.add_cell(wbs_iii, 14, mpre.tjm)
-              worksheet_wbs.add_cell(wbs_iii, 15, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
-              worksheet_wbs.add_cell(wbs_iii, 16, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
-              worksheet_wbs.add_cell(wbs_iii, 17, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
-              worksheet_wbs.add_cell(wbs_iii, 18, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
-            end
-          end
-        end
+        # wbs_iii = 0
+        # mpres.each do |mpre|
+        #
+        #   mpre_project = mpre.module_project.project
+        #   module_project = mpre.module_project
+        #   mpre_wbs_activity_ratio = mpre.wbs_activity_ratio
+        #
+        #   if module_project.wbs_activity_ratio_id == mpre.wbs_activity_ratio_id
+        #
+        #     project_application = mpre_project.application.nil? ? nil : mpre_project.application.name
+        #     project_project_area = mpre_project.project_area.nil? ? nil : mpre_project.project_area.name
+        #     project_acquisition_category = mpre_project.acquisition_category.nil? ? nil : mpre_project.acquisition_category.name
+        #     project_project_category = mpre_project.project_category.nil? ? nil : mpre_project.project_category.name
+        #     project_platform_category = mpre_project.platform_category.nil? ? nil : mpre_project.platform_category.name
+        #     project_provider = mpre_project.provider.nil? ? nil : mpre_project.provider.name
+        #     project_estimation_status = mpre_project.estimation_status.nil? ? nil : mpre_project.estimation_status.name
+        #
+        #     unless mpre_project.is_model == true
+        #
+        #       wbs_iii = wbs_iii+1
+        #       worksheet_wbs.add_cell(wbs_iii, 0, mpre_project.title)
+        #       worksheet_wbs.add_cell(wbs_iii, 1, project_application.nil? ? mpre_project.application_name : project_application)
+        #       worksheet_wbs.add_cell(wbs_iii, 2, mpre_project.business_need)
+        #       worksheet_wbs.add_cell(wbs_iii, 3, mpre_project.request_number)
+        #       worksheet_wbs.add_cell(wbs_iii, 4, project_project_area.nil? ? '' : project_project_area)
+        #       worksheet_wbs.add_cell(wbs_iii, 5, project_acquisition_category.nil? ? '' : project_acquisition_category)
+        #
+        #       unless field.nil?
+        #         pf = mpre_project.project_fields.select{ |i| i.field_id == field.id }.first
+        #
+        #         unless field.nil?
+        #           value = pf.nil? ? nil : pf.value
+        #           worksheet_wbs.add_cell(wbs_iii, 6, value)
+        #         end
+        #       end
+        #
+        #       worksheet_wbs.add_cell(wbs_iii, 7, project_platform_category.nil? ? '' : project_platform_category.to_s)
+        #
+        #       worksheet_wbs.add_cell(wbs_iii, 8, project_project_category.to_s)
+        #       worksheet_wbs.add_cell(wbs_iii, 9, project_provider.nil? ? '' : project_provider)
+        #       worksheet_wbs.add_cell(wbs_iii, 10, mpre_project.start_date.to_s)
+        #       worksheet_wbs.add_cell(wbs_iii, 11, project_estimation_status.to_s)
+        #       worksheet_wbs.add_cell(wbs_iii, 12, mpre_wbs_activity_ratio.nil? ? nil : mpre_wbs_activity_ratio.name)
+        #       worksheet_wbs.add_cell(wbs_iii, 13, mpre.name)
+        #       worksheet_wbs.add_cell(wbs_iii, 14, mpre.tjm)
+        #       worksheet_wbs.add_cell(wbs_iii, 15, mpre.theoretical_effort_most_likely.blank? ? 0 : mpre.theoretical_effort_most_likely.round(user_number_precision))
+        #       worksheet_wbs.add_cell(wbs_iii, 16, mpre.retained_effort_most_likely.blank? ? 0 : mpre.retained_effort_most_likely.round(user_number_precision))
+        #       worksheet_wbs.add_cell(wbs_iii, 17, mpre.theoretical_cost_most_likely.blank? ? 0 : mpre.theoretical_cost_most_likely.round(user_number_precision))
+        #       worksheet_wbs.add_cell(wbs_iii, 18, mpre.retained_cost_most_likely.blank? ? 0 : mpre.retained_cost_most_likely.round(user_number_precision))
+        #     end
+        #   end
+        # end
 
         ########
 
@@ -757,7 +757,7 @@ class ProjectsController < ApplicationController
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
     redirect_to :back
 
-
+    #
     # swift_client = SwiftClient.new(
     #     :auth_url => "https://auth.cloud.ovh.net/v3",
     #     :storage_url => "https://horizon.cloud.ovh.net/project/containers/container/production-backups-db",
