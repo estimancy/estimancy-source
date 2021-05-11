@@ -114,12 +114,21 @@ class WbsActivityElementsController < ApplicationController
     end
 
     #update phase short name
-    if @wbs_activity_element.phase_short_name.nil?
-      phases_short_name_number = @wbs_activity.phases_short_name_number.to_i+1
-      element_phases_short_name_number = "P#{phases_short_name_number}"
-      @wbs_activity.phases_short_name_number = phases_short_name_number
+    if current_user.super_admin?
+      element_phases_short_name_number = params[:wbs_activity_element][:phase_short_name]
+      elt_phases_short_name_number = element_phases_short_name_number.gsub(/P/, "") rescue 0
+
+      old_max_phases_short_name_number =  @wbs_activity.get_max_phases_short_name_number
+
+      @wbs_activity.phases_short_name_number = [old_max_phases_short_name_number, elt_phases_short_name_number.to_i].max
     else
-      element_phases_short_name_number = @wbs_activity_element.phase_short_name
+      if @wbs_activity_element.phase_short_name.nil?
+        phases_short_name_number = @wbs_activity.phases_short_name_number.to_i+1
+        element_phases_short_name_number = "P#{phases_short_name_number}"
+        @wbs_activity.phases_short_name_number = phases_short_name_number
+      else
+        element_phases_short_name_number = @wbs_activity_element.phase_short_name
+      end
     end
 
     if @wbs_activity_element.update_attributes(params[:wbs_activity_element].merge(phase_short_name: element_phases_short_name_number))
