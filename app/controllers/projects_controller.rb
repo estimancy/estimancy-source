@@ -98,15 +98,15 @@ class ProjectsController < ApplicationController
       ActiveRecord::Base.connection_pool.with_connection do
 
         workbook = RubyXL::Workbook.new
-        timeago = 1.year
+        # timeago = 1.year
 
         @organization = Organization.where(id: params[:organization_id]).first
 
         # if params[:date_min].present? && params[:date_min].present?
         #                                        # .where(is_historized: (params[:is_historized] == "1"))
+        #                                        # .where("created_at > ?", timeago.ago)
           @organization_projects = @organization.projects
                                        .where(is_model: false)
-                                       .where("created_at > ?", timeago.ago)
                                        .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
