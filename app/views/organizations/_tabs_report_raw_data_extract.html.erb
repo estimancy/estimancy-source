@@ -3,8 +3,16 @@
     <h2><%= I18n.t('extract_raw_data') %></h2>
   </span>
 </div>
-<div class="card-body">
 
+  <br>
+  <p>
+    11 mai 2021 : modification temporaire de maintenance <br>
+       •	Extraction sur les 365 derniers jours. <br>
+       •	Omission des données de l’onglets 2 « Services avec Ratio » (nous faire une demande par mail à support@estimancy.com si besoin). <br>
+  </p>
+
+<br>
+<div class="card-body">
   <%= form_tag raw_data_extraction_path(organization_id: @organization.id) do %>
     <div class="row-fluid">
       <div class="col-12">

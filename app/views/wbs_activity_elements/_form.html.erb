@@ -21,6 +21,15 @@
 
                 <%= f.input :organization_id, :as => :hidden, :input_html => { value:  @organization.id} %>
 
+                  <% if current_user.super_admin? %>
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :phase_short_name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+                          <label class="mdl-textfield__label" for="phase_short_name"><%= I18n.t(:alias) %></label>
+                        </div>
+                      </div>
+                  <% end %>
+
                   <div class="col-5">
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>

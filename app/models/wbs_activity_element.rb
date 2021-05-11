@@ -20,7 +20,7 @@
 #############################################################################
 
 class WbsActivityElement < ActiveRecord::Base
-  attr_accessible :name, :description, :is_root, :wbs_activity,:wbs_activity_id, :dotted_id, :position, :parent_id, :phase_short_name,
+  attr_accessible :phase_short_name, :name, :description, :is_root, :wbs_activity,:wbs_activity_id, :dotted_id, :position, :parent_id, :phase_short_name,
                   :organization_id, :service_id
 
   has_ancestry :cache_depth => true
@@ -38,6 +38,8 @@ class WbsActivityElement < ActiveRecord::Base
   scope :elements_root, -> {
     where(:is_root => true)
   }
+
+  #validates :phase_short_name, :presence => true, :uniqueness => {:scope => :wbs_activity_id, :case_sensitive => false}, unless: :is_root?
 
   validates :name, :presence => true, :uniqueness => {:scope => [:wbs_activity_id, :ancestry], :case_sensitive => false}
 

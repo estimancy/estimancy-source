@@ -92,6 +92,20 @@ class WbsActivity < ActiveRecord::Base
     self.wbs_activity_elements.select{|i| i.is_root == true }.first
   end
 
+  def get_max_phases_short_name_number
+    wbs_elements_short_names = self.wbs_activity_elements.map(&:phase_short_name)
+    phases_short_name_number = Array.new
+    wbs_elements_short_names.each_with_index do |shortname, index|
+      begin
+        phases_short_name_number[index] = shortname.scan(/\d+/).first.to_i
+      rescue
+        phases_short_name_number[index] = index+1
+      end
+    end
+
+    max_phases_short_name_number = phases_short_name_number.max
+  end
+
   #Moulinette de mise à jour des profils de l'organisation dans les instances de Wbs-activity
   # WbsActivity.all.each do |wbs_activity|
   #   organization_profiles = wbs_activity.organization.organization_profiles
