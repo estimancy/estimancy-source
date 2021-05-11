@@ -106,7 +106,7 @@ class ProjectsController < ApplicationController
         #                                        # .where(is_historized: (params[:is_historized] == "1"))
           @organization_projects = @organization.projects
                                        .where(is_model: false)
-                                       .where("created_at < ?", timeago.ago)
+                                       .where("created_at > ?", timeago.ago)
                                        .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
                                                  :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
                                                  :guw_types, :guw_unit_of_works, :module_projects,
@@ -595,7 +595,7 @@ class ProjectsController < ApplicationController
                          name: ["Coût (k€)", "Coût total (k€)"]).first
 
         # if params[:date_min].present? && params[:date_min].present?
-        #   mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("created_at < ?", timeago).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
+        #   mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("created_at > ?", timeago).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
         # else
         #   mpres = ModuleProjectRatioElement.where(organization_id: @organization.id).where("theoretical_effort_most_likely IS NOT NULL").includes(:module_project, :wbs_activity_ratio)
         # end
@@ -756,7 +756,7 @@ class ProjectsController < ApplicationController
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
     redirect_to :back
-    #
+
     #
     # swift_client = SwiftClient.new(
     #     :auth_url => "https://auth.cloud.ovh.net/v3",
