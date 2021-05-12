@@ -744,7 +744,7 @@ class ProjectsController < ApplicationController
           end
         end
 
-        workbook.write("#{Rails.root}/public/#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx")
+        workbook.write("#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx")
 
         # send_data(workbook.stream.string,
         #           filename: "#{@organization.name}-#{current_user.id}-RAW_DATA.xlsx",
