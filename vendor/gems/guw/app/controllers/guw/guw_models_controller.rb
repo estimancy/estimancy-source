@@ -1297,7 +1297,7 @@ class Guw::GuwModelsController < ApplicationController
     elsif @guw_model.name == "FP GARTNER Size"
       jj = 22 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
     else
-      jj = 23 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
+      jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
     end
 
     @guw_unit_of_works.each_with_index do |guow, i|
