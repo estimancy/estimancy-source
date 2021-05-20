@@ -58,8 +58,8 @@
               <table class="table tablesorter table-list table-sm table-users" style="width:100%; display: block; overflow: auto;">
                 <thead>
                   <tr>
-                    <th><%= I18n.t(:first_name) %></th>
                     <th><%= I18n.t(:last_name) %></th>
+                    <th><%= I18n.t(:first_name) %></th>
                     <th><%= I18n.t(:login_name) %></th>
                     <th><%= I18n.t(:email) %></th>
                     <th><%= I18n.t(:Confirmed_at) %></th>
@@ -81,14 +81,14 @@
                     <% @organization_users = @organization.users.where('login_name <> ?', 'owner') %>
                 <% end %>
                 <tbody>
-                <% @organization_users.each do |user| %>
+                <% @organization_users.order('last_name', 'first_name').each do |user| %>
                   <tr>
                     <% if user.super_admin? %>
-                      <td><strong><%= user.first_name %></strong></td>
                       <td><strong><%= user.last_name %></strong></td>
+                      <td><strong><%= user.first_name %></strong></td>
                     <% else %>
-                      <td><%= user.first_name %></td>
                       <td><%= user.last_name %></td>
+                      <td><%= user.first_name %></td>
                     <% end %>
 
                     <td><%= user.login_name %></td>

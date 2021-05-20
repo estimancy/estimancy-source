@@ -470,7 +470,7 @@
                     </span>
                   <% else %>
                       <span class="pull-left estimancy" >
-                        <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "static" %>
+                        <%= link_to (wai.comment.nil? || wai.comment.blank?) ? '----' : wai.comment.truncate(25), "#", title: wai.comment, :"data-toggle" => "modal", :"data-target" => "#comment#{wai.id}", :"data-backdrop" => "false" %>
                       </span>
                       <div class="modal fade" id="comment<%= wai.id %>" tabindex="-1" role="dialog" aria-labelledby="comment_label<%= wai.id %>" aria-hidden="true">
                         <div class="modal-dialog">
