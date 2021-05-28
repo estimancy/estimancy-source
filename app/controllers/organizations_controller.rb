@@ -3399,7 +3399,7 @@ class OrganizationsController < ApplicationController
     @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "raw_data_extract", "budget_report", "budget_excel_report"]
     @organization_show_reports_keys = @organization.show_reports.keys
     @partial_name = params[:partial_name]
-    @item_title = params[:item_title]
+    @item_title = params[:item_title] || "raw_data_extract_synthese"
 
     unless params[:budget_id].blank? || params[:application_id].blank?
       @application = Application.find(params[:application_id])
@@ -3673,7 +3673,7 @@ class OrganizationsController < ApplicationController
     @sort_action = params[:sort_action].blank? ? session[:sort_action] : params[:sort_action]
     @sort_column = params[:sort_column].blank? ? session[:sort_column] : params[:sort_column]
     @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
-    @search_hash = nil
+    @search_hash = params[:search_hash].blank? ? session[:search_hash] : params[:search_hash]  #nil
 
     all_projects = Organization.organization_projects_list(@organization.id, @historized)
     organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
@@ -5961,8 +5961,10 @@ class OrganizationsController < ApplicationController
 
   def save_show_reports
     @organization = Organization.find(params[:organization_id])
+
     @show_reports = @organization.show_reports
     @show_kpi = @organization.show_kpi
+
     @show_reports = Hash.new
     @show_kpi = Hash.new
 

@@ -2343,6 +2343,10 @@ fr_acoss:
   please_wait: "Veuillez patienter..."
 
   raw_data_extract: "Extraction de données brutes"
+  raw_data_extract_synthese: "Extraction synthèse des devis (données brutes)"
+  raw_data_extract_details: "Extraction détails des devis (données brutes)"
+  raw_data_extract_abaques_services_DE: "Composants abaques et services à Dire d'Expert"
+  raw_data_extract_services_ratio: "Services avec ratio"
 
   #organizations/report
   filtered_excel_report: "Rapport Excel filtré des devis"

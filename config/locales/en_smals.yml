@@ -2290,11 +2290,16 @@ en_smals:
   please_wait: "Please wait..."
 
   raw_data_extract: "Extract raw data"
+  raw_data_extract_synthese: "Extraction summary of estimates (raw data)"
+  raw_data_extract_details: "Extraction details of estimates (raw data)"
+  raw_data_extract_abaques_services_DE: "Abacus components & DE services"
+  raw_data_extract_services_ratio: "Services with ratio"
 
   #organizations/report
   filtered_excel_report: "Filtered Excel report"
   detailed_excel_report: "Detailed Excel report"
   detailed_pdf_report: "Detailed PDF report"
+
   budget_report: "Budget report"
   budget_excel_report: "Budget excel report"
   generate_filtered_excel_report: "Generate a filtered Excel report"
