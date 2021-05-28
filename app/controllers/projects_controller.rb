@@ -722,9 +722,9 @@ class ProjectsController < ApplicationController
     # @statuses_hash = Hash.new
     # @guw_hash = Hash.new {|h,k| h[k] = [] }
     # @max_guw_model_attributes_size = 1
-    #
-    # field = Field.where(organization_id: @organization.id, name: "Localisation").first
-    #
+
+    field = Field.where(organization_id: @organization.id, name: "Localisation").first
+
     # @organization_projects.each do |project|
     #
     #   project.project_fields.each do |pf|
@@ -872,6 +872,7 @@ class ProjectsController < ApplicationController
 
           when "raw_data_extract_services_ratio"
             workbook = raw_data_extract_services_ratio(@organization, @organization_projects)
+
           else
             workbook = raw_data_extraction_synthese(@organization, @organization_projects)
         end
