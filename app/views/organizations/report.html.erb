@@ -30,14 +30,60 @@
             <ul class="nav flex-column">
               <% @reports_list.each do |report| %>
                 <% if @organization_show_reports_keys.include?(report) %>
-                  <li class="nav-item">
-                    <a class="nav-link group" href="<%= organization_report_path(@organization,
-                                                                                 partial_name: "tabs_report_" + report,
-                                                                                 item_title: report,
-                                                                                 anchor: "tabs-") %>">
-                      <span><%= I18n.t(report) %></span>
-                    </a>
-                  </li>
+
+                  <% if report.to_s == "raw_data_extract" %>
+
+                    <li class="nav-item">
+                        <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                     partial_name: "tabs_report_" + report,
+                                                                                     item_title: "raw_data_extract_synthese",
+                                                                                     anchor: "tabs-") %>">
+                          <span><%= I18n.t("raw_data_extract_synthese") %></span>
+                        </a>
+                    </li>
+
+                    <!-- Details accessible que pour les super-admin -->
+                    <% if current_user.super_admin? %>
+
+                      <li class="nav-item">
+                        <a class="nav-link group" href="#">
+                          <span><%= I18n.t("raw_data_extract_details") %></span>
+                        </a>
+
+                        <ul class="nav flex-column">
+                          <li class="nav-item" style="margin-left: 20px;">
+                            <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                         partial_name: "tabs_report_raw_data_extract_details",
+                                                                                         item_title: "raw_data_extract_abaques_services_DE",
+                                                                                         anchor: "tabs-") %>">
+                              <span><%= I18n.t("raw_data_extract_abaques_services_DE") %></span>
+                            </a>
+                          </li>
+
+                          <li class="nav-item" style="margin-left: 20px;">
+                            <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                         partial_name: "tabs_report_raw_data_extract_details",
+                                                                                         item_title: "raw_data_extract_services_ratio",
+                                                                                         anchor: "tabs-") %>">
+                              <span><%= I18n.t("raw_data_extract_services_ratio") %></span>
+                            </a>
+                          </li>
+                        </ul>
+
+                      </li>
+                    <% end %>
+
+                  <% else %>
+
+                      <li class="nav-item">
+                        <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                     partial_name: "tabs_report_" + report,
+                                                                                     item_title: report,
+                                                                                     anchor: "tabs-") %>">
+                          <span><%= I18n.t(report) %></span>
+                        </a>
+                      </li>
+                  <% end %>
                 <% end %>
               <% end %>
             </ul>

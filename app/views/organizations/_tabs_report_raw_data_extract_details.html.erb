@@ -1,16 +1,17 @@
 <div id="tabs-filtered_excel_report">
   <span>
     <h2>
-      <%#= I18n.t('extract_raw_data') %>
-      <%= I18n.t("#{@item_title}") %>
+      <%= I18n.t('raw_data_extract_details') %>
     </h2>
   </span>
+
+  <span><h4><%= I18n.t("#{@item_title}") %></h4></span>
 </div>
 
   <br>
   <p>
     12 mai 2021 : modification temporaire de maintenance <br>
-    • Extraction des données de l'onglet "Synthèse" seulement (nous faire une demande par mail à support@estimancy.com si besoin des autres onglets). <br>
+    • Extraction des données onglet par onglet (nous faire une demande par mail à support@estimancy.com si besoin des autres onglets). <br>
   </p>
 
 <br>
@@ -22,11 +23,5 @@
       </div>
     </div>
   <% end %>
-
-<!--  <p>-->
-<!--    L'extraction des données brutes est momentanément suspendue.-->
-<!--    <br>-->
-<!--    Merci de contacter le support Estimancy pour effectuer votre demande à l'adresse support@estimancy.com-->
-<!--  </p>-->
 
 </div>
