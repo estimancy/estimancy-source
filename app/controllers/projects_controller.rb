@@ -888,7 +888,7 @@ class ProjectsController < ApplicationController
     end
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
-    redirect_to :back and return
+    redirect_to :back #and return
 
   end
 
