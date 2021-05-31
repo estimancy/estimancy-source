@@ -702,6 +702,7 @@ class ProjectsController < ApplicationController
     worksheet_wbs = workbook.worksheets[0]
     worksheet_wbs.sheet_name = 'Services avec ratio'
 
+    field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
     i = 1
 
@@ -722,8 +723,6 @@ class ProjectsController < ApplicationController
     # @statuses_hash = Hash.new
     # @guw_hash = Hash.new {|h,k| h[k] = [] }
     # @max_guw_model_attributes_size = 1
-
-    field = Field.where(organization_id: @organization.id, name: "Localisation").first
 
     # @organization_projects.each do |project|
     #
@@ -834,8 +833,8 @@ class ProjectsController < ApplicationController
 
 
   def raw_data_extraction
-    # Thread.new do
-    #   ActiveRecord::Base.connection_pool.with_connection do
+    Thread.new do
+      ActiveRecord::Base.connection_pool.with_connection do
 
         #workbook = RubyXL::Workbook.new
         # timeago = 1.year
@@ -880,16 +879,16 @@ class ProjectsController < ApplicationController
 
         workbook.write("#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx")
 
-        send_data(workbook.stream.string,
-                  filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
-                  type: "application/vnd.ms-excel")
+        # send_data(workbook.stream.string,
+        #           filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
+        #           type: "application/vnd.ms-excel")
 
-         #UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
-    #   end
-    # end
+         UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
+      end
+    end
 
-    #flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
-    #redirect_to :back and return
+    flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
+    redirect_to :back and return
 
   end
 
