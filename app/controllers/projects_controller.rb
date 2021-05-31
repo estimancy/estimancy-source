@@ -833,8 +833,8 @@ class ProjectsController < ApplicationController
 
 
   def raw_data_extraction
-    Thread.new do
-      ActiveRecord::Base.connection_pool.with_connection do
+    # Thread.new do
+    #   ActiveRecord::Base.connection_pool.with_connection do
 
         #workbook = RubyXL::Workbook.new
         # timeago = 1.year
@@ -884,8 +884,8 @@ class ProjectsController < ApplicationController
         #           type: "application/vnd.ms-excel")
 
          UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
-      end
-    end
+    #   end
+    # end
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
     redirect_to :back and return

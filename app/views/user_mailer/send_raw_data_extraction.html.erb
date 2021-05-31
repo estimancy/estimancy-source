@@ -3,8 +3,9 @@ Bonjour <%= @user %>,
 <br>
 
 Votre export des données brutes lancé sur Estimancy pour le <%= @organization.name %> est téléchargeable directement en cliquant sur
+<%= link_to "lien suivant", download_url(@organization.id) %>.
 <%#= link_to "lien suivant", download_url(@organization.id), download: true %>
-<%= link_to "lien suivant", download_path(@organization.id), :target => '_blank' %>.
+<%#= link_to "lien suivant", download_url(@organization.id), :target => '_blank' %>
 
 <br>
 <br>
