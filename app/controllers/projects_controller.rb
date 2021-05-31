@@ -888,7 +888,7 @@ class ProjectsController < ApplicationController
     end
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
-    redirect_to :back and return
+    redirect_to :back #and return
 
   end
 
@@ -1178,11 +1178,15 @@ class ProjectsController < ApplicationController
 
   def download
     @organization = Organization.find(params[:organization_id])
-    send_file(
-        "#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
-        filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
-        type: "application/vnd.ms-excel"
-    )
+    # send_file(
+    #     "#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
+    #     filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
+    #     type: "application/vnd.ms-excel"
+    # )
+
+    send_data("#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
+              filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
+              type: "application/vnd.ms-excel")
   end
 
   def build_rapport
