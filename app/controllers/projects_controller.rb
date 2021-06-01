@@ -1185,7 +1185,7 @@ class ProjectsController < ApplicationController
     # )
 
     send_file(
-        "#{SETTINGS["HOST_URL"]}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
+        "#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
         filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
         type: "application/vnd.ms-excel"
     )
