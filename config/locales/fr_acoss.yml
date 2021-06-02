@@ -2343,10 +2343,14 @@ fr_acoss:
   please_wait: "Veuillez patienter..."
 
   raw_data_extract: "Extraction de données brutes"
-  raw_data_extract_synthese: "Extraction synthèse des devis (données brutes)"
-  raw_data_extract_details: "Extraction détails des devis (données brutes)"
-  raw_data_extract_abaques_services_DE: "Composants abaques et services à Dire d'Expert"
-  raw_data_extract_services_ratio: "Services avec ratio"
+  raw_data_extract_synthese: "Synthèse des devis"
+  raw_data_extract_details: "Détails des devis"
+  raw_data_extract_abaques_services_DE: "Détails des devis - composants et services"
+  raw_data_extract_services_ratio: "Détails des devis - services du cycle (avec ratio)"
+  reports: "Rapports"
+  text_summary_estimates: "Rapport synthèse des devis remplace l’extraction des données brutes : onglet 'Synthèse' (mai 2021)"
+  text_details_estimates_cf: "Rapport détails des devis remplace l’extraction des données brutes : onglet 'Comp. Abaques & Serv. Dire Exp' (mai 2021)"
+  text_details_estimates_ratio: "Rapport détails des devis remplace l’extraction des données brutes : onglet 'Services avec ratio' (mai 2021)"
 
   #organizations/report
   filtered_excel_report: "Rapport Excel filtré des devis"

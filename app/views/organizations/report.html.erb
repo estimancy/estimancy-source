@@ -1,5 +1,5 @@
 <div class="row">
-    <div class="col-10">
+    <div class="col-9">
         <section class="card card-content-bloc estimancy-form">
           <div class="mb-5">
             <div class="effort-bloc">
@@ -21,8 +21,8 @@
         </section>
   </div>
 
-  <div class="col-2">
-    <h4 class="mb-0">Navigation</h4>
+  <div class="col-3">
+    <h4 class="mb-0"><%= I18n.t(:reports) %></h4>
       <div id="edition-sidebar">
         <ul class="nav flex-column">
 
@@ -46,30 +46,21 @@
                     <% if current_user.super_admin? %>
 
                       <li class="nav-item">
-                        <a class="nav-link group" href="#">
-                          <span><%= I18n.t("raw_data_extract_details") %></span>
+                        <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                     partial_name: "tabs_report_raw_data_extract_details_cf",
+                                                                                     item_title: "raw_data_extract_abaques_services_DE",
+                                                                                     anchor: "tabs-") %>">
+                          <span><%= I18n.t("raw_data_extract_abaques_services_DE") %></span>
                         </a>
+                      </li>
 
-                        <ul class="nav flex-column">
-                          <li class="nav-item" style="margin-left: 20px;">
-                            <a class="nav-link group" href="<%= organization_report_path(@organization,
-                                                                                         partial_name: "tabs_report_raw_data_extract_details",
-                                                                                         item_title: "raw_data_extract_abaques_services_DE",
-                                                                                         anchor: "tabs-") %>">
-                              <span><%= I18n.t("raw_data_extract_abaques_services_DE") %></span>
-                            </a>
-                          </li>
-
-                          <li class="nav-item" style="margin-left: 20px;">
-                            <a class="nav-link group" href="<%= organization_report_path(@organization,
-                                                                                         partial_name: "tabs_report_raw_data_extract_details",
-                                                                                         item_title: "raw_data_extract_services_ratio",
-                                                                                         anchor: "tabs-") %>">
-                              <span><%= I18n.t("raw_data_extract_services_ratio") %></span>
-                            </a>
-                          </li>
-                        </ul>
-
+                      <li class="nav-item">
+                        <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                     partial_name: "tabs_report_raw_data_extract_details_ratio",
+                                                                                     item_title: "raw_data_extract_services_ratio",
+                                                                                     anchor: "tabs-") %>">
+                          <span><%= I18n.t("raw_data_extract_services_ratio") %></span>
+                        </a>
                       </li>
                     <% end %>
 

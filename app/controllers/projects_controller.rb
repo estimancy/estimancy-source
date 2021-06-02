@@ -1178,18 +1178,11 @@ class ProjectsController < ApplicationController
 
   def download
     @organization = Organization.find(params[:organization_id])
-    # send_file(
-    #     "#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
-    #     filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
-    #     type: "application/vnd.ms-excel"
-    # )
-
     send_file(
         "#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
         filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
         type: "application/vnd.ms-excel"
     )
-
   end
 
   def build_rapport

@@ -2113,3 +2113,13 @@ en-gb:
   revised_effort: "Revised effort"
   estimate_history: "Estimate history"
 
+  raw_data_extract: "Extract raw data"
+  raw_data_extract_synthese: "Summary of estimates"
+  raw_data_extract_details: "Details of estimates"
+  raw_data_extract_abaques_services_DE: "Details of estimates - components & services"
+  raw_data_extract_services_ratio: "Details of estimates - cycle services (with ratio)"
+  reports: "Reports"
+  text_summary_estimates: "Summary report of estimates replaces the extraction of raw data: 'Synthese' tab (May 2021)"
+  text_details_estimates_cf: "Estimates details report replaces the extraction of raw data: 'Comp. Abaques & Serv. Dire Exp' tab (May 2021)"
+  text_details_estimates_ratio: "Estimates details report replaces the extraction of raw data: 'Services avec ratio' tab (May 2021)"
+
