@@ -59,6 +59,8 @@ module Guw
 
     #Search fields
     scoped_search :on => [:name]
+    scope :name_starts_with, -> (name) { where("name like ?", "#{name}%")}
+
 
     amoeba do
       enable

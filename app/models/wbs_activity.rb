@@ -77,6 +77,7 @@ class WbsActivity < ActiveRecord::Base
   scoped_search :in => :organization, :on => :name
   scoped_search :in => :wbs_activity_elements, :on => [:name, :description]
   scoped_search :in => :wbs_activity_ratios, :on => [:name, :description]
+  scope :name_starts_with, -> (name) { where("name like ?", "#{name}%")}
 
   def to_s(mp=nil)
     if mp.nil?

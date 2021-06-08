@@ -135,8 +135,7 @@ class OrganizationProfilesController < ApplicationController
       mpre_wbs_activity_element = mpre.wbs_activity_element
       mpre_wbs_activity_element_name = mpre_wbs_activity_element.name.to_s
 
-      op = OrganizationProfile.where(organization_id: organization.id,
-                                     name: mpre_wbs_activity_element_name).first
+      op = OrganizationProfile.where(organization_id: organization.id, name: mpre_wbs_activity_element_name).name_starts_with("P1 ").first
       unless op.nil?
         op.cost_per_hour = tjm
         op.save
@@ -144,7 +143,7 @@ class OrganizationProfilesController < ApplicationController
 
       mpre_wbs_activity_element_name_without_localisation = mpre_wbs_activity_element_name.gsub(' PARIS', '').gsub(' PROVINCE', '').gsub('MCO', '')
 
-      organization.guw_models.each do |guw_model|
+      organization.guw_models.name_starts_with("P1 ").each do |guw_model|
 
         #guw_model.guw_types.where("LOWER(name) LIKE ?", "%#{ mpre_wbs_activity_element_name_without_localisation.downcase }%").each do |guw_type|
         guw_model.guw_types.each do |guw_type|
@@ -208,7 +207,7 @@ class OrganizationProfilesController < ApplicationController
     unless mpre.retained_cost_probable.nil? || mpre.retained_effort_probable.nil?
       value = mpre.retained_cost_probable / mpre.retained_effort_probable
 
-      organization.guw_models.each do |guw_model|
+      organization.guw_models.name_starts_with("P1 ").each do |guw_model|
         guw_model.guw_types.where(name: "CPT1").each do |guw_type|
 
           guw_type_guw_complexity = guw_type.guw_complexities.first

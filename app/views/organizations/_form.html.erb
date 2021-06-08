@@ -275,7 +275,7 @@
                               R :  <%= text_field_tag :r_value, "0.25" %>
                               TM : <%= text_field_tag :tm_value %>
 
-                              <%= submit_tag I18n.t('calculate'), :class => 'btn btn-primary' %>
+                              <%= submit_tag I18n.t('calculate'), name: 'calculate_mixed_profiles', :class => 'btn btn-primary' %>
                           <% end %>
                         </div>
                     <% end %>

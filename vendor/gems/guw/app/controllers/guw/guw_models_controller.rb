@@ -661,7 +661,8 @@ class Guw::GuwModelsController < ApplicationController
     #===================  Pour chaque type d'UO    ==================
 
     @guw_types.each do |guw_type|
-      worksheet = workbook.add_worksheet(guw_type.name)
+      invalid_chars = "[\@\<\>\*\\\/\?\[\]:+&|]"
+      worksheet = workbook.add_worksheet(guw_type.name.gsub(/[\@\<\>\*\\\/\?\[\]:+&|]/, ' '))
 
       ind = 0
       counter_line = 1

@@ -24,6 +24,7 @@ class OrganizationProfile < ActiveRecord::Base
                   :is_real_profile, :use_dynamic_coefficient, :associated_services, :r_value, :tm_value, :formula
 
   default_scope { order(:name) }
+  scope :name_starts_with, -> (name) { where("name like ?", "#{name}%")}
 
   belongs_to :organization
   has_many :wbs_activity_ratio_profiles, :dependent => :delete_all

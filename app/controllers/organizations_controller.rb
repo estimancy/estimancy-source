@@ -1067,7 +1067,6 @@ class OrganizationsController < ApplicationController
                                                               max_value: max_value,
                                                               validation_text: validation_text,
                                                               is_organization_kpi_widget: is_organization_kpi_widget,
-                                                              kpi_id: kpi_id,
                                                               signalize: signalize,
                                                               lock_project: lock_project,
 
@@ -1332,12 +1331,15 @@ class OrganizationsController < ApplicationController
         tm_value = params[:tm_value].to_f
 
         real_profiles_with_dynamic_coeff.all.each do |profile|
-          used_cost = profile.initial_cost_per_hour.to_f * (1 - (tm_value * r_value))
-          profile.cost_per_hour = used_cost
-          profile.r_value = r_value
-          profile.tm_value = tm_value
-          profile.formula = "#{profile.cost_per_hour.to_f} * #{(1 - (tm_value * r_value))}"
-          profile.save
+          # Seuls les modeles P1 sont utilises
+          if profile.name.to_s.start_with?("P1 ")
+            used_cost = profile.initial_cost_per_hour.to_f * (1 - (tm_value * r_value))
+            profile.cost_per_hour = used_cost
+            profile.r_value = r_value
+            profile.tm_value = tm_value
+            profile.formula = "#{profile.cost_per_hour.to_f} * #{(1 - (tm_value * r_value))}"
+            profile.save
+          end
         end
 
         #MAJ de la valeur de TM dans le projet
@@ -1354,7 +1356,7 @@ class OrganizationsController < ApplicationController
       end
     end
 
-    redirect_to edit_organization_path(@organization, anchor: "tabs-dt")
+    #redirect_to edit_organization_path(@organization, anchor: "tabs-dt") and return
   end
 
   # Export PDF de la liste des changements
@@ -5240,6 +5242,11 @@ class OrganizationsController < ApplicationController
 
     set_page_title I18n.t(:organizations)
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
+
+    if params[:calculate_mixed_profiles]
+      calculate_mixed_profiles
+      redirect_to edit_organization_path(@organization, anchor: "tabs-dt") and return
+    end
 
     if @organization.update_attributes(params[:organization].merge(show_reports: params[:show_reports], show_kpi: params[:show_kpi]))
       flash[:notice] = I18n.t (:notice_organization_successful_updated)
