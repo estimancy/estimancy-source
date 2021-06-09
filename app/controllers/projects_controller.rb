@@ -4515,7 +4515,6 @@ public
     # # @organization_estimations = @organization.organization_estimations.order("created_at ASC")
     # @projects = @organization.projects.where(:is_model => [nil, false]).order("start_date desc")
 
-
     # if params[:historized].present? && params[:historized] == "1"
     #   @projects = @organization.projects.where(:is_model => [nil, false]).order("start_date desc")
     # else
@@ -4530,9 +4529,11 @@ public
       @organization_estimations = get_multiple_search_results(@organization.id, @projects, @search_hash)
     end
 
-    if @organization_estimations.nil? || @organization_estimations.blank?
-      @organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
-    end
+
+    #if @organization_estimations.nil? || @organization_estimations.blank?
+    #@organization_estimations = @organization.organization_estimations.where(project_id: @projects.all.map(&:id)).all  ##@organization.organization_estimations #@organization.projects.order("created_at ASC")
+    #end
+
 
     # filtre sur la version des estimations
     if !@filter_version.to_s.in?(['4', ''])
@@ -4561,9 +4562,7 @@ public
     session[:search_column] = @search_column
     session[:search_value] = @search_value
 
-
     build_footer
-
   end
 
   private def check_for_projects(start_number, desired_size, organization_estimations)
