@@ -201,7 +201,7 @@ class ApplicationController < ActionController::Base
       if @current_user_organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
-          when "estimations", "sort", "search", "projects_list_search" #,"advanced_search"
+          when "estimations", "sort", "search", "projects_list_search", "advanced_search"
             @current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized], @min, @max, @object_per_page)
             #when "sort", "search", "projects_list_search"
             #@current_ability ||= AbilityProject.new(current_user, @current_organization, @current_organization.projects)

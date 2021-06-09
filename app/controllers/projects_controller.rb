@@ -4367,7 +4367,7 @@ public
                                             advanced_search: params[:advanced_search])
     else
 
-      @organization_projects = Organization.organization_projects_list(@current_organization.id, params[:historized])
+      @organization_projects = Organization.organization_projects_list(@current_organization.id, params[:historized]).order("start_date desc")
 
       @results = {}
       @object_per_page = (current_user.object_per_page || 10)
@@ -4423,9 +4423,9 @@ public
 
       res = []
       @projects.each do |p|
-        # if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
           res << p
-        # end
+        end
       end
 
       @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
