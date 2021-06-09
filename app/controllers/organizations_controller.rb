@@ -3631,7 +3631,7 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
     #lorsqu'on active l'organisation, on supprime les paramètres de tri et de recherche
-    if params[:activate_organization] == true
+    if params[:activate_organization] == "true"
       session[:sort_column] = nil
       session[:sort_order] = nil
       session[:sort_action] = nil
