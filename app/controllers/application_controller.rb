@@ -201,10 +201,10 @@ class ApplicationController < ActionController::Base
       if @current_user_organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
-          when "estimations"
+          when "estimations", "sort", "search", "projects_list_search" #,"advanced_search"
             @current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized], @min, @max, @object_per_page)
-        when "sort", "search", "projects_list_search"
-          @current_ability ||= AbilityProject.new(current_user, @current_organization, @current_organization.projects)
+            #when "sort", "search", "projects_list_search"
+            #@current_ability ||= AbilityProject.new(current_user, @current_organization, @current_organization.projects)
         when "projects_from"
             estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
             @current_ability ||= AbilityProject.new(current_user, @current_organization, estimation_models)
