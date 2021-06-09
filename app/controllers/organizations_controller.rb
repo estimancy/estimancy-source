@@ -3630,6 +3630,14 @@ class OrganizationsController < ApplicationController
     set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
     set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
 
+    #lorsqu'on active l'organisation, on supprime les paramètres de tri et de recherche
+    if params[:activate_organization] == true
+      session[:sort_column] = nil
+      session[:sort_order] = nil
+      session[:sort_action] = nil
+      session[:search_hash] = {}
+    end
+
     if params[:filter_version].present?
       @filter_version = params[:filter_version]
     else
