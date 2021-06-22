@@ -39,6 +39,8 @@ Projestimate::Application.routes.draw do
   #get 'file_uploader/destroy'
 
   post 'generate_report_excel' => 'budgets#generate_report_excel', :as => 'generate_report_excel'
+  get 'recalculate_abaque_migrations_position' => 'views_widgets#recalculate_abaque_migrations_position', :as => 'recalculate_abaque_migrations_position'
+
 
 
   resources :autorization_log_events

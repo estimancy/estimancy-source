@@ -95,7 +95,7 @@ class ProjectsController < ApplicationController
 
 
   def raw_data_extraction_synthese(organization, organization_projects)
-
+    #sleep(0.10)
     @organization = organization
     @organization_projects = organization_projects
 

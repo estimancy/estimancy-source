@@ -4,9 +4,13 @@
     <h2><%= I18n.t :select_the_model_of_your_choix  %></h2>
     <% if can? :manage_estimation_models, Project %>
       <%= link_to I18n.t('create_new_model'), new_project_path(organization_id: @organization.id, is_model: true), :class => 'ml-5 btn btn-primary' %>
+      <% if current_user.super_admin? %>
+        <%= link_to "MAJ des Positions Vignettes", recalculate_abaque_migrations_position_path, :class => 'ml-5 btn btn-primary' %>
+      <% end %>
     <% end %>
   </div>
 </div>
+
 
 <div class="mb-6">
   <div class="estimation-template-list">

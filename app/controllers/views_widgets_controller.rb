@@ -35,6 +35,195 @@ class ViewsWidgetsController < ApplicationController
     #end
   end
 
+  def recalculate_abaque_migrations_position
+
+    ViewsWidget.where(is_label_widget: true).all.each do |view_widget|
+      if view_widget.comment.blank?
+        view_widget.comment = view_widget.name
+        view_widget.save(validate: false)
+      end
+    end
+
+
+    # Cette portion de code corrige les doublons qui existent dans le nom des vignettes
+    Project.all.each do |project|
+      project_vew_widget_names = project.views_widgets.map(&:name)
+      counts = Hash.new(0)
+      project_vew_widget_names.each { |name| counts[name] += 1 }
+      counts.each do |widget_name, nb|
+        if nb >= 2
+          i = 0
+          project.views_widgets.where(name: widget_name).each do |view_widget|
+            if i > 0
+              view_widget.name = "#{widget_name} (#{i})"
+              view_widget.save(validate: false)
+              puts "Vignette : #{widget_name}"
+            end
+            i = i+1
+          end
+        end
+      end
+    end
+
+
+    data = []
+    estimation_models_name = ["Abaque Migration Lift&Shift", "Abaque Migration Rehost", "Abaque Migration Replatform", "Abaque Travaux Ponctuels liés à la migration"]
+    #estimation_models = Project.where(title: estimation_models_name, id: 15409).all
+    estimation_models = Project.where(title: estimation_models_name).all
+
+    estimation_models.each do |estimation_model|
+
+      projects_from_models = Project.where(original_model_id: estimation_model.id).all
+      projects_from_models << estimation_model
+
+      projects_from_models.each do |project|
+
+        #test = project.views_widgets.map(&:name)
+        charge_vw = project.views_widgets.where(name: "Charge Totale (jh)").first
+        project_view = View.find(charge_vw.view_id)
+        synthese_devis = ViewsWidget.where(view_id: charge_vw.view_id, name: "Synthèse devis").first_or_create(view_id: charge_vw.view_id, name: "Synthèse devis", is_label_widget: true, comment: "Synthèse devis", color: "#d5debc", position_x: 0, position_y: 4, width: 6, height: 1)
+          #project.views_widgets.each do |view_widget|
+        project_view.views_widgets.each do |view_widget|
+
+          puts "#{view_widget.id}"
+          case view_widget.name.to_s#.downcase
+
+            #groupe 1
+          when "Service Lift & Shift (Prix Service : 561,51 €/j",
+               "Service Lift & Shift (Prix Service : 604,70 €/j)",
+               "Service Lift & Shift (Prix Service : 561,51 €/j)",
+               "Service Lift & Shift (Prix Service : 600,42 €/j)",
+               "Service Rehost (Prix Service : 620,94 €/j)",
+               "Service Rehost (Prix Service : 563,28 €/j",
+               "Service Rehost (Prix Service : 563.28 €/j)",
+               "Service Rehost (Prix Service : 563,28 €/j)",
+               "Service Rehost (Prix Service : 600,42 €/j)",
+               "Service Rehost (Prix Service : 563,28  €/j)"
+            #"service lift & shift (prix service : 561,51 €/j)",
+            #"service rehost (prix service : 563.28 €/j)",
+            #"service rehost (prix service : 620,94 €/j)"
+
+            data = [0,0,6,1]
+
+          when "Charge Lift & Shift", "Charge Rehost"
+            #"charge lift & shift", "charge rehost"
+            data = [0,1,3,1]
+
+          when "Coût Lift & Shift", "Coût Rehost", "Coût Rehost (€)"
+            #"coût lift & shift", "coût rehost"
+            data = [3,1,2,1]
+
+
+            #groupe 2
+          when "Service Tests Fonct. Proc. (Prix Service : 507,68  €/j)",
+            "Service Tests Fonct. Proc. (Prix Service : 526.55 €/j)",
+            "Service Tests Fonct. Proc. (Prix Service : 562,94 €/j)"
+            #"service tests fonct. proc. (prix service : 526.55 €/j)",
+            #"service tests fonct. proc. (prix service : 507,68  €/j)"
+            data = [6,0,6,1]
+
+          when "Charge Tests Proc.", "charge tests proc."
+            data = [6,1,3,1]
+
+          when "Coût Tests Proc.", "coût tests proc."
+            data = [9,1,3,1]
+
+
+            #groupe 3
+          when "Service Tests Fonc. Surf. (Prix Service : 507,68  €/j)",
+            "Service Tests Fonc. Surf. (Prix Service : 526,55 €/j)",
+            "Service Tests Fonc. Surf. (Prix Service : 562,94 €/j)"
+            #"service tests fonc. surf. (prix service : 526,55 €/j)",
+            #"service tests fonc. surf. (prix service : 507,68  €/j)"
+            data = [0,2,6,1]
+
+          when "Charge Tests Surf.", "charge tests surf."
+            data = [0,3,3,1]
+
+          when "Coût Tests Surf.", "coût tests surf."
+            data = [3,3,2,1]
+
+            #groupe 4
+          when "Service Travaux Ponct. (Prix Service : 620,94 €/j)",
+               "Service Travaux Ponct. (Prix Service : 537,56 €/j",
+               "Service Travaux Ponct. (Prix Service : 537,56 €/j)",
+               "Service Travaux Ponct. (Prix Service : 559,36 €/j)"
+            #"service travaux ponct. (prix service : 537,56 €/j)",
+            #"service travaux ponct. (prix service : 620,94 €/j)"
+            data = [6,2,6,1]
+
+          when "Charge Trav. Ponct.", "charge trav. ponct."
+            data = [6,3,3,1]
+
+          when "Coût Trav. Ponct.", "coût trav. ponct."
+            data = [9,3,3,1]
+
+            #groupe 5
+          when "Synthèse devis", "synthèse devis"
+            data = [0,4,6,1]
+
+          when "Charge Totale (jh)", "charge totale (jh)"
+            data = [0,5,3,1]
+
+          when "Coût Total (€)", "coût total (€)"
+            data = [3,5,2,1]
+
+          when "PMP (Prix Moyen Pondéré) (€/j)", "Prix Moyen Pondéré (€/jh)"
+            #"prix moyen pondéré (€/jh)", "pmp (prix moyen pondéré) (€/j)"
+            data = [0,6,4,1]
+
+
+          #groupe 6
+          when "Service Opti. Serv.Web/Ap. (Prix Service : 620,94 €/j)",
+               "Service Opti. Serv.Web/Ap. (Prix Service : 588,59 €/j",
+               "Service Opti. Serv.Web/Ap. (Prix Service : 588,59 €/j)"
+            #"service opti. serv.web/ap. (prix service : 588,59 €/j)",
+            #"service opti. serv.web/ap. (prix service : 620,94 €/j)"
+            data = [6,4,6,1]
+
+          when "Charge Opti. Serv.Web/Ap.", "charge opti. serv.web/ap."
+            data = [6,5,3,1]
+
+          when "Coût Opti. serv.Web/Ap.", "coût opti. serv.web/ap."
+            data = [9,5,3,1]
+
+          #groupe 7
+          when "Service Opti. BdeD (Prix Service : 620,94 €/j)",
+               "Service Opti. BdeD (Prix Service : 592,60 €/j)"
+            #"service opti. bded (prix service : 592,60 €/j)",
+            #"service opti. bdeD (prix service : 620,94 €/j)"
+            data = [6,6,6,1]
+
+          when "Charge Opti. BdD", "charge opti. bdd"
+            data = [6,7,3,1]
+
+          when "Coût Opti. BdD", "coût opti. bdd"
+            data = [9,7,3,1]
+
+          end
+
+          unless data.empty?
+            #view_widget.update_attributes(position_x: data[0], position_y: data[1], width: data[2], height: data[3])
+            view_widget.position_x = data[0]
+            view_widget.position_y = data[1]
+            view_widget.width = data[2]
+            view_widget.height = data[3]
+
+            if view_widget.save(validate: false)
+              puts "#{view_widget} MAJ"
+            else
+              puts "#{view_widget} échec MAJ"
+            end
+          end
+
+          puts "Project : #{project.title}"
+        end
+      end
+    end
+    puts "Fini..."
+
+    redirect_to :back and return
+  end
 
   def recalculate_position
     widgets_name = ["Abaque", "Localisation", "Charge RTU (jh)", "Charge RIS (jh)", "Coût (€)", "Répartition des Charges", "Dire d'expert", "Charge (jh)", "Coût services (€)", "Synthèse devis", "Synthese devis", "Charge totale", "coût total", "Prix Moyen Pondéré (€/jh)", "prix moyen pondéré"]
