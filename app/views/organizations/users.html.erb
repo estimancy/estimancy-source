@@ -21,33 +21,14 @@
                   <div class="float-right">
                     <% if can? :manage, User, :organization_id => @organization.id %>
                       <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
-                      <a href="#myWBSModal" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
+                      <a href="#import_users" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
                         <%= I18n.t(:import) %>
                       </a>
+                      <%#= link_to raw("<i class='material-icons'>save_alt</i>"), "#!", "data-toggle": "modal", "data-target": "#import_users", class: "float-right", title: I18n.t(:import) %>
                     <% end %>
                     <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn btn-primary btn-estimancy', method: "post" %>
                   </div>
 
-                  <% if can?(:manage, User, :organization_id => @organization.id) %>
-                      <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-                        <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
-                            <div class="modal-header modal-drag">
-                              <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-                              <h3 id="myModalLabel"> <%= I18n.t(:Import_user_from_excel) %></h3>
-                            </div>
-                            <div class="modal-body">
-                              <%= file_field_tag :file %>
-                            </div>
-                            <div class="modal-footer">
-                              <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
-                              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
-                            </div>
-                            <div class="loading span11 hide">
-                              <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
-                            </div>
-                        <% end %>
-                      </div>
-                  <% end %>
                 </div>
               </div>
             </div>
@@ -143,6 +124,32 @@
         </div>
       <% end %>
 </section>
+
+<% if can?(:manage, User, :organization_id => @organization.id) %>
+  <div class="modal hide fade" tabindex="-1" role="dialog" id="import_users" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <div class="modal-header modal-drag">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel"> <%= I18n.t(:Import_user_from_excel) %></h3>
+          </div>
+          <div class="modal-body">
+            <%= file_field_tag :file %>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+          </div>
+          <div class="loading span11 hide">
+            <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
 
 <script>
     $(function() {
