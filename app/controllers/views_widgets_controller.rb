@@ -54,11 +54,41 @@ class ViewsWidgetsController < ApplicationController
         if nb >= 2
           i = 0
           project.views_widgets.where(name: widget_name).each do |view_widget|
-            if i > 0
-              view_widget.name = "#{widget_name} (#{i})"
+            #if i > 0
+              case view_widget.color
+              when "#d5debc"  #Synthese devis
+                if widget_name.to_s.downcase.include?("charge")
+                  view_widget.name = "Charge Totale (jh)"
+                elsif widget_name.to_s.downcase.include?("coût") || widget_name.to_s.downcase.include?("cout")
+                  view_widget.name = "Coût Total (€)"
+                else
+                  view_widget.name = "#{widget_name} (#{i})"
+                end
+
+              when "#aa8ab8"  #Dire d'expert
+                if widget_name.to_s.downcase.include?("charge")
+                  view_widget.name = "Charge Services (jh)"
+                elsif widget_name.to_s.downcase.include?("coût") || widget_name.to_s.downcase.include?("cout")
+                  view_widget.name = "Coût Services (€)"
+                else
+                  view_widget.name = "#{widget_name} (#{i})"
+                end
+
+              when "blanchedalmond" #Abaque
+=begin
+                if widget_name.to_s.downcase.include?("charge")
+                  view_widget.name = "Charge (jh)"
+                elsif widget_name.to_s.downcase.include?("coût") || widget_name.to_s.downcase.include?("cout")
+                  view_widget.name = "Coût (€)"
+                else
+                  view_widget.name = "#{widget_name} (#{i})"
+                end
+=end
+              end
+              #view_widget.name = "#{widget_name} (#{i})"
               view_widget.save(validate: false)
               puts "Vignette : #{widget_name}"
-            end
+              #end
             i = i+1
           end
         end

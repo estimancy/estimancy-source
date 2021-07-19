@@ -30,5 +30,30 @@ module Guw
     def to_s
       self.guw_attribute.to_s
     end
+
+    def get_level_value(level)
+      begin
+        level_value = self.send("#{level}")
+        if level_value.nil?
+          guw_type = self.guw_unit_of_work.guw_type
+          gat = GuwAttributeType.where(organization_id: self.organization_id, guw_model_id: self.guw_model_id,
+                                            guw_attribute_id: self.guw_attribute_id, guw_type_id: self.guw_unit_of_work.guw_type_id).first_or_create
+          unless guw_type.nil?
+            sum_range = self.guw_attribute.guw_attribute_complexities.where(organization_id: self.organization_id,
+                                                                             guw_model_id: self.guw_model_id,
+                                                                             guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
+
+            unless sum_range.nil? || sum_range.blank? || sum_range == 0
+              level_value = (gat.nil? ? nil : gat.default_value.to_i)
+            end
+          end
+        end
+
+        #rescue
+        #level_value = self.send("#{level}")
+      end
+      level_value
+    end
+
   end
 end

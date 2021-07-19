@@ -70,64 +70,108 @@
                 <%= link_to "#{uowa.guw_attribute.name} #{gat.nil? ? nil : "(#{gat.default_value.to_i})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value.to_i  %>
               </td>
 
-            <td class="">
-              <% if guw_type.mandatory_comments == true %>
-                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "form-control ml_#{uowa.id}", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
-              <% else %>
-                <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "form-control", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
-              <% end %>
-            </td>
+                <td class="">
+                  <% if guw_type.mandatory_comments == true %>
+                    <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "form-control ml_#{uowa.id}", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
+                  <% else %>
+                    <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "form-control", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
+                  <% end %>
+                </td>
 
-            <td>
-              <% if uowa.comments.blank? %>
-                <%= link_to '...', "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}" %>
-              <% else %>
-                <%= link_to raw(uowa.comments.to_s.truncate(30)), "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}", title: raw((uowa.comments.to_s.html_safe)) %>
-              <% end %>
-            </td>
+                <td>
+                  <% if uowa.comments.blank? %>
+                    <%= link_to '...', "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}" %>
+                  <% else %>
+                    <%= link_to raw(uowa.comments.to_s.truncate(30)), "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}", title: raw((uowa.comments.to_s.html_safe)) %>
+                  <% end %>
+                </td>
 
-            <td>
-              <div class="modal fade modal_comments hide" tabindex="-1" role="dialog" id="modal_comments_<%= guow.id %>_<%= uowa.id %>" aria-labelledby="myModalLabel">
-                <div class="modal-dialog" role="document">
-                  <div class="modal-content">
-                    <div class="modal-header modal-drag">
-                      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                      <h4 class="modal-title">
-                        <%= I18n.t(:comments) %>
-                      </h4>
-                    </div>
-
-                    <div class="modal-body" style="height: inherit;">
-                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
-                        <div class="input text optional user_description">
-                          <%= text_area_tag "comments[#{guow.id}][#{uowa.id}]", (uowa.comments.blank? ? nil: raw(uowa.comments)), label: false, class: "rich_comment_area_#{uowa.id} attribute_note_area text optional mdl-textfield__input form-control", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
+                <td>
+                  <div class="modal fade modal_comments hide" tabindex="-1" role="dialog" id="modal_comments_<%= guow.id %>_<%= uowa.id %>" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header modal-drag">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title">
+                            <%= I18n.t(:comments) %>
+                          </h4>
                         </div>
-                      </div>
 
-                      <div class="modal-footer">
-                        <%= link_to "OK", "#!", id: "validate_comments_#{uowa.id}", :class => 'btn btn-primary validate_comments', disabled: true %>
+                        <div class="modal-body" style="height: inherit;">
+                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
+                            <div class="input text optional user_description">
+                              <%= text_area_tag "comments[#{guow.id}][#{uowa.id}]", (uowa.comments.blank? ? nil: raw(uowa.comments)), label: false, class: "rich_comment_area_#{uowa.id} attribute_note_area text optional mdl-textfield__input form-control", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
+                            </div>
+                          </div>
+
+                          <div class="modal-footer">
+                            <%= link_to "OK", "#!", id: "validate_comments_#{uowa.id}", :class => 'btn btn-primary validate_comments', disabled: true %>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-            </td>
+                </td>
 
-            <script>
-                var content = "";
+                <script>
+                    var content = "";
 
-                $("#preview_comment_" + <%= guow.id %> + "_" + <%= uowa.id %>).on('click', function(e) {
+                    $("#preview_comment_" + <%= guow.id %> + "_" + <%= uowa.id %>).on('click', function(e) {
 
-                    $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
-                        keyboard: false,
-                        backdrop: false
+                        $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
+                            keyboard: false,
+                            backdrop: false
+                        });
+
+                        $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+
+                        $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
+                            if (!$.trim($(this).val())) {
+    //                    if ($(this).val().length === 0) {
+                                if(valu == dv) {
+                                    $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+                                } else {
+                                    $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
+                                }
+                            } else {
+                                $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+                            }
+                        });
+
+                        $("#validate_comments_<%= uowa.id %>").on('click', function(e){
+
+                            valu = $(".ml_" + <%= uowa.id %>).val();
+                            dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
+                            if ($('.rich_comment_area_<%= uowa.id %>').val().length == 0) {
+                                if(valu == dv) {
+                                    close_comment(<%= uowa.id %>);
+                                } else {
+                                    e.preventDefault();
+                                }
+                            } else {
+                                close_comment(<%= uowa.id %>);
+                            }
+                        });
                     });
 
-                    $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+                    function close_comment(uowa_id){
+                        $('.modal_comments').modal('hide');
+
+                        comment_extract = $('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30);
+                        if (comment_extract.length === 0) {
+                            comment_extract = "...";
+                        }
+
+                        $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(comment_extract);
+                        $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', comment_extract);
+
+                        $(".submit_cotation").removeAttr("disabled");
+                    };
 
                     $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
                         if (!$.trim($(this).val())) {
-//                    if ($(this).val().length === 0) {
+    //                    if ($(this).val().length === 0) {
                             if(valu == dv) {
                                 $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                             } else {
@@ -138,7 +182,8 @@
                         }
                     });
 
-                    $("#validate_comments_<%= uowa.id %>").on('click', function(e){
+
+                    $("#validate_comments_<%= uowa.id %>").on('click', function (e) {
 
                         valu = $(".ml_" + <%= uowa.id %>).val();
                         dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
@@ -153,88 +198,43 @@
                             close_comment(<%= uowa.id %>);
                         }
                     });
-                });
 
-                function close_comment(uowa_id){
-                    $('.modal_comments').modal('hide');
+                    $(".ml_" + <%= uowa.id %>).on('change', function(k) {
 
-                    comment_extract = $('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30);
-                    if (comment_extract.length === 0) {
-                        comment_extract = "...";
-                    }
+                        valu = $(".ml_" + <%= uowa.id %>).val();
+                        dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
 
-                    $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(comment_extract);
-                    $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', comment_extract);
-
-                    $(".submit_cotation").removeAttr("disabled");
-                };
-
-                $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
-                    if (!$.trim($(this).val())) {
-//                    if ($(this).val().length === 0) {
                         if(valu == dv) {
                             $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
                         } else {
                             $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
                         }
-                    } else {
-                        $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
-                    }
-                });
 
-
-                $("#validate_comments_<%= uowa.id %>").on('click', function (e) {
-
-                    valu = $(".ml_" + <%= uowa.id %>).val();
-                    dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
-
-                    if ($('.rich_comment_area_<%= uowa.id %>').val().length == 0) {
-                        if(valu == dv) {
-                            close_comment(<%= uowa.id %>);
+                        var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
+                        if (val.length == 0) {
+                            $(".submit_cotation").prop("disabled", true);
                         } else {
-                            e.preventDefault();
+                            $(".submit_cotation").prop("disabled", false);
                         }
-                    } else {
-                        close_comment(<%= uowa.id %>);
-                    }
-                });
 
-                $(".ml_" + <%= uowa.id %>).on('change', function(k) {
+                        if(valu == dv) {
+                            $(".submit_cotation").prop("disabled", false);
+                        } else {
+                            $(".submit_cotation").prop("disabled", true);
+                            $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
+                                keyboard: false,
+                                backdrop: false
+                            });
+                        }
+                    });
 
-                    valu = $(".ml_" + <%= uowa.id %>).val();
-                    dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+                  </script>
 
-                    if(valu == dv) {
-                        $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
-                    } else {
-                        $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
-                    }
-
-                    var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
-                    if (val.length == 0) {
-                        $(".submit_cotation").prop("disabled", true);
-                    } else {
-                        $(".submit_cotation").prop("disabled", false);
-                    }
-
-                    if(valu == dv) {
-                        $(".submit_cotation").prop("disabled", false);
-                    } else {
-                        $(".submit_cotation").prop("disabled", true);
-                        $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
-                            keyboard: false,
-                            backdrop: false
-                        });
-                    }
-                });
-
-              </script>
-
-            <% if @guw_model.three_points_estimation == true %>
-              <td>
-                <%= text_field_tag "high[#{guow.id}][#{uowa.id}]", uowa.high, class: "form-control", readonly: !can?(:execute_estimation_plan, @project) %>
-              </td>
-            <% end %>
+                <% if @guw_model.three_points_estimation == true %>
+                  <td>
+                    <%= text_field_tag "high[#{guow.id}][#{uowa.id}]", uowa.high, class: "form-control", readonly: !can?(:execute_estimation_plan, @project) %>
+                  </td>
+                <% end %>
 
           <% end %>
         </tr>
