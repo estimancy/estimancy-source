@@ -274,8 +274,8 @@ class Guw::GuwModelsController < ApplicationController
 
           else
 
-            @guw_type = Guw::GuwType.create(name: worksheet.sheet_name,
-                                            description: tab[1][0].nil? ? nil : tab[1][0].value,
+            @guw_type = Guw::GuwType.create(name: tab[0][1].nil? ? worksheet.sheet_name : tab[0][1].value,
+                                            description: tab[1][1].nil? ? nil : tab[1][1].value,
                                             allow_quantity: (tab[5][1].nil? ? nil : tab[5][1].value) == 1,
                                             allow_retained: (tab[4][1].nil? ? nil : tab[4][1].value) == 1,
                                             allow_complexity: (tab[7][1].nil? ? nil : tab[7][1].value) == 1,
