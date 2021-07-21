@@ -1056,13 +1056,13 @@ class Project < ActiveRecord::Base
       elsif @pemodule.alias == "kb"
         kb_model_id = module_selected.split(',').first.to_i
         my_module_project.kb_model_id = kb_model_id
-        Kb::KbInput.create( organization_id: @current_organization.id,
+        Kb::KbInput.create( organization_id: @organization.id,
                             module_project_id: my_module_project.id,
                             kb_model_id: kb_model_id)
       elsif @pemodule.alias == "skb"
         skb_model_id = module_selected.split(',').first.to_i
         my_module_project.skb_model_id = skb_model_id
-        Skb::SkbInput.create( organization_id: @current_organization.id,
+        Skb::SkbInput.create( organization_id: @organization.id,
                               module_project_id: my_module_project.id,
                               skb_model_id: skb_model_id)
       elsif @pemodule.alias == "ge"
