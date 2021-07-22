@@ -84,7 +84,8 @@ module Ge
       if mp.nil?
         self.name
       else
-        "#{self.name} (#{mp.creation_order})"
+        #"#{self.name} (#{mp.creation_order})"
+        self.name
       end
     end
 
