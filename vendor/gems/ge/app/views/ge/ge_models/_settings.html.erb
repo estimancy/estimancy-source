@@ -16,8 +16,15 @@
         <!--<ul class="nav nav-pills tabs">-->
         <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
           <% index = 0 %>
+          <% number_elt_by_type_name = Hash.new %>
           <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
             <% factor_values_per_type.each do |type, factor_values| %>
+              <% if number_elt_by_type_name[type].nil? %>
+                <% number_elt_by_type_name[type] = 0 %>
+              <% else %>
+                <% number_elt_by_type_name[type] = number_elt_by_type_name[type]+1 %>
+              <% end %>
+
               <% if (factor_values.length == 1) && (factor_values.first.last.length == 1) %>
                 <% factor_value = factor_values.first %>
                 <% value = factor_value.last[0] %>
@@ -33,7 +40,11 @@
                 <% else %>
                   <% index = index + 1 %>
                   <li class="nav-item" style="width: 150px;">
-                    <a class="nav-link <%= (index == 1) ? 'active' : '' %>" data-toggle="pill" href="#pills-<%= type.downcase.gsub(" ", "-") %>" id="pills-<%= type.downcase.gsub(" ", "-") %>-tab" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>"><%= type.downcase.gsub(" ", "-") %></a>
+                    <% if number_elt_by_type_name[type] <= 0 %>
+                      <a class="nav-link <%= (index == 1) ? 'active' : '' %>" data-toggle="pill" href="#pills-<%= "#{scale_prod}-#{type.downcase.gsub(" ", "-")}" %>" id="pills-<%= "#{scale_prod}-#{type.downcase.gsub(" ", "-")}" %>-tab" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>"><%= type.downcase.gsub(" ", "-") %></a>
+                    <% else %>
+                      <a class="nav-link <%= (index == 1) ? 'active' : '' %>" data-toggle="pill" href="#pills-<%= "#{scale_prod}-#{type.downcase.gsub(" ", "-")}" %>" id="pills-<%= "#{scale_prod}-#{type.downcase.gsub(" ", "-")}" %>-tab" role="tab" aria-selected="<%= (index == 1) ? 'true' : ' false' %>"><%= "#{type.downcase.gsub(" ", "-")} (#{number_elt_by_type_name[type]})" %></a>
+                    <% end %>
                   </li>
                 <% end %>
               <% end %>
@@ -60,7 +71,7 @@
                   <% end %>
                 <% else %>
                   <% index = index + 1 %>
-                  <div class="tab-pane fade show <%= (index == 1) ? 'active' : '' %>" id="pills-<%= type.downcase.gsub(" ", "-") %>" role="tabpanel" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab">
+                  <div class="tab-pane fade show <%= (index == 1) ? 'active' : '' %>" id="pills-<%= "#{scale_prod}-#{type.downcase.gsub(" ", "-")}" %>" role="tabpanel" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab">
                     <div class="card card-widget">
                       <div class="card-body">
                         <div class="effort-table">
@@ -92,7 +103,7 @@
 
                                   <% ids_list = values.map{ |f| f.id } %>
                                   <% values.map{ |f| js_factor_data["#{f.id}"] = f.value_text }  %>
-                                  <% @ge_input_values["#{key}"].nil? ? (selected_value = 0) : (selected_value = @ge_input_values["#{key}"][:ge_factor_value_id]) %>
+                                  <% @ge_input_values["#{key}"].nil? ? (selected_value = nil) : (selected_value = @ge_input_values["#{key}"][:ge_factor_value_id]) %>
 
                                   <!-- Get the default value -->
                                   <% default_value = 0 %>
