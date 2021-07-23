@@ -61,20 +61,20 @@
                                       disabled: !((can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || can_alter_model) || @project.private,
                                       input_html: { :class => 'mdl-textfield__input form-control' },
                                       include_blank: false %>
-                        <% else %>
-                          <%= f.input :estimation_status_id,
+                          <% else %>
+                            <%= f.input :estimation_status_id,
                                       label: false,
                                       as: :select,
                                       collection: @current_organization.estimation_statuses,
                                       disabled: !((can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || can_alter_model) || @project.private,
                                       input_html: { :class => 'mdl-textfield__input form-control' },
                                       include_blank: false %>
-                          </div>
                         <% end %>
                         <label for="estimation_status_id" class="mdl-textfield__label"><%= I18n.t 'estimation_status' %></label>
                       </div>
                     </div>
                   </div>
+                </div>
 
                   <div class="form-row">
                     <div class="col-6">
@@ -120,7 +120,8 @@
                   <% if @project.is_model == true %>
                     <div class="form-row">
                       <div class="col-6">
-                        <div class="select-estimancy">
+                        <!-- <div class="select-estimancy"> -->
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                           <% apps = @project.applications %>
 
                           <% if @current_organization.applications.empty? and apps.empty? %>
@@ -244,7 +245,7 @@
                     <div class="form-row">
                       <div class="col-12">
                         <%= f.input :use_automatic_quotation_number, as: :boolean, :label => raw("&nbsp; #{I18n.t 'use_automatic_quotation_number'}"), :input_html => {:class => 'mdl-checkbox__inputs'}, :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model) %>
-                        </div>
+                      </div>
                     </div>
 
                     <div class="form-row">
@@ -429,7 +430,7 @@
                 %>
                   <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
                   <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
-                <% end %>
+              <% end %>
 
               <% elsif action_name.in?(['new', 'create']) %>
                 <% if (@is_model.in?(["true", true]) && can?(:manage_estimation_models, Project)) || (!@is_model.in?(["true", true]) && can?(:create_project_from_scratch, Project)) %>
