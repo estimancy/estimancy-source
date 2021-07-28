@@ -56,8 +56,8 @@ module Ge
       @module_project = @ge_model_factor_description.module_project
 
       selected_factor_id = params[:factor_selected_value].to_i
-      selected_factor = GeFactorValue.find(selected_factor_id)
-      if selected_factor
+      if GeFactorValue.where(id: selected_factor_id).exists? #selected_factor
+        selected_factor = GeFactorValue.where(id: selected_factor_id).first
         selected_factor_value = selected_factor.value_number
 
         # Update selected value from slider
