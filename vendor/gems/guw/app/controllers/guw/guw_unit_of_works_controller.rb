@@ -2541,15 +2541,15 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                 guw_model_id: @guw_model.id,
                                                                 project_id: @project.id,
                                                                 module_project_id: module_project.id,
-                                                                pbs_project_element_id: @component.id,
-                                                                name: row[10].nil? ? '-' : row[10].value).first_or_create
+                                                                pbs_project_element_id: [@component.id, nil],
+                                                                name: row[10].nil? ? '-' : row[10].value).first_or_create(pbs_project_element_id: @component.id)
                 else
                   guw_uow_group = Guw::GuwUnitOfWorkGroup.where(organization_id: @organization.id,
                                                                 guw_model_id: @guw_model.id,
                                                                 project_id: @project.id,
                                                                 module_project_id: module_project.id,
-                                                                pbs_project_element_id: @component.id,
-                                                                name: default_group).first_or_create
+                                                                pbs_project_element_id: [@component.id, nil],
+                                                                name: default_group).first_or_create(pbs_project_element_id: @component.id)
                 end
 
                 tmp_hash_res = Hash.new
