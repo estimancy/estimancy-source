@@ -130,7 +130,7 @@
                     var mp_source_id = $('#'+sourceId).data('module_project_id');
                     var mp_target_id = $('#'+targetId).data('module_project_id');
                     //delete connection
-                    instance.detach(connection);
+                    instance.deleteConnection(connection); //instance.detach(connection);
                     $.ajax({
                         method: 'GET',
                         url: "/update_module_project_dynamic_connections",
