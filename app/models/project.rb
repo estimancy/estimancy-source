@@ -830,7 +830,21 @@ class Project < ActiveRecord::Base
                 end
 
                 # Correction duplication critères attribute
+                # debut correction : il faut boucler sur guw_uow.guw_unit_of_work_attributes et modifier et valeurs des attributs
+                guw_uow.guw_unit_of_work_attributes.each do |new_guowa|
+                  #new_guowa.guw_unit_of_work_id = guw_uow.id
+                  new_guowa.organization_id = guw_uow.organization_id
+                  new_guowa.guw_model_id = guw_uow.guw_model_id
+                  new_guowa.project_id = guw_uow.project_id
+                  new_guowa.module_project_id = guw_uow.module_project_id
 
+                  #voir lors d'une copie d'organisation pour le reste des attributs : vérifier que la partie ci-dessous n'est pas déjà gérée par la copie d'organization
+                  #(if old_prj.organization_id != new_prj.organization_id) - guw_model_id, guw_type_id, guw_attribute_id, guw_attribute_complexity_id
+                  new_guowa.save
+                end
+                # fin correction
+
+=begin   remplacé par la correction au dessus - code à suprimer après validation
                 old_mp.guw_unit_of_works.each do |old_guw|
 
                   old_guw_guw_model = old_guw.guw_model
@@ -845,7 +859,7 @@ class Project < ActiveRecord::Base
                                                               module_project_id: old_guw.module_project_id,
                                                               guw_unit_of_work_id: old_guw.id).first
 
-                    unless guowa.nil?
+                    unless guowa.nil?  # il faut tester si l'attibut n'existe pas déjà :
 
                       new_guowa = guowa.dup
 
@@ -853,15 +867,11 @@ class Project < ActiveRecord::Base
                       new_guowa.guw_model_id = guw_uow.guw_model_id
                       new_guowa.project_id = guw_uow.project_id
                       new_guowa.module_project_id = guw_uow.module_project_id
-
                       new_guowa.save
-
                     end
-
                   end
-
                 end
-
+=end
               end
             end
 
