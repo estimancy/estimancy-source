@@ -251,6 +251,11 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data.chart_actual_coordinates = chart_actual_coordinates
 
     begin
+      if params[:new_staffing_trapeze].to_f == 0.0
+        new_staffing_trapeze = (2 * (params["new_effort"].to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit ) / params["new_duration"].to_f) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2))
+        @staffing_custom_data.max_staffing = new_staffing_trapeze
+      end
+
       @staffing_custom_data.save
     rescue
       #
@@ -335,6 +340,13 @@ class Staffing::StaffingCustomDataController < ApplicationController
     @staffing_custom_data.rayleigh_chart_theoretical_coordinates = rayleigh_chart_theoretical_coordinates
 
     begin
+      if params[:new_staffing_rayleigh].to_f == 0.0
+        new_form_coef = -Math.log(1-0.97) / (params["new_duration"].to_f * params["new_duration"].to_f);
+        new_t_max_staffing = Math.sqrt(1/(2*new_form_coef));
+        new_staffing_rayleigh = (params["new_effort"].to_f * @staffing_model.standard_unit_coefficient.to_f / effort_week_unit ) / (new_t_max_staffing * Math.sqrt(Math.exp(1)))
+        @staffing_custom_data.max_staffing_rayleigh = new_staffing_rayleigh
+      end
+
       @staffing_custom_data.save
     rescue
       # ignored

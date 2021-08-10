@@ -113,6 +113,7 @@
                                   postfix: "%"
                               });
 
+
                               // Get The Max-Staff value according to selected value from the Slider
                               function set_staffing_values(data) {
 
@@ -167,8 +168,14 @@
                                   var mm = date.getMonth();
                                   var y = date.getFullYear();
 
+                                  if (mm <= 0) {
+                                      mm = 12;
+                                      y = y-1;
+                                  }
+
                                   var someFormattedDate = dd + '/' + mm + '/' + y;
                                   $(".end_date").html(someFormattedDate);
+
                               }
 
                               function sign(value){
