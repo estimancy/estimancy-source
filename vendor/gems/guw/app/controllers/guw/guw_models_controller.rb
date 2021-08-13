@@ -1246,6 +1246,7 @@ class Guw::GuwModelsController < ApplicationController
     hash = @guw_model.orders
     hash.delete("Critères")
     hash.delete("Coeff. de Complexité")
+    hash.delete("Coeff. de complexité") # Correction export - la colonne "Coeff. de complexité" existe en double lors de certains export de dénombrement
 
     @guw_unit_of_works.each do |i|
       if i.nil?
@@ -1289,6 +1290,22 @@ class Guw::GuwModelsController < ApplicationController
         I18n.t(:cotation),
         "Coeff. de complexité"] + hash.sort_by { |k, v| v.to_f }.map{|i| i.first } + @guw_model.guw_attributes.order("name ASC").map{|i| [i.name, "Commentaires"] }.flatten + (@wbs_activity.nil? ? [] : (@wbs_activity.wbs_activity_elements.select{|i| !i.root? }.map{|i| ["#{i.name} (Effort)", "#{i.name} (Cout)"] }.flatten) + ["TJM Moyen"])
 
+    # Correction export - la colonne "Coeff. de complexité" existe en double lors de certains export de dénombrement
+    # jj_decreased_value = 0
+    # nb_per_elt = header.reduce Hash.new(0) do |hash, num|   hash[num] += 1  ; hash end
+    # if nb_per_elt["Coeff. de complexité"] > 1
+    #   nbb = 0
+    #   header.each_with_index do |elt, index|
+    #     if elt == "Coeff. de complexité"
+    #       nbb = nbb+1
+    #       if nbb > 1
+    #         #header.delete_at(index)
+    #         jj_decreased_value = jj_decreased_value+1
+    #       end
+    #     end
+    #   end
+    # end
+
     header.each_with_index do |val, index|
       @worksheet.add_cell(0, index, val)
     end
@@ -1298,7 +1315,7 @@ class Guw::GuwModelsController < ApplicationController
     elsif @guw_model.name == "FP GARTNER Size"
       jj = 22 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
     else
-      jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size
+      jj = 20 + @guw_model.guw_outputs.where(organization_id: organization_id).size + @guw_model.guw_coefficients.where(organization_id: organization_id).size #- jj_decreased_value
     end
 
     @guw_unit_of_works.each_with_index do |guow, i|
