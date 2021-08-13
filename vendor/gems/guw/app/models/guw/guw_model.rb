@@ -46,10 +46,10 @@ module Guw
     has_many :guw_outputs, dependent: :destroy
     has_many :guw_coefficients, dependent: :destroy
     has_many :guw_coefficient_elements, dependent: :destroy
-    has_many :guw_scale_module_attributes, dependent: :destroy
+    has_many :guw_scale_module_attributes, dependent: :delete_all #revoir la gestion des :delete_all qui semble ne pas fonctionner
 
     has_many :attribute_modules, dependent: :destroy
-    has_many :guw_output_types, dependent: :destroy
+    has_many :guw_output_types, dependent: :delete_all #revoir la gestion des :delete_all qui semble ne pas fonctionner
 
     belongs_to :organization
 
