@@ -91,7 +91,7 @@ class ApplicationController < ActionController::Base
   before_filter :set_current_organization
   before_filter :update_activity_time
   before_filter :initialization_module, except: [:estimations]  #sga_comment
-  before_filter :get_organizations, only: [:estimations, :contactsupport] #sga_comment
+  before_filter :get_organizations#, only: [:estimations, :contactsupport] #sga_comment
   before_filter :get_owner_user, only: [:sign_in]
 
   def get_organizations
