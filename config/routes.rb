@@ -137,7 +137,7 @@ Projestimate::Application.routes.draw do
   delete 'destroy_user_from_organization' => 'users#destroy_user_from_organization', as: 'destroy_user_from_organization'
 
   # Page de support qui redirige vers le site Estimancy
-  get '/support' => redirect("https://estimancy-themes.com/en/support/")
+  get '/support' => redirect("https://estimancy.com/en/support/")
 
 
   match 'multiple_export_dashboard' => 'projects#multiple_export_dashboard', :as => 'multiple_export_dashboard', via: [:get, :post]

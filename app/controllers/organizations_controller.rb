@@ -3686,6 +3686,7 @@ class OrganizationsController < ApplicationController
     @search_hash = params[:search_hash].blank? ? session[:search_hash] : params[:search_hash]  #nil
 
     all_projects = Organization.organization_projects_list(@organization.id, @historized)
+    #all_projects = Organization.organization_projects_list(@organization.id, @historized).accessible_by(@current_ability, :see_project)
     organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
 
     res = []

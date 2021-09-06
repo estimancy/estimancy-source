@@ -53,7 +53,6 @@ class ApplicationController < ActionController::Base
     end
   end
 
-
   helper_method :root_url
   helper_method :browser
   helper_method :version_browser
@@ -80,18 +79,20 @@ class ApplicationController < ActionController::Base
   helper_method :set_user_language_for_datepicker
   helper_method :initialization_module
   helper_method :user_number_precision
+  helper_method :get_owner_user
 
   before_filter :check_access
   before_filter :set_user_time_zone
   before_filter :set_user_language
   before_filter :set_return_to
-  before_filter :previous_page
+  #before_filter :previous_page  #sga_comment
   before_filter :set_breadcrumbs
-  before_filter :set_current_project
+  #before_filter :set_current_project   #sga_comment
   before_filter :set_current_organization
   before_filter :update_activity_time
-  before_filter :initialization_module
-  before_filter :get_organizations
+  before_filter :initialization_module, except: [:estimations]  #sga_comment
+  before_filter :get_organizations, only: [:estimations, :contactsupport] #sga_comment
+  before_filter :get_owner_user, only: [:sign_in]
 
   def get_organizations
     if user_signed_in?
@@ -103,6 +104,37 @@ class ApplicationController < ActionController::Base
         @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
       end
     end
+  end
+
+  def get_owner_user
+    owner_key = AdminSetting.find_by_key("Estimation Owner")
+    if owner_key.nil?
+      owner_key = AdminSetting.create(key: "Estimation Owner", value: "*OWNER")
+      owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
+      if owner.nil?
+        owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
+        owner.skip_confirmation_notification!
+        owner.save(validate: false)
+        Organization.all.each do |o|
+          o.users << owner
+          o.save
+        end
+      end
+    else
+      owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
+      if owner.nil?
+        owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
+        owner.skip_confirmation_notification!
+        owner.save(validate: false)
+      end
+      owner = User.find_by_initials(owner_key.value)
+    end
+    @owner = owner
+  end
+
+  #récupère les donnes pour le fichier ability
+  def get_data_for_ability
+    #@permissions_by_group =
   end
 
   # skip_before_filter :set_paper_trail_whodunnit

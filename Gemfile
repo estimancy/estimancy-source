@@ -63,8 +63,8 @@ gem 'mysql2', '~> 0.4.9' #'~> 0.3.11'
 gem 'curb'
 
 #Permissions
-# gem 'cancan'
 gem 'cancancan', '~> 1.10'
+#gem 'cancancan', '~> 3.2'
 
 #Authentication for tests
 gem 'warden'
