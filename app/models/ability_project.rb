@@ -113,7 +113,7 @@ class AbilityProject
             alias_action :create_project_from_template, :is_model => true, :to => :manage_estimation_models
 
             @array_users = Array.new
-            @array_status_groups = Hash.new  #Array.new
+            @array_status_groups = Array.new  #Hash.new
             @array_groups = Array.new
             @array_owners = Array.new
 
@@ -123,7 +123,9 @@ class AbilityProject
             end
 
             user_groups.each do |grp|
-              @array_status_groups[grp.id] = Array.new
+
+              #@array_status_groups[grp.id] = Array.new
+              array_status_per_group = Array.new
 
               #on recupere les permissions en fonction des statuts
               grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).where(organization_id: organization.id).each do |esgr|
@@ -135,6 +137,7 @@ class AbilityProject
                   prj_scrt_project_security_level_permissions = esgr_security_level.permissions.select{|i| i.is_permission_project }
 
                   prj_scrt_project_security_level_permissions.each do |permission|
+                    #organization_projects.select{|p| p.id == 31533}.each do |op|
                     organization_projects.each do |op|
                       project = op.is_a?(Project) ? op : op.project
                       if permission.alias == "manage" and permission.category == "Project"
@@ -142,7 +145,7 @@ class AbilityProject
                       else
                         unless project.nil?
                           #@array_status_groups.push([permission.id, project.id, esgr_estimation_status_id])
-                          @array_status_groups[grp.id].push([permission.id, project.id, esgr_estimation_status_id])
+                          array_status_per_group.push([permission.id, project.id, esgr_estimation_status_id])
                         end
                       end
                     end
@@ -150,26 +153,33 @@ class AbilityProject
                 end
               end
 
+              @array_status_groups = @array_status_groups+array_status_per_group
 
               prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
                                                                                             group_id: grp.id,
                                                                                             is_model_permission: false,
                                                                                             is_estimation_permission: true).all
+
+              # prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
+              #                                                                               project_id: 31533,
+              #                                                                               group_id: grp.id,
+              #                                                                               is_model_permission: false,
+              #                                                                               is_estimation_permission: true).all
               unless prj_scrts.empty?
                 specific_permissions_array = []
                 prj_scrts.each do |prj_scrt|
-
                   project = prj_scrt.project
+
                   unless project.nil?
 
                     prj_scrt_project_security_level = prj_scrt.project_security_level
                     unless prj_scrt_project_security_level.nil?
 
-                      if prj_scrt_project_security_level.name.in?["TOUT", "*ALL"]
+                      if ["TOUT", "*ALL"].include?(prj_scrt_project_security_level.name.to_s.upcase)
                         if project.private == true && project.is_model != true
                           @array_groups << []
                         else
-                          @array_groups << @array_status_groups[grp.id]
+                          @array_groups += array_status_per_group #@array_status_groups[grp.id]
                         end
                       else
                           prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
