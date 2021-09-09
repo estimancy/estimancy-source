@@ -80,19 +80,21 @@ class ApplicationController < ActionController::Base
   helper_method :initialization_module
   helper_method :user_number_precision
   helper_method :get_owner_user
+  helper_method :get_permission_by_group_and_status
 
   before_filter :check_access
   before_filter :set_user_time_zone
   before_filter :set_user_language
   before_filter :set_return_to
-  #before_filter :previous_page  #sga_comment
+  before_filter :previous_page  #sga_comment
   before_filter :set_breadcrumbs
-  #before_filter :set_current_project   #sga_comment
+  before_filter :set_current_project   #sga_comment
   before_filter :set_current_organization
   before_filter :update_activity_time
-  before_filter :initialization_module, except: [:estimations]  #sga_comment
+  before_filter :initialization_module#, except: [:estimations]  #sga_comment
   before_filter :get_organizations#, only: [:estimations, :contactsupport] #sga_comment
   before_filter :get_owner_user, only: [:sign_in]
+  #before_filter :get_permission_by_group_and_status#, only: [:sign_in, :set_estimation_status_group_roles]
 
   def get_organizations
     if user_signed_in?
@@ -130,6 +132,60 @@ class ApplicationController < ActionController::Base
       owner = User.find_by_initials(owner_key.value)
     end
     @owner = owner
+  end
+
+  def get_permission_by_group_and_status
+    @permissions_by_group_and_status ||= HashWithIndifferentAccess.new
+
+    if @current_organization
+      if @current_organization_for_ability.nil? || @current_organization_for_ability != @current_organization
+        @current_organization_for_ability = @current_organization
+        organization = @current_organization_for_ability
+
+        if user_signed_in?
+          unless current_user.super_admin?
+            organization_estimation_statuses = organization.estimation_statuses
+            user_groups = current_user.groups.where(organization_id: organization.id)
+
+            user_groups.each do |grp|
+              array_status_per_group = Array.new
+
+              #on recupere les permissions en fonction des statuts
+              grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).where(organization_id: organization.id).each do |esgr|
+
+                esgr_security_level = esgr.project_security_level
+                esgr_estimation_status_id = esgr.estimation_status_id
+
+                unless esgr_security_level.nil?
+                  prj_scrt_project_security_level_permissions = esgr_security_level.permissions.select{|i| i.is_permission_project }
+
+                  prj_scrt_project_security_level_permissions.each do |permission|
+                    #organization_projects.select{|p| p.id == 31533}.each do |op|
+                    organization_projects.each do |op|
+                      project = op.is_a?(Project) ? op : op.project
+                      if permission.alias == "manage" and permission.category == "Project"
+                        can :manage, project, estimation_status_id: esgr_estimation_status_id
+                      else
+                        unless project.nil?
+                          #@array_status_groups.push([permission.id, project.id, esgr_estimation_status_id])
+                          array_status_per_group.push([permission.id, project.id, esgr_estimation_status_id])
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+
+
+
+          end
+        end
+
+      end
+    end
+
+
   end
 
   #récupère les donnes pour le fichier ability
