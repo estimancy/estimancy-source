@@ -603,7 +603,8 @@ class AbilityView
           #remettre getsorted pour la liste complete des devis
           # organization_projects = get_sorted_estimations(organization.id, projects, sort_column, sort_order, search_hash, min, max, action)
 
-          @permissions_by_group_and_status = $permissions_by_group_and_status #Hash.new
+          #@permissions_by_group_and_status = $permissions_by_group_and_status #Hash.new
+          @permissions_by_group_and_status = Hash.new
           organization_estimation_statuses = organization.estimation_statuses
           user_groups = user.groups.where(organization_id: organization.id)
           organization_project_securities = ProjectSecurity.includes(:project, :project_security_level)
