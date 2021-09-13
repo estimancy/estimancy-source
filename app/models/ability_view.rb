@@ -28,6 +28,8 @@ class AbilityView
 
     #Uncomment in order to authorize everybody to manage all the app
     unless user.nil?
+      owner ||= (@owner.nil? ? get_owner_user : @owner)
+
       if Rails.env == "test" || user.super_admin == true
         can :manage, :all
       else
@@ -38,24 +40,22 @@ class AbilityView
 
         if !organization.nil?
 
-          # if estimation_view == false
-          #   organization_projects = projects
-          # else
-          #   organization_projects = organization.organization_estimations
-          # end
-
           #La gestion des paramètres se fait fait dans ApplicationController ==> current_ability
-          #organization_projects = projects.compact
-          organization_projects = projects#.compact
+          organization_projects = projects #.compact
 
-          #remettre getsorted pour la liste complete des devis
-          # organization_projects = get_sorted_estimations(organization.id, projects, sort_column, sort_order, search_hash, min, max, action)
-
+          @permissions_by_group_and_status = Hash.new
           organization_estimation_statuses = organization.estimation_statuses
           user_groups = user.groups.where(organization_id: organization.id)
+          organization_project_securities = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
+                                                                                                              is_model_permission: false,
+                                                                                                              is_estimation_permission: true)
+          users_array = [user.id]
+          if owner
+            users_array << owner.id
+          end
+          user_owner_prj_scrts = organization_project_securities.where(user_id: users_array)
 
           # Add Action Aliases, for example:  alias_action :edit, :to => :update
-
           #For organization and estimations permissions
           alias_action :show_estimations_permissions, :to => :manage_estimations_permissions
           alias_action :manage_estimations_permissions, :show_organization_permissions, :to => :manage_organization_permissions
@@ -83,24 +83,263 @@ class AbilityView
 
           #Load user groups permissions
           if user && !user_groups.empty?
-            permissions_array = []
-
             user_groups.includes(:permissions).map do |grp|
               grp.permissions.map do |i|
-                if i.object_associated.blank?
-                  permissions_array << [i.alias.to_sym, :all]
-                else
-                  permissions_array << [i.alias.to_sym, i.object_associated.constantize]
+                perm_alias = i.alias
+                unless perm_alias.blank?
+                  perm_object_associated = i.object_associated.blank? ? ":all" : i.object_associated.constantize
+
+                  if perm_alias == :manage_estimation_models
+                    can perm_alias, perm_object_associated, :is_model => true
+                  else
+                    can perm_alias, perm_object_associated
+                  end
                 end
               end
             end
 
-            for perm in permissions_array
-              unless perm[0].nil? or perm[1].nil?
-                if perm[0] == :manage_estimation_models
-                  can perm[0], perm[1], :is_model => true
-                else
-                  can perm[0], perm[1]
+            #For "manage_estimation_models", only models will be taken in account
+            #When user can create a project template, he also can edit the model
+            alias_action :edit_project, :is_model => true, :to => :manage_estimation_models
+            alias_action :delete_project, :is_model => true, :to => :manage_estimation_models
+            alias_action :create_project_from_template, :is_model => true, :to => :manage_estimation_models
+
+            unless user_owner_prj_scrts.empty?
+              user_owner_prj_scrts.each do |prj_scrt|
+                prj_scrt_project_security_level = prj_scrt.project_security_level
+                unless prj_scrt_project_security_level.nil?
+                  prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
+
+                  #project = prj_scrt.project
+                  op = prj_scrt.project
+                  project = op.is_a?(Project) ? op : op.project
+
+                  unless project.nil?
+                    if (prj_scrt.user_id == user.id) || ( prj_scrt.user_id == owner.id && user.id == project.creator_id)
+                      organization_estimation_statuses.each do |es|
+                        prj_scrt_project_security_level_permissions.each do |permission|
+                          if permission.alias == "manage" and permission.category == "Project"
+                            can :manage, [project, op], estimation_status_id: es.id
+                          else
+                            #@array_users << [permission.id, project.id, es.id]
+                            can permission.alias.to_sym, [project, op], estimation_status_id: es.id
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+
+            user_groups.each do |grp|
+
+              @permissions_by_group_and_status[grp.id] = Hash.new
+              #on recupere les permissions en fonction des statuts
+              grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).where(organization_id: organization.id).each do |esgr|
+
+                esgr_security_level = esgr.project_security_level
+                esgr_estimation_status_id = esgr.estimation_status_id
+
+                unless esgr_security_level.nil?
+                  @permissions_by_group_and_status[grp.id][esgr_estimation_status_id] = esgr_security_level.permissions.select{|i| i.is_permission_project }
+
+                  # prj_scrt_project_security_level_permissions.each do |permission|
+                  #   #organization_projects.select{|p| p.id == 31533}.each do |op|
+                  #   organization_projects.each do |op|
+                  #     project = op.is_a?(Project) ? op : op.project
+                  #     if permission.alias == "manage" and permission.category == "Project"
+                  #       can :manage, project, estimation_status_id: esgr_estimation_status_id
+                  #     else
+                  #       unless project.nil?
+                  #         #@array_status_groups.push([permission.id, project.id, esgr_estimation_status_id])
+                  #         array_status_per_group.push([permission.id, project.id, esgr_estimation_status_id])
+                  #       end
+                  #     end
+                  #   end
+                  # end
+
+                end
+              end
+
+              prj_scrts = organization_project_securities.where(group_id: grp.id)
+
+              #Project.uncached do
+              #Project.where(id: projects).find_in_batches(batch_size: 100) do |organization_projects|
+              #sleep(2)
+              #ActiveRecord::Base.transaction do
+              #organization_projects.each do |project|
+              organization_projects.each do |op|
+                project = op.is_a?(Project) ? op : op.project
+                prj_scrts.where(project_id: project.id).each do |prj_scrt|
+
+                  prj_scrt_project_security_level = prj_scrt.project_security_level
+                  unless prj_scrt_project_security_level.nil?
+
+                    if ["TOUT", "*ALL"].include?(prj_scrt_project_security_level.name.to_s.upcase)
+                      if project.private == true && project.is_model != true
+                        #nothing to do
+                      else
+                        @permissions_by_group_and_status[grp.id].each do |estimation_status_id, permissions|
+                          permissions.each do |permission|
+                            if permission.alias == "manage" and permission.category == "Project"
+                              can :manage, [project, op], estimation_status_id: estimation_status_id
+                            else
+                              can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
+                            end
+                          end
+                        end
+                      end
+
+                    else
+                      prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
+                      @permissions_by_group_and_status[grp.id].each do |estimation_status_id, permissions|
+                        possible_permissions = [ permissions, prj_scrt_project_security_level_permissions ].inject(:&)
+
+                        possible_permissions.each do |permission|
+                          if project.private == true && project.is_model != true
+                            #nothing
+                          else
+                            if permission.alias == "manage" and permission.category == "Project"
+                              can :manage, [project, op], estimation_status_id: estimation_status_id
+                            else
+                              can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
+                            end
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+              #end
+              #end
+              #end
+
+              #puts "Finished"
+            end
+          end
+        end
+      end
+    end
+  end
+
+  def get_owner_user
+    owner_key = AdminSetting.find_by_key("Estimation Owner")
+    if owner_key.nil?
+      owner_key = AdminSetting.create(key: "Estimation Owner", value: "*OWNER")
+      owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
+      if owner.nil?
+        owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
+        owner.skip_confirmation_notification!
+        owner.save(validate: false)
+        Organization.all.each do |o|
+          o.users << owner
+          o.save
+        end
+      end
+    else
+      owner = User.where(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com").first
+      if owner.nil?
+        owner = User.new(first_name: "*", last_name: "OWNER", login_name: "owner", initials: owner_key.value, email: "contact@estimancy.com")
+        owner.skip_confirmation_notification!
+        owner.save(validate: false)
+      end
+      owner = User.find_by_initials(owner_key.value)
+    end
+  end
+
+  def initialize_SAVE_10_09_2021(user, organization, projects, nb_project = 1, estimation_view = true)
+
+    #Uncomment in order to authorize everybody to manage all the app
+    unless user.nil?
+      owner ||= (@owner.nil? ? get_owner_user : @owner)
+
+      if Rails.env == "test" || user.super_admin == true
+        can :manage, :all
+      else
+        #Only the super-admin has the rights to manage the master-data
+        if user.super_admin?
+          can :manage_master_data, :all
+        end
+
+        if !organization.nil?
+          #La gestion des paramètres se fait fait dans ApplicationController ==> current_ability
+          organization_projects = projects#.compact
+
+          @permissions_by_group_and_status = Hash.new
+          organization_estimation_statuses = organization.estimation_statuses
+          user_groups = user.groups.where(organization_id: organization.id)
+          organization_project_securities = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
+                                                                                                              is_model_permission: false,
+                                                                                                              is_estimation_permission: true)
+          users_array = [user.id]
+          if owner
+            users_array << owner.id
+          end
+          user_owner_prj_scrts = organization_project_securities.where(user_id: users_array)
+
+          # Add Action Aliases, for example:  alias_action :edit, :to => :update
+          #For organization and estimations permissions
+          alias_action :show_estimations_permissions, :to => :manage_estimations_permissions
+          alias_action :manage_estimations_permissions, :show_organization_permissions, :to => :manage_organization_permissions
+          alias_action :show_global_permissions, :to => :manage_global_permissions
+
+          # For projects selected columns
+          alias_action :show_projects_selected_columns, :to => :manage_projects_selected_columns
+
+          # Notice the edit action is aliased to update. This means if the user is able to update a record he also has permission to edit it.
+          alias_action [:show_groups, Group], :to => [:manage, Group]
+
+          #For organization
+          alias_action :show_organizations, :to => :edit_organizations
+          alias_action :edit_organizations, :to => :create_organizations
+
+          # For estimation: when we can edit a project, we can also see and show it
+          alias_action :see_project, :to => :show_project
+          alias_action :show_project, :to => :edit_project
+          alias_action  :alter_estimation_name, :alter_product_name, :alter_estimation_status, :alter_project_areas, :alter_acquisition_categories, :alter_platform_categories, :alter_project_categories, :alter_providers, :alter_request_number, :to => :edit_project
+          alias_action :execute_estimation_plan, :manage_estimation_widgets, :alter_estimation_status, :alter_project_status_comment, :commit_project, :to => :alter_estimation_plan
+          alias_action :alter_estimation_plan, :manage_project_security, :to => :edit_project
+
+          #For instance modules
+          alias_action :show_modules_instances, :to => :manage_modules_instances
+
+          #Load user groups permissions
+          if user && !user_groups.empty?
+            # permissions_array = []
+            # user_groups.includes(:permissions).map do |grp|
+            #   grp.permissions.map do |i|
+            #     if i.object_associated.blank?
+            #       permissions_array << [i.alias.to_sym, :all]
+            #     else
+            #       permissions_array << [i.alias.to_sym, i.object_associated.constantize]
+            #     end
+            #   end
+            # end
+            #
+            # for perm in permissions_array
+            #   unless perm[0].nil? or perm[1].nil?
+            #     if perm[0] == :manage_estimation_models
+            #       can perm[0], perm[1], :is_model => true
+            #     else
+            #       can perm[0], perm[1]
+            #     end
+            #   end
+            # end
+            #
+
+            user_groups.includes(:permissions).map do |grp|
+              grp.permissions.map do |i|
+                perm_alias = i.alias
+                unless perm_alias.blank?
+                  perm_object_associated = i.object_associated.blank? ? ":all" : i.object_associated.constantize
+
+                  if perm_alias == :manage_estimation_models
+                    can perm_alias, perm_object_associated, :is_model => true
+                  else
+                    can perm_alias, perm_object_associated
+                  end
                 end
               end
             end
@@ -116,20 +355,15 @@ class AbilityView
             @array_groups = Array.new
             @array_owners = Array.new
 
-            #Specfic project security loading
-            prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
-                                                                                          user_id: user.id,
-                                                                                          is_model_permission: false,
-                                                                                          is_estimation_permission: true).all
-            unless prj_scrts.empty?
-
+            #User / Owner security loading
+            unless user_owner_prj_scrts.empty?
               hash_organization_projects = Hash.new(Array.new())
 
               organization_projects.each do |op|
                 hash_organization_projects[op.project_id] = op
               end
 
-              prj_scrts.each do |prj_scrt|
+              user_owner_prj_scrts.each do |prj_scrt|
                 prj_scrt_project_security_level = prj_scrt.project_security_level
                 unless prj_scrt_project_security_level.nil?
                   prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
@@ -142,13 +376,15 @@ class AbilityView
                   end
 
                   unless project.nil?
-                    organization_estimation_statuses.each do |es|
-                      prj_scrt_project_security_level_permissions.each do |permission|
-                        if permission.alias == "manage" and permission.category == "Project"
-                          can :manage, project, estimation_status_id: es.id
-                          can :manage, organization_project, estimation_status_id: es.id
-                        else
-                          @array_users << [permission.id, project.id, es.id]
+                    if (prj_scrt.user_id == user.id) || ( prj_scrt.user_id == owner.id && user.id == project.creator_id)
+                      organization_estimation_statuses.each do |es|
+                        prj_scrt_project_security_level_permissions.each do |permission|
+                          if permission.alias == "manage" and permission.category == "Project"
+                            can :manage, project, estimation_status_id: es.id
+                            can :manage, organization_project, estimation_status_id: es.id
+                          else
+                            @array_users << [permission.id, project.id, es.id]
+                          end
                         end
                       end
                     end
@@ -344,4 +580,207 @@ class AbilityView
       end
     end
   end
+
+  def initialize_save_13_09_2021(user, organization, projects, nb_project = 1, estimation_view = true)
+
+    #Uncomment in order to authorize everybody to manage all the app
+    unless user.nil?
+      owner ||= (@owner.nil? ? get_owner_user : @owner)
+
+      if Rails.env == "test" || user.super_admin == true
+        can :manage, :all
+      else
+        #Only the super-admin has the rights to manage the master-data
+        if user.super_admin?
+          can :manage_master_data, :all
+        end
+
+        if !organization.nil?
+
+          #La gestion des paramètres se fait fait dans ApplicationController ==> current_ability
+          organization_projects = projects#.compact
+
+          #remettre getsorted pour la liste complete des devis
+          # organization_projects = get_sorted_estimations(organization.id, projects, sort_column, sort_order, search_hash, min, max, action)
+
+          @permissions_by_group_and_status = $permissions_by_group_and_status #Hash.new
+          organization_estimation_statuses = organization.estimation_statuses
+          user_groups = user.groups.where(organization_id: organization.id)
+          organization_project_securities = ProjectSecurity.includes(:project, :project_security_level)
+                                                           .where(organization_id: organization.id,
+                                                                  is_model_permission: false,
+                                                                  is_estimation_permission: true)
+          users_array = [user.id]
+          if owner
+            users_array << owner.id
+          end
+          user_owner_prj_scrts = organization_project_securities.where(user_id: users_array)
+
+          # Add Action Aliases, for example:  alias_action :edit, :to => :update
+          #For organization and estimations permissions
+          alias_action :show_estimations_permissions, :to => :manage_estimations_permissions
+          alias_action :manage_estimations_permissions, :show_organization_permissions, :to => :manage_organization_permissions
+          alias_action :show_global_permissions, :to => :manage_global_permissions
+
+          # For projects selected columns
+          alias_action :show_projects_selected_columns, :to => :manage_projects_selected_columns
+
+          # Notice the edit action is aliased to update. This means if the user is able to update a record he also has permission to edit it.
+          alias_action [:show_groups, Group], :to => [:manage, Group]
+
+          #For organization
+          alias_action :show_organizations, :to => :edit_organizations
+          alias_action :edit_organizations, :to => :create_organizations
+
+          # For estimation: when we can edit a project, we can also see and show it
+          alias_action :see_project, :to => :show_project
+          alias_action :show_project, :to => :edit_project
+          alias_action  :alter_estimation_name, :alter_product_name, :alter_estimation_status, :alter_project_areas, :alter_acquisition_categories, :alter_platform_categories, :alter_project_categories, :alter_providers, :alter_request_number, :to => :edit_project
+          alias_action :execute_estimation_plan, :manage_estimation_widgets, :alter_estimation_status, :alter_project_status_comment, :commit_project, :to => :alter_estimation_plan
+          alias_action :alter_estimation_plan, :manage_project_security, :to => :edit_project
+
+          #For instance modules
+          alias_action :show_modules_instances, :to => :manage_modules_instances
+
+          #Load user groups permissions
+          if user && !user_groups.empty?
+            user_groups.includes(:permissions).map do |grp|
+              grp.permissions.map do |i|
+                perm_alias = i.alias
+                unless perm_alias.blank?
+                  perm_object_associated = i.object_associated.blank? ? ":all" : i.object_associated.constantize
+
+                  if perm_alias == :manage_estimation_models
+                    can perm_alias, perm_object_associated, :is_model => true
+                  else
+                    can perm_alias, perm_object_associated
+                  end
+                end
+              end
+            end
+
+            #For "manage_estimation_models", only models will be taken in account
+            #When user can create a project template, he also can edit the model
+            alias_action :edit_project, :is_model => true, :to => :manage_estimation_models
+            alias_action :delete_project, :is_model => true, :to => :manage_estimation_models
+            alias_action :create_project_from_template, :is_model => true, :to => :manage_estimation_models
+
+            unless user_owner_prj_scrts.empty?
+              user_owner_prj_scrts.each do |prj_scrt|
+                prj_scrt_project_security_level = prj_scrt.project_security_level
+                unless prj_scrt_project_security_level.nil?
+                  prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
+
+                  #project = prj_scrt.project
+                  op = prj_scrt.project
+                  project = op.is_a?(Project) ? op : op.project
+
+                  unless project.nil?
+                    if (prj_scrt.user_id == user.id) || ( prj_scrt.user_id == owner.id && user.id == project.creator_id)
+                      organization_estimation_statuses.each do |es|
+                        prj_scrt_project_security_level_permissions.each do |permission|
+                          if permission.alias == "manage" and permission.category == "Project"
+                            can :manage, [project, op], estimation_status_id: es.id
+                            #can :manage, op, estimation_status_id: es.id
+                          else
+                            #@array_users << [permission.id, project.id, es.id]
+                            can permission.alias.to_sym, [project, op], estimation_status_id: es.id
+                            #can permission.alias.to_sym, op, estimation_status_id: es.id
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+            end
+
+            user_groups.each do |grp|
+
+              # @permissions_by_group_and_status[grp.id] = Hash.new
+              # #on recupere les permissions en fonction des statuts
+              # grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status)
+              #                                  .where(organization_id: organization.id).each do |esgr|
+              #   esgr_security_level = esgr.project_security_level
+              #   esgr_estimation_status_id = esgr.estimation_status_id
+              #
+              #   unless esgr_security_level.nil?
+              #     @permissions_by_group_and_status[grp.id][esgr_estimation_status_id] = esgr_security_level.permissions.select{|i| i.is_permission_project }
+              #     # prj_scrt_project_security_level_permissions.each do |permission|
+              #     #   #organization_projects.select{|p| p.id == 31533}.each do |op|
+              #     #   organization_projects.each do |op|
+              #     #     project = op.is_a?(Project) ? op : op.project
+              #     #     if permission.alias == "manage" and permission.category == "Project"
+              #     #       can :manage, project, estimation_status_id: esgr_estimation_status_id
+              #     #     else
+              #     #       unless project.nil?
+              #     #         #@array_status_groups.push([permission.id, project.id, esgr_estimation_status_id])
+              #     #         array_status_per_group.push([permission.id, project.id, esgr_estimation_status_id])
+              #     #       end
+              #     #     end
+              #     #   end
+              #     # end
+              #
+              #   end
+              # end
+
+              prj_scrts = organization_project_securities.where(group_id: grp.id)
+
+              organization_projects.each do |op|
+                #organization_projects.each do |project|
+                project = op.is_a?(Project) ? op : op.project
+
+                prj_scrts.where(project_id: project.id).each do |prj_scrt|
+
+                  prj_scrt_project_security_level = prj_scrt.project_security_level
+                  unless prj_scrt_project_security_level.nil?
+
+                    if ["TOUT", "*ALL"].include?(prj_scrt_project_security_level.name.to_s.upcase)
+                      if project.private == true && project.is_model != true
+                        #nothing to do
+                      else
+                        @permissions_by_group_and_status[grp.id].each do |estimation_status_id, permissions|
+                          permissions.each do |permission|
+                            if permission.alias == "manage" and permission.category == "Project"
+                              can :manage, [project, op], estimation_status_id: estimation_status_id
+                              #can :manage, op, estimation_status_id: estimation_status_id
+                            else
+                              can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
+                              #can permission.alias.to_sym, op, estimation_status_id: estimation_status_id
+                            end
+                          end
+                        end
+                      end
+                    else
+                      prj_scrt_project_security_level_permissions = prj_scrt_project_security_level.permissions.select{|i| i.is_permission_project }
+                      @permissions_by_group_and_status[grp.id].each do |estimation_status_id, permissions|
+                        possible_permissions = [ permissions, prj_scrt_project_security_level_permissions ].inject(:&)
+
+                        possible_permissions.each do |permission|
+                          if project.private == true && project.is_model != true
+                            #nothing
+                          else
+                            if permission.alias == "manage" and permission.category == "Project"
+                              can :manage, [project, op], estimation_status_id: estimation_status_id
+                              #can :manage, op, estimation_status_id: estimation_status_id
+                            else
+                              can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
+                              #can permission.alias.to_sym, op, estimation_status_id: estimation_status_id
+                            end
+                          end
+                        end
+                      end
+                    end
+                  end
+                end
+              end
+
+              #puts "Finished"
+            end
+          end
+        end
+      end
+    end
+  end
+
 end
