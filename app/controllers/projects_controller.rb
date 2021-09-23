@@ -825,10 +825,10 @@ class ProjectsController < ApplicationController
     Guw::GuwUnitOfWorkAttribute.find_each do |uowa|
       unless Guw::GuwUnitOfWork.where(id: uowa.guw_unit_of_work_id).exists?
         guw_uowa_count = guw_uowa_count+1
-        #uowa.delete
+        uowa.delete
       end
     end
-    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"
+    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"  # 6815 +
 
 
     #==== Donnes fantomes pour : GuwCoefficientElementUnitOfWork (Nb fantôme = 343 964)  nb total records = 2 162 426
@@ -847,9 +847,11 @@ class ProjectsController < ApplicationController
     User.find_each do |user|
       if user.organizations.all.size == 0
         fantome_user_count = fantome_user_count+1
-        #user.delete
+        #puts user
+        user.delete
       end
     end
+    puts "NB user fantômes = #{fantome_user_count}" #NB user fantômes = 153
 
     # ====
 
