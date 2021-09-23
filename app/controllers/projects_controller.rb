@@ -828,7 +828,7 @@ class ProjectsController < ApplicationController
         uowa.delete
       end
     end
-    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"  # 6815 +
+    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"  # 6815 + 408512
 
 
     #==== Donnes fantomes pour : GuwCoefficientElementUnitOfWork (Nb fantôme = 343 964)  nb total records = 2 162 426
@@ -836,7 +836,7 @@ class ProjectsController < ApplicationController
     Guw::GuwCoefficientElementUnitOfWork.find_each do |ceuow|
       unless Guw::GuwUnitOfWork.where(id: ceuow.guw_unit_of_work_id).exists?
         guw_ceuow_count = guw_uowa_count+1
-        #ceuow.delete
+        ceuow.delete
       end
     end
     puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}"
