@@ -836,11 +836,22 @@ class ProjectsController < ApplicationController
     Guw::GuwCoefficientElementUnitOfWork.find_each do |ceuow|
       unless Guw::GuwUnitOfWork.where(id: ceuow.guw_unit_of_work_id).exists?
         guw_ceuow_count = guw_uowa_count+1
-        ceuow.delete
+        #ceuow.delete
       end
     end
     puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}"
 
+    #=== Utilisateurs fantômes qui ne sont rattachés à aucune organisation
+
+    fantome_user_count = 0
+    User.find_each do |user|
+      if user.organizations.all.size == 0
+        fantome_user_count = fantome_user_count+1
+        #user.delete
+      end
+    end
+
+    # ====
 
     #===================  Date de creation > '2020-07-01'  ==========================
     #Project.joins(:organization, :estimation_status).where('projects.created_at < ?', '2020-07-01'.to_date).group('organizations.name', 'estimation_statuses.name').order('organizations.name', 'estimation_statuses.name').count

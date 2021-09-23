@@ -445,7 +445,7 @@
                         <% end %>
                       <% elsif i[0] == "Critères" %>
 
-                      <% elsif i[0] == "Coeff. de Complexité" %>
+                      <% elsif i[0] == "Coeff. de Complexité" || i[0] == "Coeff. de complexité" || i[0] == I18n.t(:cplx_coeff) %>
                         <% if i[1].blank? %>
                           <span class="pull-left">
                             <%= i[0] %>
@@ -481,7 +481,7 @@
 
                     <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
                       <% unless i[1].blank? %>
-                        <% if i[0] == "Coeff. de Complexité" %>
+                        <% if i[0] == "Coeff. de Complexité" || i[0] == "Coeff. de complexité" || i[0] == I18n.t(:cplx_coeff) %>
                           <td class="center">
                             <p><%= uow.intermediate_percent %><br><%= uow.intermediate_weight %></p>
                           </td>

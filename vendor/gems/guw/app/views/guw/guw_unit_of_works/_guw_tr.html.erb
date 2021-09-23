@@ -133,7 +133,7 @@
           <% end %>
         </td>
       <% end %>
-    <% elsif i[0] == "Coeff. complexity" || i[0] == "Coeff. de Complexité" || i[0] == I18n.t(:cplx_coeff) %>
+    <% elsif i[0] == "Coeff. complexity" || i[0] == "Coeff. de Complexité" || i[0] == "Coeff. de complexité" || i[0] == I18n.t(:cplx_coeff) %>
       <% unless @guw_type.nil? %>
         <% @guw_complexities = @guw_type.guw_complexities.where(organization_id: organization_id, guw_model_id: guw_model_id).order("display_order ASC") %>
       <% end %>

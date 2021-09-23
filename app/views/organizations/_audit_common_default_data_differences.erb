@@ -26,7 +26,7 @@
 
                           <td><%= value %></td>
 
-                          <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
+                          <% if item == "Coefficient" || item == "Coeff. de Complexité" || item == "Coeff. de complexité" || item == I18n.t(:cplx_coeff) || item == "Critères" %>
                               <td class="orders_padding">
                                 <b>
                                   <%= item %>
@@ -43,7 +43,7 @@
                             <%= text_field_tag "items[#{item}]", YAML::load(referenced_guw_model_orders.value)[item], class: "order_size" %>
                           </td>
 
-                          <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
+                          <% if item == "Coefficient" || item == "Coeff. de Complexité" || item == "Coeff. de complexité" || item == I18n.t(:cplx_coeff) || item == "Critères" %>
                               <td class="orders_padding">
                                 <b>
                                   <%= item %>
@@ -83,7 +83,7 @@
                             <%= value %>
                           </td>
 
-                          <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
+                          <% if item == "Coefficient" || item == "Coeff. de Complexité" || item == "Coeff. de complexité" || item == I18n.t(:cplx_coeff) || item == "Critères" %>
                               <td class="orders_padding">
                                 <b>
                                   <%= item %>
@@ -100,7 +100,7 @@
                             <%= text_field_tag "items[#{item}]", YAML::load(different_guw_model_orders.value)[item], class: "order_size" %>
                           </td>
 
-                          <% if item == "Coefficient" || item == "Coeff. de Complexité"  || item == "Critères" %>
+                          <% if item == "Coefficient" || item == "Coeff. de Complexité" || item == "Coeff. de complexité" || item == I18n.t(:cplx_coeff)  || item == "Critères" %>
                               <td class="orders_padding">
                                 <b>
                                   <%= item %>
