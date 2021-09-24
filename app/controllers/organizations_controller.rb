@@ -3423,7 +3423,7 @@ class OrganizationsController < ApplicationController
     send_file(
       "#{Rails.root}/public/#{@filename}",
       filename: @filename,
-      type: "application/vnd.ms-excel", disposition: 'attachment'
+      type: "application/vnd.ms-excel"#, disposition: 'attachment'
     )
 
     # require 'open-uri'
