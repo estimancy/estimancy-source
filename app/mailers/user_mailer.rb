@@ -35,6 +35,7 @@ class UserMailer < ActionMailer::Base
     @user = user
     @filename = filename
     @action_title = action_title
+
     mail(:to => [user.email], :subject => "[ESTIMANCY] - #{action_title}")
   end
 

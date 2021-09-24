@@ -3235,6 +3235,7 @@ class OrganizationsController < ApplicationController
                 I18n.t(:quantity),
                 I18n.t(:tracability),
                 I18n.t(:cotation),
+                "Commentaire complexité",
                 "Coeff. de complexité (initial)",
                 "Coeff. de complexité (modifié)"]
 
@@ -3249,8 +3250,8 @@ class OrganizationsController < ApplicationController
 
               # worksheet.change_row_bold(0,true)
 
-              #jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
-              jj = (first_header.size - 3) + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
+              jj = 18 + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
+              #jj = (first_header.size - 3) + @guw_model.guw_outputs.size + @guw_model.guw_coefficients.size
 
               ii = 0
               @guw_model.guw_attributes.each do |guw_attribute|
@@ -3292,6 +3293,7 @@ class OrganizationsController < ApplicationController
                 worksheet.add_cell(ind, col += 1, guow.quantity)
                 worksheet.add_cell(ind, col += 1, guow.tracking)
                 worksheet.add_cell(ind, col += 1, cplx)
+                worksheet.add_cell(ind, col += 1, guow.cplx_comments)
                 worksheet.add_cell(ind, col += 1, guow.intermediate_percent)
                 worksheet.add_cell(ind, col += 1, guow.intermediate_weight) # col 19 (avant modif)
 
@@ -3421,8 +3423,14 @@ class OrganizationsController < ApplicationController
     send_file(
       "#{Rails.root}/public/#{@filename}",
       filename: @filename,
-      type: "application/vnd.ms-excel"
+      type: "application/vnd.ms-excel", disposition: 'attachment'
     )
+
+    # require 'open-uri'
+    # #url = 'http://someserver.com/path/../filename.jpg'
+    # data = open("#{Rails.root}/public/#{@filename}").read
+    # send_data data, :disposition => 'attachment', :filename=>@filename
+
   end
 
   def report
