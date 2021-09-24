@@ -29,6 +29,15 @@ class UserMailer < ActionMailer::Base
     mail(:to => [user.email], :subject => "[ESTIMANCY] - Export des données brutes")
   end
 
+  # send file after export
+  def send_extraction_file(user, organization, filename, action_title)
+    @organization = organization
+    @user = user
+    @filename = filename
+    @action_title = action_title
+    mail(:to => [user.email], :subject => "[ESTIMANCY] - #{action_title}")
+  end
+
   def send_notification(project, estimation_status)
     @project = project
     @estimation_status = estimation_status

@@ -828,7 +828,7 @@ class ProjectsController < ApplicationController
         uowa.delete
       end
     end
-    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"  # 6815 + 408512
+    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"  # 295686 + 6815 + 408512
 
 
     #==== Donnes fantomes pour : GuwCoefficientElementUnitOfWork (Nb fantôme = 343 964)  nb total records = 2 162 426
@@ -839,7 +839,7 @@ class ProjectsController < ApplicationController
         ceuow.delete
       end
     end
-    puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}"
+    puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}" # 408513
 
     #=== Utilisateurs fantômes qui ne sont rattachés à aucune organisation
 
@@ -2151,7 +2151,6 @@ class ProjectsController < ApplicationController
 
   end
 
-
   def download
     @organization = Organization.find(params[:organization_id])
     send_file(
@@ -2160,6 +2159,7 @@ class ProjectsController < ApplicationController
         type: "application/vnd.ms-excel"
     )
   end
+
 
   def build_rapport
     pdf = WickedPdf.new.pdf_from_url(rapport_url)
