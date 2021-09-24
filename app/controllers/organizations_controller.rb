@@ -3420,16 +3420,16 @@ class OrganizationsController < ApplicationController
   def download_extraction_file
     @organization = Organization.find(params[:organization_id])
 
-    send_file(
-      "#{Rails.root}/public/#{@filename}",
-      filename: @filename,
-      type: "application/vnd.ms-excel"#, disposition: 'attachment'
-    )
+    # send_file(
+    #   "#{Rails.root}/public/#{@filename}",
+    #   filename: @filename,
+    #   type: "application/vnd.ms-excel"#, disposition: 'attachment'
+    # )
 
-    # require 'open-uri'
-    # #url = 'http://someserver.com/path/../filename.jpg'
-    # data = open("#{Rails.root}/public/#{@filename}").read
-    # send_data data, :disposition => 'attachment', :filename=>@filename
+    require 'open-uri'
+    #url = 'http://someserver.com/path/../filename.jpg'
+    data = open("#{Rails.root}/public/#{@filename}").read
+    send_data data, :disposition => 'attachment', :filename=>@filename
 
   end
 
