@@ -3411,18 +3411,16 @@ class OrganizationsController < ApplicationController
         UserMailer.send_extraction_file(current_user, @organization, filename, "Export détaillé des devis").deliver_now
       end
     end
-    flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
+    flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant l'export demandé' vous sera envoyé."
     redirect_to :back and return
   end
 
-  def download_extraction_file(organization_id, filename)
-    #@organization = Organization.find(params[:organization_id])
-    @organization = Organization.find(organization_id)
-    @filename = filename
+  def download_extraction_file
+    @organization = Organization.find(params[:organization_id])
 
     send_file(
-      "#{Rails.root}/public/#{filename}",
-      filename: filename,
+      "#{Rails.root}/public/#{@filename}",
+      filename: @filename,
       type: "application/vnd.ms-excel"
     )
   end
