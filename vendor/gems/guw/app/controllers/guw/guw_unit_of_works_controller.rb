@@ -1085,7 +1085,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               if params["complexity_coeff_ajusted"].present? && !params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].blank?
                 cplx_coeff = params["complexity_coeff_ajusted"]["#{guw_unit_of_work.id}"].to_f
-                guw_unit_of_work.intermediate_percent = cplx_coeff
+                #guw_unit_of_work.intermediate_percent = cplx_coeff
                 guw_unit_of_work.intermediate_weight = cplx_coeff
               else
                 if params["complexity_coeff"].present? && !params["complexity_coeff"]["#{guw_unit_of_work.id}"].blank?
