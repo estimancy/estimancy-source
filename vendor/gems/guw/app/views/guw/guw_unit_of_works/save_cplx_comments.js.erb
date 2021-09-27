@@ -1,1 +1,3 @@
 $("#cplx_comments").modal('toggle');
+<% new_comments = @guw_unit_of_work.cplx_comments.blank? ? @guw_unit_of_work.guw_type&.description : @guw_unit_of_work.cplx_comments %>
+$("#complexity_coeff_ajusted_<%= @guw_unit_of_work.id %>").prop('title', "<%= new_comments %>");
