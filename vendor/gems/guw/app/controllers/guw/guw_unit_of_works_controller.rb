@@ -273,7 +273,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       #=== fonction de purge =====
       @guw_unit_of_work.guw_unit_of_work_attributes.where.not(project_id: @guw_unit_of_work.project_id).destroy_all
-      @guw_unit_of_work.guw_unit_of_work_attributes.where.not(guw_type_id: @guw_unit_of_work.guw_type_id).destroy_all
+      #@guw_unit_of_work.guw_unit_of_work_attributes.where.not(guw_type_id: @guw_unit_of_work.guw_type_id).destroy_all
 
       #=== fonction de purge =====
 
