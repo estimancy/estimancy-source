@@ -153,7 +153,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     organization = module_project.organization
     component = current_component
 
-    @guw_unit_of_work.delete
+    guw_unit_of_work_attributes = @guw_unit_of_work.guw_unit_of_work_attributes
+    guw_coefficient_element_unit_of_works = @guw_unit_of_work.guw_coefficient_element_unit_of_works
+
+    if @guw_unit_of_work.delete
+      guw_unit_of_work_attributes.delete_all
+      guw_coefficient_element_unit_of_works.delete_all
+    end
 
     reorder group
 
@@ -226,7 +232,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @component = current_component
 
     @guw_coefficient = Guw::GuwCoefficient.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_coefficient_id]).first  #.find(params[:guw_coefficient_id])
-    @guw_coefficient_element = Guw::GuwCoefficientElement.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_coefficient_element_id]).first #.find(params[:guw_coefficient_element_id])
+    @guw_coefficient_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_coefficient_element_id])
+    @guw_coefficient_element = @guw_coefficient_guw_coefficient_elements.first   #.find(params[:guw_coefficient_element_id])
+    @default_coeff_elt = @guw_coefficient_guw_coefficient_elements.select{|i| i.default == true }.first
 
     @ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                        guw_model_id: @guw_model.id,

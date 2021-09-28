@@ -1,1 +1,13 @@
 $("#coefficient_comments").modal('toggle');
+
+<% new_comments = @ceuw.nil? ? @guw_unit_of_work.guw_type&.description : (@ceuw.comments.blank? ? @guw_unit_of_work.guw_type&.description : @ceuw.comments) %>;
+$('.coeff_<%= "#{@guw_unit_of_work.id}_#{@guw_coefficient.id}_#{@guw_coefficient_element.id}" %>').prop('title', "<%= new_comments %>");
+
+<%# begin %>
+  <%# if @default_coeff_elt.value.to_f != @ceuw.percent.to_f %>
+    <%# color = @default_coeff_elt.color_code %>
+//    $('.coeff_<%#= "#{@guw_unit_of_work.id}_#{@guw_coefficient.id}_#{@guw_coefficient_element.id}" %>').css('background-color','<%#= "##{color}" %>');
+  <%# end %>
+
+<%# rescue %>
+<%# end %>

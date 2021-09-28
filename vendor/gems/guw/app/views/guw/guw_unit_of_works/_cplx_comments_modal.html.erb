@@ -37,17 +37,27 @@
 <% end %>
 
 <script>
+  // $("textarea#cplx_comments.attribute_note_area").keyup(function(e) {
   $(".attribute_note_area").keyup(function(e) {
     var empty = false;
-    $(".attribute_note_area").each(function() {
-      if ($(this).val().length == 0) {
-        empty = true;
-      }
-    });
+    if ($(this).val().length == 0) {
+      empty = true;
+      alert("1");
+    }
+
+    // $(".attribute_note_area").each(function() {
+    //   if ($(this).val().length == 0) {
+    //     empty = true;
+    //     alert("1");
+    //   }
+    // });
+
     if (empty) {
       $(".submit_comments").attr('disabled', 'disabled');
+        //alert("2");
     } else {
       $(".submit_comments").removeAttr('disabled');
+        //alert("3");
     }
   });
 </script>
