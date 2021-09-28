@@ -271,14 +271,23 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                        guw_model_id: @guw_model.id,
                                                        guw_type_id: @guw_unit_of_work.guw_type_id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
 
+      #=== fonction de purge =====
+      @guw_unit_of_work.guw_unit_of_work_attributes.where.not(project_id: @guw_unit_of_work.project_id).destroy_all
+      @guw_unit_of_work.guw_unit_of_work_attributes.where.not(guw_type_id: @guw_unit_of_work.guw_type_id).destroy_all
+
+      #=== fonction de purge =====
+
       unless sum_range.nil? || sum_range.blank? || sum_range == 0
-        finder = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+        all_finders = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
                                                    guw_model_id: @guw_model.id,
                                                    guw_attribute_id: gac.id,
                                                    guw_type_id: @guw_unit_of_work.guw_type_id,
                                                    project_id: @guw_unit_of_work.project_id,
                                                    module_project_id: @guw_unit_of_work.module_project_id,
-                                                   guw_unit_of_work_id: @guw_unit_of_work.id).first
+                                                   guw_unit_of_work_id: @guw_unit_of_work.id)
+
+        finder = all_finders.first
+        other_finder_to_delete = all_finders.where.not(id: finder.id).destroy_all
 
         if finder.nil?
           Guw::GuwUnitOfWorkAttribute.create( organization_id: @guw_model.organization_id,
