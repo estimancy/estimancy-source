@@ -287,7 +287,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                    guw_unit_of_work_id: @guw_unit_of_work.id)
 
         finder = all_finders.first
-        other_finder_to_delete = all_finders.where.not(id: finder.id).destroy_all
+
 
         if finder.nil?
           Guw::GuwUnitOfWorkAttribute.create( organization_id: @guw_model.organization_id,
@@ -297,6 +297,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                               project_id: @guw_unit_of_work.project_id,
                                               module_project_id: @guw_unit_of_work.module_project_id,
                                               guw_unit_of_work_id: @guw_unit_of_work.id)
+        else
+          other_finder_to_delete = all_finders.where.not(id: finder.id).destroy_all
         end
       end
     end
