@@ -298,7 +298,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                               module_project_id: @guw_unit_of_work.module_project_id,
                                               guw_unit_of_work_id: @guw_unit_of_work.id)
         else
-          other_finder_to_delete = all_finders.where.not(id: finder.id).destroy_all
+          all_finders.where.not(id: finder.id).destroy_all
         end
       end
     end
