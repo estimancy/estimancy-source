@@ -14,7 +14,7 @@
                                                        guw_coefficient_element_id: guw_coefficient_element.id,
                                                        project_id: guw_unit_of_work.project_id,
                                                        module_project_id: guw_unit_of_work.module_project_id,
-                                                       guw_unit_of_work_id: guw_unit_of_work.id).first %>
+                                                       guw_unit_of_work_id: guw_unit_of_work.id).last #.first  #SGA%>
 
   <div class="modal-header modal-drag">
     <h4 class="modal-title">
@@ -49,11 +49,11 @@
 <script>
   $(".attribute_note_area").keyup(function(e) {
     var empty = false;
-    $(".attribute_note_area").each(function() {
+    //$(".attribute_note_area").each(function() {
       if ($(this).val().length == 0) {
         empty = true;
       }
-    });
+    //});
     if (empty) {
       $(".submit_comments").attr('disabled', 'disabled');
     } else {
