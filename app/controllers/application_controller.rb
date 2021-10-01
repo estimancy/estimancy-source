@@ -382,7 +382,9 @@ class ApplicationController < ActionController::Base
             #@current_ability ||= AbilityProject.new(current_user, @current_organization, @current_organization.projects)
         when "projects_from"
             estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @current_organization.id, is_model: true)
-            @current_ability ||= AbilityProject.new(current_user, @current_organization, estimation_models)
+            #@current_ability ||= AbilityProject.new(current_user, @current_organization, estimation_models)
+            estimation_models_size = estimation_models.size
+            @current_ability ||= AbilityProject.new(current_user, @current_organization, estimation_models, 0, estimation_models_size, estimation_models_size)
         else
           # A améliorer
           if params[:controller] == "projects" && params[:action] == "edit"
