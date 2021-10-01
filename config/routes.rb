@@ -339,7 +339,7 @@ Projestimate::Application.routes.draw do
     get "module_estimation" => 'organizations#module_estimation'
     get "users" => 'organizations#users', as: 'organization_users'
 
-    get "estimations" => 'organizations#estimations'
+    match "estimations" => 'organizations#estimations', via: [:get, :post]
     get "historized_estimations" => 'organizations#historized_estimations'
     get "estimations_from_view" => 'organizations#estimations_from_view'
     get "async_estimations" => 'organizations#async_estimations'

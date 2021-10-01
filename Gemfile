@@ -63,8 +63,8 @@ gem 'mysql2', '~> 0.4.9' #'~> 0.3.11'
 gem 'curb'
 
 #Permissions
-gem 'cancancan', '~> 1.10'
-#gem 'cancancan', '~> 3.2'
+#gem 'cancancan', '~> 1.10'
+gem 'cancancan', '~> 3.2'
 
 #Authentication for tests
 gem 'warden'
@@ -231,7 +231,7 @@ gem 'remotipart', '~> 1.2'
 gem 'yaml_db'
 
 gem 'test-unit'
-# gem 'bullet', group: :development
+gem 'bullet', group: :development
 
 local_gemfile = File.join(File.dirname(__FILE__), 'Gemfile.local')
 if File.exists?(local_gemfile)

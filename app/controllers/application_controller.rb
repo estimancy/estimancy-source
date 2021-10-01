@@ -20,11 +20,13 @@
 ########################################################################
 
 class ApplicationController < ActionController::Base
+
   protect_from_forgery
 
   before_filter :authenticate_user!
 
   layout :layout_by_controller
+  include OrganizationsHelper
 
   require 'socket'
 
@@ -80,7 +82,10 @@ class ApplicationController < ActionController::Base
   helper_method :initialization_module
   helper_method :user_number_precision
   helper_method :get_owner_user
-  helper_method :get_permission_by_group_and_status
+  helper_method :get_organization_estimation_status_group_roles
+  helper_method :set_organization_global_data
+  helper_method :get_estimation_list_params
+  helper_method :get_projects_for_estimation_list
 
   before_filter :check_access
   before_filter :set_user_time_zone
@@ -94,7 +99,10 @@ class ApplicationController < ActionController::Base
   before_filter :initialization_module#, except: [:estimations]  #sga_comment
   before_filter :get_organizations#, only: [:estimations, :contactsupport] #sga_comment
   before_filter :get_owner_user, only: [:sign_in]
-  #before_filter :get_permission_by_group_and_status#, only: [:sign_in, :set_estimation_status_group_roles]
+  #before_filter :before_filter :get_projects_for_estimation_list, only: [:estimations], only: [:estimations] #[:estimations, :projects_list_search]
+  #before_action :get_organization_estimation_status_group_roles#, if: :organization_has_changed?
+  #after_action :get_organization_estimation_status_group_roles, only: [:set_estimation_status_group_roles]
+  #before_action :get_estimation_list_params#, only: [:estimations] #[:get_sorted_estimations]
 
   def get_organizations
     if user_signed_in?
@@ -134,57 +142,118 @@ class ApplicationController < ActionController::Base
     @owner = owner
   end
 
-  def get_permission_by_group_and_status
-    @permissions_by_group_and_status ||= HashWithIndifferentAccess.new
+  def organization_has_changed?
+    if user_signed_in? #&& current_user
+      if @current_organization
+        if @current_organization_setted_data.blank? || (@current_organization_setted_data != @current_organization)
+          @current_organization_setted_data = @current_organization
+          true
+        end
+      else
+        false
+      end
+    else
+      false
+    end
+  end
 
+  def set_organization_global_data
     if @current_organization
-      if @current_organization_for_ability.nil? || @current_organization_for_ability != @current_organization
-        @current_organization_for_ability = @current_organization
-        organization = @current_organization_for_ability
+      $project_selected_columns = @current_organization.project_selected_columns
+      $default_sort_column = @current_organization.default_estimations_sort_column rescue nil
+      $default_sort_order = @current_organization.default_estimations_sort_order rescue nil
+      $selected_inline_columns = update_selected_inline_columns(Project)
+    end
+  end
 
-        if user_signed_in?
-          unless current_user.super_admin?
-            organization_estimation_statuses = organization.estimation_statuses
-            user_groups = current_user.groups.where(organization_id: organization.id)
+  def get_organization_estimation_status_group_roles
 
-            user_groups.each do |grp|
-              array_status_per_group = Array.new
+    set_organization_global_data
 
-              #on recupere les permissions en fonction des statuts
-              grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).where(organization_id: organization.id).each do |esgr|
+    $permissions_by_group_and_status ||= HashWithIndifferentAccess.new
 
-                esgr_security_level = esgr.project_security_level
-                esgr_estimation_status_id = esgr.estimation_status_id
-
-                unless esgr_security_level.nil?
-                  prj_scrt_project_security_level_permissions = esgr_security_level.permissions.select{|i| i.is_permission_project }
-
-                  prj_scrt_project_security_level_permissions.each do |permission|
-                    #organization_projects.select{|p| p.id == 31533}.each do |op|
-                    organization_projects.each do |op|
-                      project = op.is_a?(Project) ? op : op.project
-                      if permission.alias == "manage" and permission.category == "Project"
-                        can :manage, project, estimation_status_id: esgr_estimation_status_id
-                      else
-                        unless project.nil?
-                          #@array_status_groups.push([permission.id, project.id, esgr_estimation_status_id])
-                          array_status_per_group.push([permission.id, project.id, esgr_estimation_status_id])
-                        end
-                      end
-                    end
-                  end
-                end
+    organization = @current_organization
+    if user_signed_in?
+      if organization
+        unless current_user.super_admin?
+          $organization_estimation_statuses = organization.estimation_statuses
+          $user_groups = current_user.groups.includes(:permissions).where(organization_id: organization.id)
+          $user_groups.each do |grp|
+            $permissions_by_group_and_status[grp.id] = Hash.new
+            grp.estimation_status_group_roles.includes(:project_security_level).where(organization_id: organization.id).each do |esgr|
+              esgr_security_level =  ProjectSecurityLevel.includes([:permissions]).where(organization_id: organization.id, id: esgr.project_security_level_id).first  #esgr.project_security_level.includes([:permissions])
+              esgr_estimation_status_id = esgr.estimation_status_id
+              unless esgr_security_level.nil?
+                $permissions_by_group_and_status[grp.id][esgr_estimation_status_id] = esgr_security_level.permissions.select{|i| i.is_permission_project }
               end
             end
+          end
+        end
+      end
+    end
+  end
 
+  def get_estimation_list_params
+    if user_signed_in?
+      if @current_organization
+        #puts "Hello"
+        #lorsqu'on active l'organisation, on supprime les paramètres de tri et de recherche
+        if params[:activate_organization] == "true"
+          session[:sort_column] = nil
+          session[:sort_order] = nil
+          session[:sort_action] = nil
+          session[:search_hash] = {}
+        end
 
+        # if params[:filter_version].present?
+        #   @filter_version = params[:filter_version]
+        # else
+        #   @filter_version = '4'
+        # end
+        @filter_version = '4'
+        @historized  = params[:historized]
 
+        @object_per_page = (current_user.object_per_page || 10)
+
+        if params[:min].present? && params[:max].present?
+          @min = params[:min].to_i
+          @max = params[:max].to_i
+        else
+          @min = 0
+          @max = @object_per_page
+        end
+
+        if session[:sort_action].blank?
+          session[:sort_action] = "true"
+        end
+
+        if session[:sort_column].blank?
+          #session[:sort_column] = "start_date"
+          project_selected_columns = $project_selected_columns #@organization.project_selected_columns
+          default_sort_column = $default_sort_column #@organization.default_estimations_sort_column rescue nil
+          default_sort_order = $default_sort_order #@organization.default_estimations_sort_order rescue nil
+
+          if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
+            session[:sort_column] = default_sort_column
+            session[:sort_order] = default_sort_order
+          else
+            session[:sort_column] = "created_at"
+            session[:sort_order] = "desc"
           end
         end
 
+        if session[:sort_order].blank?
+          if session[:sort_column].in?(["start_date", "created_at"])
+            session[:sort_order] ="desc"
+          end
+        end
+
+        @sort_action = params[:sort_action].blank? ? session[:sort_action] : params[:sort_action]
+        @sort_column = params[:sort_column].blank? ? session[:sort_column] : params[:sort_column]
+        @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
+        @search_hash = params[:search_hash].blank? ? session[:search_hash] : params[:search_hash]
       end
     end
-
 
   end
 
@@ -287,10 +356,28 @@ class ApplicationController < ActionController::Base
     begin
       @current_user_organization_ids ||= current_user.organization_ids
       if @current_user_organization_ids.include?(@current_organization.id)
-        # Le code qui suit remplace les lignes du dessus
+        user = current_user
+        organization = @current_organization
+
         case params[:action]
           when "estimations", "sort", "search", "projects_list_search", "advanced_search"
-            @current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized], @min, @max, @object_per_page)
+            #@current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized], $sort_column, $sort_order, $search_hash, $min, $max, $object_per_page)
+
+            @current_ability ||= AbilityProject.new(user, organization, $organization_projects, $min, $max, $object_per_page)
+
+            # ### v4.3
+            # if params[:historized] == "1"
+            #   all_projects = Project.unscoped.includes(:project_securities).where(:is_model => [nil, false], organization_id: organization.id)
+            #   organization_projects = get_sorted_estimations(organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+            #   @current_ability ||= AbilityProject.new(user, organization, organization_projects, $min, $max, $object_per_page)
+            # else
+            #   #all_projects = OrganizationEstimation.unscoped.includes([:project, :project_securities]).where(organization_id: @current_organization.id)
+            #   all_projects = OrganizationEstimation.unscoped.includes([:project]).where(organization_id: organization.id)
+            #   organization_projects = get_sorted_estimations(organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+            #   @current_ability ||= AbilityProject.new(user, organization, organization_projects, $min, $max, $object_per_page)
+            # end
+            # ### end for v4.3
+
             #when "sort", "search", "projects_list_search"
             #@current_ability ||= AbilityProject.new(current_user, @current_organization, @current_organization.projects)
         when "projects_from"
@@ -671,6 +758,7 @@ class ApplicationController < ActionController::Base
     unless saml_auth.nil?
       saml_auth_id = saml_auth.id
     end
+
     # return the path based on resource
     if resource.password_changed == true || (resource.auth_type == saml_auth_id)
       # if user has no organization, this means that his has no group, so no right
@@ -719,7 +807,7 @@ class ApplicationController < ActionController::Base
         search_hash[column_name] = val
         search_string << "&search[#{column_name}]=#{val}"
 
-        results = get_search_results(@organization.id, organization_estimations, column_name, val).all.map(&:id)
+        results = get_search_results(organization_id, organization_estimations, column_name, val).all.map(&:id)
 
         a = results.flatten
         b = final_results.flatten

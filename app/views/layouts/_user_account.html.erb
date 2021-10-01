@@ -156,7 +156,7 @@
   <li class="divider-vertical"></li>
 
   <li>
-    <a href="<%= load_admin_setting('url_wiki') %>" title="<%= I18n.t 'wiki' %>" target="_blank" >
+    <a href="<%= @url_wiki_admin_setting ||= load_admin_setting('url_wiki') %>" title="<%= I18n.t 'wiki' %>" target="_blank" >
       <i class="fa fa-book fa-lg" ></i>
     </a>
   </li>

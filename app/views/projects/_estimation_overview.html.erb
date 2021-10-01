@@ -20,8 +20,12 @@
       </span>
     </div>
 
+    <%# selected_inline_columns = $selected_inline_columns  #update_selected_inline_columns(Project) %>
     <% selected_inline_columns = update_selected_inline_columns(Project) %>
-    <%= form_tag projects_list_search_path, remote: true do %>
+    <%#= form_tag projects_list_search_path, remote: true do %>
+    <%= form_tag organization_estimations_path(@current_organization), remote: true do %>
+      <%= hidden_field_tag :is_search_action, true %>
+
       <%= submit_tag "Rechercher", class: "hide" %>
       <table class="estimation-table main-estimation-table">
         <thead>
@@ -42,6 +46,7 @@
         </thead>
 
         <tbody>
+          <%# @projects.includes(:application, :project_area, :acquisition_category, :estimation_status, :creator).each_with_index do |project, index| %>
           <% @projects.each_with_index do |project, index| %>
             <%# if (project.private != true && current_user.id == project.creator_id) || current_user.super_admin == true %>
               <tr data-project_id="<%= project.id %>">
@@ -50,7 +55,7 @@
                   <%= column_content(@pfs, column, project, @fields_coefficients, @historized) %>
                 <% end %>
 
-                <% @project_module_projects = project.module_projects %>
+                <%# @project_module_projects = project.module_projects %>
                 <td class="estimation-table-overview-cell">
                   <div class="tools">
                     <a href="<%= edit_project_path(project) %>"><i class="material-icons">edit</i></a>

@@ -21,8 +21,6 @@
 
 class OrganizationsController < ApplicationController
 
-  # load_resource
-
   require 'will_paginate/array'
   require 'securerandom'
   require 'rubyXL'
@@ -30,6 +28,8 @@ class OrganizationsController < ApplicationController
   include ProjectsHelper
   include OrganizationsHelper
   include ActionView::Helpers::NumberHelper
+
+  skip_authorization_check  only: :estimations
 
   def service_on_demand
     @organization = Organization.find(params[:organization_id])
@@ -3445,7 +3445,6 @@ class OrganizationsController < ApplicationController
     set_page_title I18n.t(:Parameter, parameter: @organization)
 
     @fields = @organization.fields
-    @work_element_types = @organization.work_element_types
 
     @organization_profiles = @organization.organization_profiles.where("name LIKE ?", "%#{params[:advanced_search]}%")
 
@@ -3622,6 +3621,7 @@ class OrganizationsController < ApplicationController
     # render :partial => 'organizations/organization_projects', object: [@organization, @projects]
   end
 
+
   def estimations
     @organization = Organization.find(params[:organization_id])
 
@@ -3638,11 +3638,12 @@ class OrganizationsController < ApplicationController
       session[:search_hash] = {}
     end
 
-    if params[:filter_version].present?
-      @filter_version = params[:filter_version]
-    else
-      @filter_version = '4'
-    end
+    # if params[:filter_version].present?
+    #   @filter_version = params[:filter_version]
+    # else
+    #   @filter_version = '4'
+    # end
+    @filter_version = '4'
     @historized  = params[:historized]
 
     @object_per_page = (current_user.object_per_page || 10)
@@ -3660,10 +3661,13 @@ class OrganizationsController < ApplicationController
     end
 
     if session[:sort_column].blank?
-      #session[:sort_column] = "start_date"
-      project_selected_columns = @organization.project_selected_columns
-      default_sort_column = @organization.default_estimations_sort_column rescue nil
-      default_sort_order = @organization.default_estimations_sort_order rescue nil
+      # project_selected_columns = $project_selected_columns #@organization.project_selected_columns
+      # default_sort_column = $default_sort_column #@organization.default_estimations_sort_column rescue nil
+      # default_sort_order = $default_sort_order #@organization.default_estimations_sort_order rescue nil
+
+      project_selected_columns = @organization.project_selected_columns #$project_selected_columns
+      default_sort_column = @organization.default_estimations_sort_column rescue nil #$default_sort_column #
+      default_sort_order = @organization.default_estimations_sort_order rescue nil #$default_sort_order #
 
       if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
         session[:sort_column] = default_sort_column
@@ -3685,26 +3689,103 @@ class OrganizationsController < ApplicationController
     @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
     @search_hash = params[:search_hash].blank? ? session[:search_hash] : params[:search_hash]  #nil
 
-    all_projects = Organization.organization_projects_list(@organization.id, @historized)
-    #all_projects = Organization.organization_projects_list(@organization.id, @historized).accessible_by(@current_ability, :see_project)
-    organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
+    if params[:is_search_action] == "true"
+      @min = 0
+      @max = @object_per_page
+      @search_string = ""
 
-    res = []
-    if @historized
-      organization_projects.each do |p|
-        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
-          res << p
+      #search_params = params
+      search_params = HashWithIndifferentAccess.new
+      params.each { |k, v| search_params[k] = v }
+
+      search_params.delete("organization_id")
+      search_params.delete("utf8")
+      search_params.delete("commit")
+      search_params.delete("action")
+      search_params.delete("controller")
+      search_params.delete("filter_organization_projects_version")
+      search_params.delete("sort_action")
+      search_params.delete("sort_column")
+      search_params.delete("sort_order")
+      search_params.delete("min")
+      search_params.delete("max")
+      search_params.delete("is_search_action")
+      search_params.delete("filter_version")
+
+      search_params.delete_if { |k, v| v.nil? || v.blank? }
+
+      @search_hash = search_params
+      unless @search_hash.blank?
+        @search_hash.each do |k, v|
+          @search_string << "&search[#{k}]=#{v}"
         end
       end
-    else
-      organization_projects.each do |p|
-        if can?(:see_project, p.project, estimation_status_id: p.estimation_status_id)
-          res << p
-        end
-      end
+
+      session[:search_string] = @search_string
+      session[:search_hash] = @search_hash
     end
 
-    @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
+    $min = @min
+    $max = @max
+    $object_per_page = @object_per_page
+    $sort_action = @sort_action
+    $sort_column = @sort_column
+    $sort_order = @sort_order
+    $search_hash = @search_hash
+
+
+    # all_projects = Organization.organization_projects_list(@organization.id, @historized)
+    # #all_projects = Organization.organization_projects_list(@organization.id, @historized).accessible_by(@current_ability, :see_project)
+    # organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
+
+    # if @historized
+    #   organization_projects = Project.accessible_by(@current_ability, :see_project)
+    # else
+    #   organization_projects = OrganizationEstimation.accessible_by(@current_ability, :see_project)
+    # end
+
+    begin
+      if @historized == "1"
+        all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id)
+        $organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+
+        @projects_to_see = Project.accessible_by(AbilityProject.new(current_user, @organization, $organization_projects, $min, $max, $object_per_page), :see_project)
+
+      else
+        #all_projects = OrganizationEstimation.unscoped.includes([:project, :project_securities]).where(organization_id: @current_organization.id)
+        all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
+        $organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+
+        @current_ability = AbilityProject.new(current_user, @organization, $organization_projects, $min, $max, $object_per_page)
+        @projects_to_see = OrganizationEstimation.accessible_by(@current_ability, :see_project).includes([:project])
+
+        puts "Hello"
+      end
+    rescue
+      []
+    end
+
+
+
+    res = @projects_to_see.includes([:application, :project_area, :acquisition_category, :estimation_status, :creator]) #$all_projects_to_see #[]
+
+    # #if @historized
+    #   organization_projects.each do |p|
+    #     if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+    #       res << p
+    #     end
+    #   end
+    # else
+    #   organization_projects.each do |p|
+    #     if can?(:see_project, p.project, estimation_status_id: p.estimation_status_id)
+    #       res << p
+    #     end
+    #   end
+    # end
+
+    #@projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    @projects = res[0..@object_per_page].nil? ? [] : res[0..@object_per_page-1]
 
     last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
     @last_page_min = (last_page.to_i-1) * @object_per_page
@@ -3728,7 +3809,199 @@ class OrganizationsController < ApplicationController
     @pfs = {}
 
     fields = @organization.fields
-    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
+    ProjectField.includes([:project, :views_widget]).where(project_id: @projects.map(&:id).uniq).each do |pf|
+      begin
+        if pf.field_id.in?(fields.map(&:id))
+          if pf.project && pf.views_widget
+            views_widget = pf.views_widget.includes([:module_project])
+            if pf.project_id == views_widget.module_project.project_id
+
+              if pf.field.name.to_s.in?(["Max. Staff.", "Staff. max."])
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = (pf.value.blank? ? nil : pf.value.to_f.round_up_by_step(0.1).round(1))
+              else
+                @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = pf.value
+              end
+            else
+              pf.delete
+            end
+          else
+            pf.delete
+          end
+        else
+          pf.delete
+        end
+
+      rescue
+        #puts "erreur"
+      end
+    end
+
+    fields.each do |f|
+      @fields_coefficients[f.id] = f.coefficient
+    end
+  end
+
+
+
+  def estimations_save_21092021_10h37
+    @organization = Organization.find(params[:organization_id])
+
+    check_if_organization_is_image(@organization)
+
+    set_breadcrumbs I18n.t(:organizations) => "/all_organizations?organization_id=#{@organization.id}", @organization.to_s => ""
+    set_page_title I18n.t(:spec_estimations, parameter: @organization.to_s)
+
+    #lorsqu'on active l'organisation, on supprime les paramètres de tri et de recherche
+    if params[:activate_organization] == "true"
+      session[:sort_column] = nil
+      session[:sort_order] = nil
+      session[:sort_action] = nil
+      session[:search_hash] = {}
+    end
+
+    # if params[:filter_version].present?
+    #   @filter_version = params[:filter_version]
+    # else
+    #   @filter_version = '4'
+    # end
+    @filter_version = '4'
+    @historized  = params[:historized]
+
+    @object_per_page = (current_user.object_per_page || 10)
+
+    if params[:min].present? && params[:max].present?
+      @min = params[:min].to_i
+      @max = params[:max].to_i
+    else
+      @min = 0
+      @max = @object_per_page
+    end
+
+    if session[:sort_action].blank?
+      session[:sort_action] = "true"
+    end
+
+    if session[:sort_column].blank?
+      #session[:sort_column] = "start_date"
+      project_selected_columns = $project_selected_columns #@organization.project_selected_columns
+      default_sort_column = $default_sort_column #@organization.default_estimations_sort_column rescue nil
+      default_sort_order = $default_sort_order #@organization.default_estimations_sort_order rescue nil
+
+      if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
+        session[:sort_column] = default_sort_column
+        session[:sort_order] = default_sort_order
+      else
+        session[:sort_column] = "created_at"
+        session[:sort_order] = "desc"
+      end
+    end
+
+    if session[:sort_order].blank?
+      if session[:sort_column].in?(["start_date", "created_at"])
+        session[:sort_order] ="desc"
+      end
+    end
+
+    @sort_action = params[:sort_action].blank? ? session[:sort_action] : params[:sort_action]
+    @sort_column = params[:sort_column].blank? ? session[:sort_column] : params[:sort_column]
+    @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
+    @search_hash = params[:search_hash].blank? ? session[:search_hash] : params[:search_hash]  #nil
+
+    if params[:is_search_action] == "true"
+      @min = 0
+      @max = @object_per_page
+      @search_string = ""
+
+      search_params = params
+      search_params.delete("utf8")
+      search_params.delete("commit")
+      search_params.delete("action")
+      search_params.delete("controller")
+      search_params.delete("filter_organization_projects_version")
+      search_params.delete("sort_action")
+      search_params.delete("sort_column")
+      search_params.delete("sort_order")
+      search_params.delete("min")
+      search_params.delete("max")
+      search_params.delete("is_search_action")
+      search_params.delete("filter_version")
+
+      search_params.delete_if { |k, v| v.nil? || v.blank? }
+
+      @search_hash = search_params
+      unless @search_hash.blank?
+        @search_hash.each do |k, v|
+          @search_string << "&search[#{k}]=#{v}"
+        end
+      end
+
+      session[:search_string] = @search_string
+      session[:search_hash] = @search_hash
+
+    end
+
+
+    $min = @min
+    $max = @max
+    $object_per_page = @object_per_page
+    $sort_action = @sort_action
+    $sort_column = @sort_column
+    $sort_order = @sort_order
+    $search_hash = @search_hash
+
+
+    # all_projects = Organization.organization_projects_list(@organization.id, @historized)
+    # #all_projects = Organization.organization_projects_list(@organization.id, @historized).accessible_by(@current_ability, :see_project)
+    # organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
+
+    # if @historized
+    #   organization_projects = Project.accessible_by(@current_ability, :see_project)
+    # else
+    #   organization_projects = OrganizationEstimation.accessible_by(@current_ability, :see_project)
+    # end
+
+
+    res = $all_projects_to_see #[]
+    # #if @historized
+    #   organization_projects.each do |p|
+    #     if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+    #       res << p
+    #     end
+    #   end
+    # else
+    #   organization_projects.each do |p|
+    #     if can?(:see_project, p.project, estimation_status_id: p.estimation_status_id)
+    #       res << p
+    #     end
+    #   end
+    # end
+
+    #@projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    @projects = res[0..@object_per_page].nil? ? [] : res[0..@object_per_page-1]
+
+    last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
+    @last_page_min = (last_page.to_i-1) * @object_per_page
+    @last_page_max = @last_page_min + @object_per_page
+
+    if params[:is_last_page] == "true" || (@min == @last_page_min)
+      @is_last_page = "true"
+    else
+      @is_last_page = "false"
+    end
+
+    session[:sort_column] = @sort_column
+    session[:sort_order] = @sort_order
+    session[:sort_action] = @sort_action
+    session[:is_last_page] = @is_last_page
+    session[:search_column] = @search_column
+    session[:search_value] = @search_value
+    session[:search_hash] = @search_hash
+
+    @fields_coefficients = {}
+    @pfs = {}
+
+    fields = @organization.fields
+    ProjectField.includes([:project, :views_widget, :field]).where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
         if pf.field_id.in?(fields.map(&:id))
           if pf.project && pf.views_widget
@@ -3758,8 +4031,6 @@ class OrganizationsController < ApplicationController
       @fields_coefficients[f.id] = f.coefficient
     end
   end
-
-
   private def check_for_projects(start_number, desired_size)
 
     organization_estimations = @organization.organization_estimations
@@ -5062,9 +5333,7 @@ class OrganizationsController < ApplicationController
 
     @users = @organization.users
     @fields = @organization.fields
-
     @organization_profiles = @organization.organization_profiles
-    @work_element_types = @organization.work_element_types
 
     @reports_list = ["filtered_excel_report", "detailed_excel_report", "detailed_pdf_report", "raw_data_extract", "budget_report", "budget_excel_report"]
     @kpi_list = ["quote_creation_duration_kpi", "fp_delivered_number_kpi", "global_budget", "estimations_total_kpi", "projects_stability_indicators", "general_dashboard"]
@@ -5690,7 +5959,13 @@ class OrganizationsController < ApplicationController
       end
       @current_organization.default_estimations_sort_column = params[:default_estimations_sort_column]
       @current_organization.default_estimations_sort_order = params[:default_estimations_sort_order]
-      @current_organization.save
+
+      if @current_organization.save
+        $project_selected_columns = @current_organization.project_selected_columns
+        $default_sort_column = @current_organization.default_estimations_sort_column rescue nil
+        $default_sort_order = @current_organization.default_estimations_sort_order rescue nil
+        $selected_inline_columns = update_selected_inline_columns(Project)
+      end
     end
 
     respond_to do |format|
@@ -5780,7 +6055,6 @@ class OrganizationsController < ApplicationController
     @item_title = params[:item_title]
 
     @fields = @organization.fields
-    @work_element_types = @organization.work_element_types
     @organization_profiles = @organization.organization_profiles
     @organization_group = @organization.groups
     @estimation_models = Project.where(organization_id: @organization.id, :is_model => true) #@organization.projects.where(:is_model => true)
@@ -7021,6 +7295,117 @@ class OrganizationsController < ApplicationController
         error_message = (organization.is_image_organization == true)? I18n.t(:can_not_access_the_estimates_of_an_image_organization) : I18n.t(:not_authorized_to_access_this_organization)
         redirect_to("/all_organizations", flash: { error: error_message }) and return
       end
+    end
+  end
+
+  def get_projects_for_estimation_list
+    organization_id = params[:organization_id]
+    @organization = Organization.find(organization_id) #@current_organization
+
+    #lorsqu'on active l'organisation, on supprime les paramètres de tri et de recherche
+    if params[:activate_organization] == "true"
+      session[:sort_column] = nil
+      session[:sort_order] = nil
+      session[:sort_action] = nil
+      session[:search_hash] = {}
+    end
+
+    @filter_version = '4'
+    @historized  = params[:historized]
+
+    @object_per_page = (current_user.object_per_page || 10)
+
+    if params[:min].present? && params[:max].present?
+      @min = params[:min].to_i
+      @max = params[:max].to_i
+    else
+      @min = 0
+      @max = @object_per_page
+    end
+
+    if session[:sort_action].blank?
+      session[:sort_action] = "true"
+    end
+
+    if session[:sort_column].blank?
+      project_selected_columns = @organization.project_selected_columns #$project_selected_columns
+      default_sort_column = @organization.default_estimations_sort_column rescue nil #$default_sort_column #
+      default_sort_order = @organization.default_estimations_sort_order rescue nil #$default_sort_order #
+
+      if !default_sort_column.blank? && default_sort_column.in?(project_selected_columns)
+        session[:sort_column] = default_sort_column
+        session[:sort_order] = default_sort_order
+      else
+        session[:sort_column] = "created_at"
+        session[:sort_order] = "desc"
+      end
+    end
+
+    if session[:sort_order].blank?
+      if session[:sort_column].in?(["start_date", "created_at"])
+        session[:sort_order] ="desc"
+      end
+    end
+
+    @sort_action = params[:sort_action].blank? ? session[:sort_action] : params[:sort_action]
+    @sort_column = params[:sort_column].blank? ? session[:sort_column] : params[:sort_column]
+    @sort_order = params[:sort_order].blank? ? session[:sort_order] : params[:sort_order]
+    @search_hash = params[:search_hash].blank? ? session[:search_hash] : params[:search_hash]  #nil
+
+    if params[:is_search_action] == "true"
+      @min = 0
+      @max = @object_per_page
+      @search_string = ""
+
+      search_params = HashWithIndifferentAccess.new
+      params.each { |k, v| search_params[k] = v }
+
+      search_params.delete("organization_id")
+      search_params.delete("utf8")
+      search_params.delete("commit")
+      search_params.delete("action")
+      search_params.delete("controller")
+      search_params.delete("filter_organization_projects_version")
+      search_params.delete("sort_action")
+      search_params.delete("sort_column")
+      search_params.delete("sort_order")
+      search_params.delete("min")
+      search_params.delete("max")
+      search_params.delete("is_search_action")
+      search_params.delete("filter_version")
+      search_params.delete_if { |k, v| v.nil? || v.blank? }
+
+      @search_hash = search_params
+      unless @search_hash.blank?
+        @search_hash.each do |k, v|
+          @search_string << "&search[#{k}]=#{v}"
+        end
+      end
+
+      session[:search_string] = @search_string
+      session[:search_hash] = @search_hash
+    end
+
+    $min = @min
+    $max = @max
+    $object_per_page = @object_per_page
+    $sort_action = @sort_action
+    $sort_column = @sort_column
+    $sort_order = @sort_order
+    $search_hash = @search_hash
+
+    begin
+      if params[:historized] == "1"
+        all_projects = Project.unscoped.includes(:project_securities).where(:is_model => [nil, false], organization_id: @organization.id)
+        $organization_projects = get_sorted_estimations(organization_id, all_projects, $sort_column, $sort_order, $search_hash)
+      else
+        #all_projects = OrganizationEstimation.unscoped.includes([:project, :project_securities]).where(organization_id: @current_organization.id)
+        all_projects = OrganizationEstimation.unscoped.includes([:project]).where(organization_id: organization_id)
+        $organization_projects = get_sorted_estimations(organization_id, all_projects, $sort_column, $sort_order, $search_hash)
+        puts "Hello"
+      end
+    rescue
+      []
     end
   end
 
