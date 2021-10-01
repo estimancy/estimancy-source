@@ -56,10 +56,19 @@
 </td>
 
 <%# guow.guw_unit_of_work_attributes %>
-<% guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(organization_id: organization_id,
+<%# guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(organization_id: organization_id,
                                                                         guw_model_id: guw_model_id,
                                                                         guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
                                                                         guw_unit_of_work_id: guow.id) %>
+<!--#=== fonction de purge =====-->
+<% all_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes %>
+<% all_guw_unit_of_work_attributes.where.not(project_id: guow.project_id).destroy_all %>
+<% all_guw_unit_of_work_attributes.where.not(guw_type_id: guow.guw_type_id).destroy_all %>
+<!--#=== fonction de purge =====-->
+
+<% guow_guw_unit_of_work_attributes = all_guw_unit_of_work_attributes.where(organization_id: organization_id,
+                                                                        guw_model_id: guw_model_id,
+                                                                        guw_type_id: @guw_type.nil? ? nil : @guw_type.id) %>
 
 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
   <% if i[1].blank? %>
@@ -93,7 +102,7 @@
                                                                  guw_coefficient_id: guw_coefficient.id,
                                                                  project_id: @project.id,
                                                                  module_project_id: current_mp.id,
-                                                                 guw_unit_of_work_id: guow.id).first
+                                                                 guw_unit_of_work_id: guow.id).last#.first
                unless ceuw.nil?
                  elm = ceuw.guw_coefficient_element
                  has_element = false
@@ -133,7 +142,7 @@
           <% end %>
         </td>
       <% end %>
-    <% elsif i[0] == "Coeff. complexity" || i[0] == "Coeff. de Complexité" || i[0] == I18n.t(:cplx_coeff) %>
+    <% elsif i[0] == "Coeff. complexity" || i[0] == "Coeff. de Complexité" || i[0] == "Coeff. de complexité" || i[0] == I18n.t(:cplx_coeff) %>
       <% unless @guw_type.nil? %>
         <% @guw_complexities = @guw_type.guw_complexities.where(organization_id: organization_id, guw_model_id: guw_model_id).order("display_order ASC") %>
       <% end %>
@@ -195,7 +204,7 @@
                                          style: "text-align: right; width: 80%;",
                                          class: "complexity_weight-#{uowg.id} guw-#{guow.id} form-control form-control-sm",
                                          guw: guow.id,
-                                         title: guow.cplx_comments,
+                                         # title: guow.cplx_comments,
                                          readonly: !(@guw_type.allow_retained == true),
                                          title: guow.cplx_comments.blank? ? @guw_type.description : guow.cplx_comments,
                                          readonly: true %>
@@ -349,6 +358,22 @@
                             "&value=" + $(this).val() +
                             "&previousValue=" + parseFloat(previousSavedValue)
                           });
+                        }
+
+                        else{
+
+                            $("#guw_form").bind("submit");
+                            $(".guw_submit").prop("disabled", true);
+
+                            $.ajax({
+                                url: "<%= guw.save_coefficient_comments_path(guow.id) %>",
+                                data: "guw_coefficient_id=" + $(this).attr("coeff_id") +
+                                    "&guw_unit_of_work_id=" + $(this).attr("guw") +
+                                    "&guw_coefficient_element_id=" + $(this).attr("coeff_element_id") +
+                                    "&value=" + $(this).val() +
+                                    "&comments=" + "" +
+                                    "&previousValue=" + parseFloat(previousSavedValue)
+                            });
                         }
                       });
                     });

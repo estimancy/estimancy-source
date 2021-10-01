@@ -1,0 +1,19 @@
+Bonjour <%= @user %>,
+
+<br>
+
+Votre <%= @action_title %> lancé sur Estimancy pour le <%= @organization.name %> est téléchargeable directement en cliquant sur
+<%#= link_to "lien suivant", download_extraction_file_url(@filename, :protocol => 'https') %>.
+<%= link_to "lien suivant", download_extraction_file_url(@organization.id, :protocol => 'https') %>.
+
+<%#= link_to "lien suivant", download_url(@organization.id), download: true %>
+<%#= link_to "lien suivant", download_url(@organization.id), :target => '_blank' %>
+
+<br>
+<br>
+
+Bien cordialement,
+
+<br>
+
+L'équipe Estimancy.

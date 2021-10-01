@@ -825,10 +825,10 @@ class ProjectsController < ApplicationController
     Guw::GuwUnitOfWorkAttribute.find_each do |uowa|
       unless Guw::GuwUnitOfWork.where(id: uowa.guw_unit_of_work_id).exists?
         guw_uowa_count = guw_uowa_count+1
-        #uowa.delete
+        uowa.delete
       end
     end
-    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"
+    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"  # 295686 + 6815 + 408512
 
 
     #==== Donnes fantomes pour : GuwCoefficientElementUnitOfWork (Nb fantôme = 343 964)  nb total records = 2 162 426
@@ -839,8 +839,21 @@ class ProjectsController < ApplicationController
         ceuow.delete
       end
     end
-    puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}"
+    puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}" # 408513
 
+    #=== Utilisateurs fantômes qui ne sont rattachés à aucune organisation
+
+    fantome_user_count = 0
+    User.find_each do |user|
+      if user.organizations.all.size == 0
+        fantome_user_count = fantome_user_count+1
+        #puts user
+        user.delete
+      end
+    end
+    puts "NB user fantômes = #{fantome_user_count}" #NB user fantômes = 153
+
+    # ====
 
     #===================  Date de creation > '2020-07-01'  ==========================
     #Project.joins(:organization, :estimation_status).where('projects.created_at < ?', '2020-07-01'.to_date).group('organizations.name', 'estimation_statuses.name').order('organizations.name', 'estimation_statuses.name').count
@@ -2138,7 +2151,6 @@ class ProjectsController < ApplicationController
 
   end
 
-
   def download
     @organization = Organization.find(params[:organization_id])
     send_file(
@@ -2147,6 +2159,7 @@ class ProjectsController < ApplicationController
         type: "application/vnd.ms-excel"
     )
   end
+
 
   def build_rapport
     pdf = WickedPdf.new.pdf_from_url(rapport_url)

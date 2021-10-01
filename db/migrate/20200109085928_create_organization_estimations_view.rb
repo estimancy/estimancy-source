@@ -1,3 +1,5 @@
+#anciennement : 20170703085928_create_organization_estimations_view
+# 20200109085928
 
 class CreateOrganizationEstimationsView < ActiveRecord::Migration
 
@@ -15,7 +17,6 @@ class CreateOrganizationEstimationsView < ActiveRecord::Migration
       ORDER BY current_organization_id, project_created_date DESC;
 
     SQL
-
 
     # execute <<-SQL
     #

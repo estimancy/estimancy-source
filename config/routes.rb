@@ -536,6 +536,7 @@ Projestimate::Application.routes.draw do
   get 'projects_quantity' => 'organizations#projects_quantity'
 
   get "download/:organization_id" => 'projects#download', as: 'download'
+  get "download_extraction_file/:organization_id" => 'organizations#download_extraction_file', as: 'download_extraction_file'
 
   post 'delete' => 'demands#delete'
 
