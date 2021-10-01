@@ -1,10 +1,11 @@
 $("#cplx_comments").modal('toggle');
 
-
 <% new_comments = @guw_unit_of_work.cplx_comments.blank? ? @guw_unit_of_work.guw_type&.description : @guw_unit_of_work.cplx_comments %>
 $("#complexity_coeff_ajusted_<%= @guw_unit_of_work.id %>").prop('title', "<%= new_comments %>");
 
 <% if @guw_unit_of_work.intermediate_percent.to_f.round(3) != @guw_unit_of_work.intermediate_weight.to_f.round(3) %>
   <% color = @guw_unit_of_work.guw_type.color_code %>
   $("#complexity_coeff_ajusted_<%= @guw_unit_of_work.id %>").css('background-color','<%= "##{color}" %>');
+<% else %>
+  $("#complexity_coeff_ajusted_<%= @guw_unit_of_work.id %>").css('background-color', '');
 <% end %>

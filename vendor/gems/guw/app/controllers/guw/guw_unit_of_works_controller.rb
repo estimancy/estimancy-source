@@ -202,6 +202,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_unit_of_work.cplx_comments = params[:cplx_comments]
     @guw_unit_of_work.intermediate_weight = @value.to_f
+    if @guw_unit_of_work.intermediate_weight.to_f.round(3) == @guw_unit_of_work.intermediate_percent.to_f.round(3)
+      @guw_unit_of_work.cplx_comments = ""
+    end
     @guw_unit_of_work.save
 
     # redirect_to main_app.dashboard_path(@project, recalculate: true)
@@ -218,7 +221,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                        guw_coefficient_id: @guw_coefficient.id,
                                                        project_id: @guw_unit_of_work.project_id,
                                                        module_project_id: @guw_unit_of_work.module_project_id,
-                                                       guw_unit_of_work_id: @guw_unit_of_work.id).first
+                                                       guw_unit_of_work_id: @guw_unit_of_work.id).last#.first   #SGA
   end
 
   def save_coefficient_comments
@@ -234,7 +237,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_coefficient = Guw::GuwCoefficient.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_coefficient_id]).first  #.find(params[:guw_coefficient_id])
     @guw_coefficient_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization.id, guw_model_id: @guw_model.id, id: params[:guw_coefficient_element_id])
     @guw_coefficient_element = @guw_coefficient_guw_coefficient_elements.first   #.find(params[:guw_coefficient_element_id])
-    @default_coeff_elt = @guw_coefficient_guw_coefficient_elements.select{|i| i.default == true }.first
+    #@default_coeff_elt = @guw_coefficient_guw_coefficient_elements.select{|i| i.default == true }.first
 
     @ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                        guw_model_id: @guw_model.id,
@@ -273,8 +276,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       #=== fonction de purge =====
       @guw_unit_of_work.guw_unit_of_work_attributes.where.not(project_id: @guw_unit_of_work.project_id).destroy_all
-      #@guw_unit_of_work.guw_unit_of_work_attributes.where.not(guw_type_id: @guw_unit_of_work.guw_type_id).destroy_all
-
+      @guw_unit_of_work.guw_unit_of_work_attributes.where.not(guw_type_id: @guw_unit_of_work.guw_type_id).destroy_all
       #=== fonction de purge =====
 
       unless sum_range.nil? || sum_range.blank? || sum_range == 0

@@ -41,6 +41,8 @@ Guw::Engine.routes.draw do
     post "save_cplx_comments"
   end
 
+  get 'save_coefficient_comments' => 'guw_unit_of_works#save_coefficient_comments', :as => 'save_coefficient_comments'
+
   post "ai_auto_sizing" => "guw_unit_of_works#ai_auto_sizing"
   post "ai_control" => "guw_unit_of_works#ai_control"
 
