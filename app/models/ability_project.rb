@@ -161,10 +161,10 @@ class AbilityProject
 
                       permissions.each do |permission|
                         if permission.alias == "manage" and permission.category == "Project"
-                          #can :manage, [project, op], estimation_status_id: estimation_status_id
+                          can :manage, [project, op], estimation_status_id: estimation_status_id
                           can :manage, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
                         else
-                          #can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
+                          can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
                           can permission.alias.to_sym, [Project, OrganizationEstimation], id: project.id,  estimation_status_id: estimation_status_id
                         end
                         nb_permissions_per_project += 1
@@ -181,10 +181,10 @@ class AbilityProject
                         #nothing
                       else
                         if permission.alias == "manage" and permission.category == "Project"
-                          #can :manage, [project, op], estimation_status_id: estimation_status_id
+                          can :manage, [project, op], estimation_status_id: estimation_status_id
                           can :manage, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
                         else
-                          #can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
+                          can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
                           can permission.alias.to_sym, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
                         end
                         nb_permissions_per_project += 1
