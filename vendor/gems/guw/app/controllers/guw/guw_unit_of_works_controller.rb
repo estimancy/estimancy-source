@@ -221,7 +221,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                        guw_coefficient_id: @guw_coefficient.id,
                                                        project_id: @guw_unit_of_work.project_id,
                                                        module_project_id: @guw_unit_of_work.module_project_id,
-                                                       guw_unit_of_work_id: @guw_unit_of_work.id).last#.first   #SGA
+                                                       guw_unit_of_work_id: @guw_unit_of_work.id).first
   end
 
   def save_coefficient_comments
