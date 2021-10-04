@@ -202,6 +202,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_unit_of_work.cplx_comments = params[:cplx_comments]
     @guw_unit_of_work.intermediate_weight = @value.to_f
+
     if @guw_unit_of_work.intermediate_weight.to_f.round(3) == @guw_unit_of_work.intermediate_percent.to_f.round(3)
       @guw_unit_of_work.cplx_comments = ""
     end
