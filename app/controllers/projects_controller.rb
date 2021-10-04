@@ -841,6 +841,80 @@ class ProjectsController < ApplicationController
     end
     puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}" # 408513
 
+
+    Guw::GuwUnitOfWork.where(organization_id: @organization.id,
+                             guw_model_id: @guw_model.id,
+                             project_id:  @project.id,
+                             module_project_id: @module_project.id,
+                             id: @modified_guw_line_ids).includes(:guw_type, :guw_complexity).order("name ASC")
+
+
+    #Dans cette table, il ya plusieurs elts pour une ligne d'UO, ce qui n'est pas normal
+    guw_ceuow_count_to_delete = 0
+    Organization.all.each do |organization|
+      puts "CDS  =  #{organization}"
+
+      guw_ceuow_count_to_delete_per_cds = 0
+      Guw::GuwUnitOfWork.where(organization_id: organization.id).each_with_index do |guw_unit_of_work, i|
+
+        organization_id = guw_unit_of_work.organization_id
+        guw_model = guw_unit_of_work.guw_model
+        guw_model_id = guw_unit_of_work.guw_model_id
+        project_id = guw_unit_of_work.project_id
+        module_project_id = guw_unit_of_work.module_project_id
+        guw_unit_of_work_id = guw_unit_of_work.id
+
+        @guw_coefficients = guw_model.guw_coefficients.where(organization_id: organization_id)
+        @guw_coefficients.each do |guw_coefficient|
+          #guw_coefficient_guw_coefficient_elements = guw_coefficient.guw_coefficient_elements.where(organization_id: organization.id, guw_model_id: @guw_model.id)
+
+          guw_coefficient_id = guw_coefficient.id
+          if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
+
+            ceuws = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                            guw_model_id: guw_model_id,
+                                                            guw_coefficient_id: guw_coefficient_id,
+                                                            #guw_coefficient_element_id: nil,
+                                                            project_id: project_id,
+                                                            module_project_id: module_project_id,
+                                                            guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC")
+
+
+            ce = Guw::GuwCoefficientElement.where(organization_id: organization_id,
+                                                  guw_model_id: guw_model_id,
+                                                  guw_coefficient_id: guw_coefficient_id).first
+
+            last_ceuw = ceuws.last
+            if ce && ce.value.to_f == 100
+              if last_ceuw.percent.to_f != 100
+                first_ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                   guw_model_id: guw_model_id,
+                                                                   guw_coefficient_id: guw_coefficient_id,
+                                                                   guw_coefficient_element_id: ce.id,
+                                                                   project_id: project_id,
+                                                                   module_project_id: module_project_id,
+                                                                   guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC").first
+
+                comments = first_ceuw.comments rescue nil
+                last_ceuw.comments = comments
+              end
+            end
+
+            last_ceuw.guw_coefficient_element_id = ce.id
+            last_ceuw.save
+            guw_ceuow_count_to_delete = guw_ceuow_count_to_delete + ceuws.size - 1
+
+            #delete others
+            ceuws.where.not(id: last_ceuw).delete_all
+
+          end
+        end
+      end
+      puts "CDS #{organization} : Nb GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete_per_cds}"
+    end
+    puts "Nb TOTAL GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete}"
+
+
     #=== Utilisateurs fantômes qui ne sont rattachés à aucune organisation
 
     fantome_user_count = 0
