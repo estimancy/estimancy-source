@@ -238,18 +238,16 @@
                             }
                             else{
 
-                                $("#guw_form").bind("submit");
-                                $(".submit_comments").prop("disabled", true);
+                              $("#guw_form").bind("submit");
+                              $(".submit_comments").prop("disabled", true);
 
-                                $.ajax({
-                                    url: "<%= guw.save_cplx_comments_path %>",
-                                    data: "guw_unit_of_work_id=" + $(this).attr("guw") +
-                                        "&value=" + currentValue +
-                                        "&previousValue=" + parseFloat(previousSavedValue)
-                                });
-
+                              $.ajax({
+                                  url: "<%= guw.save_cplx_comments_path %>",
+                                  data: "guw_unit_of_work_id=" + $(this).attr("guw") +
+                                      "&value=" + currentValue +
+                                      "&previousValue=" + parseFloat(previousSavedValue)
+                              });
                             }
-
                           });
                         });
                       </script>
@@ -352,13 +350,12 @@
                   <script>
                     //$(document).ready(function(){
                     $(document).ready(function() {
-                      var defaultValue = <%= @guw_coefficient_guw_coefficient_elements.first.default_display_value.to_f %>;
-                      var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
-                      var currentValue ;
 
                       $("#guw input.coeff_<%= guow.id %>_<%= @guw_coefficient.id %>_<%= @guw_coefficient_guw_coefficient_elements.first.id %>").on("change", function(event){
 
-                        currentValue = $(this).val();
+                        var defaultValue = <%= @guw_coefficient_guw_coefficient_elements.first.default_display_value.to_f %>;
+                        var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
+                        var currentValue = $(this).val();
 
                         if(parseFloat(currentValue) != parseFloat(defaultValue)) {
 
