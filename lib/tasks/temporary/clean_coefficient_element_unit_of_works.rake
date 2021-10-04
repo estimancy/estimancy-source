@@ -37,8 +37,8 @@ namespace :guw_models do
       organization_id = organization.id
 
       organization.guw_models.each do |guw_model|
-
         guw_model_id = guw_model.id
+
         Guw::GuwUnitOfWork.where(organization_id: organization.id, guw_model_id: guw_model_id).each_with_index do |guw_unit_of_work, i|
 
           project_id = guw_unit_of_work.project_id
@@ -47,7 +47,6 @@ namespace :guw_models do
 
           guw_coefficients = guw_model.guw_coefficients.where(organization_id: organization_id)
           guw_coefficients.each do |guw_coefficient|
-            #guw_coefficient_guw_coefficient_elements = guw_coefficient.guw_coefficient_elements.where(organization_id: organization.id, guw_model_id: @guw_model.id)
 
             guw_coefficient_id = guw_coefficient.id
             if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
@@ -63,9 +62,7 @@ namespace :guw_models do
 
               last_ceuw = ceuws.last
               if last_ceuw
-                ce = Guw::GuwCoefficientElement.where(organization_id: organization_id,
-                                                      guw_model_id: guw_model_id,
-                                                      guw_coefficient_id: guw_coefficient_id).first
+                ce = Guw::GuwCoefficientElement.where(organization_id: organization_id, guw_model_id: guw_model_id, guw_coefficient_id: guw_coefficient_id).first
 
                 if ce && ce.value.to_f == 100
                   if last_ceuw.percent.to_f != 100
@@ -83,13 +80,15 @@ namespace :guw_models do
                 end
 
                 last_ceuw.guw_coefficient_element_id = ce.id
-                #last_ceuw.save
+                last_ceuw.save
 
                 other_ceuows = ceuws.where.not(id: last_ceuw.id)
-                guw_ceuow_count_to_delete = guw_ceuow_count_to_delete + other_ceuows.size
+                other_ceuows_size = other_ceuows.size
+                guw_ceuow_count_to_delete = guw_ceuow_count_to_delete + other_ceuows_size
+                guw_ceuow_count_to_delete_per_cds = guw_ceuow_count_to_delete_per_cds + other_ceuows_size
 
                 #delete others
-                #other_ceuows.delete_all
+                other_ceuows.delete_all
               end
             end
           end
@@ -98,7 +97,7 @@ namespace :guw_models do
       puts "CDS #{organization} : Nb GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete_per_cds}"
     end
 
-    puts "Nb TOTAL GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete}"
+    puts "Nb TOTAL GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete}"  #sur test2 = Nb TOTAL GuwCoefficientElementUnitOfWork en plus = 407918
 
   end
 end
