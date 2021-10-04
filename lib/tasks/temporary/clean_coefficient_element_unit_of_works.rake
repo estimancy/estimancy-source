@@ -19,15 +19,16 @@
 #
 #############################################################################
 
-# rake guw_models:coefficient_element_unit_of_works RAILS_ENV=production
+# rake guw_models:clean_coefficient_element_unit_of_works RAILS_ENV=production
 namespace :guw_models do
 
   desc 'Clean coefficient_element_unit_of_works'
 
-  task :coefficient_element_unit_of_works => :environment do
+  task :clean_coefficient_element_unit_of_works => :environment do
 
     #Dans cette table, il ya plusieurs elts pour une ligne d'UO, ce qui n'est pas normal
     guw_ceuow_count_to_delete = 0
+
     Organization.all.each do |organization|
       puts "CDS  =  #{organization}"
       guw_ceuow_count_to_delete_per_cds = 0
