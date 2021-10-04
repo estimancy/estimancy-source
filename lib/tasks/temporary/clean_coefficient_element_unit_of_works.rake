@@ -19,12 +19,12 @@
 #
 #############################################################################
 
-# rake guw_models:guw_models RAILS_ENV=production
+# rake guw_models:coefficient_element_unit_of_works RAILS_ENV=production
 namespace :guw_models do
 
   desc 'Clean coefficient_element_unit_of_works'
 
-  task :guw_models => :environment do
+  task :coefficient_element_unit_of_works => :environment do
 
     #Dans cette table, il ya plusieurs elts pour une ligne d'UO, ce qui n'est pas normal
     guw_ceuow_count_to_delete = 0
@@ -92,6 +92,7 @@ namespace :guw_models do
       end
       puts "CDS #{organization} : Nb GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete_per_cds}"
     end
+
     puts "Nb TOTAL GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete}"
 
   end
