@@ -28,65 +28,68 @@ namespace :guw_models do
 
     #Dans cette table, il ya plusieurs elts pour une ligne d'UO, ce qui n'est pas normal
     guw_ceuow_count_to_delete = 0
-
+    nb_guw_unit_of_work_with_no_model = 0
     Organization.all.each do |organization|
+
       puts "CDS  =  #{organization}"
       guw_ceuow_count_to_delete_per_cds = 0
 
-      Guw::GuwUnitOfWork.where(organization_id: organization.id).each_with_index do |guw_unit_of_work, i|
+      organization_id = organization.id
 
-        organization_id = guw_unit_of_work.organization_id
-        guw_model = guw_unit_of_work.guw_model
-        guw_model_id = guw_unit_of_work.guw_model_id
-        project_id = guw_unit_of_work.project_id
-        module_project_id = guw_unit_of_work.module_project_id
-        guw_unit_of_work_id = guw_unit_of_work.id
+      organization.guw_models.each do |guw_model|
+        guw_model_id = guw_model.id
 
-        @guw_coefficients = guw_model.guw_coefficients.where(organization_id: organization_id)
-        @guw_coefficients.each do |guw_coefficient|
-          #guw_coefficient_guw_coefficient_elements = guw_coefficient.guw_coefficient_elements.where(organization_id: organization.id, guw_model_id: @guw_model.id)
+        Guw::GuwUnitOfWork.where(organization_id: organization.id, guw_model_id: guw_model_id).each_with_index do |guw_unit_of_work, i|
 
-          guw_coefficient_id = guw_coefficient.id
-          if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
+          project_id = guw_unit_of_work.project_id
+          module_project_id = guw_unit_of_work.module_project_id
+          guw_unit_of_work_id = guw_unit_of_work.id
 
-            ceuws = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                                               guw_model_id: guw_model_id,
-                                                               guw_coefficient_id: guw_coefficient_id,
-                                                               #guw_coefficient_element_id: nil,
-                                                               project_id: project_id,
-                                                               module_project_id: module_project_id,
-                                                               guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC")
+          guw_coefficients = guw_model.guw_coefficients.where(organization_id: organization_id)
+          guw_coefficients.each do |guw_coefficient|
+
+            guw_coefficient_id = guw_coefficient.id
+            if guw_coefficient.coefficient_type == "Pourcentage" || guw_coefficient.coefficient_type == "Coefficient"
+
+              ceuws = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                 guw_model_id: guw_model_id,
+                                                                 guw_coefficient_id: guw_coefficient_id,
+                                                                 #guw_coefficient_element_id: nil,
+                                                                 project_id: project_id,
+                                                                 module_project_id: module_project_id,
+                                                                 guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC")
 
 
-            last_ceuw = ceuws.last
-            if last_ceuw
-              ce = Guw::GuwCoefficientElement.where(organization_id: organization_id,
-                                                    guw_model_id: guw_model_id,
-                                                    guw_coefficient_id: guw_coefficient_id).first
+              last_ceuw = ceuws.last
+              if last_ceuw
+                ce = Guw::GuwCoefficientElement.where(organization_id: organization_id, guw_model_id: guw_model_id, guw_coefficient_id: guw_coefficient_id).first
 
-              if ce && ce.value.to_f == 100
-                if last_ceuw.percent.to_f != 100
-                  first_ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                                                          guw_model_id: guw_model_id,
-                                                                          guw_coefficient_id: guw_coefficient_id,
-                                                                          guw_coefficient_element_id: ce.id,
-                                                                          project_id: project_id,
-                                                                          module_project_id: module_project_id,
-                                                                          guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC").first
+                if ce && ce.value.to_f == 100
+                  if last_ceuw.percent.to_f != 100
+                    first_ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                            guw_model_id: guw_model_id,
+                                                                            guw_coefficient_id: guw_coefficient_id,
+                                                                            guw_coefficient_element_id: ce.id,
+                                                                            project_id: project_id,
+                                                                            module_project_id: module_project_id,
+                                                                            guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC").first
 
-                  comments = first_ceuw.comments rescue nil
-                  last_ceuw.comments = comments
+                    comments = first_ceuw.comments rescue nil
+                    last_ceuw.comments = comments
+                  end
                 end
+
+                last_ceuw.guw_coefficient_element_id = ce.id
+                last_ceuw.save
+
+                other_ceuows = ceuws.where.not(id: last_ceuw.id)
+                other_ceuows_size = other_ceuows.size
+                guw_ceuow_count_to_delete = guw_ceuow_count_to_delete + other_ceuows_size
+                guw_ceuow_count_to_delete_per_cds = guw_ceuow_count_to_delete_per_cds + other_ceuows_size
+
+                #delete others
+                other_ceuows.delete_all
               end
-
-              last_ceuw.guw_coefficient_element_id = ce.id
-              #last_ceuw.save
-
-              other_ceuows = ceuws.where.not(id: last_ceuw.id)
-              guw_ceuow_count_to_delete = guw_ceuow_count_to_delete + other_ceuows.size
-
-              #delete others
-              #other_ceuows.delete_all
             end
           end
         end
@@ -94,7 +97,7 @@ namespace :guw_models do
       puts "CDS #{organization} : Nb GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete_per_cds}"
     end
 
-    puts "Nb TOTAL GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete}"
+    puts "Nb TOTAL GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete}"  #sur test2 = Nb TOTAL GuwCoefficientElementUnitOfWork en plus = 407918
 
   end
 end
