@@ -591,9 +591,10 @@
   <% end %>
 </td>
 
-<%# if can? :execute_estimation_plan, @project %>
+
 <%# if true %>
-  <td class="estimation-table-overview-cell">
+<td class="estimation-table-overview-cell">
+  <% if can? :execute_estimation_plan, @project %>
     <div class="tools">
       <div class="dropdown">
         <button class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="Action">
@@ -638,8 +639,8 @@
         </div>
       </div>
     </div>
-  </td>
-<%# end %>
+  <% end %>
+</td>
 
 <script>
   $(".new_guw_button").click(function(){
