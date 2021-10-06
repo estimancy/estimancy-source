@@ -28,6 +28,8 @@ class ApplicationController < ActionController::Base
   layout :layout_by_controller
   include OrganizationsHelper
 
+  skip_authorization_check  only: :estimations
+
   require 'socket'
 
   if Rails.env == "production"
@@ -54,6 +56,7 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+
 
   helper_method :root_url
   helper_method :browser

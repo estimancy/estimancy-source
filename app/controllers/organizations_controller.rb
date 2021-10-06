@@ -3790,17 +3790,20 @@ class OrganizationsController < ApplicationController
     begin
       if @historized == "1"
         all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id)
-        $organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+        organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
 
-        @current_ability = AbilityProject.new(current_user, @organization, $organization_projects, $min, $max, $object_per_page)
-        @projects_to_see = Project.accessible_by(AbilityProject.new(current_user, @organization, $organization_projects, $min, $max, $object_per_page), :see_project)
+        #@current_ability ||= AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
+        @current_ability = AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
+        #@projects_to_see = Project.accessible_by(AbilityProject.new(current_user, @organization, $organization_projects, $min, $max, $object_per_page), :see_project)
+        @projects_to_see = Project.accessible_by(@current_ability, :see_project)
 
       else
         #all_projects = OrganizationEstimation.unscoped.includes([:project, :project_securities]).where(organization_id: @current_organization.id)
         all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
-        $organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+        organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
 
-        @current_ability = AbilityProject.new(current_user, @organization, $organization_projects, $min, $max, $object_per_page)
+        #@current_ability ||= AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
+        @current_ability = AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
         @projects_to_see = OrganizationEstimation.accessible_by(@current_ability, :see_project).includes([:project])
 
         #puts "Hello"
@@ -3809,8 +3812,8 @@ class OrganizationsController < ApplicationController
       []
     end
 
-
-    res = @projects_to_see.includes([:application, :project_area, :acquisition_category, :estimation_status, :creator]) #$all_projects_to_see #[]
+    #res = $all_projects_to_see #[]
+    res = @projects_to_see.includes([:application, :project_area, :acquisition_category, :estimation_status, :creator])
 
     # #if @historized
     #   organization_projects.each do |p|
