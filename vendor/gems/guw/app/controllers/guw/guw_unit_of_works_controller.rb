@@ -1170,8 +1170,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           @guw_coefficients.each do |guw_coefficient|
 
-            guw_coefficient_guw_coefficient_elements = guw_coefficient.guw_coefficient_elements.where(organization_id: @organization.id,
-                                                                                                      guw_model_id: @guw_model.id)
+            #guw_coefficient_guw_coefficient_elements = guw_coefficient.guw_coefficient_elements.where(organization_id: @organization.id, guw_model_id: @guw_model.id)
 
             if guw_coefficient.coefficient_type == "Pourcentage"
 
@@ -1180,16 +1179,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                                   guw_model_id: @guw_model.id,
                                                                   guw_coefficient_id: guw_coefficient.id,
-                                                                  guw_coefficient_element_id: nil,
+                                                                  #guw_coefficient_element_id: nil,
                                                                   project_id: @project.id,
                                                                   module_project_id: @module_project.id,
-                                                                  guw_unit_of_work_id: guw_unit_of_work.id).first_or_create(organization_id: @organization.id,
-                                                                                                                            guw_model_id: @guw_model.id,
-                                                                                                                            guw_coefficient_id: guw_coefficient.id,
-                                                                                                                            guw_coefficient_element_id: nil,
-                                                                                                                            project_id: @project.id,
-                                                                                                                            module_project_id: @module_project.id,
-                                                                                                                            guw_unit_of_work_id: guw_unit_of_work.id)
+                                                                  guw_unit_of_work_id: guw_unit_of_work.id).first_or_create
 
               end
 
@@ -1262,7 +1255,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                                   guw_model_id: @guw_model.id,
                                                                   guw_coefficient_id: guw_coefficient.id,
-                                                                  guw_coefficient_element_id: nil,
+                                                                  #guw_coefficient_element_id: nil,
                                                                   project_id: @project.id,
                                                                   module_project_id: @module_project.id,
                                                                   guw_unit_of_work_id: guw_unit_of_work.id).first_or_create
@@ -1625,7 +1618,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
       Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
-
     end
 
   end
@@ -1794,16 +1786,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                             guw_model_id: @guw_model.id,
                                                             guw_coefficient_id: guw_coefficient.id,
-                                                            guw_coefficient_element_id: nil,
+                                                            #guw_coefficient_element_id: nil,
                                                             project_id: @project.id,
                                                             module_project_id: @module_project.id,
-                                                            guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create(organization_id: @organization.id,
-                                                                                                                       guw_model_id: @guw_model.id,
-                                                                                                                       guw_coefficient_id: guw_coefficient.id,
-                                                                                                                       guw_coefficient_element_id: nil,
-                                                                                                                       project_id: @project.id,
-                                                                                                                       module_project_id: @module_project.id,
-                                                                                                                       guw_unit_of_work_id: @guw_unit_of_work.id)
+                                                            guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
 
           guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
             cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
@@ -1843,16 +1829,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                             guw_model_id: @guw_model.id,
                                                             guw_coefficient_id: guw_coefficient.id,
-                                                            guw_coefficient_element_id: nil,
+                                                            #guw_coefficient_element_id: nil,
                                                             project_id: @project.id,
                                                             module_project_id: @module_project.id,
-                                                            guw_unit_of_work_id: @guw_unit_of_work).first_or_create(organization_id: @organization.id,
-                                                                                                                    guw_model_id: @guw_model.id,
-                                                                                                                    guw_coefficient_id: guw_coefficient.id,
-                                                                                                                    guw_coefficient_element_id: nil,
-                                                                                                                    project_id: @project.id,
-                                                                                                                    module_project_id: @module_project.id,
-                                                                                                                    guw_unit_of_work_id: @guw_unit_of_work)
+                                                            guw_unit_of_work_id: @guw_unit_of_work).first_or_create
 
           guw_coefficient.guw_coefficient_elements.where(organization_id: @organization.id,
                                                          guw_model_id: @guw_model.id).each do |guw_coefficient_element|
@@ -1909,12 +1889,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                               guw_coefficient_id: guw_coefficient.id,
                                                               project_id: @project.id,
                                                               module_project_id: @module_project.id,
-                                                              guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create(organization_id: @organization.id,
-                                                                                                                         guw_model_id: @guw_model.id,
-                                                                                                                         guw_coefficient_id: guw_coefficient.id,
-                                                                                                                         project_id: @project.id,
-                                                                                                                         module_project_id: @module_project.id,
-                                                                                                                         guw_unit_of_work_id: @guw_unit_of_work.id)
+                                                              guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
           end
 
           unless ceuw.nil?

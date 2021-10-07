@@ -204,7 +204,6 @@
                                          style: "text-align: right; width: 80%;",
                                          class: "complexity_weight-#{uowg.id} guw-#{guow.id} form-control form-control-sm",
                                          guw: guow.id,
-                                         # title: guow.cplx_comments,
                                          readonly: !(@guw_type.allow_retained == true),
                                          title: guow.cplx_comments.blank? ? @guw_type.description : guow.cplx_comments,
                                          readonly: true %>
@@ -222,8 +221,10 @@
                           $("#complexity_coeff_ajusted_" + <%= guow.id %>).on("change", function(event){
 
                             var currentValue = $(this).val();
+                            var defaultValue = <%= guow.intermediate_percent.to_f %>;
 
-                            if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {
+                            //if(parseFloat(currentValue) != parseFloat(previousSavedValue)) {
+                            if(parseFloat(currentValue) != parseFloat(defaultValue)) {
 
                               $("#guw_form").bind("submit");
                               $(".submit_comments").prop("disabled", true);
@@ -233,6 +234,18 @@
                                   data: "guw_unit_of_work_id=" + $(this).attr("guw") +
                                 "&value=" + currentValue +
                                 "&previousValue=" + parseFloat(previousSavedValue)
+                              });
+                            }
+                            else{
+
+                              $("#guw_form").bind("submit");
+                              $(".submit_comments").prop("disabled", true);
+
+                              $.ajax({
+                                  url: "<%= guw.save_cplx_comments_path %>",
+                                  data: "guw_unit_of_work_id=" + $(this).attr("guw") +
+                                      "&value=" + currentValue +
+                                      "&previousValue=" + parseFloat(previousSavedValue)
                               });
                             }
                           });
@@ -337,13 +350,12 @@
                   <script>
                     //$(document).ready(function(){
                     $(document).ready(function() {
-                      var defaultValue = <%= @guw_coefficient_guw_coefficient_elements.first.default_display_value.to_f %>;
-                      var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
-                      var currentValue ;
 
                       $("#guw input.coeff_<%= guow.id %>_<%= @guw_coefficient.id %>_<%= @guw_coefficient_guw_coefficient_elements.first.id %>").on("change", function(event){
 
-                        currentValue = $(this).val();
+                        var defaultValue = <%= @guw_coefficient_guw_coefficient_elements.first.default_display_value.to_f %>;
+                        var previousSavedValue = $("#guw_coefficient_percent_" + <%= guow.id %> + "_" + <%= @guw_coefficient.id %>).val();
+                        var currentValue = $(this).val();
 
                         if(parseFloat(currentValue) != parseFloat(defaultValue)) {
 
@@ -579,9 +591,10 @@
   <% end %>
 </td>
 
-<%# if can? :execute_estimation_plan, @project %>
+
 <%# if true %>
-  <td class="estimation-table-overview-cell">
+<td class="estimation-table-overview-cell">
+  <% if can? :execute_estimation_plan, @project %>
     <div class="tools">
       <div class="dropdown">
         <button class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" title="Action">
@@ -626,8 +639,8 @@
         </div>
       </div>
     </div>
-  </td>
-<%# end %>
+  <% end %>
+</td>
 
 <script>
   $(".new_guw_button").click(function(){
