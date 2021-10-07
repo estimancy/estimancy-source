@@ -820,6 +820,7 @@ class ProjectsController < ApplicationController
     end
     puts "Count = #{count}"
 
+
     #==== Donnes fantomes pour : GuwUnitOfWorkAttribute (Nb fantôme = 343 963)  nb total records = 1 846 501
     guw_uowa_count = 0
     Guw::GuwUnitOfWorkAttribute.find_each do |uowa|
@@ -842,12 +843,21 @@ class ProjectsController < ApplicationController
     puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}" # 408513
 
 
-    Guw::GuwUnitOfWork.where(organization_id: @organization.id,
-                             guw_model_id: @guw_model.id,
-                             project_id:  @project.id,
-                             module_project_id: @module_project.id,
-                             id: @modified_guw_line_ids).includes(:guw_type, :guw_complexity).order("name ASC")
+    #=== Utilisateurs fantômes qui ne sont rattachés à aucune organisation
 
+    fantome_user_count = 0
+    User.find_each do |user|
+      if user.organizations.all.size == 0
+        fantome_user_count = fantome_user_count+1
+        #puts user
+        user.delete
+      end
+    end
+    puts "NB user fantômes = #{fantome_user_count}" #NB user fantômes = 153
+
+    # ====
+
+    #+========
 
     #Dans cette table, il ya plusieurs elts pour une ligne d'UO, ce qui n'est pas normal
     guw_ceuow_count_to_delete = 0
@@ -915,19 +925,6 @@ class ProjectsController < ApplicationController
     puts "Nb TOTAL GuwCoefficientElementUnitOfWork en plus = #{guw_ceuow_count_to_delete}"
 
 
-    #=== Utilisateurs fantômes qui ne sont rattachés à aucune organisation
-
-    fantome_user_count = 0
-    User.find_each do |user|
-      if user.organizations.all.size == 0
-        fantome_user_count = fantome_user_count+1
-        #puts user
-        user.delete
-      end
-    end
-    puts "NB user fantômes = #{fantome_user_count}" #NB user fantômes = 153
-
-    # ====
 
     #===================  Date de creation > '2020-07-01'  ==========================
     #Project.joins(:organization, :estimation_status).where('projects.created_at < ?', '2020-07-01'.to_date).group('organizations.name', 'estimation_statuses.name').order('organizations.name', 'estimation_statuses.name').count
