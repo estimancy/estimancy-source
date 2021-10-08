@@ -50,7 +50,7 @@
                   <%= column_content(@pfs, column, project, @fields_coefficients, @historized) %>
                 <% end %>
 
-                <%# @project_module_projects = project.module_projects %>
+                <% @project_module_projects = project.module_projects %>
                 <td class="estimation-table-overview-cell">
                   <div class="tools">
                     <a href="<%= edit_project_path(project) %>"><i class="material-icons">edit</i></a>
