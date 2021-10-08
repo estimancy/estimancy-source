@@ -201,7 +201,11 @@ class ApplicationController < ActionController::Base
       if @current_user_organization_ids.include?(@current_organization.id)
         # Le code qui suit remplace les lignes du dessus
         case params[:action]
-          when "estimations", "sort", "search", "projects_list_search", "advanced_search"
+
+        when "save_guw_unit_of_works_with_multiple_outputs", "save_uo_with_multiple_outputs", "load_cotations"
+          @current_ability ||= AbilityProjectExecution.new(current_user, @current_organization, [@project])
+
+        when "estimations", "sort", "search", "projects_list_search", "advanced_search"
             @current_ability ||= Abilities.ability_for(current_user, @current_organization, params[:historized], @min, @max, @object_per_page)
             #when "sort", "search", "projects_list_search"
             #@current_ability ||= AbilityProject.new(current_user, @current_organization, @current_organization.projects)
@@ -211,9 +215,11 @@ class ApplicationController < ActionController::Base
         else
           # A améliorer
           if params[:controller] == "projects" && params[:action] == "edit"
-            @current_ability ||= AbilityProject.new(current_user, @current_organization, [Project.find(params[:id])])
+            #@current_ability ||= AbilityProject.new(current_user, @current_organization, [Project.find(params[:id])])
+            @current_ability ||= AbilityProjectExecution.new(current_user, @current_organization, [Project.find(params[:id])])
           else
-            @current_ability ||= AbilityProject.new(current_user, @current_organization, [@project])
+            #@current_ability ||= AbilityProject.new(current_user, @current_organization, [@project])
+            @current_ability ||= AbilityProjectExecution.new(current_user, @current_organization, [@project])
           end
         end
       else
@@ -424,7 +430,7 @@ class ApplicationController < ActionController::Base
 
   # Get the initialization module (module that get attribute values from the project organization)
   def initialization_module
-    @initialization_module = Pemodule.where(alias: 'initialization').first
+    @initialization_module ||= Pemodule.where(alias: 'initialization').first
   end
 
   # Get all the adminSetting parameters
@@ -1158,6 +1164,4 @@ class ApplicationController < ActionController::Base
 
     filtered_projects
   end
-
-
 end
