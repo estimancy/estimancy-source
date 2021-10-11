@@ -16,6 +16,7 @@ class OrganizationEstimation < ActiveRecord::Base
   belongs_to :platform_category
   belongs_to :project_category
   belongs_to :creator, :class_name => 'User', :foreign_key => 'creator_id'
+  belongs_to :original_model, :class_name => 'Project', :foreign_key => 'original_model_id'
   belongs_to :estimation_status
   belongs_to :project
   belongs_to :provider
