@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
-
+# octobre 2021
 # rake guw_models:clean_coefficient_element_unit_of_works RAILS_ENV=production
 namespace :guw_models do
 
@@ -102,23 +102,26 @@ namespace :guw_models do
               if last_ceuw
                 ce = Guw::GuwCoefficientElement.where(organization_id: organization_id, guw_model_id: guw_model_id, guw_coefficient_id: guw_coefficient_id).first
 
-                if ce && ce.value.to_f == 100
-                  if last_ceuw.percent.to_f != 100
-                    first_ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                                                            guw_model_id: guw_model_id,
-                                                                            guw_coefficient_id: guw_coefficient_id,
-                                                                            guw_coefficient_element_id: ce.id,
-                                                                            project_id: project_id,
-                                                                            module_project_id: module_project_id,
-                                                                            guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC").first
+                if ce
+                  if ce.value.to_f == 100
+                    if last_ceuw.percent.to_f != 100
+                      first_ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                              guw_model_id: guw_model_id,
+                                                                              guw_coefficient_id: guw_coefficient_id,
+                                                                              guw_coefficient_element_id: ce.id,
+                                                                              project_id: project_id,
+                                                                              module_project_id: module_project_id,
+                                                                              guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC").first
 
-                    comments = first_ceuw.comments rescue nil
-                    last_ceuw.comments = comments
+                      comments = first_ceuw.comments rescue nil
+                      last_ceuw.comments = comments
+                    end
                   end
+
+                  last_ceuw.guw_coefficient_element_id = ce.id
+                  last_ceuw.save
                 end
 
-                last_ceuw.guw_coefficient_element_id = ce.id
-                last_ceuw.save
 
                 other_ceuows = ceuws.where.not(id: last_ceuw.id)
                 other_ceuows_size = other_ceuows.size
