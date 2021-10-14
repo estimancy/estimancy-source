@@ -1439,3 +1439,15 @@ table.table_effort_per_phase th{
         visibility: visible;
     }
 }
+
+.w-5 {
+    width: 5% !important;
+}
+
+.w-10 {
+    width: 10% !important;
+}
+.w-15 {
+    width: 15% !important;
+}
+

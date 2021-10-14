@@ -18,11 +18,11 @@
   <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
 </td>
 
-<td class="text_field_text_overflow guw-cell-ajustment w-25">
+<td class="text_field_text_overflow guw-cell-ajustment w-15">
   <%= link_to guow.name.blank? ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.comments, method: "post", remote: true, title: "#{ guow.comments.to_s } \n #{ guow.tracking.to_s }" %>
 </td>
 
-<td class="guw-cell-ajustment">
+<td class="guw-cell-ajustment w-15">
   <% unless @guw_type.nil? %>
 
     <%
