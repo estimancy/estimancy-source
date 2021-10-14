@@ -2423,7 +2423,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                            project_id: @project.id,
                                            module_project_id: module_project.id,
                                            pbs_project_element_id: component.id,
-                                           guw_model_id: @guw_model.id,
                                            display_order: nil,
                                            tracking: "",
                                            quantity: 1,

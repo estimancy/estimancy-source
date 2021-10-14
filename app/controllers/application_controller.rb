@@ -20,7 +20,6 @@
 ########################################################################
 
 class ApplicationController < ActionController::Base
-
   protect_from_forgery
 
   before_filter :authenticate_user!
@@ -352,7 +351,6 @@ class ApplicationController < ActionController::Base
         end
       end
     end
-
   end
 
   def current_ability
@@ -403,7 +401,6 @@ class ApplicationController < ActionController::Base
       @current_ability = AbilityProject.new(current_user, nil, nil)
     end
   end
-
 
   def update_activity_time
     if current_user
