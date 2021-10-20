@@ -1443,7 +1443,7 @@ module ViewsWidgetsHelper
     ratio_profiles_with_nil_ratio = []
     wbs_activity_ratio_profiles = []
     unless ratio_reference.nil?
-      ratio_reference.wbs_activity_ratio_elements.each do |ratio_elt|
+      ratio_reference.wbs_activity_ratio_elements.includes([:wbs_activity_ratio_profiles]).each do |ratio_elt|
         ratio_profiles_with_nil_ratio << ratio_elt.wbs_activity_ratio_profiles
       end
       # Reject all RatioProfile with nil ratio_value

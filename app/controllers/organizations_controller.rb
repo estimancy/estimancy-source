@@ -3729,20 +3729,27 @@ class OrganizationsController < ApplicationController
     all_projects = Organization.organization_projects_list(@organization.id, @historized)
     organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
 
-    res = []
     if @historized
-      organization_projects.each do |p|
-        if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
-          res << p
-        end
-      end
+      res = Project.where(organization_id: @organization.id).accessible_by(@current_ability, :see_project).includes([:application, :acquisition_category, :estimation_status, :creator]).all
     else
-      organization_projects.each do |p|
-        if can?(:see_project, p.project, estimation_status_id: p.estimation_status_id)
-          res << p
-        end
-      end
+      res = OrganizationEstimation.where(organization_id: @organization.id).accessible_by(@current_ability, :see_project).includes([:application, :acquisition_category, :estimation_status, :creator]).all
     end
+
+
+    # res = []
+    # if @historized
+    #   organization_projects.each do |p|
+    #     if can?(:see_project, p, estimation_status_id: p.estimation_status_id)
+    #       res << p
+    #     end
+    #   end
+    # else
+    #   organization_projects.each do |p|
+    #     if can?(:see_project, p.project, estimation_status_id: p.estimation_status_id)
+    #       res << p
+    #     end
+    #   end
+    # end
 
     @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
 
@@ -3768,11 +3775,12 @@ class OrganizationsController < ApplicationController
     @pfs = {}
 
     fields = @organization.fields
-    ProjectField.where(project_id: @projects.map(&:id).uniq).each do |pf|
+    ProjectField.includes([:views_widget]).where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
         if pf.field_id.in?(fields.map(&:id))
-          if pf.project && pf.views_widget
-            if pf.project_id == pf.views_widget.module_project.project_id
+          views_widget = pf.views_widget.includes([:module_project])
+          if pf.project && views_widget
+            if pf.project_id == views_widget.module_project.project_id
 
               if pf.field.name.to_s.in?(["Max. Staff.", "Staff. max."])
                 @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = (pf.value.blank? ? nil : pf.value.to_f.round_up_by_step(0.1).round(1))

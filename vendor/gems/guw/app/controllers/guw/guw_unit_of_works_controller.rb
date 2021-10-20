@@ -685,7 +685,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     end
 
     if guw_type_attributes_complexities.nil?
-      @guw_attribute_complexities = Guw::GuwAttributeComplexity.where(organization_id: organization_id,
+      @guw_attribute_complexities = Guw::GuwAttributeComplexity.includes([:guw_type_complexity]).where(organization_id: organization_id,
                                                                       guw_model_id: @guw_model.id,
                                                                       guw_attribute_id: guowa.guw_attribute_id,
                                                                       guw_type_id: (guw_type.nil? ? nil : guw_type.id)).all
@@ -888,9 +888,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                     guw_model_id: @guw_model.id,
                                                     project_id:  @project.id,
                                                     module_project_id: @module_project.id,
-                                                    id: @modified_guw_line_ids).includes(:guw_type, :guw_complexity).order("name ASC")
+                                                    id: @modified_guw_line_ids).includes(:guw_complexity, :guw_unit_of_work_group).order("name ASC")
 
       @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id)
+      @all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization.id, guw_model_id: @guw_model.id)
       @guw_outputs = @guw_model.guw_outputs.where(organization_id: @organization.id, guw_model_id: @guw_model.id).order("display_order ASC")
 
       # Recuperation de la criticité de l'application
@@ -927,7 +928,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       # Fin Recuperation de la criticité de l'application
 
       ces = {}
-      ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id, guw_model_id: @guw_model.id, default: true).each do |ce|
+      ce = @all_guw_coefficient_elements.where(default: true).each do |ce|
         ces[ce.guw_coefficient_id] = ce
       end
 
@@ -1033,7 +1034,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         ceuws = {}
-        ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id, guw_model_id: @guw_model.id).each do |gce|
+        ce = @all_guw_coefficient_elements.each do |gce|
           Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization.id,
                                                      guw_model_id: @guw_model.id,
                                                      guw_coefficient_id: gce.guw_coefficient_id,
@@ -1055,7 +1056,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         end
 
         ces = {}
-        ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id, guw_model_id: @guw_model.id, default: true).each do |ce|
+        ce = @all_guw_coefficient_elements.where(default: true).each do |ce|
           ces[ce.guw_coefficient_id] = ce
         end
 
@@ -1192,9 +1193,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 if ceuw.percent.nil?
                   ce = ces[guw_coefficient.id]
                   if ce.nil?
-                    ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id,
-                                                          guw_model_id: @guw_model.id,
-                                                          guw_coefficient_id: guw_coefficient.id).first
+                    ce = @all_guw_coefficient_elements.where(guw_coefficient_id: guw_coefficient.id).first
                   end
 
                   if ce.nil?
@@ -1218,7 +1217,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
                 cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}"]
                 if cce.nil?
-                  cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                  cce = Guw::GuwComplexityCoefficientElement.includes([:guw_coefficient_element])
+                                                            .where(organization_id: @organization.id,
                                                                    guw_model_id: @guw_model.id,
                                                                    guw_output_id: guw_output.id,
                                                                    guw_complexity_id: guw_unit_of_work.guw_complexity_id,
@@ -1275,9 +1275,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                   #                                       default: true).first
                   ce = ces[guw_coefficient.id]
                   if ce.nil?
-                    ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id,
-                                                          guw_model_id: @guw_model.id,
-                                                          guw_coefficient_id: guw_coefficient.id).first
+                    ce = @all_guw_coefficient_elements.where(guw_coefficient_id: guw_coefficient.id).first
                   end
 
                   if ce.nil?
@@ -1310,7 +1308,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 cce = cces["#{guw_coefficient_element.id}_#{guw_unit_of_work.guw_complexity_id}"]
 
                 if cce.nil?
-                  cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+                  cce = Guw::GuwComplexityCoefficientElement.includes([:guw_coefficient_element])
+                                                            .where(organization_id: @organization.id,
                                                                    guw_model_id: @guw_model.id,
                                                                    guw_output_id: guw_output.id,
                                                                    guw_complexity_id: guw_unit_of_work.guw_complexity_id,
@@ -1444,27 +1443,19 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
               begin
                 unless params['deported_guw_coefficient'].nil?
-                  ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id,
-                                                        guw_model_id: @guw_model.id,
-                                                        id: params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
+                  ce = @all_guw_coefficient_elements.where(id: params['deported_guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
                 else
-                  ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id,
-                                                        guw_model_id: @guw_model.id,
-                                                        id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
+                  ce = @all_guw_coefficient_elements.where(id: params['guw_coefficient']["#{guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
                 end
               rescue
                 ce = nil
               end
 
               if ce.nil?
-                ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id,
-                                                      guw_model_id: @guw_model.id,
-                                                      guw_coefficient_id: guw_coefficient.id,
-                                                      default: true).first
+                ce = @all_guw_coefficient_elements.where(guw_coefficient_id: guw_coefficient.id,
+                                                         default: true).first
                 if ce.nil?
-                  ce = Guw::GuwCoefficientElement.where(organization_id: @organization.id,
-                                                        guw_model_id: @guw_model.id,
-                                                        guw_coefficient_id: guw_coefficient.id).first
+                  ce = @all_guw_coefficient_elements.where(guw_coefficient_id: guw_coefficient.id).first
                 end
               end
 
@@ -1657,7 +1648,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.off_line = false
     @guw_unit_of_work.off_line_uo = false
 
-    @guw_unit_of_work.guw_unit_of_work_attributes.where(organization_id: @organization.id,
+    @guw_unit_of_work.guw_unit_of_work_attributes.includes([:guw_attribute]).where(organization_id: @organization.id,
                                                         guw_model_id: @guw_model.id,
                                                         guw_type_id: guw_type.id).each do |guowa|
 
@@ -1792,7 +1783,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                             guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
 
           guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
-            cce = Guw::GuwComplexityCoefficientElement.where(organization_id: @organization.id,
+            cce = Guw::GuwComplexityCoefficientElement.includes([:guw_coefficient_element])
+                                                      .where(organization_id: @organization.id,
                                                              guw_model_id: @guw_model.id,
                                                              guw_output_id: guw_output.id,
                                                              guw_complexity_id: @guw_unit_of_work.guw_complexity_id,

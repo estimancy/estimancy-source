@@ -202,7 +202,7 @@ class AbilityProject
             end
 
             user_groups.each do |grp|
-              prj_scrts = ProjectSecurity.includes(:project, :project_security_level).where(organization_id: organization.id,
+              prj_scrts = ProjectSecurity.includes(:project).where(organization_id: organization.id,
                                                                                             group_id: grp.id,
                                                                                             is_model_permission: false,
                                                                                             is_estimation_permission: true).all
@@ -210,7 +210,7 @@ class AbilityProject
                 specific_permissions_array = []
                 prj_scrts.each do |prj_scrt|
 
-                  prj_scrt_project_security_level = prj_scrt.project_security_level
+                  prj_scrt_project_security_level = ProjectSecurityLevel.where(id: prj_scrt.project_security_level_id).includes([:permissions]).first #prj_scrt.project_security_level
                   project = prj_scrt.project
 
                   unless project.nil?
@@ -236,9 +236,10 @@ class AbilityProject
                 end
               end
 
-              grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).where(organization_id: organization.id).each do |esgr|
+              #grp.estimation_status_group_roles.includes(:project_security_level).where(organization_id: organization.id).each do |esgr|
+              grp.estimation_status_group_roles.where(organization_id: organization.id).each do |esgr|
 
-                esgr_security_level = esgr.project_security_level
+                esgr_security_level = ProjectSecurityLevel.where(id: esgr.project_security_level_id).includes([:permissions]).first #esgr.project_security_level
                 esgr_estimation_status_id = esgr.estimation_status_id
 
                 unless esgr_security_level.nil?

@@ -120,7 +120,7 @@ class ViewsWidget < ActiveRecord::Base
     organization_fields = organization.fields
 
     ###module_project.views_widgets.each do |view_widget|
-    project_view_widgets =  project.views_widgets.where('module_project_id = ? OR is_kpi_widget = ?', module_project.id, true).all.sort_by{ |w| w.is_kpi_widget ? 1 : 0 }
+    project_view_widgets =  project.views_widgets.includes([:estimation_value]).where('module_project_id = ? OR is_kpi_widget = ?', module_project.id, true).all.sort_by{ |w| w.is_kpi_widget ? 1 : 0 }
 
     project_view_widgets.each do |view_widget|
 

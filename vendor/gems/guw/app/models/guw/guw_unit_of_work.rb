@@ -115,7 +115,7 @@ module Guw
           flagged_unit_of_work = all_unit_of_work_groups.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size
 
 
-          @module_project.pemodule.attribute_modules.each do |am|
+          @module_project.pemodule.attribute_modules.includes([:pe_attribute]).each do |am|
             am_pe_attribute = am.pe_attribute
             unless am_pe_attribute.nil?
               @evs = EstimationValue.where(organization_id: organization_id,
@@ -206,7 +206,7 @@ module Guw
             @hash_evs[tmp_ev.pe_attribute_id] << tmp_ev
           end
 
-          @module_project.pemodule.attribute_modules.where(guw_model_id: @guw_model.id).each do |am|
+          @module_project.pemodule.attribute_modules.includes([:pe_attribute]).where(guw_model_id: @guw_model.id).each do |am|
 
             am_pe_attribute = am.pe_attribute
 
