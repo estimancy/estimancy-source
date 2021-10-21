@@ -22,18 +22,18 @@
 # rake users:delete_all_users_and_update_uo_description RAILS_ENV=production
 namespace :users do
 
-  desc 'delete_all_users_and_update_uo_description'
+  desc 'delete_all_users_and_update_uo_type_description'
 
   task :delete_all_users_and_update_uo_description => :environment do
 
     #delete all users unless (admin, ebelle, sgaye)
     #User.where.not(login_name: ["admin", "ebellet", "sgaye"]).delete_all
 
-    #update guw_uow description
-    Guw::GuwUnitOfWork.find_each do |uow|
-      if uow.comments.blank?
-        uow.comments = uow.name
-        uow.save
+    #update guw_type description
+    Guw::GuwType.find_each do |uow_type|
+      if uow_type.description.blank? || uow_type.description.to_s == "Description"
+        uow_type.description = uow_type.name
+        uow_type.save
       end
     end
 
