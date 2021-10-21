@@ -22,6 +22,7 @@
   <% #@guw_model_guw_coefficients = @guw_model.guw_coefficients %>
   <% #@deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
 
+  <% @guw_model_orders_sorted = @guw_model.orders.sort_by { |k, v| v.to_f } %>
   <% @group_unit_of_works = @current_module_project_guw_unit_of_work_groups = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
                                                                                        project_id: project_id,
                                                                                        module_project_id: @current_mp.id).order("name ASC") %>
@@ -121,7 +122,8 @@
 
     <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-    <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("created_at ASC") %>
+    <%# @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("created_at ASC") %>
+    <% @uowg_guw_unit_of_works = @current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: uowg.id).order("created_at ASC") %>
 
     <div class="card card-widget">
       <div class="card-body">
@@ -143,7 +145,7 @@
                 <th colspan="2"><%= I18n.t :name %></th>
                 <th class="text-center"><%= I18n.t(:component) %></th>
 
-                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                <% @guw_model_orders_sorted.each do |i| %>
                   <% unless i[1].blank? %>
                     <% if @hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
                       <% guw_coefficient = @hash_guw_coefficients[i[0]] %>
@@ -199,7 +201,7 @@
               <tr style="height: 0px;">
                 <td colspan="3">
                 </td>
-                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                <% @guw_model_orders_sorted.each do |i| %>
                   <% unless i[1].blank? %>
                     <% go = @hash_guw_outputs[i[0]] %>
                     <% if go.class == Guw::GuwOutput %>
