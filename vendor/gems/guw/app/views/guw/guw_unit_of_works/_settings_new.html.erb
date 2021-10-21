@@ -11,25 +11,24 @@
     </div>
   </div>
 
-  <% @current_mp = current_module_project %>
-
   <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
+  <% @current_mp = current_module_project %>
   <% current_mp = @module_project %>
   <% current_psb =  current_component %>
   <% organization_id = @guw_model.organization_id %>
   <% project_id = @project.id %>
 
-  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
+  <%# @current_module_project_guw_unit_of_work_groups = @current_mp.guw_unit_of_work_groups %>
+  <% #@guw_model_guw_coefficients = @guw_model.guw_coefficients %>
+  <% #@deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
+
+  <% @group_unit_of_works = @current_module_project_guw_unit_of_work_groups = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
                                                                                        project_id: project_id,
-                                                                                       module_project_id: current_mp.id).order("name ASC") %>
+                                                                                       module_project_id: @current_mp.id).order("name ASC") %>
 
   <% @guw_coefficients = @guw_model_guw_coefficients = Guw::GuwCoefficient.includes(:guw_coefficient_elements).where(organization_id: organization_id, guw_model_id: @guw_model.id) %>
-
   <% @current_module_project_guw_unit_of_works = @current_mp.guw_unit_of_works %>
-  <% @current_module_project_guw_unit_of_work_groups = @current_mp.guw_unit_of_work_groups %>
-  <% #@guw_model_guw_coefficients = @guw_model.guw_coefficients %>
   <% @deported_guw_model_guw_coefficients = @deported_guw_coefficients = @guw_coefficients.where(deported: true) #@guw_model.guw_coefficients.where(deported: true) %>
-  <% #@deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
   <% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
 
 
@@ -854,7 +853,8 @@
 <script>
   //$(document).ready(function(){
   $(document).ready(function() {
-    <% @current_mp.guw_unit_of_work_groups.each do |uowg| %>
+    <%# @current_mp.guw_unit_of_work_groups.each do |uowg| %>
+    <% @group_unit_of_works.each do |uowg| %>
       <% @guw_model.guw_outputs.each do |go| %>
         var sum = 0;
         $(".total_<% uowg.id %>_<% go.id %>").each(function() {
