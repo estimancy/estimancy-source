@@ -3729,12 +3729,6 @@ class OrganizationsController < ApplicationController
     all_projects = Organization.organization_projects_list(@organization.id, @historized)
     organization_projects = get_sorted_estimations(@organization.id, all_projects, @sort_column, @sort_order, @search_hash)
 
-    # if @historized
-    #   res = Project.where(organization_id: @organization.id).accessible_by(@current_ability, :see_project).includes([:application, :acquisition_category, :estimation_status, :creator]).all
-    # else
-    #   res = OrganizationEstimation.where(organization_id: @organization.id).accessible_by(@current_ability, :see_project).includes([:application, :acquisition_category, :estimation_status, :creator]).all
-    # end
-
     res = []
     if @historized
       organization_projects.each do |p|
