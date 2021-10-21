@@ -27,7 +27,7 @@ namespace :users do
   task :delete_all_users_and_update_uo_description => :environment do
 
     #delete all users unless (admin, ebelle, sgaye)
-    User.where.not(login_name: ["admin", "ebellet", "sgaye"]).delete_all
+    #User.where.not(login_name: ["admin", "ebellet", "sgaye"]).delete_all
 
     #update guw_uow description
     Guw::GuwUnitOfWork.find_each do |uow|
