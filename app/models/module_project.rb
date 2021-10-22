@@ -207,7 +207,7 @@ class ModuleProject < ActiveRecord::Base
   def possible_previous_mp_for_attribute(pe_attribute)
     possible_module_projects = []
     unless pe_attribute.nil?
-      self.previous.each do |previous_mp|
+      self.previous.includes([:pemodule]).each do |previous_mp|
         if previous_mp.pemodule.attribute_modules.where(:pe_attribute_id => pe_attribute.id, in_out: ["output", "both"]).length >= 1
           possible_module_projects << previous_mp
         end

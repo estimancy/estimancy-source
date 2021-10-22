@@ -70,35 +70,21 @@ module Guw
           @module_project.guw_model_id = @guw_model.id
           @module_project.save
 
-          retained_size = Guw::GuwUnitOfWork.where(organization_id: organization_id,
-                                                   guw_model_id: @guw_model.id,
-                                                   project_id: @project.id,
-                                                   module_project_id: @module_project.id,
-                                                   pbs_project_element_id: component.id,
-                                                   selected: true,
-                                                   guw_unit_of_work_id: nil).map(&:ajusted_size).compact.sum
+          @all_guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: organization_id,
+                                                            guw_model_id: @guw_model.id,
+                                                            project_id: @project.id,
+                                                            module_project_id: @module_project.id,
+                                                            pbs_project_element_id: component.id)
 
-          theorical_size = Guw::GuwUnitOfWork.where(organization_id: organization_id,
-                                                    guw_model_id: @guw_model.id,
-                                                    project_id: @project.id,
-                                                    module_project_id: @module_project.id,
-                                                    pbs_project_element_id: component.id,
-                                                    selected: true,
-                                                    guw_unit_of_work_id: nil).map(&:size).compact.sum
+          retained_size = @all_guw_unit_of_works.where(selected: true,
+                                                       guw_unit_of_work_id: nil).map(&:ajusted_size).compact.sum
 
-          effort = Guw::GuwUnitOfWork.where(organization_id: organization_id,
-                                            guw_model_id: @guw_model.id,
-                                            project_id: @project.id,
-                                            module_project_id: @module_project.id,
-                                            pbs_project_element_id: component.id,
-                                            selected: true, guw_unit_of_work_id: nil).map(&:effort).compact.sum
+          theorical_size = @all_guw_unit_of_works.where(selected: true,
+                                                        guw_unit_of_work_id: nil).map(&:size).compact.sum
 
-          cost = Guw::GuwUnitOfWork.where(organization_id: organization_id,
-                                          guw_model_id: @guw_model.id,
-                                          project_id: @project.id,
-                                          module_project_id: @module_project.id,
-                                          pbs_project_element_id: component.id,
-                                          selected: true, guw_unit_of_work_id: nil).map(&:cost).compact.sum
+          effort = @all_guw_unit_of_works.where(selected: true, guw_unit_of_work_id: nil).map(&:effort).compact.sum
+
+          cost = @all_guw_unit_of_works.where(selected: true, guw_unit_of_work_id: nil).map(&:cost).compact.sum
 
           all_unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: organization_id,
                                                                   guw_model_id: @guw_model.id,
@@ -115,7 +101,7 @@ module Guw
           flagged_unit_of_work = all_unit_of_work_groups.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size
 
 
-          @module_project.pemodule.attribute_modules.each do |am|
+          @module_project.pemodule.attribute_modules.includes([:pe_attribute]).each do |am|
             am_pe_attribute = am.pe_attribute
             unless am_pe_attribute.nil?
               @evs = EstimationValue.where(organization_id: organization_id,
@@ -193,7 +179,7 @@ module Guw
           # flagged_unit_of_work = Guw::GuwUnitOfWorkGroup.where(module_project_id: @module_project.id,
           #                                                      pbs_project_element_id: component.id).all.map{|i| i.guw_unit_of_works.where(flagged: true)}.flatten.size
 
-          @selected_guw_unit_of_works = GuwUnitOfWork.where( organization_id: organization_id,
+          @selected_guw_unit_of_works = GuwUnitOfWork.where(organization_id: organization_id,
                                                                   guw_model_id: @guw_model.id,
                                                                   project_id: @project.id,
                                                                   module_project_id: @module_project.id,
@@ -206,7 +192,7 @@ module Guw
             @hash_evs[tmp_ev.pe_attribute_id] << tmp_ev
           end
 
-          @module_project.pemodule.attribute_modules.where(guw_model_id: @guw_model.id).each do |am|
+          @module_project.pemodule.attribute_modules.includes([:pe_attribute]).where(guw_model_id: @guw_model.id).each do |am|
 
             am_pe_attribute = am.pe_attribute
 

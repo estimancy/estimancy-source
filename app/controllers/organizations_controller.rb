@@ -3664,7 +3664,6 @@ class OrganizationsController < ApplicationController
     # render :partial => 'organizations/organization_projects', object: [@organization, @projects]
   end
 
-
   def estimations
     @organization = Organization.find(params[:organization_id])
 
@@ -4049,8 +4048,9 @@ class OrganizationsController < ApplicationController
     ProjectField.includes([:project, :views_widget, :field]).where(project_id: @projects.map(&:id).uniq).each do |pf|
       begin
         if pf.field_id.in?(fields.map(&:id))
-          if pf.project && pf.views_widget
-            if pf.project_id == pf.views_widget.module_project.project_id
+          views_widget = pf.views_widget.includes([:module_project])
+          if pf.project && views_widget
+            if pf.project_id == views_widget.module_project.project_id
 
               if pf.field.name.to_s.in?(["Max. Staff.", "Staff. max."])
                 @pfs["#{pf.project_id}_#{pf.field_id}".to_sym] = (pf.value.blank? ? nil : pf.value.to_f.round_up_by_step(0.1).round(1))
@@ -4076,6 +4076,8 @@ class OrganizationsController < ApplicationController
       @fields_coefficients[f.id] = f.coefficient
     end
   end
+
+
   private def check_for_projects(start_number, desired_size)
 
     organization_estimations = @organization.organization_estimations

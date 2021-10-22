@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
-
+# octobre 2021
 # rake guw_models:clean_coefficient_element_unit_of_works RAILS_ENV=production
 namespace :guw_models do
 
@@ -26,6 +26,44 @@ namespace :guw_models do
 
   task :clean_coefficient_element_unit_of_works => :environment do
 
+    #================================================================================================
+    #==== Donnes fantomes pour : GuwUnitOfWorkAttribute (Nb fantôme = 343 963)  nb total records = 1 846 501
+    guw_uowa_count = 0
+    Guw::GuwUnitOfWorkAttribute.find_each do |uowa|
+      unless Guw::GuwUnitOfWork.where(id: uowa.guw_unit_of_work_id).exists?
+        guw_uowa_count = guw_uowa_count+1
+        uowa.delete
+      end
+    end
+    puts "Nb GuwUnitOfWorkAttribute fantôme = #{guw_uowa_count}"  # 295686 + 6815 + 408512
+
+    #================================================================================================
+
+    #==== Donnes fantomes pour : GuwCoefficientElementUnitOfWork (Nb fantôme = 343 964)  nb total records = 2 162 426
+    guw_ceuow_count = 0
+    Guw::GuwCoefficientElementUnitOfWork.find_each do |ceuow|
+      unless Guw::GuwUnitOfWork.where(id: ceuow.guw_unit_of_work_id).exists?
+        guw_ceuow_count = guw_uowa_count+1
+        ceuow.delete
+      end
+    end
+    puts "Nb GuwCoefficientElementUnitOfWork fantôme = #{guw_ceuow_count}" # 408513
+
+    #================================================================================================
+
+    #=== Utilisateurs fantômes qui ne sont rattachés à aucune organisation
+
+    fantome_user_count = 0
+    User.find_each do |user|
+      if user.organizations.all.size == 0
+        fantome_user_count = fantome_user_count+1
+        #puts user
+        user.delete
+      end
+    end
+    puts "NB user fantômes = #{fantome_user_count}" #NB user fantômes = 153
+
+    #================================================================================================
     #Dans cette table, il ya plusieurs elts pour une ligne d'UO, ce qui n'est pas normal
     guw_ceuow_count_to_delete = 0
     nb_guw_unit_of_work_with_no_model = 0
@@ -64,23 +102,26 @@ namespace :guw_models do
               if last_ceuw
                 ce = Guw::GuwCoefficientElement.where(organization_id: organization_id, guw_model_id: guw_model_id, guw_coefficient_id: guw_coefficient_id).first
 
-                if ce && ce.value.to_f == 100
-                  if last_ceuw.percent.to_f != 100
-                    first_ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                                                            guw_model_id: guw_model_id,
-                                                                            guw_coefficient_id: guw_coefficient_id,
-                                                                            guw_coefficient_element_id: ce.id,
-                                                                            project_id: project_id,
-                                                                            module_project_id: module_project_id,
-                                                                            guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC").first
+                if ce
+                  if ce.value.to_f == 100
+                    if last_ceuw.percent.to_f != 100
+                      first_ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                              guw_model_id: guw_model_id,
+                                                                              guw_coefficient_id: guw_coefficient_id,
+                                                                              guw_coefficient_element_id: ce.id,
+                                                                              project_id: project_id,
+                                                                              module_project_id: module_project_id,
+                                                                              guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at DESC").first
 
-                    comments = first_ceuw.comments rescue nil
-                    last_ceuw.comments = comments
+                      comments = first_ceuw.comments rescue nil
+                      last_ceuw.comments = comments
+                    end
                   end
+
+                  last_ceuw.guw_coefficient_element_id = ce.id
+                  last_ceuw.save
                 end
 
-                last_ceuw.guw_coefficient_element_id = ce.id
-                last_ceuw.save
 
                 other_ceuows = ceuws.where.not(id: last_ceuw.id)
                 other_ceuows_size = other_ceuows.size

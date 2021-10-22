@@ -1,4 +1,4 @@
-<% @guw_types = @guw_model.guw_types.order("name asc").includes(:guw_complexities) %>
+<% @guw_types = @guw_model.guw_types.order("name asc")#.includes(:guw_complexities) %>
 
 <%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_with_multiple_outputs_path, id: "guw_form", remote: true do %>
 
@@ -11,37 +11,37 @@
     </div>
   </div>
 
-  <% @current_mp = current_module_project %>
-
   <!-- Vue  ModuleProjectGuwUnitOfWorkGroup -->
+  <% @current_mp = current_module_project %>
   <% current_mp = @module_project %>
   <% current_psb =  current_component %>
   <% organization_id = @guw_model.organization_id %>
   <% project_id = @project.id %>
 
-  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
+  <%# @current_module_project_guw_unit_of_work_groups = @current_mp.guw_unit_of_work_groups %>
+  <% #@guw_model_guw_coefficients = @guw_model.guw_coefficients %>
+  <% #@deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
+
+  <% @guw_model_orders_sorted = @guw_model.orders.sort_by { |k, v| v.to_f } %>
+  <% @group_unit_of_works = @current_module_project_guw_unit_of_work_groups = Guw::GuwUnitOfWorkGroup.includes(:guw_unit_of_works).where(organization_id: organization_id,
                                                                                        project_id: project_id,
-                                                                                       module_project_id: current_mp.id).order("name ASC") %>
+                                                                                       module_project_id: @current_mp.id).order("name ASC") %>
 
-  <% @guw_coefficients = Guw::GuwCoefficient.includes(:guw_coefficient_elements).where(organization_id: organization_id, guw_model_id: @guw_model.id) %>
-
+  <% @guw_coefficients = @guw_model_guw_coefficients = Guw::GuwCoefficient.includes(:guw_coefficient_elements).where(organization_id: organization_id, guw_model_id: @guw_model.id) %>
   <% @current_module_project_guw_unit_of_works = @current_mp.guw_unit_of_works %>
-  <% @current_module_project_guw_unit_of_work_groups = @current_mp.guw_unit_of_work_groups %>
-  <% @guw_model_guw_coefficients = @guw_model.guw_coefficients %>
-  <% @deported_guw_model_guw_coefficients = @guw_model.guw_coefficients.where(deported: true) %>
-  <% @deported_guw_coefficients = @guw_coefficients.where(guw_model_id: @guw_model.id, deported: true) %>
+  <% @deported_guw_model_guw_coefficients = @deported_guw_coefficients = @guw_coefficients.where(deported: true) #@guw_model.guw_coefficients.where(deported: true) %>
   <% @guw_outputs = @guw_model.guw_outputs.where(organization_id: organization_id) %>
-
+  <% @guw_model_complexities = Guw::GuwComplexity.where(organization_id: organization_id, guw_model_id: @guw_model.id).all %>
 
   <% @hash_guw_coefficients = {} %>
-  <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
-                               name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
+  <%# Guw::GuwCoefficient.includes([:guw_coefficient_elements]).where(guw_model_id: @guw_model.id, name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
+  <% @guw_coefficients.where(name: @guw_model.orders.map(&:first)).each do |guw_coef| %>
     <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
   <% end %>
 
   <% @hash_guw_outputs = {} %>
-  <% Guw::GuwOutput.where(guw_model_id: @guw_model.id,
-                          name: @guw_model.orders.map(&:first)).each do |guw_output| %>
+  <%# Guw::GuwOutput.where(guw_model_id: @guw_model.id, name: @guw_model.orders.map(&:first)).each do |guw_output| %>
+  <% @guw_outputs.where(name: @guw_model.orders.map(&:first)).each do |guw_output| %>
     <% @hash_guw_outputs[guw_output.name] = guw_output %>
   <% end %>
 
@@ -51,25 +51,21 @@
   <% end %>
 
   <% @guow_guw_coefficient_element_unit_of_works = Hash.new {|h,k| h[k] = [] } %>
-  <% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                                guw_model_id: @guw_model.id,
-                                                project_id: project_id,
-                                                module_project_id: current_mp.id).each do |gceuw| %>
+  <% @all_guw_coefficient_element_unit_of_works = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                                             guw_model_id: @guw_model.id,
+                                                                                             project_id: project_id,
+                                                                                             module_project_id: current_mp.id) %>
+  <% @all_guw_coefficient_element_unit_of_works.each do |gceuw| %>
     <% @guow_guw_coefficient_element_unit_of_works[gceuw.guw_unit_of_work_id] << gceuw %>
   <% end %>
 
   <% @guow_guw_coefficient_element_unit_of_works_with_coefficients = {} %>
-  <% Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                                guw_model_id: @guw_model.id,
-                                                project_id: project_id,
-                                                module_project_id: current_mp.id).order("updated_at ASC").each do |gceuw| %>
+  <% @all_guw_coefficient_element_unit_of_works.order("updated_at ASC").each do |gceuw| %>
     <% @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{gceuw.guw_unit_of_work_id}_#{gceuw.guw_coefficient_id}"] = gceuw %>
   <% end %>
 
   <% @hash_guw_coefficients = {} %>
-  <% Guw::GuwCoefficient.where(guw_model_id: @guw_model.id,
-                               name: @guw_model.orders.map(&:first),
-                               deported: false).each do |guw_coef| %>
+  <% @guw_coefficients.where(name: @guw_model.orders.map(&:first), deported: false).each do |guw_coef| %>
     <% @hash_guw_coefficients[guw_coef.name] = guw_coef %>
   <% end %>
 
@@ -126,7 +122,8 @@
 
     <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
-    <% @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("created_at ASC") %>
+    <%# @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("created_at ASC") %>
+    <% @uowg_guw_unit_of_works = @current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: uowg.id).order("created_at ASC") %>
 
     <div class="card card-widget">
       <div class="card-body">
@@ -148,7 +145,7 @@
                 <th colspan="2"><%= I18n.t :name %></th>
                 <th class="text-center"><%= I18n.t(:component) %></th>
 
-                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                <% @guw_model_orders_sorted.each do |i| %>
                   <% unless i[1].blank? %>
                     <% if @hash_guw_coefficients[i[0]].class == Guw::GuwCoefficient %>
                       <% guw_coefficient = @hash_guw_coefficients[i[0]] %>
@@ -182,8 +179,9 @@
                       <% end %>
                     <% elsif @hash_guw_coefficients[i[0]].class == Guw::GuwOutput %>
                       <% guw_output = @hash_guw_coefficients[i[0]] %>
-                      <% unless guw_output.estimation_status_id.nil? %>
-                        <% if guw_output.estimation_status_id == @project.estimation_status_id %>
+                      <% output_estimation_status_id = guw_output.estimation_status_id %>
+                      <% unless output_estimation_status_id.nil? %>
+                        <% if output_estimation_status_id == @project.estimation_status_id %>
                           <%= i[0] %>
                         <% end %>
                       <% else %>
@@ -203,7 +201,7 @@
               <tr style="height: 0px;">
                 <td colspan="3">
                 </td>
-                <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
+                <% @guw_model_orders_sorted.each do |i| %>
                   <% unless i[1].blank? %>
                     <% go = @hash_guw_outputs[i[0]] %>
                     <% if go.class == Guw::GuwOutput %>
@@ -219,12 +217,13 @@
               </tr>
 
               <% @hash_guw_complexities = {} %>
-              <% Guw::GuwComplexity.where(organization_id: organization_id, guw_model_id: @guw_model.id).all.each do |guw_complexity| %>
+              <% @guw_model_complexities.each do |guw_complexity| %>
                   <% @hash_guw_complexities[guw_complexity.guw_type_id] = guw_complexity %>
               <% end %>
 
               <% @hash_guw_model_guw_complexities = Hash.new {|h,k| h[k] = [] } %>
-              <% @guw_model.guw_types.each do |guw_type| %>
+              <%# @guw_model.guw_types.each do |guw_type| %>
+              <% @guw_types.each do |guw_type| %>
                 <% guw_complexity = @hash_guw_complexities[guw_type.id] %>
                 <% unless guw_complexity.nil? %>
                   <% @hash_guw_model_guw_complexities[guw_complexity.guw_type_id] << guw_complexity %>
@@ -232,7 +231,7 @@
               <% end %>
 
               <%# @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity, :guw_unit_of_work_attributes).each_with_index do |guow, i| %>
-              <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_complexity).order("display_order ASC").each_with_index do |guow, i| %>
+              <% @uowg_guw_unit_of_works.includes(:guw_type, :guw_unit_of_work, :project).order("display_order ASC").each_with_index do |guow, i| %>
                 <% @guw_type = guow.guw_type %>
                 <% unless @guw_type.nil? %>
                   <% @guw_complexities = @hash_guw_model_guw_complexities[@guw_type.id] %>
@@ -856,7 +855,8 @@
 <script>
   //$(document).ready(function(){
   $(document).ready(function() {
-    <% @current_mp.guw_unit_of_work_groups.each do |uowg| %>
+    <%# @current_mp.guw_unit_of_work_groups.each do |uowg| %>
+    <% @group_unit_of_works.each do |uowg| %>
       <% @guw_model.guw_outputs.each do |go| %>
         var sum = 0;
         $(".total_<% uowg.id %>_<% go.id %>").each(function() {

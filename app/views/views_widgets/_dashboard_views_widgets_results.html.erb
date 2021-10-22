@@ -54,7 +54,7 @@
         <%# module_project = ModuleProject.where("pemodule_id = ? AND project_id = ?", @initialization_module.id, @project.id).first unless @initialization_module.nil? %>
         <% module_project_view = module_project.view %>
         <% unless module_project_view.nil? %>
-          <% module_project_view_widgets = module_project_view.views_widgets.order('position').all %>
+          <% module_project_view_widgets = module_project_view.views_widgets.includes([:estimation_value]).order('position').all %>
           <% module_project_view_widgets.each do |view_widget| %>
             <% if view_widget.is_label_widget? %>
               <%# view_widget_data = view_widget.comment #get_label_widget_data(view_widget.id) %>

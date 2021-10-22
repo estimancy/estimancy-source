@@ -789,7 +789,7 @@ class AbilityView
 
                 prj_scrts.each do |prj_scrt|
 
-                  prj_scrt_project_security_level = prj_scrt.project_security_level
+                  prj_scrt_project_security_level = ProjectSecurityLevel.includes([:permissions]).where(id: prj_scrt.project_security_level).first #prj_scrt.project_security_level
 
                   begin
                     organization_project = hash_organization_projects[prj_scrt.project_id]
@@ -822,9 +822,10 @@ class AbilityView
                 end
               end
 
-              grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).where(organization_id: organization.id).each do |esgr|
+              #grp.estimation_status_group_roles.includes(:project_security_level, :estimation_status).where(organization_id: organization.id).each do |esgr|
+              grp.estimation_status_group_roles.where(organization_id: organization.id).each do |esgr|
 
-                esgr_security_level = esgr.project_security_level
+                esgr_security_level = ProjectSecurityLevel.where(id: esgr.project_security_level_id).includes([:permissions]).first #esgr.project_security_level
                 esgr_estimation_status_id = esgr.estimation_status_id
 
                 unless esgr_security_level.nil?
@@ -878,8 +879,11 @@ class AbilityView
 
             status_global.each_with_index do |a, i|
               unless hash_project[a[1]].nil?
-                can hash_permission[a[0]], hash_project[a[1]], estimation_status_id: hash_status[a[2]]
-                can hash_permission[a[0]], hash_project[a[1]].project, estimation_status_id: hash_status[a[2]]
+                # can hash_permission[a[0]], hash_project[a[1]], estimation_status_id: hash_status[a[2]]
+                # can hash_permission[a[0]], hash_project[a[1]].project, estimation_status_id: hash_status[a[2]]
+
+
+                can hash_permission[a[0]], [Project, OrganizationEstimation], id: hash_project[a[1]].project.id, estimation_status_id: hash_status[a[2]]
               end
             end
           end
