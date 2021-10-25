@@ -55,24 +55,19 @@
 
 </td>
 
-<%# guow.guw_unit_of_work_attributes %>
 <%# guow_guw_unit_of_work_attributes = Guw::GuwUnitOfWorkAttribute.where(organization_id: organization_id,
                                                                         guw_model_id: guw_model_id,
                                                                         guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
                                                                         guw_unit_of_work_id: guow.id) %>
-<!--#=== fonction de purge =====-->
-<% all_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes %>
-<% all_guw_unit_of_work_attributes.where.not(project_id: guow.project_id).destroy_all %>
-<% all_guw_unit_of_work_attributes.where.not(guw_type_id: guow.guw_type_id).destroy_all %>
-<!--#=== fonction de purge =====-->
 
-<% guow_guw_unit_of_work_attributes = all_guw_unit_of_work_attributes.where(organization_id: organization_id,
+<%# guow_guw_unit_of_work_attributes = guow.guw_unit_of_work_attributes.where(organization_id: organization_id,
                                                                         guw_model_id: guw_model_id,
                                                                         guw_type_id: @guw_type.nil? ? nil : @guw_type.id) %>
 
 <% @guw_model.orders.sort_by { |k, v| v.to_f }.each do |i| %>
   <% if i[1].blank? %>
-    <% if i[0] ==  I18n.t(:cplx_coeff) || i[0] == "Coeff. de Complexité" || i[0] == "Coeff. de complexité" || i[0] == I18n.t(:cplx_coeff) %>
+    <%# if i[0] ==  I18n.t(:cplx_coeff) || i[0] == "Coeff. de Complexité" || i[0] == "Coeff. de complexité" || i[0] == I18n.t(:cplx_coeff) %>
+    <% if i[0].to_s.in? [I18n.t(:cplx_coeff), "Coeff. de Complexité", "Coeff. de complexité", I18n.t(:cplx_coeff)] %>
       <% unless @guw_type.nil? %>
         <% @guw_complexities = @guw_type.guw_complexities.where(organization_id: organization_id, guw_model_id: guw_model_id).order("display_order ASC") %>
         <% unless @guw_complexities.nil? %>
@@ -129,12 +124,12 @@
           <% unless @guw_type.nil? %>
             <% if @guw_type.allow_criteria == true %>
               <span class="text-center criteria_label_<%= guow.id %>">
-                <% counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
-                <% if counting.empty? %>
+                <%# counting = guow_guw_unit_of_work_attributes.map(&:most_likely).compact %>
+                <%# if counting.empty? %>
                   <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{ (guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
-                <% else %>
-                  <%= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{ (guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
-                <% end %>
+                <%# else %>
+                  <%#= link_to raw("<i class='material-icons'>settings</i"), guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "#{ (guow.missing_value == true) ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                <%# end %>
               </span>
             <% else %>
               <span class="text-center">
