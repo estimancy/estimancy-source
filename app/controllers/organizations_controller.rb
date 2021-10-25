@@ -3793,9 +3793,8 @@ class OrganizationsController < ApplicationController
 
         #@current_ability ||= AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
         @current_ability = AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
-        #@projects_to_see = Project.accessible_by(AbilityProject.new(current_user, @organization, $organization_projects, $min, $max, $object_per_page), :see_project)
-        @projects_to_see = Project.where(organization_id: @organization.id).accessible_by(@current_ability, :see_project)
-
+        #@projects_to_see = Project.where(organization_id: @organization.id, id: organization_projects.map(&:id)).accessible_by(@current_ability, :see_project)
+        @projects_to_see = organization_projects.accessible_by(@current_ability, :see_project)
       else
         #all_projects = OrganizationEstimation.unscoped.includes([:project, :project_securities]).where(organization_id: @current_organization.id)
         all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
@@ -3803,7 +3802,8 @@ class OrganizationsController < ApplicationController
 
         #@current_ability ||= AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
         @current_ability = AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
-        @projects_to_see = OrganizationEstimation.where(organization_id: @organization.id).accessible_by(@current_ability, :see_project).includes([:project])
+        #@projects_to_see = OrganizationEstimation.where(organization_id: @organization.id, id: organization_projects.map(&:id)).accessible_by(@current_ability, :see_project)
+        @projects_to_see = organization_projects.accessible_by(@current_ability, :see_project)
 
         #puts "Hello"
       end
@@ -3812,7 +3812,7 @@ class OrganizationsController < ApplicationController
     end
 
     #res = $all_projects_to_see #[]
-    res = @projects_to_see.includes([:application, :project_area, :acquisition_category, :estimation_status, :creator])#.where(id: 2451)
+    res = @projects_to_see.includes([:application, :acquisition_category, :estimation_status, :creator]) #:project_area
 
     # #if @historized
     #   organization_projects.each do |p|
