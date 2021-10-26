@@ -1972,6 +1972,88 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
 
+  #Met à jour le champs contenant la synthèse des résultats de chaque ligne ligne d'UO
+  # coefficient_element_unit_of_works
+  def update_summary_results(organization, guw_model, module_project, coefficient_element_unit_of_works)
+
+    organization_id = organization.id
+    guw_model_id = guw_model.id
+
+    guw_model_orders = guw_model.orders.sort_by { |k, v| v.to_f }
+
+    guw_model.guw_unit_of_works.includes(:guw_type, :guw_unit_of_work, :project).order("display_order ASC").each do |guw_unit_of_work|
+      guw_type = guw_unit_of_work.guw_type
+      guw_unit_of_work.summary_results[:guw_model_orders] = guw_model_orders
+      guw_unit_of_work.summary_results[:complexity_comments] = guw_unit_of_work.cplx_comments.blank? ? guw_type.description : guw_unit_of_work.cplx_comments
+
+
+      guw_unit_of_work.summary_results[:guw_type] = { id: guw_unit_of_work.guw_type_id,
+                                                      name: guw_type.name,
+                                                      description: guw_type.description.blank? ? guw_type.name : guw_type.description,
+                                                      allow_criteria: guw_type.allow_criteria,
+                                                      allow_complexity: guw_type.allow_complexity
+                                                    }
+
+      guw_unit_of_work.summary_results[:guw_coefficients] = coefficients_hash = HashWithIndifferentAccess.new
+      guw_unit_of_work.summary_results[:guw_outputs] = outputs_hash = HashWithIndifferentAccess.new
+
+      guw_model_guw_coefficients =  Guw::GuwCoefficient.includes(:guw_coefficient_elements).where(organization_id: organization_id, guw_model_id: guw_model_id)
+
+      guw_model_guw_coefficients.each do |guw_coefficient|
+        coefficients_hash[guw_coefficient.id] = {
+          coeff_elt_id: nil,
+          default_coeff_elt_id: nil,
+          coeff_elt_unit_of_work_id: nil,
+        }
+
+        if guw_type.nil?
+          results = []
+        else
+          guw_coefficient_guw_coefficient_elements = guw_coefficient.guw_coefficient_elements.select{|i| i.organization_id == organization_id && i.guw_model_id == guw_model_id }
+          results = guw_coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements #.includes(:guw_coefficient_element)
+                                                                      .where(organization_id: organization_id,
+                                                                             guw_model_id: guw_model_id,
+                                                                             guw_type_id: guw_type.id)
+                                                                      .select{|ct| ct.value != nil }
+                                                                      .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+
+        end
+
+        default = guw_coefficient_guw_coefficient_elements.select{|i| i.default == true }.first
+        if default.nil?
+          default = results.first
+        end
+
+        coefficients_hash[guw_coefficient.id][:coeff_elt_results] = results
+        coefficients_hash[guw_coefficient.id][:coeff_elt_default] = default
+
+        begin
+          ceuw = @guow_guw_coefficient_element_unit_of_works_with_coefficients["#{guow.id}_#{@guw_coefficient.id}"]
+        rescue
+          ceuw = @all_guw_coefficient_element_unit_of_works.where(guw_coefficient_id: @guw_coefficient.id, guw_unit_of_work_id: guow.id).order("updated_at ASC").last
+        end
+
+        if ceuw.nil?
+          color = ""
+        else
+          if default.value.to_f == ceuw.percent.to_f
+            color = ""
+          else
+            color = "background-color: ##{default.color_code}"
+          end
+        end
+        coefficients_hash[guw_coefficient.id][:color] = color
+
+
+      end
+      guw_unit_of_work.summary_results[:guw_coefficients] = coefficients_hash
+
+      guw_unit_of_work.summary_results[:guw_outputs] = outputs_hash
+    end
+
+  end
+
+
   # Comptage automatique des PFs
   def ai_auto_sizing
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])

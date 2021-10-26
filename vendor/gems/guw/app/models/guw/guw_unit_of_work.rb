@@ -42,6 +42,8 @@ module Guw
 
     # validates_presence_of :name
 
+    serialize :summary_results, HashWithIndifferentAccess
+
     serialize :ajusted_size
     serialize :size
     serialize :effort
