@@ -54,9 +54,9 @@ $("#new_guw").modal('toggle', {backdrop: false});
 
 <% @guw_unit_of_work_guw_unit_of_work_group = @guw_unit_of_work.guw_unit_of_work_group %>
 <% if @position.blank? %>
-  $('table.group_<%= @guw_unit_of_work_guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work_guw_unit_of_work_group})) %></tr>");
+  $('table.group_<%= @guw_unit_of_work_guw_unit_of_work_group.id %> tr:last').after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr_without_summary_results", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work_guw_unit_of_work_group})) %></tr>");
 <% else %>
-  $('table.group_<%= @guw_unit_of_work_guw_unit_of_work_group.id %> tr').eq(<%= @position.to_i + 1 %>).after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work_guw_unit_of_work_group})) %></tr>");
+  $('table.group_<%= @guw_unit_of_work_guw_unit_of_work_group.id %> tr').eq(<%= @position.to_i + 1 %>).after("<tr id=\"<%= @guw_unit_of_work.id %>\" data-guw-id=\"<%= @guw_unit_of_work.id %>\"><%= j(render(partial: "guw/guw_unit_of_works/guw_tr_without_summary_results", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work_guw_unit_of_work_group})) %></tr>");
 <% end %>
 
 $(".selected_of_unit_of_work").html("<%= @selected_of_unit_of_works %>");
