@@ -98,7 +98,7 @@ namespace :guw_models do
                                                                  guw_unit_of_work_id: guw_unit_of_work_id)
 
 
-              last_ceuw = ceuws.order("updated_at ASC, id ASC").last
+              last_ceuw = ceuws.order(updated_at: :asc, id: :asc).last
               if last_ceuw
                 ce = Guw::GuwCoefficientElement.where(organization_id: organization_id, guw_model_id: guw_model_id, guw_coefficient_id: guw_coefficient_id).first
 
@@ -180,7 +180,7 @@ namespace :guw_models do
           puts "#{ceuws.map(&:updated_at).max}"
           #puts "#{ceuws.order(updated_at: :asc).last.id}"
 
-          last_ceuw = ceuws.order(updated_at: :asc).last
+          last_ceuw = ceuws.order(updated_at: :asc, id: :asc).last
           puts "LAST ID = #{last_ceuw.id}"
           puts "LAST VALUE = #{last_ceuw.percent}"
 
