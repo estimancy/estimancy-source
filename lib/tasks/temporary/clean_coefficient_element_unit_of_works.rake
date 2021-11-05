@@ -111,7 +111,7 @@ namespace :guw_models do
                                                                               guw_coefficient_element_id: ce.id,
                                                                               project_id: project_id,
                                                                               module_project_id: module_project_id,
-                                                                              guw_unit_of_work_id: guw_unit_of_work_id).order("updated_at ASC").first
+                                                                              guw_unit_of_work_id: guw_unit_of_work_id).order(updated_at: :asc, id: :asc).first
 
                       comments = first_ceuw.comments rescue nil
                       last_ceuw.comments = comments
