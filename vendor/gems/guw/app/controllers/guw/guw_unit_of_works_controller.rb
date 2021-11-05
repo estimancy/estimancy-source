@@ -948,8 +948,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       @guw_unit_of_works.each_with_index do |guw_unit_of_work, i|
 
         summary_results = HashWithIndifferentAccess.new
-        summary_results[:guw_coefficients] = coefficients_hash = HashWithIndifferentAccess.new
-        summary_results[:guw_outputs] = outputs_hash = HashWithIndifferentAccess.new
+        summary_results[:guw_coefficients] = Hash.new
+        summary_results[:guw_outputs]  = Hash.new
 
         # guw_unit_of_work.ajusted_size = nil
         # guw_unit_of_work.size = nil
@@ -1650,6 +1650,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @component = current_component
+    @all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+
     @all_guw_coefficient_element_unit_of_works = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization_id,
                                                                                             guw_model_id: @guw_model_id,
                                                                                             project_id: @project_id,
@@ -1663,6 +1665,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.effort = {}
     @guw_unit_of_work.cost = {}
 
+    summary_results = HashWithIndifferentAccess.new
+    summary_results[:guw_coefficients] = Hash.new
+    summary_results[:guw_outputs] = Hash.new
+
     begin
       guw_type = Guw::GuwType.where(organization_id: @organization.id,
                                     guw_model_id: @guw_model.id,
@@ -1670,6 +1676,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     rescue
       guw_type = @guw_unit_of_work.guw_type
     end
+
+    summary_results[:guw_type] = { id: guw_type.id, name: guw_type.name,
+                                   description: guw_type.description.blank? ? guw_type.name : guw_type.description,
+                                   allow_criteria: guw_type.allow_criteria, allow_complexity: guw_type.allow_complexity
+    }
+    summary_results[:cplx_comments] = @guw_unit_of_work.cplx_comments.blank? ? guw_type.description : @guw_unit_of_work.cplx_comments
 
     @lows = Array.new
     @mls = Array.new
@@ -1780,6 +1792,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
     @guw_model.guw_outputs.where(organization_id: @organization_id).order("display_order ASC").each_with_index do |guw_output, index|
 
+      summary_results[:guw_outputs][guw_output.id] = HashWithIndifferentAccess.new
+
       @oc = Guw::GuwOutputComplexity.where(organization_id: @organization_id,
                                            guw_model_id: @guw_model_id,
                                            guw_output_id: guw_output.id,
@@ -1803,6 +1817,40 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       percents = []
       selected_coefficient_values = Hash.new {|h,k| h[k] = [] }
       @guw_model.guw_coefficients.each do |guw_coefficient|
+
+        coefficient_guw_coefficient_elements = @all_guw_coefficient_elements.where(guw_coefficient_id: guw_coefficient.id)
+
+        #### summary_results #####
+
+        summary_results[:guw_coefficients][guw_coefficient.id] = Hash.new
+        summary_results[:guw_coefficients][guw_coefficient.id][:coefficient_type] = guw_coefficient.coefficient_type
+
+        unless guw_type.nil?
+          results = coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+                                                                  .where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_type_id: guw_type.id)
+                                                                  .select{|ct| ct.value != nil }
+                                                                  .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+        else
+          results = []
+        end
+
+        default_coefficient_element = coefficient_guw_coefficient_elements.select{|i| i.default == true }.first
+        if default_coefficient_element.nil?
+          default_coefficient_element = results.first
+        end
+
+        #surtout pour les coefficient de type Coefficient
+        if default_coefficient_element.nil?
+          default_coefficient_element = coefficient_guw_coefficient_elements.first
+        end
+
+        summary_results[:guw_coefficients][guw_coefficient.id][:default_coeff_elt_id] = default_coefficient_element&.id
+        summary_results[:guw_coefficients][guw_coefficient.id][:coeff_elt_result_ids] = results.map(&:id)
+        default_display_value = results.first&.default_display_value
+        summary_results[:guw_coefficients][guw_coefficient.id][:default_display_value] = default_display_value
+
+        #### END summary_results #####
+
         if guw_coefficient.coefficient_type == "Pourcentage"
 
           ceuw = @all_guw_coefficient_element_unit_of_works.where(organization_id: @organization_id,
@@ -1813,7 +1861,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                             module_project_id: @module_project_id,
                                                             guw_unit_of_work_id: @guw_unit_of_work.id).first_or_create
 
-          guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+          coefficient_guw_coefficient_elements.each do |guw_coefficient_element|
             cce = @all_guw_complexity_coefficient_elements.where(guw_output_id: guw_output.id,
                                                                  guw_complexity_id: @guw_unit_of_work.guw_complexity_id,
                                                                  guw_coefficient_element_id: guw_coefficient_element.id).first
@@ -1831,7 +1879,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
               end
 
               ceuw.guw_coefficient_element_id = guw_coefficient_element.id
-
             end
           end
 
@@ -1844,6 +1891,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             ceuw.save
           end
 
+          summary_results = update_summary_results_coefficient_ceuow(summary_results, guw_coefficient, ceuw, guw_type, results, default_display_value, default_coefficient_element)
+
+
         elsif guw_coefficient.coefficient_type == "Coefficient"
 
           ceuw = @all_guw_coefficient_element_unit_of_works.where(organization_id: @organization_id,
@@ -1854,7 +1904,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                             module_project_id: @module_project_id,
                                                             guw_unit_of_work_id: @guw_unit_of_work).first_or_create
 
-          guw_coefficient.guw_coefficient_elements.where(organization_id: @organization_id,
+          coefficient_guw_coefficient_elements.where(organization_id: @organization_id,
                                                          guw_model_id: @guw_model_id).each do |guw_coefficient_element|
 
             cce = @all_guw_complexity_coefficient_elements.where(guw_output_id: guw_output.id,
@@ -1884,6 +1934,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           if ceuw.changed?
             ceuw.save
           end
+
+          summary_results = update_summary_results_coefficient_ceuow(summary_results, guw_coefficient, ceuw, guw_type, results, default_display_value, default_coefficient_element)
 
         else
           unless params['hidden_coefficient_element'].nil?
@@ -1920,6 +1972,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             if ceuw.changed?
               ceuw.save
             end
+
+            summary_results = update_summary_results_coefficient_ceuow(summary_results, guw_coefficient, ceuw, guw_type, results, default_display_value, default_coefficient_element)
+
           end
 
           unless cce.nil?
@@ -1973,6 +2028,13 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           tmp = inter_value.to_f * (@guw_unit_of_work.quantity.nil? ? 1 : @guw_unit_of_work.quantity.to_f) * (scv.nil? ? 1 : scv.to_f) * (pct.nil? ? 1 : pct.to_f) * (coef.nil? ? 1 : coef.to_f)
         end
 
+        got = Guw::GuwOutputType.where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_output_id: guw_output.id, guw_type_id: @guw_unit_of_work.guw_type_id).first
+        unless got.nil?
+          summary_results[:guw_outputs][guw_output.id][:guw_output_type_id] = got&.id
+          got_display_type = got.display_type
+          summary_results[:guw_outputs][guw_output.id][:got_display_type] = got_display_type
+        end
+
         if guw_output.name == "Effort AI (m.d)"
           tmp_hash_res["#{guw_output.id}"] = tmp * 1.15
           tmp_hash_ares["#{guw_output.id}"] = tmp * 1.15
@@ -1985,6 +2047,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         @guw_unit_of_work.size = tmp_hash_res
       end
     end
+
+    @guw_unit_of_work.summary_results = summary_results
 
     if @guw_unit_of_work.changed?
       @guw_unit_of_work.save

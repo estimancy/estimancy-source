@@ -18,7 +18,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 #############################################################################
-# octobre 2021
+# octobre 2021 : IMPACT
 # rake guw_models:clean_coefficient_element_unit_of_works RAILS_ENV=production
 namespace :guw_models do
 
