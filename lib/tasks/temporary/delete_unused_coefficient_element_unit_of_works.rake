@@ -36,7 +36,7 @@ namespace :users do
       guw_ceuow_count_to_delete_per_cds = 0
 
       organization_id = organization.id
-      organization.guw_models.where(id: 974).each do |guw_model|
+      organization.guw_models.each do |guw_model|
         guw_model_id = guw_model.id
 
         all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: organization_id, guw_model_id: guw_model_id)
