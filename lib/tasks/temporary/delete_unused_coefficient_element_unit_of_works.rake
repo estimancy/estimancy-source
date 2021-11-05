@@ -71,7 +71,7 @@ namespace :users do
           all_ceuows = all_guw_coefficient_element_unit_of_works.where(guw_unit_of_work_id: guw_unit_of_work.id)
           all_used_ceuows = all_guw_coefficient_element_unit_of_works.where(guw_unit_of_work_id: guw_unit_of_work.id, guw_coefficient_id: used_guw_coefficient_ids.compact.uniq)
 
-          ceuows_to_delete = all_ceuows.where.not(id: all_used_ceuows)
+          ceuows_to_delete = all_ceuows.where.not(id: all_used_ceuows.map(&:id))
 
           ceuows_to_delete_size = ceuows_to_delete.size
           guw_ceuow_count_to_delete_per_cds = guw_ceuow_count_to_delete_per_cds + ceuows_to_delete_size
