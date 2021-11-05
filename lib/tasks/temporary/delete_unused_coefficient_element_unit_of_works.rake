@@ -30,7 +30,7 @@ namespace :users do
 
     all_ceuows_to_delete = 0
 
-    Organization.where(id: 73).all.each do |organization|
+    Organization.all.each do |organization|
 
       puts "CDS  =  #{organization}"
       guw_ceuow_count_to_delete_per_cds = 0
@@ -77,10 +77,6 @@ namespace :users do
           guw_ceuow_count_to_delete_per_cds = guw_ceuow_count_to_delete_per_cds + ceuows_to_delete_size
           all_ceuows_to_delete = all_ceuows_to_delete + ceuows_to_delete_size
 
-          #delete others
-          #ceuows_to_delete.delete_all
-          Guw::GuwCoefficientElementUnitOfWork.where(id: ceuows_to_delete.map(&:id)).delete_all
-
           # puts "Nb total lignes de ceow = #{all_ceuows.size}"
           # puts "Nb total utiles lignes de ceow = #{all_used_ceuows.size}"
           #
@@ -91,6 +87,11 @@ namespace :users do
           # end
           #
           # puts "\n"
+
+          #delete others
+          #ceuows_to_delete.delete_all
+          Guw::GuwCoefficientElementUnitOfWork.where(id: ceuows_to_delete.map(&:id)).delete_all
+
         end
 
         #puts "Nb to delete ceow = #{all_ceuows_to_delete}" # 211 pour le projet 615
@@ -102,7 +103,6 @@ namespace :users do
     puts "Nb TOTAL ceow à supprimer = #{all_ceuows_to_delete}"
 
   end
-
 
 
 
