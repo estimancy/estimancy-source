@@ -300,7 +300,8 @@ module OrganizationsHelper
       when :title
         #content_tag('td', can_show_estimation?(project) ?
         content_tag('td', can_show_estimation?(project) ?
-                              link_to(value, dashboard_path(project), :class => 'estimancy hide_overview') : value)
+                            link_to(value, dashboard_path(project, direct_to_dashboard: true), :class => 'estimancy hide_overview') : value)
+                            #link_to(value, activate_module_project_path(project.module_projects.first), :class => 'estimancy hide_overview') : value)
       when :original_model
         begin
           if project.original_model
