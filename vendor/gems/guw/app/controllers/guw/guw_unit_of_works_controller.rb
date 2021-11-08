@@ -894,12 +894,19 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                     module_project_id: @module_project_id,
                                                     id: @modified_guw_line_ids).includes(:guw_complexity, :guw_unit_of_work_group).order("name ASC")
 
-      @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id)
-      @all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+      # @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id)
+      # @all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+
+      # utilisation de la vue
+      @all_guw_coefficient_elements = Guw::GuwUsedCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+      #@guw_coefficients = @guw_model.guw_used_coefficients.where(organization_id: @organization.id)
+      @guw_coefficient_ids = @all_guw_coefficient_elements.map(&:guw_coefficient_id).uniq
+      @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id, id: @guw_coefficient_ids)
       @all_guw_coefficient_element_unit_of_works = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization_id,
                                                                                              guw_model_id: @guw_model_id,
                                                                                              project_id: @project_id,
                                                                                              module_project_id: @module_project_id)
+
 
       @guw_outputs = @guw_model.guw_outputs.where(organization_id: @organization_id, guw_model_id: @guw_model_id).order("display_order ASC")
 
