@@ -2272,9 +2272,16 @@ class ProjectsController < ApplicationController
 
     @user = current_user
     @pemodules ||= Pemodule.all
-    @module_project = current_module_project
-    @show_hidden = 'true'
+    #Get the initialization module_project
+    @initialization_module_project ||= ModuleProject.where(organization_id: @current_organization.id, pemodule_id: @initialization_module.id, project_id: @project.id).first unless @initialization_module.nil?
 
+    if params[:direct_to_dashboard] == "true" || params[:direct_to_dashboard] == true
+      redirect_to activate_module_project_path(module_project_id: @initialization_module_project) and return
+    else
+      @module_project = current_module_project
+    end
+
+    @show_hidden = 'true'
     status_comment_link = ""
     if can_alter_estimation?(@project) && ( can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project))
       status_comment_link = "#{main_app.add_comment_on_status_change_path(:project_id => @project.id)}"
@@ -2283,8 +2290,6 @@ class ProjectsController < ApplicationController
 
     @project_organization = @current_organization #@project.organization
     @module_projects = @project.module_projects.where(organization_id: @current_organization.id)
-    #Get the initialization module_project
-    @initialization_module_project ||= ModuleProject.where(organization_id: @current_organization.id, pemodule_id: @initialization_module.id, project_id: @project.id).first unless @initialization_module.nil?
 
     @module_positions = ModuleProject.where(:project_id => @project.id).order(:position_y).all.map(&:position_y).compact.uniq.max || 1
     @module_positions_x = @project.module_projects.order(:position_x).all.map(&:position_x).compact.max
