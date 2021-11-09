@@ -53,7 +53,7 @@ module Guw
 
     #avec la vue
     has_many :guw_used_coefficient_elements, foreign_key: :guw_coefficient_element_id, dependent: :destroy
-    has_many :guw_used_coefficients, through: :guw_used_coefficient_elements, foreign_key: :guw_coefficient_id#, source: :guw_coefficient
+    has_many :guw_used_coefficients, through: :guw_used_coefficient_elements, foreign_key: :guw_coefficient_id, class_name: GuwCoefficient #, source: :guw_coefficient
 
     belongs_to :organization
 

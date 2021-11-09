@@ -902,6 +902,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       #@guw_coefficients = @guw_model.guw_used_coefficients.where(organization_id: @organization.id)
       @guw_coefficient_ids = @all_guw_coefficient_elements.map(&:guw_coefficient_id).uniq
       @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id, id: @guw_coefficient_ids)
+
       @all_guw_coefficient_element_unit_of_works = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization_id,
                                                                                              guw_model_id: @guw_model_id,
                                                                                              project_id: @project_id,
@@ -1657,7 +1658,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     authorize! :execute_estimation_plan, @project
 
     @component = current_component
-    @all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+    #@all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+    @all_guw_coefficient_elements = Guw::GuwUsedCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
 
     @all_guw_coefficient_element_unit_of_works = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization_id,
                                                                                             guw_model_id: @guw_model_id,
@@ -1823,7 +1825,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       coeffs = []
       percents = []
       selected_coefficient_values = Hash.new {|h,k| h[k] = [] }
-      @guw_model.guw_coefficients.each do |guw_coefficient|
+
+      @guw_coefficient_ids = @all_guw_coefficient_elements.map(&:guw_coefficient_id).uniq
+      @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id, id: @guw_coefficient_ids)
+      @guw_model.guw_coefficients.where(organization_id: @organization.id, id: @guw_coefficient_ids).each do |guw_coefficient|
 
         coefficient_guw_coefficient_elements = @all_guw_coefficient_elements.where(guw_coefficient_id: guw_coefficient.id)
 

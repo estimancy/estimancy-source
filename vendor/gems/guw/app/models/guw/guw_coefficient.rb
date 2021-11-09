@@ -2,6 +2,7 @@ module Guw
   class GuwCoefficient < ActiveRecord::Base
     belongs_to :guw_model
     has_many :guw_coefficient_elements, dependent: :destroy
+    #has_many :guw_used_coefficient_elements, foreign_key: :guw_coefficient_element_id, dependent: :destroy
 
     validates :name, :presence => true
 

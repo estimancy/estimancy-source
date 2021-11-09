@@ -11,7 +11,7 @@ class CreateGuwUsedCoefficientsView < ActiveRecord::Migration
 
       CREATE OR REPLACE VIEW guw_guw_used_coefficient_elements AS
 
-        SELECT guw_coefficient_element.*
+        SELECT guw_coefficient_element.id AS guw_coefficient_element_id, guw_coefficient_element.*
 
         FROM guw_guw_coefficient_elements guw_coefficient_element
   
@@ -44,7 +44,6 @@ class CreateGuwUsedCoefficientsView < ActiveRecord::Migration
                 guw_coefficient_element.guw_coefficient_id,
                 guw_coefficient_element.default,
                 guw_coefficient_element.display_order;
-
 
     SQL
 
