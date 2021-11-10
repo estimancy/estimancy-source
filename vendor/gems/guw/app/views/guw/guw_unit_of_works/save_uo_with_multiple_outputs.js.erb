@@ -54,7 +54,8 @@
   $("#modal_cotation").modal('toggle');
   $('.modal_comments').modal('hide');
 
-  $("tr#<%= @guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %>");
+//  $("tr#<%#= @guw_unit_of_work.id %>").html("<%#= j(render(partial: "guw/guw_unit_of_works/guw_tr", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %>");
+  $("tr#<%= @guw_unit_of_work.id %>").html("<%= j(render(partial: "guw/guw_unit_of_works/guw_tr_with_summary_results", locals: { "guow" => @guw_unit_of_work, "uowg" => @guw_unit_of_work.guw_unit_of_work_group})) %>");
 
   $("#dashboard_right_panel").html("<%= j(render 'module_projects/dashboard_right_panel') %>");
   $("#dashboard_left_panel").html("<%= j(render 'module_projects/dashboard_left_inner') %>");

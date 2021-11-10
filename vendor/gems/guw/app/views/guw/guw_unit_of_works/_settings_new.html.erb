@@ -247,11 +247,11 @@
                     #   @guw_coefficient_guw_coefficient_elements[guw_coefficient_element.guw_coefficient_id] << guw_coefficient_element
                     # end
                   %>
-                  <%# if guow.summary_results.blank? %>
-                    <%#= render partial: "guw/guw_unit_of_works/guw_tr_without_summary_results", locals: {"guow" => guow, "uowg" => uowg} %>
-                  <%# else %>
-                    <%= render partial: "guw/guw_unit_of_works/guw_tr", locals: {"guow" => guow, "uowg" => uowg} %>
-                  <%# end %>
+                  <% if guow.summary_results.blank? %>
+                    <%= render partial: "guw/guw_unit_of_works/guw_tr_without_summary_results", locals: {"guow" => guow, "uowg" => uowg} %>
+                  <% else %>
+                    <%= render partial: "guw/guw_unit_of_works/guw_tr_with_summary_results", locals: {"guow" => guow, "uowg" => uowg} %>
+                  <% end %>
                 </tr>
               <% end %>
 
