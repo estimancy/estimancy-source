@@ -1916,7 +1916,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                             module_project_id: @module_project_id,
                                                             guw_unit_of_work_id: @guw_unit_of_work).first_or_create
 
-          coefficient_guw_coefficient_elements.where(organization_id: @organization_id, guw_model_id: @guw_model_id).each do |guw_coefficient_element|
+          coefficient_guw_coefficient_elements.each do |guw_coefficient_element|
 
             cce = @all_guw_complexity_coefficient_elements.where(guw_output_id: guw_output.id,
                                                                  guw_complexity_id: @guw_unit_of_work.guw_complexity_id,
@@ -1952,9 +1952,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           unless params['hidden_coefficient_element'].nil?
             unless params['hidden_coefficient_element']["#{@guw_unit_of_work.id}"].nil?
               #ce = Guw::GuwCoefficientElement.find_by_id(params['hidden_coefficient_element']["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i)
-              ce = Guw::GuwCoefficientElement.where(organization_id: @organization_id,
-                                                    guw_model_id: @guw_model_id,
-                                                    id: params['hidden_coefficient_element']["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
+              #ce = Guw::GuwCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id, id: params['hidden_coefficient_element']["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
+              ce = coefficient_guw_coefficient_elements.where(id: params['hidden_coefficient_element']["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_i).first
+              if ce.nil?
+                ce = coefficient_guw_coefficient_elements.where(guw_coefficient_id: guw_coefficient.id).last
+              end
             end
           end
 
@@ -1972,10 +1974,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           end
 
           unless ceuw.nil?
-
             v = params['hidden_coefficient_element']["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
-            ceuw.guw_coefficient_element_id = v.nil? ? nil : v.to_i
+            ceuw.guw_coefficient_element_id = v.blank? ? ce.id : v.to_i
 
+            ceuw.percent = ce&.value
             ceuw.guw_coefficient_id = guw_coefficient.id
             ceuw.guw_unit_of_work_id = @guw_unit_of_work.id
             ceuw.module_project_id = @module_project_id
