@@ -3607,7 +3607,10 @@ class ProjectsController < ApplicationController
         if params[:yes_confirmation] == 'selected'
           if ((can? :delete_project, @project) || (can? :manage, @project)) && @project.is_childless?
 
-            @project.update_attributes(is_historized: true)
+            @project.is_historized = true
+            @project.project_security_ids = []
+            @project.save(validate: false)
+
             @project.destroy
 
             ###current_user.delete_recent_project(@project.id)
