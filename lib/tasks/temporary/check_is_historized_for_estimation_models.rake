@@ -5,7 +5,7 @@ namespace :projects do
   desc "check_is_historized_for_estimation_models"
   task check_is_historized_for_estimation_models: :environment do
 
-    Organization.where(id: 75).all.each do |organization|
+    Organization.all.each do |organization|
       puts "#{organization.name}"
       begin
         Project.where(organization_id: organization.id, is_model: true).each do |estimation_model|
