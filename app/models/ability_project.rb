@@ -151,60 +151,62 @@ class AbilityProject
               prj_scrts = project.project_securities.includes(:project_security_level).where(is_model_permission: false, is_estimation_permission: true)
               user_project_security_levels = prj_scrts.where(user_id: user.id).map(&:project_security_level)
 
-              user_groups.each do |group|
-                grp_project_security_levels = prj_scrts.where(group_id: group.id).map(&:project_security_level) + user_project_security_levels
+              #if !(project.private == true && project.creator_id != user.id && project.is_model != true)
+                user_groups.each do |group|
+                  grp_project_security_levels = prj_scrts.where(group_id: group.id).map(&:project_security_level) + user_project_security_levels
 
-                if project.creator_id == user.id
-                  owner_project_security_levels = prj_scrts.where(user_id: owner.id).map(&:project_security_level) rescue []
-                  grp_project_security_levels += owner_project_security_levels
-                end
+                  if project.creator_id == user.id
+                    owner_project_security_levels = prj_scrts.where(user_id: owner.id).map(&:project_security_level) rescue []
+                    grp_project_security_levels += owner_project_security_levels
+                  end
 
-                grp_project_security_levels.uniq.each do |project_security_level|
-                  #set_abilities_for_project_security_level(project, op, group, project_security_level)
+                  grp_project_security_levels.uniq.each do |project_security_level|
+                    #set_abilities_for_project_security_level(project, op, group, project_security_level)
 
-                  if ["TOUT", "*ALL"].include?(project_security_level.name.to_s.upcase)
-                    if project.private == true && project.is_model != true
-                      #nothing to do
-                    else
-                      @permissions_by_group_and_status[group.id].each do |estimation_status_id, permissions|
-                        if project.estimation_status_id == estimation_status_id
-                          permissions.each do |permission|
-                            if permission.alias == "manage" and permission.category == "Project"
-                              #can :manage, [project, op], estimation_status_id: estimation_status_id
-                              can :manage, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
-                            else
-                              #can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
-                              can permission.alias.to_sym, [Project, OrganizationEstimation], id: project.id,  estimation_status_id: estimation_status_id
+                    if ["TOUT", "*ALL"].include?(project_security_level.name.to_s.upcase)
+                      #if project.private == true && project.is_model != true
+                        #nothing to do
+                        #else
+                        @permissions_by_group_and_status[group.id].each do |estimation_status_id, permissions|
+                          if project.estimation_status_id == estimation_status_id
+                            permissions.each do |permission|
+                              if permission.alias == "manage" and permission.category == "Project"
+                                #can :manage, [project, op], estimation_status_id: estimation_status_id
+                                can :manage, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
+                              else
+                                #can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
+                                can permission.alias.to_sym, [Project, OrganizationEstimation], id: project.id,  estimation_status_id: estimation_status_id
+                              end
+                              nb_permissions_per_project += 1
                             end
-                            nb_permissions_per_project += 1
                           end
                         end
-                      end
-                    end
-                  else
-                    project_security_level_permissions = project_security_level.permissions.select{|i| i.is_permission_project }
-                    @permissions_by_group_and_status[group.id].each do |estimation_status_id, permissions|
-                      if project.estimation_status_id == estimation_status_id
-                        possible_permissions = [permissions, project_security_level_permissions].inject(:&)
-                        possible_permissions.each do |permission|
-                          if project.private == true && project.is_model != true
-                            #nothing
-                          else
-                            if permission.alias == "manage" and permission.category == "Project"
-                              #can :manage, [project, op], estimation_status_id: estimation_status_id
-                              can :manage, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
-                            else
-                              #can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
-                              can permission.alias.to_sym, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
-                            end
-                            nb_permissions_per_project += 1
+                        #end
+                    else
+                      project_security_level_permissions = project_security_level.permissions.select{|i| i.is_permission_project }
+                      @permissions_by_group_and_status[group.id].each do |estimation_status_id, permissions|
+                        if project.estimation_status_id == estimation_status_id
+                          possible_permissions = [permissions, project_security_level_permissions].inject(:&)
+                          possible_permissions.each do |permission|
+                            #if project.private == true && project.is_model != true
+                              #nothing
+                              #else
+                              if permission.alias == "manage" and permission.category == "Project"
+                                #can :manage, [project, op], estimation_status_id: estimation_status_id
+                                can :manage, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
+                              else
+                                #can permission.alias.to_sym, [project, op], estimation_status_id: estimation_status_id
+                                can permission.alias.to_sym, [Project, OrganizationEstimation], id: project.id, estimation_status_id: estimation_status_id
+                              end
+                              nb_permissions_per_project += 1
+                              #end
                           end
                         end
                       end
                     end
                   end
                 end
-              end
+              #end
 
               if nb_permissions_per_project > 0
                 $all_projects_to_see << project

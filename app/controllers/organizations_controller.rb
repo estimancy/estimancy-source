@@ -3818,7 +3818,8 @@ class OrganizationsController < ApplicationController
         all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
       end
 
-      organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+      #organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+      organization_projects = get_sorted_estimations(@organization.id, all_projects.where.not('private = ? and creator_id != ?', true, current_user.id), $sort_column, $sort_order, $search_hash)
       @current_ability = AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
       @projects_to_see = organization_projects.accessible_by(@current_ability, :see_project)
     rescue
