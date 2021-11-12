@@ -9,8 +9,14 @@ namespace :projects do
       puts "#{organization.name}"
       begin
         Project.where(organization_id: organization.id, is_model: true).each do |estimation_model|
-          estimation_model.is_historized = true
-          estimation_model.historization_time = Time.now
+          #project_securities = estimation_model.project_securities.where(organization_id: organization.id)
+          if estimation_model.project_securities.where(organization_id: organization.id, is_model_permission: false, is_estimation_permission: true).size == 0
+            estimation_model.is_historized = true
+            estimation_model.historization_time = Time.now
+          else
+            estimation_model.is_historized = false
+            estimation_model.historization_time = nil
+          end
           estimation_model.save(validate: false)
         end
 
