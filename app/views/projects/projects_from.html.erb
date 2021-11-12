@@ -40,7 +40,7 @@
 
       <tbody>
         <% @estimation_models.each do |project| %>
-          <% if can_see_estimation?(project) %>
+          <%# if can_see_estimation?(project) %>
             <tr>
               <td class="estimation-template-table-name-cell">
                 <% if can?(:create_project_from_template, Project) %>
@@ -75,7 +75,7 @@
                 </div>
               </td>
             </tr>
-          <% end %>
+          <%# end %>
         <% end %>
       </tbody>
     </table>

@@ -5191,8 +5191,8 @@ public
     end
 
     #@estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
-    @estimation_models = Project.where(organization_id: @organization.id, :is_model => true, is_historized: [false, nil])#.where.not(is_historized: true)
-    #@estimation_models = Project.accessible_by(@current_ability, :create_project_from_template).where(organization_id: @organization.id, :is_model => true, is_historized: [false, nil])#.where.not(is_historized: true)
+    #@estimation_models = Project.where(organization_id: @organization.id, :is_model => true, is_historized: [false, nil])#.where.not(is_historized: true)
+    @estimation_models = Project.accessible_by(@current_ability, :see_project).where(organization_id: @organization.id, :is_model => true, is_historized: [false, nil])#.where.not(is_historized: true)
 
     # fields = @organization.fields
     # ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|
