@@ -3389,10 +3389,15 @@ class ProjectsController < ApplicationController
         #   @project.historization_time = nil
         # end
 
-        unless @project.estimation_status.is_historization_status == true
-          @project.is_historized = false
-          @project.historization_time = nil
-        end
+
+        # if @project.is_model == true
+        #   @project.is_historized = params[:project][:is_historized]
+        # else
+        #   unless @project.estimation_status.is_historization_status == true
+        #     @project.is_historized = false
+        #     @project.historization_time = nil
+        #   end
+        # end
 
         # Initialization Module
         unless @initialization_module.nil?
@@ -5186,26 +5191,27 @@ public
     end
 
     #@estimation_models = @organization.projects.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(:is_model => true)
-    @estimation_models = Project.includes(:estimation_status, :project_area, :project_category, :platform_category, :acquisition_category).where(organization_id: @organization.id, :is_model => true)
+    @estimation_models = Project.where(organization_id: @organization.id, :is_model => true, is_historized: [false, nil])#.where.not(is_historized: true)
+    #@estimation_models = Project.accessible_by(@current_ability, :create_project_from_template).where(organization_id: @organization.id, :is_model => true, is_historized: [false, nil])#.where.not(is_historized: true)
 
-    fields = @organization.fields
-    ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|
-      begin
-        if pf.field_id.in?(fields.map(&:id))
-          if pf.project && pf.views_widget
-            if pf.project_id != pf.views_widget.module_project.project_id
-              pf.delete
-            end
-          else
-            pf.delete
-          end
-        else
-          pf.delete
-        end
-      rescue
-        #puts "erreur"
-      end
-    end
+    # fields = @organization.fields
+    # ProjectField.where(project_id: @estimation_models.map(&:id).uniq).each do |pf|
+    #   begin
+    #     if pf.field_id.in?(fields.map(&:id))
+    #       if pf.project && pf.views_widget
+    #         if pf.project_id != pf.views_widget.module_project.project_id
+    #           pf.delete
+    #         end
+    #       else
+    #         pf.delete
+    #       end
+    #     else
+    #       pf.delete
+    #     end
+    #   rescue
+    #     #puts "erreur"
+    #   end
+    # end
 
     ###@current_ability = Ability.new(current_user, @organization, @estimation_models, 1, false)
   end

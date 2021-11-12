@@ -8,6 +8,7 @@
     <tr>
       <th class="text_left"><%= I18n.t(:label_model_name) %></th>
       <th class="center">Vers.</th>
+      <th class="center"><%= I18n.t(:is_historized) %></th>
       <th class="center"><%= I18n.t(:created_at) %></th>
       <th class="center"><%= I18n.t(:actions) %></th>
     </tr>
@@ -34,6 +35,7 @@
               <% end %>
             </td>
             <td class="center"><%= project.version_number %></td>
+            <td class="center"><%= check_box_tag "is_historized", project.is_historized, project.is_historized, disabled: true %></td>
             <td class="center"><%= I18n.l(project.created_at) %></td>
             <td style="min-width:130px;">
               <% if can? :manage_estimation_models, Project %>

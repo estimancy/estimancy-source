@@ -1975,7 +1975,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
           unless ceuw.nil?
             v = params['hidden_coefficient_element']["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
-            ceuw.guw_coefficient_element_id = v.blank? ? ce.id : v.to_i
+            ceuw.guw_coefficient_element_id = ce.id #v.blank? ? ce.id : v.to_i
 
             ceuw.percent = ce&.value
             ceuw.guw_coefficient_id = guw_coefficient.id
