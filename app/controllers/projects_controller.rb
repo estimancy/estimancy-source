@@ -4688,44 +4688,47 @@ public
             new_mp.associated_module_projects << new_associated_mp
           end
 
-          #Thread.new do
-            #ActiveRecord::Base.connection_pool.with_connection do
+          #On cree les phases de la WBS que lorsqu'on copie un projet
+          # Lorsqu'on crée un projet à partir d'un modèle, les phases de la WBS ne seront pas créées
+          if params[:create_project_from_template].nil?
+            #Thread.new do
+              #ActiveRecord::Base.connection_pool.with_connection do
 
-              ### Wbs activity
-              #create module_project ratio elements
-              old_mp_module_project_ratio_elements.each do |old_mp_ratio_elt|
-                mp_ratio_element = old_mp_ratio_elt.dup
-                mp_ratio_element.module_project_id = new_mp.id
-                mp_ratio_element.copy_id = old_mp_ratio_elt.id
+                ### Wbs activity
+                #create module_project ratio elements
+                old_mp_module_project_ratio_elements.each do |old_mp_ratio_elt|
+                  mp_ratio_element = old_mp_ratio_elt.dup
+                  mp_ratio_element.module_project_id = new_mp.id
+                  mp_ratio_element.copy_id = old_mp_ratio_elt.id
 
-                pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
-                unless pbs.nil?
-                  mp_ratio_element.pbs_project_element_id = pbs.id
-                end
-                mp_ratio_element.save
-              end
-
-              new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: @organization.id)
-              new_mp_ratio_elements.each do |mp_ratio_element|
-                #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
-
-                #unless mp_ratio_element.is_root?
-                new_ancestor_ids_list = []
-                mp_ratio_element.ancestor_ids.each do |ancestor_id|
-                  ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
-                  if ancestor
-                    ancestor_id = ancestor.id
-                    new_ancestor_ids_list.push(ancestor_id)
+                  pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
+                  unless pbs.nil?
+                    mp_ratio_element.pbs_project_element_id = pbs.id
                   end
+                  mp_ratio_element.save
                 end
-                mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
-                #end
-                mp_ratio_element.save
-              end
-            #end
-            # ActiveRecord::Base.connection.close
-          #end
 
+                new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: @organization.id)
+                new_mp_ratio_elements.each do |mp_ratio_element|
+                  #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
+
+                  #unless mp_ratio_element.is_root?
+                  new_ancestor_ids_list = []
+                  mp_ratio_element.ancestor_ids.each do |ancestor_id|
+                    ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
+                    if ancestor
+                      ancestor_id = ancestor.id
+                      new_ancestor_ids_list.push(ancestor_id)
+                    end
+                  end
+                  mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
+                  #end
+                  mp_ratio_element.save
+                end
+              #end
+              # ActiveRecord::Base.connection.close
+            #end
+          end
 
           ### End wbs_activity
 
