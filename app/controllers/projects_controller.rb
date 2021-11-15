@@ -3600,40 +3600,37 @@ class ProjectsController < ApplicationController
     authorize! :delete_project, @project
     is_model = @project.is_model
 
-    Thread.new do
-      #ActiveRecord::Base.connection_pool.with_connection do
-      case params[:commit]
-      when I18n.t('delete')
-        if params[:yes_confirmation] == 'selected'
-          if ((can? :delete_project, @project) || (can? :manage, @project)) && @project.is_childless?
+    case params[:commit]
+    when I18n.t('delete')
+      if params[:yes_confirmation] == 'selected'
+        if ((can? :delete_project, @project) || (can? :manage, @project)) && @project.is_childless?
 
-            @project.is_historized = true
-            @project.project_security_ids = []
-            @project.save(validate: false)
+          @project.is_historized = true
+          @project.historization_time = Time.now
+          @project.project_security_ids = []
+          @project.save(validate: false)
 
+          Thread.new do
             @project.destroy
-
-            ###current_user.delete_recent_project(@project.id)
-            # session[:project_id] = current_user.projects.first
-            # flash[:notice] = I18n.t(:notice_project_successful_deleted, :value => 'Project')
-            #redirect_to organization_estimations_path(@current_organization)
-          else
-            flash[:warning] = I18n.t(:error_access_denied)
-            redirect_to (params[:from_tree_history_view].nil? ?  organization_estimations_path(@organization) : edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'))
           end
+
+          ###current_user.delete_recent_project(@project.id)
+          # session[:project_id] = current_user.projects.first
+          flash[:notice] = I18n.t(:notice_project_successful_deleted, :value => 'Project')
+          redirect_to organization_estimations_path(@current_organization)
         else
-          flash[:warning] = I18n.t('warning_need_check_box_confirmation')
-          render :template => 'projects/confirm_deletion'
+          flash[:warning] = I18n.t(:error_access_denied)
+          redirect_to (params[:from_tree_history_view].nil? ?  organization_estimations_path(@organization) : edit_project_path(:id => params['current_showed_project_id'], :anchor => 'tabs-history'))
         end
-      when I18n.t('cancel')
-        redirect_to (is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models') : organization_estimations_path(@current_organization))
       else
+        flash[:warning] = I18n.t('warning_need_check_box_confirmation')
         render :template => 'projects/confirm_deletion'
       end
-      #end
+    when I18n.t('cancel')
+      redirect_to (is_model ? organization_setting_path(@current_organization, anchor: "tabs-estimation-models", partial_name: 'tabs_estimation_models') : organization_estimations_path(@current_organization))
+    else
+      render :template => 'projects/confirm_deletion'
     end
-    flash[:notice] = I18n.t(:notice_project_successful_deleted, :value => 'Project')
-    redirect_to organization_estimations_path(@current_organization) and return
   end
 
 
