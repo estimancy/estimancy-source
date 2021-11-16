@@ -4575,7 +4575,7 @@ public
     Organization.transaction do
       begin
         # get et lock the organization
-        @organization.lock!
+        #@organization.lock!
 
         new_automatic_number = @organization.automatic_quotation_number.next
         @organization.automatic_quotation_number = new_automatic_number
