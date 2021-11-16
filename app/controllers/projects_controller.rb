@@ -3610,9 +3610,21 @@ class ProjectsController < ApplicationController
           @project.project_security_ids = []
           @project.save(validate: false)
 
-          Thread.new do
-            @project.destroy
+          t = Thread.new do
+            ActiveRecord::Base.connection_pool.with_connection do
+              @project.destroy
+            end
           end
+          t.join
+
+          # #Project.transaction do
+          #   t = Thread.new do
+          #     #@project.with_lock.destroy
+          #     @project.destroy
+          #     #ActiveRecord::Base.connection.close
+          #   end
+          #   t.join
+          # #end
 
           ###current_user.delete_recent_project(@project.id)
           # session[:project_id] = current_user.projects.first
@@ -4572,28 +4584,31 @@ public
     #=======
 
     # Locking organization instead project is created/save
-    Organization.transaction do
-      begin
-        # get et lock the organization
-        #@organization.lock!
+    #Organization.transaction do
+    ActiveRecord::Base.transaction do
+      ActiveRecord::Base.connection_pool.with_connection do
+        begin
+          # get et lock the organization
+          #@organization.lock!
 
-        new_automatic_number = @organization.automatic_quotation_number.next
-        @organization.automatic_quotation_number = new_automatic_number
+          new_automatic_number = @organization.automatic_quotation_number.next
+          @organization.automatic_quotation_number = new_automatic_number
 
-        # si generation d'un nouveau n° de devis, il faut MAJ la valeur au niveau de l'organisation
-        if generate_automatique_title == true
-          #new_prj.title = "#{@organization.prefix_quotation_number} #{new_automatic_number}"
-          new_prj.title = new_automatic_number
-          new_prj.save
-          @organization.save!
+          # si generation d'un nouveau n° de devis, il faut MAJ la valeur au niveau de l'organisation
+          if generate_automatique_title == true
+            #new_prj.title = "#{@organization.prefix_quotation_number} #{new_automatic_number}"
+            new_prj.title = new_automatic_number
+            new_prj.save
+            @organization.save!
+          end
+
+        rescue
+          flash[:error] = I18n.t(:error_generating_auto_estimation_number)
+          #redirect_to request.referer #and return
+
+          raise ActiveRecord::Rollback #and return
+          redirect_to request.referer and return
         end
-
-      rescue
-        flash[:error] = I18n.t(:error_generating_auto_estimation_number)
-        #redirect_to request.referer #and return
-
-        raise ActiveRecord::Rollback #and return
-        redirect_to request.referer and return
       end
     end
     # end locking
@@ -4601,379 +4616,381 @@ public
 
     # Debut transaction
     ActiveRecord::Base.transaction do
+      ActiveRecord::Base.connection_pool.with_connection do
+        if new_prj.save
+          old_prj.save #Original project copy number will be incremented to 1
 
-      if new_prj.save
-        old_prj.save #Original project copy number will be incremented to 1
+          #Update the project securities for the current user who create the estimation from model
+          #if params[:action_name] == "create_project_from_template"
+          owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
+          if !params[:create_project_from_template].nil?
+            creator_securities = new_prj.project_securities.where(organization_id: @organization.id)
+            creator_securities.each do |ps|
+              if ps.is_model_permission == true
+                # Amelioration Creer à partir d'un modele
+                # ps.update_attribute(:is_model_permission, false)
+                # ps.update_attribute(:is_estimation_permission, true)
+                ps.is_model_permission = false
+                ps.is_estimation_permission = true
 
-        #Update the project securities for the current user who create the estimation from model
-        #if params[:action_name] == "create_project_from_template"
-        owner = User.find_by_initials(AdminSetting.find_by_key("Estimation Owner").value)
-        if !params[:create_project_from_template].nil?
-          creator_securities = new_prj.project_securities.where(organization_id: @organization.id)
-          creator_securities.each do |ps|
-            if ps.is_model_permission == true
-              # Amelioration Creer à partir d'un modele
-              # ps.update_attribute(:is_model_permission, false)
-              # ps.update_attribute(:is_estimation_permission, true)
-              ps.is_model_permission = false
-              ps.is_estimation_permission = true
-
-              if ps.user_id == owner.id
-                #ps.update_attribute(:user_id, owner.id)
-                ps.user_id = owner.id
-              end
-              ps.save
-            else
-              ps.destroy
-            end
-          end
-        end
-
-        #Managing the component tree : PBS
-        #pe_wbs_product = new_prj.pe_wbs_projects.products_wbs.first
-        pe_wbs_product = new_prj.pe_wbs_projects.first
-
-        # For PBS
-        new_prj_components = pe_wbs_product.pbs_project_elements
-        new_prj_application = new_prj.application
-        new_prj_components.each do |new_c|
-          if new_c.is_root == true
-            if !params[:create_project_from_template].nil?
-              if new_prj_application.nil?
-                new_c.name = new_prj.application_name
+                if ps.user_id == owner.id
+                  #ps.update_attribute(:user_id, owner.id)
+                  ps.user_id = owner.id
+                end
+                ps.save
               else
-                new_c.name = new_prj_application.name
+                ps.destroy
               end
-              new_c.save
             end
           end
 
-          new_ancestor_ids_list = []
-          new_c.ancestor_ids.each do |ancestor_id|
-            ancestor_id = PbsProjectElement.find_by_pe_wbs_project_id_and_copy_id(new_c.pe_wbs_project_id, ancestor_id).id
-            new_ancestor_ids_list.push(ancestor_id)
-          end
-          new_c.ancestry = new_ancestor_ids_list.join('/')
-          new_c.save
-        end
+          #Managing the component tree : PBS
+          #pe_wbs_product = new_prj.pe_wbs_projects.products_wbs.first
+          pe_wbs_product = new_prj.pe_wbs_projects.first
 
-        hash_apps = {}
-        @organization.applications.each do |app|
-          hash_apps[app.name] = app
-        end
-
-        #For applications
-        old_prj.applications.each do |application|
-          # Application.where(name: application.name, organization_id: @organization.id).first
-          app = hash_apps[application.name]
-          ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
-        end
-
-        old_prj_pbs_project_elements = old_prj.pbs_project_elements
-
-        # For ModuleProject associations
-        old_prj.module_projects.group(:id).each do |old_mp|
-
-          old_mp_associated_module_projects = old_mp.associated_module_projects
-          old_mp_module_project_ratio_elements = old_mp.module_project_ratio_elements.where(organization_id: @organization.id)
-
-
-          new_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: old_mp.id).first  #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
-          # new_mp.done = false
-          # new_mp.save
-
-          # ModuleProject Associations for the new project
-          old_mp_associated_module_projects.each do |associated_mp|
-            new_associated_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: associated_mp.id).first
-            new_mp.associated_module_projects << new_associated_mp
-          end
-
-          #On cree les phases de la WBS que lorsqu'on copie un projet
-          # Lorsqu'on crée un projet à partir d'un modèle, les phases de la WBS ne seront pas créées
-          if params[:create_project_from_template].nil?
-            #Thread.new do
-              #ActiveRecord::Base.connection_pool.with_connection do
-
-                ### Wbs activity
-                #create module_project ratio elements
-                old_mp_module_project_ratio_elements.each do |old_mp_ratio_elt|
-                  mp_ratio_element = old_mp_ratio_elt.dup
-                  mp_ratio_element.module_project_id = new_mp.id
-                  mp_ratio_element.copy_id = old_mp_ratio_elt.id
-
-                  pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
-                  unless pbs.nil?
-                    mp_ratio_element.pbs_project_element_id = pbs.id
-                  end
-                  mp_ratio_element.save
+          # For PBS
+          new_prj_components = pe_wbs_product.pbs_project_elements
+          new_prj_application = new_prj.application
+          new_prj_components.each do |new_c|
+            if new_c.is_root == true
+              if !params[:create_project_from_template].nil?
+                if new_prj_application.nil?
+                  new_c.name = new_prj.application_name
+                else
+                  new_c.name = new_prj_application.name
                 end
+                new_c.save
+              end
+            end
 
-                new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: @organization.id)
-                new_mp_ratio_elements.each do |mp_ratio_element|
-                  #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
+            new_ancestor_ids_list = []
+            new_c.ancestor_ids.each do |ancestor_id|
+              ancestor_id = PbsProjectElement.find_by_pe_wbs_project_id_and_copy_id(new_c.pe_wbs_project_id, ancestor_id).id
+              new_ancestor_ids_list.push(ancestor_id)
+            end
+            new_c.ancestry = new_ancestor_ids_list.join('/')
+            new_c.save
+          end
 
-                  #unless mp_ratio_element.is_root?
-                  new_ancestor_ids_list = []
-                  mp_ratio_element.ancestor_ids.each do |ancestor_id|
-                    ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
-                    if ancestor
-                      ancestor_id = ancestor.id
-                      new_ancestor_ids_list.push(ancestor_id)
+          hash_apps = {}
+          @organization.applications.each do |app|
+            hash_apps[app.name] = app
+          end
+
+          #For applications
+          old_prj.applications.each do |application|
+            # Application.where(name: application.name, organization_id: @organization.id).first
+            app = hash_apps[application.name]
+            ApplicationsProjects.create(application_id: app.id, project_id: new_prj.id)
+          end
+
+          old_prj_pbs_project_elements = old_prj.pbs_project_elements
+
+          # For ModuleProject associations
+          old_prj.module_projects.group(:id).each do |old_mp|
+
+            old_mp_associated_module_projects = old_mp.associated_module_projects
+            old_mp_module_project_ratio_elements = old_mp.module_project_ratio_elements.where(organization_id: @organization.id)
+
+
+            new_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: old_mp.id).first  #.find_by_project_id_and_copy_id(new_prj.id, old_mp.id)
+            # new_mp.done = false
+            # new_mp.save
+
+            # ModuleProject Associations for the new project
+            old_mp_associated_module_projects.each do |associated_mp|
+              new_associated_mp = ModuleProject.where(organization_id: @organization.id, project_id: new_prj.id, copy_id: associated_mp.id).first
+              new_mp.associated_module_projects << new_associated_mp
+            end
+
+            #On cree les phases de la WBS que lorsqu'on copie un projet
+            # Lorsqu'on crée un projet à partir d'un modèle, les phases de la WBS ne seront pas créées
+            if params[:create_project_from_template].nil?
+              #Thread.new do
+                #ActiveRecord::Base.connection_pool.with_connection do
+
+                  ### Wbs activity
+                  #create module_project ratio elements
+                  old_mp_module_project_ratio_elements.each do |old_mp_ratio_elt|
+                    mp_ratio_element = old_mp_ratio_elt.dup
+                    mp_ratio_element.module_project_id = new_mp.id
+                    mp_ratio_element.copy_id = old_mp_ratio_elt.id
+
+                    pbs = new_prj_components.where(copy_id: old_mp_ratio_elt.pbs_project_element_id).first
+                    unless pbs.nil?
+                      mp_ratio_element.pbs_project_element_id = pbs.id
                     end
-                  end
-                  mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
-                  #end
-                  mp_ratio_element.save
-                end
-              #end
-              # ActiveRecord::Base.connection.close
-            #end
-          end
-
-          ### End wbs_activity
-
-          # Skb::SkbInput.where(retained_size: nil).each do |skbi|
-          #   skbi.delete
-          # end
-
-          # For SKB-Input
-          old_mp.skb_inputs.each do |skbi|
-            Skb::SkbInput.create(data: skbi.data,
-                                 processing: skbi.processing,
-                                 retained_size: skbi.retained_size,
-                                 filters: skbi.filters,
-                                 organization_id: @organization.id,
-                                 module_project_id: new_mp.id)
-          end
-
-          #For ge_model_factor_descriptions
-          old_mp.ge_model_factor_descriptions.each do |factor_description|
-            Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id,
-                                                ge_factor_id: factor_description.ge_factor_id,
-                                                factor_alias: factor_description.factor_alias,
-                                                description: factor_description.description,
-                                                module_project_id: new_mp.id,
-                                                project_id: new_prj.id,
-                                                organization_id: @organization.id)
-          end
-
-          #For Ge inputs
-          old_mp.ge_inputs.each do |oge_input|
-            ge = Ge::GeInput.new(organization_id: @organization.id,
-                               module_project_id: new_mp.id,
-                               project_id: new_prj.id,
-                               values: oge_input.values,
-                               s_factors_value: oge_input.s_factors_value,
-                               p_factors_value: oge_input.p_factors_value,
-                               c_factors_value: oge_input.c_factors_value,
-                               formula: oge_input.formula)
-
-            ge.save
-          end
-
-          #For Kb
-          old_mp.kb_inputs.each do |okb_input|
-            kb = Kb::KbInput.new(organization_id: @organization.id,
-                                 module_project_id: new_mp.id,
-                                 formula: okb_input.formula,
-                                 values: okb_input.values,
-                                 regression: okb_input.regression,
-                                 filters: okb_input.filters)
-
-            kb.save
-          end
-
-          #For Staffing
-          old_mp.staffing_custom_data.each do |oscd|
-            staffing = Staffing::StaffingCustomDatum.new( module_project_id: new_mp.id,
-                                                          staffing_model_id: new_mp.staffing_model_id,
-                                                          pbs_project_element_id: new_prj.root_component.id,
-                                                          staffing_method: oscd.staffing_method,
-                                                          period_unit: oscd.period_unit,
-                                                          standard_effort: oscd.standard_effort,
-                                                          global_effort_type: oscd.global_effort_type,
-                                                          global_effort_value: oscd.global_effort_value,
-                                                          staffing_constraint: oscd.staffing_constraint,
-                                                          duration: oscd.duration,
-                                                          max_staffing: oscd.max_staffing,
-                                                          t_max_staffing: oscd.t_max_staffing,
-                                                          mc_donell_coef: oscd.mc_donell_coef,
-                                                          puissance_n: oscd.puissance_n,
-                                                          trapeze_default_values: oscd.trapeze_default_values,
-                                                          trapeze_parameter_values: oscd.trapeze_parameter_values,
-                                                          form_coef: oscd.form_coef,
-                                                          difficulty_coef: oscd.difficulty_coef,
-                                                          coef_a: oscd.coef_a,
-                                                          coef_b: oscd.coef_b,
-                                                          coef_a_prime: oscd.coef_a_prime,
-                                                          coef_b_prime: oscd.coef_b_prime,
-                                                          calculated_effort: oscd.calculated_effort,
-                                                          theoretical_staffing: oscd.theoretical_staffing,
-                                                          calculated_staffing: oscd.calculated_staffing,
-                                                          chart_actual_coordinates: oscd.chart_actual_coordinates,
-                                                          trapeze_chart_theoretical_coordinates: oscd.trapeze_chart_theoretical_coordinates,
-                                                          rayleigh_chart_theoretical_coordinates: oscd.rayleigh_chart_theoretical_coordinates,
-                                                          rayleigh_duration: oscd.rayleigh_duration,
-                                                          actuals_based_on: oscd.actuals_based_on,
-                                                          mcdonnell_chart_theorical_coordinates: oscd.mcdonnell_chart_theorical_coordinates,
-                                                          max_staffing_rayleigh: oscd.max_staffing_rayleigh,
-                                                          percent: oscd.percent)
-
-            staffing.save
-          end
-
-          # if the module_project is nil
-          unless old_mp.view.nil?
-            #Update the new project/estimation views and widgets
-            update_views_and_widgets(new_prj, old_mp, new_mp)
-          end
-
-          #Update the Unit of works's groups
-          # new_mp.guw_unit_of_work_groups.where(organization_id: @organization.id, project_id: new_prj.id).each do |guw_group|
-          new_mp.guw_unit_of_work_groups.each do |guw_group|
-            new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
-            new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
-            guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id,
-                                        project_id: new_prj.id,
-                                        guw_model_id: old_mp.guw_model_id,
-                                        organization_id: new_prj.organization_id)
-
-            # Update the group unit of works and attributes
-            guw_group.guw_unit_of_works.each do |guw_uow|
-
-              new_uow_mp = ModuleProject.where(organization_id: @organization.id,
-                                               project_id: new_prj.id,
-                                               copy_id: guw_uow.module_project_id).first
-
-              new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
-
-              new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
-              new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
-              guw_uow.update_attributes(module_project_id: new_uow_mp_id,
-                                        pbs_project_element_id: new_pbs_id,
-                                        organization_id: new_prj.organization_id,
-                                        project_id: new_prj.id)
-
-              # copy des coefficient-elements-unit-of-works
-              guw_uow.guw_coefficient_element_unit_of_works.each do |new_guw_coeff_elt_uow|
-                unless new_guw_coeff_elt_uow.nil?
-                  new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
-                  new_guw_coeff_elt_uow.module_project_id = new_mp.id
-                  new_guw_coeff_elt_uow.guw_model_id = old_mp.guw_model_id
-                  new_guw_coeff_elt_uow.project_id = new_prj.id
-                  new_guw_coeff_elt_uow.save
-                end
-              end
-
-              # Correction duplication critères attribute
-              old_mp.guw_unit_of_works.each do |old_guw|
-
-                old_guw_guw_model = old_guw.guw_model
-                old_guw_guw_model.guw_attributes.where( organization_id: old_guw_guw_model.organization_id,
-                                                        guw_model_id: old_guw_guw_model.id).all.each do |gac|
-
-                  guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: old_guw_guw_model.organization_id,
-                                                            guw_model_id: old_guw.guw_model_id,
-                                                            guw_attribute_id: gac.id,
-                                                            guw_type_id: old_guw.guw_type_id,
-                                                            project_id: old_mp.project_id,
-                                                            module_project_id: old_guw.module_project_id,
-                                                            guw_unit_of_work_id: old_guw.id).first
-
-                  unless guowa.nil?
-
-                    new_guowa = guowa.dup
-
-                    new_guowa.guw_unit_of_work_id = guw_uow.id
-                    new_guowa.guw_model_id = guw_uow.guw_model_id
-                    new_guowa.project_id = guw_uow.project_id
-                    new_guowa.module_project_id = guw_uow.module_project_id
-
-                    new_guowa.save
-
+                    mp_ratio_element.save
                   end
 
-                end
-              end
+                  new_mp_ratio_elements = new_mp.module_project_ratio_elements.where(organization_id: @organization.id)
+                  new_mp_ratio_elements.each do |mp_ratio_element|
+                    #mp_ratio_element.pbs_project_element_id = new_prj_components.where(copy_id: mp_ratio_element.pbs_project_element_id).first.id
 
-              #====
-            end
-          end
-
-          new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
-          new_mp_estimation_values = new_mp.estimation_values.where(organization_id: @organization.id, pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"])
-          hash_nmpevs = {}
-
-          new_mp_estimation_values.each do |nmpev|
-            hash_nmpevs["#{nmpev.pe_attribute_id}_#{nmpev.in_out}"] = nmpev
-          end
-
-          ["input", "output"].each do |io|
-
-            new_mp_pemodule_pe_attributes.each do |attr|
-
-                ev = hash_nmpevs["#{attr.id}_#{io}"]
-
-              unless ev.nil?
-                new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
-                old_prj_pbs_project_elements.each do |old_component|
-                  new_prj_components.each do |new_component|
-                    # unless ev.nil?
-
-                    ev_low = ev.string_data_low.delete(old_component.id)
-                    ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
-                    ev_high = ev.string_data_high.delete(old_component.id)
-                    ev_probable = ev.string_data_probable.delete(old_component.id)
-
-                    ev.string_data_low[new_component.id.to_i] = ev_low
-                    ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
-                    ev.string_data_high[new_component.id.to_i] = ev_high
-                    ev.string_data_probable[new_component.id.to_i] = ev_probable
-
-                    # update ev attribute links
-                    unless ev.estimation_value_id.nil?
-                      project_id = new_prj.id
-                      new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
-                      if new_ev
-                        ev.estimation_value_id = new_ev.id
+                    #unless mp_ratio_element.is_root?
+                    new_ancestor_ids_list = []
+                    mp_ratio_element.ancestor_ids.each do |ancestor_id|
+                      ancestor = new_mp_ratio_elements.where(copy_id: ancestor_id).first
+                      if ancestor
+                        ancestor_id = ancestor.id
+                        new_ancestor_ids_list.push(ancestor_id)
                       end
                     end
+                    mp_ratio_element.ancestry = new_ancestor_ids_list.join('/')
+                    #end
+                    mp_ratio_element.save
+                  end
+                #end
+                # ActiveRecord::Base.connection.close
+              #end
+            end
 
-                    ev.save
-                    # end
+            ### End wbs_activity
+
+            # Skb::SkbInput.where(retained_size: nil).each do |skbi|
+            #   skbi.delete
+            # end
+
+            # For SKB-Input
+            old_mp.skb_inputs.each do |skbi|
+              Skb::SkbInput.create(data: skbi.data,
+                                   processing: skbi.processing,
+                                   retained_size: skbi.retained_size,
+                                   filters: skbi.filters,
+                                   organization_id: @organization.id,
+                                   module_project_id: new_mp.id)
+            end
+
+            #For ge_model_factor_descriptions
+            old_mp.ge_model_factor_descriptions.each do |factor_description|
+              Ge::GeModelFactorDescription.create(ge_model_id: factor_description.ge_model_id,
+                                                  ge_factor_id: factor_description.ge_factor_id,
+                                                  factor_alias: factor_description.factor_alias,
+                                                  description: factor_description.description,
+                                                  module_project_id: new_mp.id,
+                                                  project_id: new_prj.id,
+                                                  organization_id: @organization.id)
+            end
+
+            #For Ge inputs
+            old_mp.ge_inputs.each do |oge_input|
+              ge = Ge::GeInput.new(organization_id: @organization.id,
+                                 module_project_id: new_mp.id,
+                                 project_id: new_prj.id,
+                                 values: oge_input.values,
+                                 s_factors_value: oge_input.s_factors_value,
+                                 p_factors_value: oge_input.p_factors_value,
+                                 c_factors_value: oge_input.c_factors_value,
+                                 formula: oge_input.formula)
+
+              ge.save
+            end
+
+            #For Kb
+            old_mp.kb_inputs.each do |okb_input|
+              kb = Kb::KbInput.new(organization_id: @organization.id,
+                                   module_project_id: new_mp.id,
+                                   formula: okb_input.formula,
+                                   values: okb_input.values,
+                                   regression: okb_input.regression,
+                                   filters: okb_input.filters)
+
+              kb.save
+            end
+
+            #For Staffing
+            old_mp.staffing_custom_data.each do |oscd|
+              staffing = Staffing::StaffingCustomDatum.new( module_project_id: new_mp.id,
+                                                            staffing_model_id: new_mp.staffing_model_id,
+                                                            pbs_project_element_id: new_prj.root_component.id,
+                                                            staffing_method: oscd.staffing_method,
+                                                            period_unit: oscd.period_unit,
+                                                            standard_effort: oscd.standard_effort,
+                                                            global_effort_type: oscd.global_effort_type,
+                                                            global_effort_value: oscd.global_effort_value,
+                                                            staffing_constraint: oscd.staffing_constraint,
+                                                            duration: oscd.duration,
+                                                            max_staffing: oscd.max_staffing,
+                                                            t_max_staffing: oscd.t_max_staffing,
+                                                            mc_donell_coef: oscd.mc_donell_coef,
+                                                            puissance_n: oscd.puissance_n,
+                                                            trapeze_default_values: oscd.trapeze_default_values,
+                                                            trapeze_parameter_values: oscd.trapeze_parameter_values,
+                                                            form_coef: oscd.form_coef,
+                                                            difficulty_coef: oscd.difficulty_coef,
+                                                            coef_a: oscd.coef_a,
+                                                            coef_b: oscd.coef_b,
+                                                            coef_a_prime: oscd.coef_a_prime,
+                                                            coef_b_prime: oscd.coef_b_prime,
+                                                            calculated_effort: oscd.calculated_effort,
+                                                            theoretical_staffing: oscd.theoretical_staffing,
+                                                            calculated_staffing: oscd.calculated_staffing,
+                                                            chart_actual_coordinates: oscd.chart_actual_coordinates,
+                                                            trapeze_chart_theoretical_coordinates: oscd.trapeze_chart_theoretical_coordinates,
+                                                            rayleigh_chart_theoretical_coordinates: oscd.rayleigh_chart_theoretical_coordinates,
+                                                            rayleigh_duration: oscd.rayleigh_duration,
+                                                            actuals_based_on: oscd.actuals_based_on,
+                                                            mcdonnell_chart_theorical_coordinates: oscd.mcdonnell_chart_theorical_coordinates,
+                                                            max_staffing_rayleigh: oscd.max_staffing_rayleigh,
+                                                            percent: oscd.percent)
+
+              staffing.save
+            end
+
+            # if the module_project is nil
+            unless old_mp.view.nil?
+              #Update the new project/estimation views and widgets
+              update_views_and_widgets(new_prj, old_mp, new_mp)
+            end
+
+            #Update the Unit of works's groups
+            # new_mp.guw_unit_of_work_groups.where(organization_id: @organization.id, project_id: new_prj.id).each do |guw_group|
+            new_mp.guw_unit_of_work_groups.each do |guw_group|
+              new_pbs_project_element = new_prj_components.find_by_copy_id(guw_group.pbs_project_element_id)
+              new_pbs_project_element_id = new_pbs_project_element.nil? ? nil : new_pbs_project_element.id
+              guw_group.update_attributes(pbs_project_element_id: new_pbs_project_element_id,
+                                          project_id: new_prj.id,
+                                          guw_model_id: old_mp.guw_model_id,
+                                          organization_id: new_prj.organization_id)
+
+              # Update the group unit of works and attributes
+              guw_group.guw_unit_of_works.each do |guw_uow|
+
+                new_uow_mp = ModuleProject.where(organization_id: @organization.id,
+                                                 project_id: new_prj.id,
+                                                 copy_id: guw_uow.module_project_id).first
+
+                new_uow_mp_id = new_uow_mp.nil? ? nil : new_uow_mp.id
+
+                new_pbs = new_prj_components.find_by_copy_id(guw_uow.pbs_project_element_id)
+                new_pbs_id = new_pbs.nil? ? nil : new_pbs.id
+                guw_uow.update_attributes(module_project_id: new_uow_mp_id,
+                                          pbs_project_element_id: new_pbs_id,
+                                          organization_id: new_prj.organization_id,
+                                          project_id: new_prj.id)
+
+                # copy des coefficient-elements-unit-of-works
+                guw_uow.guw_coefficient_element_unit_of_works.each do |new_guw_coeff_elt_uow|
+                  unless new_guw_coeff_elt_uow.nil?
+                    new_guw_coeff_elt_uow.guw_unit_of_work_id = guw_uow.id
+                    new_guw_coeff_elt_uow.module_project_id = new_mp.id
+                    new_guw_coeff_elt_uow.guw_model_id = old_mp.guw_model_id
+                    new_guw_coeff_elt_uow.project_id = new_prj.id
+                    new_guw_coeff_elt_uow.save
+                  end
+                end
+
+                # Correction duplication critères attribute
+                old_mp.guw_unit_of_works.each do |old_guw|
+
+                  old_guw_guw_model = old_guw.guw_model
+                  old_guw_guw_model.guw_attributes.where( organization_id: old_guw_guw_model.organization_id,
+                                                          guw_model_id: old_guw_guw_model.id).all.each do |gac|
+
+                    guowa = Guw::GuwUnitOfWorkAttribute.where(organization_id: old_guw_guw_model.organization_id,
+                                                              guw_model_id: old_guw.guw_model_id,
+                                                              guw_attribute_id: gac.id,
+                                                              guw_type_id: old_guw.guw_type_id,
+                                                              project_id: old_mp.project_id,
+                                                              module_project_id: old_guw.module_project_id,
+                                                              guw_unit_of_work_id: old_guw.id).first
+
+                    unless guowa.nil?
+
+                      new_guowa = guowa.dup
+
+                      new_guowa.guw_unit_of_work_id = guw_uow.id
+                      new_guowa.guw_model_id = guw_uow.guw_model_id
+                      new_guowa.project_id = guw_uow.project_id
+                      new_guowa.module_project_id = guw_uow.module_project_id
+
+                      new_guowa.save
+
+                    end
+
+                  end
+                end
+
+                #====
+              end
+            end
+
+            new_mp_pemodule_pe_attributes = new_mp.pemodule.pe_attributes
+            new_mp_estimation_values = new_mp.estimation_values.where(organization_id: @organization.id, pe_attribute_id: new_mp_pemodule_pe_attributes.map(&:id), in_out: ["input", "output"])
+            hash_nmpevs = {}
+
+            new_mp_estimation_values.each do |nmpev|
+              hash_nmpevs["#{nmpev.pe_attribute_id}_#{nmpev.in_out}"] = nmpev
+            end
+
+            ["input", "output"].each do |io|
+
+              new_mp_pemodule_pe_attributes.each do |attr|
+
+                  ev = hash_nmpevs["#{attr.id}_#{io}"]
+
+                unless ev.nil?
+                  new_evs = EstimationValue.where(copy_id: ev.estimation_value_id).all
+                  old_prj_pbs_project_elements.each do |old_component|
+                    new_prj_components.each do |new_component|
+                      # unless ev.nil?
+
+                      ev_low = ev.string_data_low.delete(old_component.id)
+                      ev_most_likely = ev.string_data_most_likely.delete(old_component.id)
+                      ev_high = ev.string_data_high.delete(old_component.id)
+                      ev_probable = ev.string_data_probable.delete(old_component.id)
+
+                      ev.string_data_low[new_component.id.to_i] = ev_low
+                      ev.string_data_most_likely[new_component.id.to_i] = ev_most_likely
+                      ev.string_data_high[new_component.id.to_i] = ev_high
+                      ev.string_data_probable[new_component.id.to_i] = ev_probable
+
+                      # update ev attribute links
+                      unless ev.estimation_value_id.nil?
+                        project_id = new_prj.id
+                        new_ev = new_evs.select { |est_v| est_v.module_project.project_id == project_id}.first
+                        if new_ev
+                          ev.estimation_value_id = new_ev.id
+                        end
+                      end
+
+                      ev.save
+                      # end
+                    end
                   end
                 end
               end
             end
           end
-        end
 
-        # On remet à jour ce champs pour la gestion des Trigger
-        new_prj.update_attribute(:is_new_created_record, false)
+          # On remet à jour ce champs pour la gestion des Trigger
+          new_prj.update_attribute(:is_new_created_record, false)
 
-        # Update project's organization estimations counter
-        unless new_prj.is_model == true || @current_user.super_admin == true
-          unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
-            @organization.estimations_counter -= 1
-            @organization.save
+          # Update project's organization estimations counter
+          unless new_prj.is_model == true || @current_user.super_admin == true
+            unless @organization.estimations_counter.nil? || @organization.estimations_counter == 0
+              @organization.estimations_counter -= 1
+              @organization.save
+            end
+          end
+
+          @project = new_prj
+
+          # flash[:success] = I18n.t(:notice_project_successful_duplicated)
+          redirect_to edit_project_path(new_prj) and return
+        else
+          #if params[:action_name] == "create_project_from_template"
+          if !params[:create_project_from_template].nil?
+            flash[:warning] = I18n.t(:project_already_exist, value: new_prj.title)
+            redirect_to projects_from_path(organization_id: @organization.id) and return
+          else
+            flash[:error] = I18n.t(:error_project_failed_duplicate)
+            redirect_to organization_estimations_path(@current_organization)
           end
         end
+      end   # Fin transaction
+    end
 
-        @project = new_prj
-
-        # flash[:success] = I18n.t(:notice_project_successful_duplicated)
-        redirect_to edit_project_path(new_prj) and return
-      else
-        #if params[:action_name] == "create_project_from_template"
-        if !params[:create_project_from_template].nil?
-          flash[:warning] = I18n.t(:project_already_exist, value: new_prj.title)
-          redirect_to projects_from_path(organization_id: @organization.id) and return
-        else
-          flash[:error] = I18n.t(:error_project_failed_duplicate)
-          redirect_to organization_estimations_path(@current_organization)
-        end
-      end
-    end   # Fin transaction
   end
 
   def commit
