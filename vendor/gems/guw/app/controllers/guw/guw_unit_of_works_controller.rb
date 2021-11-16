@@ -265,22 +265,30 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work = Guw::GuwUnitOfWork.find(params[:guw_unit_of_work_id])
     @guw_model = @guw_unit_of_work.guw_model
 
-    Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id, low: nil, most_likely: nil, high: nil).delete_all
+    #ligne suivante commentée car on a créé un script qui supprime les GuwUnitOfWorkAttribute fantômes
+    ##Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id, low: nil, most_likely: nil, high: nil).delete_all
 
-    @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id,
-                                    guw_model_id: @guw_model.id).all.each do |gac|
+    #=== fonction de purge =====
+    # @guw_unit_of_work.guw_unit_of_work_attributes.where.not(project_id: @guw_unit_of_work.project_id).destroy_all
+    # @guw_unit_of_work.guw_unit_of_work_attributes.where.not(guw_type_id: @guw_unit_of_work.guw_type_id).destroy_all
+
+    @all_guw_unit_of_work_attributes = @guw_unit_of_work.guw_unit_of_work_attributes
+    #@all_guw_unit_of_work_attributes.where.not(project_id: @guw_unit_of_work.project_id).destroy_all
+    #@all_guw_unit_of_work_attributes.where.not(guw_type_id: @guw_unit_of_work.guw_type_id).destroy_all
+    #@all_guw_unit_of_work_attributes.where('project_id != ? OR guw_type_id != ?', @guw_unit_of_work.project_id, @guw_unit_of_work.guw_type_id).destroy_all
+
+    #=== fin fonction de purge =====
+
+    @guw_model.guw_attributes.where(organization_id: @guw_model.organization_id, guw_model_id: @guw_model.id).all.each do |gac|
 
       sum_range = gac.guw_attribute_complexities.where(organization_id: @guw_model.organization_id,
                                                        guw_model_id: @guw_model.id,
                                                        guw_type_id: @guw_unit_of_work.guw_type_id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact
 
-      #=== fonction de purge =====
-      @guw_unit_of_work.guw_unit_of_work_attributes.where.not(project_id: @guw_unit_of_work.project_id).destroy_all
-      @guw_unit_of_work.guw_unit_of_work_attributes.where.not(guw_type_id: @guw_unit_of_work.guw_type_id).destroy_all
-      #=== fonction de purge =====
 
       unless sum_range.nil? || sum_range.blank? || sum_range == 0
-        all_finders = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+        #all_finders = Guw::GuwUnitOfWorkAttribute.where(organization_id: @guw_model.organization_id,
+        all_finders = @all_guw_unit_of_work_attributes.where(organization_id: @guw_model.organization_id,
                                                    guw_model_id: @guw_model.id,
                                                    guw_attribute_id: gac.id,
                                                    guw_type_id: @guw_unit_of_work.guw_type_id,
@@ -899,6 +907,14 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
       # utilisation de la vue
       @all_guw_coefficient_elements = Guw::GuwUsedCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+      # used_coefficient_elements = Guw::GuwUsedCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+      #                                                          .map{|i| i.guw_complexity_coefficient_elements
+      #                                                                    .where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_type_id: guw_type.id)
+      #                                                                    .select{|ct| ct.value != nil }
+      #                                                                    .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+      #
+      # @all_guw_coefficient_elements = Guw::GuwUsedCoefficientElement.where(id: used_coefficient_elements.map(&:id))
+
       #@guw_coefficients = @guw_model.guw_used_coefficients.where(organization_id: @organization.id)
       @guw_coefficient_ids = @all_guw_coefficient_elements.map(&:guw_coefficient_id).uniq
       @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id, id: @guw_coefficient_ids)
@@ -985,6 +1001,17 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         else
           guw_type = Guw::GuwType.where(id: params[:guw_type]["#{guw_unit_of_work.id}"].to_i).first
         end
+
+        #########
+        used_coefficient_elements = @all_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+                                                                           .where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_type_id: guw_type.id)
+                                                                           .select{|ct| ct.value != nil }
+                                                                           .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+
+        @all_guw_coefficient_elements = @all_guw_coefficient_elements.where(id: used_coefficient_elements.map(&:id))
+        @guw_coefficient_ids = @all_guw_coefficient_elements.map(&:guw_coefficient_id).uniq
+        @guw_coefficients = @guw_coefficients.where(id: @guw_coefficient_ids)
+        #########
 
         if params[:guw_technology].present?
           guw_unit_of_work.organization_technology_id = params[:guw_technology]["#{guw_unit_of_work.id}"].to_i
@@ -1161,10 +1188,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             summary_results[:guw_coefficients][guw_coefficient.id][:coefficient_type] = guw_coefficient.coefficient_type
 
             unless guw_type.nil?
-              results = coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
-                                                                      .where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_type_id: guw_type.id)
-                                                                      .select{|ct| ct.value != nil }
-                                                                      .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+              # results = coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+              #                                                         .where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_type_id: guw_type.id)
+              #                                                         .select{|ct| ct.value != nil }
+              #                                                         .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+              results = used_coefficient_elements
             else
               results = []
             end
@@ -1655,11 +1683,29 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_model_id = @guw_unit_of_work.guw_model_id
     @project_id = @module_project.project_id
 
+    begin
+      guw_type = Guw::GuwType.where(organization_id: @organization_id,
+                                    guw_model_id: @guw_model_id,
+                                    id: params[:guw_type]["#{guw_unit_of_work.id}"]).first #.find(params[:guw_type]["#{guw_unit_of_work.id}"])
+    rescue
+      guw_type = @guw_unit_of_work.guw_type
+    end
+
     authorize! :execute_estimation_plan, @project
 
     @component = current_component
     #@all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
-    @all_guw_coefficient_elements = Guw::GuwUsedCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+    #@all_guw_coefficient_elements = Guw::GuwUsedCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+
+    used_coefficient_elements = Guw::GuwUsedCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
+                                                             .map{|i| i.guw_complexity_coefficient_elements
+                                                             .where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_type_id: guw_type.id)
+                                                             .select{|ct| ct.value != nil }
+                                                             .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+
+    @all_guw_coefficient_elements = Guw::GuwUsedCoefficientElement.where(id: used_coefficient_elements.map(&:id))
+    @guw_coefficient_ids = @all_guw_coefficient_elements.map(&:guw_coefficient_id).uniq
+    @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id, id: @guw_coefficient_ids)
 
     @all_guw_coefficient_element_unit_of_works = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: @organization_id,
                                                                                             guw_model_id: @guw_model_id,
@@ -1677,14 +1723,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     summary_results = HashWithIndifferentAccess.new
     summary_results[:guw_coefficients] = Hash.new
     summary_results[:guw_outputs] = Hash.new
-
-    begin
-      guw_type = Guw::GuwType.where(organization_id: @organization.id,
-                                    guw_model_id: @guw_model.id,
-                                    id: params[:guw_type]["#{guw_unit_of_work.id}"]).first #.find(params[:guw_type]["#{guw_unit_of_work.id}"])
-    rescue
-      guw_type = @guw_unit_of_work.guw_type
-    end
 
     summary_results[:guw_type] = { id: guw_type.id, name: guw_type.name,
                                    description: guw_type.description.blank? ? guw_type.name : guw_type.description,
@@ -1826,8 +1864,6 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       percents = []
       selected_coefficient_values = Hash.new {|h,k| h[k] = [] }
 
-      @guw_coefficient_ids = @all_guw_coefficient_elements.map(&:guw_coefficient_id).uniq
-      @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id, id: @guw_coefficient_ids)
       @guw_coefficients.each do |guw_coefficient|
 
         coefficient_guw_coefficient_elements = @all_guw_coefficient_elements.where(guw_coefficient_id: guw_coefficient.id)
@@ -1838,10 +1874,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         summary_results[:guw_coefficients][guw_coefficient.id][:coefficient_type] = guw_coefficient.coefficient_type
 
         unless guw_type.nil?
-          results = coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
-                                                                  .where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_type_id: guw_type.id)
-                                                                  .select{|ct| ct.value != nil }
-                                                                  .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+          # results = coefficient_guw_coefficient_elements.map{|i| i.guw_complexity_coefficient_elements
+          #                                                         .where(organization_id: @organization_id, guw_model_id: @guw_model_id, guw_type_id: guw_type.id)
+          #                                                         .select{|ct| ct.value != nil }
+          #                                                         .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+          results = used_coefficient_elements
         else
           results = []
         end
@@ -1879,7 +1916,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                  guw_coefficient_element_id: guw_coefficient_element.id).first
             unless cce.nil?
               unless cce.value.blank?
-                pc = params["hidden_coefficient_percent"]["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                pc = params["hidden_coefficient_percent"]["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"] #rescue nil
                 percents << (pc.blank? ? 1.0 : (pc.to_f / 100))
                 percents << cce.value.to_f
 
@@ -1894,7 +1931,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           end
 
-          ceuw.percent = params["hidden_coefficient_percent"]["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+          ceuw.percent = params["hidden_coefficient_percent"]["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"] rescue nil
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = @guw_unit_of_work.id
           ceuw.module_project_id = @module_project.id
@@ -1923,7 +1960,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                                  guw_coefficient_element_id: guw_coefficient_element.id).first
             unless cce.nil?
               unless cce.value.blank?
-                pc = params["hidden_coefficient_percent"]["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"]
+                pc = params["hidden_coefficient_percent"]["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"] rescue nil
                 coeffs << (pc.blank? ? 1 : pc.to_f)
 
                 v = (cce.guw_coefficient_element.value.nil? ? 1 : cce.guw_coefficient_element.value).to_f
@@ -1937,7 +1974,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
             end
           end
 
-          ceuw.percent = params["hidden_coefficient_percent"]["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f
+          ceuw.percent = params["hidden_coefficient_percent"]["#{@guw_unit_of_work.id}"]["#{guw_coefficient.id}"].to_f rescue nil
           ceuw.guw_coefficient_id = guw_coefficient.id
           ceuw.guw_unit_of_work_id = @guw_unit_of_work.id
           ceuw.module_project_id = @module_project_id
