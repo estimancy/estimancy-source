@@ -3611,9 +3611,9 @@ class ProjectsController < ApplicationController
           @project.save(validate: false)
 
           t = Thread.new do
-            ActiveRecord::Base.connection_pool.with_connection do
+            #ActiveRecord::Base.connection_pool.with_connection do
               @project.destroy
-            end
+            #end
           end
           t.join
 
