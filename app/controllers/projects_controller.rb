@@ -3610,12 +3610,11 @@ class ProjectsController < ApplicationController
           @project.project_security_ids = []
           @project.save(validate: false)
 
-          Thread.new do
-            #ActiveRecord::Base.connection_pool.with_connection do
-              @project.destroy
-            #end
-          end
-          #t.join
+          # Thread.new do
+          #   #ActiveRecord::Base.connection_pool.with_connection do
+          #     @project.destroy
+          #   #end
+          # end
 
           # #Project.transaction do
           #   t = Thread.new do
