@@ -20,7 +20,7 @@
     @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: organization_id, id: @guw_coefficient_ids) %>
 
   <% @all_guw_coefficient_element_unit_of_works = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
-                                                                                            guw_model_id: guw_model_id,
+                                                                                            guw_model_id: @guw_model_id,
                                                                                             project_id: project_id,
                                                                                             module_project_id: guow.module_project_id,
                                                                                             guw_unit_of_work_id: guow.id) %>
