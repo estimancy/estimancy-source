@@ -543,7 +543,7 @@
 
       var root_mp_ratio_element_id = $("#root_mp_ratio_element_id").val();
 
-      // Gestion changement du ratio
+        // Gestion changement du ratio
       $("#ratio").change(function() {
           if ($(this).val() !== "") {
               return $.ajax({
@@ -693,6 +693,7 @@
         var clkBtn = "";
         $('input[type="submit"]').click(function(evt) {
             clkBtn = evt.target.name;
+            //StartBlockUI();
         });
 
         $("#save_effort_breakdown_form").on("submit",function(e) {

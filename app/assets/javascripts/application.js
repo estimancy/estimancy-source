@@ -22,6 +22,7 @@
 //= require spectrum.js
 //= require jscolor
 //= require jquery-tablesorter
+//= require jquery.blockUI
 //
 // require jquery-min.js
 //= require jquery-ui-min.js

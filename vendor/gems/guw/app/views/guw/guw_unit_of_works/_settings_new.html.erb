@@ -115,7 +115,8 @@
       <div class="edition-bloc-tools">
         <% if can? :execute_estimation_plan, @project   %>
           <a href="<%= guw.new_guw_unit_of_work_group_path %>"><i class="material-icons">add</i><%= I18n.t("add_a_group") %></a>
-          <%= submit_tag I18n.t(:recalculate_all), disabled: true, data: { :"disable-with" => "#{ I18n.t :please_wait }" }, class: "btn btn-secondary button_to_calculate" %>
+          <%#= submit_tag I18n.t(:recalculate_all), disabled: true, data: { :"disable-with" => "#{ I18n.t :please_wait }" }, id: "recalculate_all", class: "btn btn-secondary button_to_calculate" %>
+          <%= submit_tag I18n.t(:recalculate_all), disabled: true, data: { :"disable-with" => "#{ I18n.t :please_wait }" }, id: "recalculate_all", class: "btn btn-secondary button_to_calculate"%>
         <% end %>
       </div>
     </div>
@@ -288,14 +289,31 @@
 
   <script>
     var my_array = [];
-    //$(document).ready(function(){
+
     $(document).ready(function() {
 
       window.history.pushState("", "", "<%= main_app.dashboard_path(@project) %>");
 
-      $(".new_guw_button").on('click', function(e){
+        $('#recalculate_all').click(function() {
+
+            StartBlockUI();
+
+            // $.blockUI({ message: '<h1><i class="fa fa-3x fa-spinner fa-spin"></i></h1>',
+            //             css: { backgroundColor: 'transparent', border: 'none'}
+            // });
+        });
+
+        $(".new_guw_button").on('click', function(e){
         $("select#guw_unit_of_work_group_id").val($(this).data("group-id"));
         $("#hidden_position").val($(this).data("display-order"));
+      });
+
+
+      $('.selected').click(function(){
+            // if (this.checked)
+          var new_line = $(this).closest("tr").data("guw-id");
+          my_array.push(new_line);
+          $("#modified_guw_line_ids").val(my_array);
       });
 
       $("table#guw input").keyup(function(e) {
@@ -317,6 +335,7 @@
       });
 
     });
+
   </script>
 
 <% end %>
@@ -352,6 +371,7 @@
 </style>
 
 <script>
+
     function raz(group){
         $('.retained-gp-' + group).val('');
         return false; // prevent default click action from happening!
@@ -393,7 +413,6 @@
         }
     }
 
-    //$(document).ready(function () {
     $(document).ready(function() {
 
         $('.guw_type').change(function(){
@@ -861,7 +880,7 @@
     //Après le chargement de la page, on réactive les boutons
     $('.button_to_calculate').attr('disabled',false);
 
-    <%# @current_mp.guw_unit_of_work_groups.each do |uowg| %>
+      <%# @current_mp.guw_unit_of_work_groups.each do |uowg| %>
     <% @group_unit_of_works.each do |uowg| %>
       <% @guw_model.guw_outputs.each do |go| %>
         var sum = 0;
@@ -904,5 +923,34 @@
       //         form.submit();
       //     }
       // });
+
   });
 </script>
+
+<style type="text/css">
+    #loadingmsg {
+        color: black;
+        background: #fff;
+        padding: 10px;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        z-index: 100;
+        margin-right: -25%;
+        margin-bottom: -25%;
+    }
+    #loadingover {
+        background: black;
+        z-index: 99;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        top: 0;
+        left: 0;
+        -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+        filter: alpha(opacity=80);
+        -moz-opacity: 0.8;
+        -khtml-opacity: 0.8;
+        opacity: 0.8;
+    }
+</style>

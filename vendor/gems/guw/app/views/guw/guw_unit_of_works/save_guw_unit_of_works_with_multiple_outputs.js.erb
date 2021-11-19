@@ -85,9 +85,18 @@ $("#dashboard_right_panel").html("<%= j(render 'module_projects/dashboard_right_
 $("#dashboard_left_panel").html("<%= j(render 'module_projects/dashboard_left_inner') %>");
 $('#module_execution').addClass('show');
 
+CloseBlockUI();
+
 var my_array = [];
 //$(document).ready(function(){
 $(document).ready(function() {
+
+    $('.selected').click(function(){
+        var new_line = $(this).closest("tr").data("guw-id");
+        my_array.push(new_line);
+        $("#modified_guw_line_ids").val(my_array);
+    });
+
   $("table#guw input").keyup(function(e) {
     var new_line = $(this).closest("tr").data("guw-id");
     my_array.push(new_line);

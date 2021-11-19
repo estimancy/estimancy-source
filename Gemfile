@@ -282,3 +282,6 @@ gem 'order_as_specified'
 gem 'prometheus-client'
 
 gem 'jquery-tablesorter'
+
+# gem 'jquery_block_ui'
+gem 'blockuijs-rails',  :git => 'git://github.com/rusanu/blockuijs-rails.git'

@@ -1283,8 +1283,6 @@ function update_mp_ratio_element_retained_effort_and_cost_values(){
 
     });
 
-
     // End test
-
 }
 
