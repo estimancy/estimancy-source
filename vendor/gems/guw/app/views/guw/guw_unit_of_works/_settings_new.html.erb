@@ -294,7 +294,8 @@
 
       window.history.pushState("", "", "<%= main_app.dashboard_path(@project) %>");
 
-        $('#recalculate_all').click(function() {
+        // $('#recalculate_all').click(function() {
+        $("#guw_form").on("submit", function(){
             StartBlockUI();
         });
 

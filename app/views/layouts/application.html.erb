@@ -50,36 +50,37 @@
             <% end %>
           </div>
 
-          <% unless controller.action_name == "all_organizations" %>
+          <%# unless controller.action_name == "all_organizations" %>
 
-            <%= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" , id: "adv_search_form" do %>
+            <%#= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" , id: "adv_search_form" do %>
 
-              <%= hidden_field_tag :item_title, params[:item_title] %>
+              <%#= hidden_field_tag :item_title, params[:item_title] %>
 
-              <div class="input-group global-search-bar">
-                <div class="input-group-prepend global-search-bar-prepend" >
-                  <span class="input-group-text" id="search-icon" >
-                    <i class="material-icons">search</i>
-                  </span>
-                </div>
+<!--              <div class="input-group global-search-bar">-->
+<!--                <div class="input-group-prepend global-search-bar-prepend" >-->
+<!--                  <span class="input-group-text" id="search-icon" >-->
+<!--                    <i class="material-icons">search</i>-->
+<!--                  </span>-->
+<!--                </div>-->
 
-                <input value="<%= params[:advanced_search] %>"
-                       id="adv_search"
-                       type="text"
-                       name="advanced_search"
-                       placeholder="<%= params[:item_title].blank? ? I18n.t('estimation_name, version_number, author...') : I18n.t(params[:item_title]) %>"
-                       class="form-control global-search-bar-input"
-                       aria-label="search" aria-describedby="search-icon">
+<!--                <input value="<%#= params[:advanced_search] %>"-->
+<!--                       id="adv_search"-->
+<!--                       type="text"-->
+<!--                       name="advanced_search"-->
+<!--                       placeholder="<%#= params[:item_title].blank? ? I18n.t('estimation_name, version_number, author...') : I18n.t(params[:item_title]) %>"-->
+<!--                       class="form-control global-search-bar-input"-->
+<!--                       aria-label="search" aria-describedby="search-icon">-->
 
-                <div class="input-group-append global-search-bar-append" id="adv_search_submit">
-                  <a class="input-group-text unclickable" href="#" style="text-decoration: none;">
-                    <%= I18n.t :advanced_research_estimates %>
-                  </a>
-                </div>
+<!--                <div class="input-group-append global-search-bar-append" id="adv_search_submit">-->
+<!--                  <a class="input-group-text unclickable" href="#" style="text-decoration: none;">-->
+                    <%#= I18n.t :advanced_research_estimates %>
+<!--                  </a>-->
+<!--                </div>-->
 
-              </div>
-            <% end %>
-          <% end %>
+<!--              </div>-->
+            <%# end %>
+          <%# end %>
+
         </div>
 
         <ul class="navbar-nav mr-auto">
