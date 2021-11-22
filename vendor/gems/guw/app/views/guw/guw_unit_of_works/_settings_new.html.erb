@@ -891,34 +891,14 @@
       <% end %>
     <% end %>
 
-    //$('[class^="complexity_weight-"]').each(function() {
-    // $('[class^="complexity_weight-"]').each.keypress(function(e){
-    //     if(e.which == 13){
-    //         e.preventDefault();
-    //         alert("test");
-    //     }
-    // });
 
-      // ('[class^="complexity_weight-"]').addEventListener('keypress', function(event) {
-      //     if (event.keyCode == 13) {
-      //         event.preventDefault();
-      //         alert("test");
-      //     }
-      // });
-
-      // $('form').on('keypress', e => {
-      //     if (e.keyCode == 13) {
-      //         //return false;
-      //         e.preventDefault();
-      //         //alert("Test 123");
-      //
-      //         var form = $(this);
-      //         form.append($('<input />',{name: 'by_keypress_enter', value: 1}));
-      //
-      //         //$('form').submit();
-      //         form.submit();
-      //     }
-      // });
+      $('#guw_form').on('keypress', e => {
+          if (e.keyCode == 13) {
+              //return false;
+              e.preventDefault();
+              $(".guw_submit").first().click();
+          }
+      });
 
   });
 </script>
