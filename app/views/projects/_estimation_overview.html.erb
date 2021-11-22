@@ -1,4 +1,5 @@
-<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<!--For blockUI-->
+<!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>-->
 
 <div class="mb-5">
   <div class="estimation-list">
@@ -23,7 +24,7 @@
     <%# selected_inline_columns = $selected_inline_columns  #update_selected_inline_columns(Project) %>
     <% selected_inline_columns = update_selected_inline_columns(Project) %>
     <%#= form_tag projects_list_search_path, remote: true do %>
-    <%= form_tag organization_estimations_path(@current_organization), remote: true do %>
+    <%= form_tag organization_estimations_path(@current_organization), id: 'search_on_estimation_list', remote: true do %>
       <%= hidden_field_tag :is_search_action, true %>
 
       <%= submit_tag "Rechercher", class: "hide" %>
@@ -38,7 +39,8 @@
           <tr>
             <% selected_inline_columns.each do |column| %>
               <td style="padding: 5px;">
-                <%= text_field_tag column.name, session[:search_hash].nil? ? '' : session[:search_hash][column.name], class: "form-control form-control-sm" %>
+                <%= text_field_tag column.name, session[:search_hash].nil? ? '' : session[:search_hash][column.name],
+                                   class: "form-control form-control-sm", disabled: column.field_id %>
               </td>
             <% end %>
             <td></td>

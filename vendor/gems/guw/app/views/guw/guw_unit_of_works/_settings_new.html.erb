@@ -295,12 +295,7 @@
       window.history.pushState("", "", "<%= main_app.dashboard_path(@project) %>");
 
         $('#recalculate_all').click(function() {
-
             StartBlockUI();
-
-            // $.blockUI({ message: '<h1><i class="fa fa-3x fa-spinner fa-spin"></i></h1>',
-            //             css: { backgroundColor: 'transparent', border: 'none'}
-            // });
         });
 
         $(".new_guw_button").on('click', function(e){

@@ -51,6 +51,10 @@ namespace :guw_models do
 
     #================================================================================================
 
+    #Mettre nb devis par users à 10 pour tout le monde
+    User.update_all(object_per_page: 10)
+
+
     #=== Utilisateurs fantômes qui ne sont rattachés à aucune organisation
 
     fantome_user_count = 0

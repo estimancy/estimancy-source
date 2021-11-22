@@ -15,6 +15,7 @@
 //= require jquery_ujs
 //= require pager.js
 //= require select_list_move
+//= require estimancy_blockUI
 //= require projects.js
 //= require poppers
 //= require main
@@ -22,7 +23,6 @@
 //= require spectrum.js
 //= require jscolor
 //= require jquery-tablesorter
-//= require jquery.blockUI
 //
 // require jquery-min.js
 //= require jquery-ui-min.js
@@ -35,4 +35,5 @@
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.fr.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.de.js
 //= require bootstrap-datepicker/locales/bootstrap-datepicker.it.js
+//= require jquery.blockUI
 // require turbolinks

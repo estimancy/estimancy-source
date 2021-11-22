@@ -34,17 +34,3 @@
   <% end %>
 </div>
 
-
-<script>
-    //Affichage de spinner lors d'une action
-    function StartBlockUI() {
-        $.blockUI({ message: '<h1><i class="fa fa-3x fa-spinner fa-spin"></i></h1>',
-            css: { backgroundColor: 'transparent', border: 'none'}
-        });
-    }
-
-    function CloseBlockUI() {
-        setTimeout($.unblockUI, 1);
-    }
-</script>
-
