@@ -862,11 +862,11 @@ class ApplicationController < ActionController::Base
           ids = EstimationStatus.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = organization_estimations.where(estimation_status_id: ids, organization_id: organization_id)
         when "start_date"
-          results = organization_estimations.where("start_date LIKE ?", "%#{val}%")
+          results = organization_estimations.where("start_date LIKE ?", "%#{val.to_date}%")
         when "created_at"
-          results = organization_estimations.where("created_at LIKE ?", "%#{val}%")
+          results = organization_estimations.where("created_at LIKE ?", "%#{val.to_date}%")
         when "updated_at"
-          results = organization_estimations.where("updated_at LIKE ?", "%#{val}%")
+          results = organization_estimations.where("updated_at LIKE ?", "%#{val.to_date}%")
         when "project_area"
           ids = ProjectArea.where("name LIKE ?", "%#{val}%").all.map(&:id)
           results = organization_estimations.where(project_area_id: ids, organization_id: organization_id)
