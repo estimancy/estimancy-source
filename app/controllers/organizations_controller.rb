@@ -3828,7 +3828,7 @@ class OrganizationsController < ApplicationController
       []
     end
     #res = $all_projects_to_see #[]
-    res = @projects_to_see.includes([:application, :acquisition_category, :estimation_status, :creator]) #:project_area
+    res = @projects_to_see.includes([:application, :acquisition_category, :estimation_status, :creator]) rescue [] #:project_area
 
     # #if @historized
     #   organization_projects.each do |p|
