@@ -536,14 +536,32 @@
   </div>
 
 <!--for BlockUI-->
-  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<!--  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>-->
+<!-- la fonction "update_mp_ratio_element_retained_effort_and_cost_values" regroupait toutes les fonctions js dans le fichier projestimate_scripts-->
   <script>
     //$(document).ready(function(){
     $(document).ready(function() {
 
       var root_mp_ratio_element_id = $("#root_mp_ratio_element_id").val();
 
-        // Gestion changement du ratio
+      // Mise à jour de la valeur booleenne de "is_just_changed" lorsque la valeur de l'effort retenu change
+      $('.retained_effort, .retained_cost').change(function(){
+          var ap_id = $(this).attr('id');
+          var ap_value = $(this).val();
+          //ap_value = parseFloat(ap_value.replace("," , "."));
+
+          var mp_ratio_element_id = $(this).data("mp_ratio_element_id");
+
+          if(!isNaN(parseFloat(ap_value)) && isFinite(ap_value)){
+              if(ap_value != undefined){
+                  //$("is_just_changed_"+mp_ratio_element_id).prop( "checked", true );
+                  $("#is_just_changed_"+mp_ratio_element_id).attr("checked",true);
+              }
+          }
+      });
+
+
+      // Gestion changement du ratio
       $("#ratio").change(function() {
           if ($(this).val() !== "") {
               return $.ajax({
@@ -627,7 +645,7 @@
 
         $("form").bind("keypress", function (e) {
             if (e.keyCode == 13) {
-                event.preventDefault();
+                e.preventDefault();
                 //alert('Un ENTER ne suffit pas.\nCliquez sur le bouton Soumettre.'+ event.keyCode);
                 return false;
             }
@@ -693,7 +711,6 @@
         var clkBtn = "";
         $('input[type="submit"]').click(function(evt) {
             clkBtn = evt.target.name;
-            //StartBlockUI();
         });
 
         $("#save_effort_breakdown_form").on("submit",function(e) {
@@ -781,6 +798,7 @@
 
                     return false; // cancel submit
                 }else{
+                    StartBlockUI();
                     //alert("not need comment" + " " + disable_calculate_button);
                     //$("#wbs_calculate_button").removeAttr('disabled');
                     $("#wbs_calculate_button").attr('title','<%= I18n.t(:calculate) %>');
