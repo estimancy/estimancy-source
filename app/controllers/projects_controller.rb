@@ -93,8 +93,24 @@ class ProjectsController < ApplicationController
     render :layout => false
   end
 
-  #05/07/2021 sauvegarde des 3 fonction pour tester find_in_batch et find_each et eager_load
-  def raw_data_extraction_synthese(organization, organization_projects)
+  # Extraction des données brutes avec Sidekiq
+  def raw_data_extraction
+
+    #workbook = RubyXL::Workbook.new
+    # timeago = 1.year
+
+    @organization = Organization.where(id: params[:organization_id]).first
+    @item_title = params[:item_title].to_s
+
+    #RawDataExtractionWorker.perform_async(params[:organization_id], params[:item_title].to_s, params[:start_date], params[:end_date])
+    RawDataExtractionWorker.perform_async(params[:organization_id], params[:item_title].to_s, current_user.id)
+
+    flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
+    redirect_to :back and return
+  end
+
+  #26/11/2021 sauvegarde des 3 fonction pour tester avec Sidekiq
+  def raw_data_extraction_synthese_before_sidekiq(organization, organization_projects)
     #sleep(0.010)
     @organization = organization
     @organization_projects = organization_projects
@@ -244,7 +260,7 @@ class ProjectsController < ApplicationController
   end
 
   #raw_data_extract_cf
-  def raw_data_extract_abaques_services_DE(organization, organization_projects)
+  def raw_data_extract_abaques_services_DE_before_sidekiq(organization, organization_projects)
     @organization = organization
     @organization_projects = organization_projects
 
@@ -690,7 +706,7 @@ class ProjectsController < ApplicationController
   end
 
 
-  def raw_data_extract_services_ratio(organization, organization_projects)
+  def raw_data_extract_services_ratio_before_sidekiq(organization, organization_projects)
 
     @organization = organization
     @organization_projects = organization_projects
@@ -792,7 +808,66 @@ class ProjectsController < ApplicationController
 
     workbook
   end
-  #Fin sauvegarde 05/07/2021 sauvegarde des 3 fonction pour tester find_in_batch et find_each et eager_load
+
+  def raw_data_extraction_before_sidekiq
+    Thread.new do
+      ActiveRecord::Base.connection_pool.with_connection do
+
+        #workbook = RubyXL::Workbook.new
+        # timeago = 1.year
+
+        @organization = Organization.where(id: params[:organization_id]).first
+
+        # if params[:date_min].present? && params[:date_min].present?
+        #                                        # .where(is_historized: (params[:is_historized] == "1"))
+        #                                        # .where("created_at > ?", timeago.ago)
+        @organization_projects = @organization.projects
+                                              .where(is_model: false)
+                                              .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
+                                                        :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
+                                                        :guw_types, :guw_unit_of_works, :module_projects,
+                                                        :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+        # else
+        #   @organization_projects = @organization.projects
+        #                                .where(is_model: false)
+        #                                .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
+        #                                          :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
+        #                                          :guw_types, :guw_unit_of_works, :module_projects,
+        #                                          :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
+        # end
+
+
+        @item_title = params[:item_title].to_s
+
+        case @item_title
+        when "raw_data_extraction_synthese"
+          workbook = raw_data_extraction_synthese(@organization, @organization_projects)
+
+        when "raw_data_extract_abaques_services_DE"
+          workbook = raw_data_extract_abaques_services_DE(@organization, @organization_projects)
+
+        when "raw_data_extract_services_ratio"
+          workbook = raw_data_extract_services_ratio(@organization, @organization_projects)
+
+        else
+          workbook = raw_data_extraction_synthese(@organization, @organization_projects)
+        end
+
+
+        workbook.write("#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx")
+
+        # send_data(workbook.stream.string,
+        #           filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
+        #           type: "application/vnd.ms-excel")
+
+        UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
+      end
+    end
+
+    flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
+    redirect_to :back and return
+  end
+  #Fin sauvegarde 26/11/2021 sauvegarde des 3 fonction pour tester avec Sidekiq
 
   def test_me
 
@@ -1288,7 +1363,6 @@ class ProjectsController < ApplicationController
 
     workbook
   end
-
 
   #raw_data_extract_cf
   def raw_data_extract_abaques_services_DE_test_batch_eager_load(organization, organization_projects)
@@ -1881,64 +1955,6 @@ class ProjectsController < ApplicationController
     workbook
   end
 
-  def raw_data_extraction
-    Thread.new do
-      ActiveRecord::Base.connection_pool.with_connection do
-
-        #workbook = RubyXL::Workbook.new
-        # timeago = 1.year
- 
-        @organization = Organization.where(id: params[:organization_id]).first
-
-        # if params[:date_min].present? && params[:date_min].present?
-        #                                        # .where(is_historized: (params[:is_historized] == "1"))
-        #                                        # .where("created_at > ?", timeago.ago)
-          @organization_projects = @organization.projects
-                                       .where(is_model: false)
-                                       .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
-                                                 :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
-                                                 :guw_types, :guw_unit_of_works, :module_projects,
-                                                 :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
-        # else
-        #   @organization_projects = @organization.projects
-        #                                .where(is_model: false)
-        #                                .includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
-        #                                          :estimation_status, :guw_model, :guw_attributes, :guw_coefficients,
-        #                                          :guw_types, :guw_unit_of_works, :module_projects,
-        #                                          :guw_unit_of_work_attributes, :guw_coefficient_element_unit_of_works)
-        # end
-
-
-        @item_title = params[:item_title].to_s
-
-        case @item_title
-          when "raw_data_extraction_synthese"
-            workbook = raw_data_extraction_synthese(@organization, @organization_projects)
-
-          when "raw_data_extract_abaques_services_DE"
-            workbook = raw_data_extract_abaques_services_DE(@organization, @organization_projects)
-
-          when "raw_data_extract_services_ratio"
-            workbook = raw_data_extract_services_ratio(@organization, @organization_projects)
-
-          else
-            workbook = raw_data_extraction_synthese(@organization, @organization_projects)
-        end
-
-
-        workbook.write("#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx")
-
-        # send_data(workbook.stream.string,
-        #           filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
-        #           type: "application/vnd.ms-excel")
-
-         UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
-      end
-    end
-
-    flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."
-    redirect_to :back and return
-  end
 
 
   def cds_data
@@ -3610,6 +3626,8 @@ class ProjectsController < ApplicationController
           @project.historization_time = Time.now
           @project.project_security_ids = []
           @project.save(validate: false)
+
+          DeleteProjectWorker.perform_async(@project.id)
 
           # Thread.new do
           #   #ActiveRecord::Base.connection_pool.with_connection do

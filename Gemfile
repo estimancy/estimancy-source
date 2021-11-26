@@ -156,7 +156,7 @@ gem 'time_diff', '~> 0.3.0'
 # gem 'tinymce-rails'
 
 # Tool for asynchronous jobs processing
-###gem 'sidekiq'
+gem 'sidekiq'#, '~> 5.2.5'
 gem 'sinatra', :require => false
 gem 'slim'
 
