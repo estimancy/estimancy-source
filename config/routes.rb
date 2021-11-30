@@ -536,8 +536,13 @@ Projestimate::Application.routes.draw do
   get 'projects_quantity' => 'organizations#projects_quantity'
 
   get "download/:organization_id" => 'projects#download', as: 'download'
-  #get "download_extraction_file/:organization_id" => 'organizations#download_extraction_file', as: 'download_extraction_file'
-  get "download_extraction_file/:organization_id/:filename" => 'organizations#download_extraction_file', as: 'download_extraction_file'
+  get "download_extraction_file/:organization_id" => 'organizations#download_extraction_file', as: 'download_extraction_file'
+  #get "download_extraction_file/:organization_id/:filename" => 'organizations#download_extraction_file', as: 'download_extraction_file'
+
+  require 'sidekiq/web'
+  authenticate :user, lambda { |u| u.super_admin? } do
+    mount Sidekiq::Web => '/estimancy_jobs'
+  end
 
   post 'delete' => 'demands#delete'
 

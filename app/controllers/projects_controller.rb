@@ -94,7 +94,7 @@ class ProjectsController < ApplicationController
   end
 
   # Extraction des données brutes avec Sidekiq
-  def raw_data_extraction
+  def raw_data_extraction_sidekiq
 
     #workbook = RubyXL::Workbook.new
     # timeago = 1.year
@@ -810,7 +810,7 @@ class ProjectsController < ApplicationController
     workbook
   end
 
-  def raw_data_extraction_before_sidekiq
+  def raw_data_extraction #raw_data_extraction_before_sidekiq
     Thread.new do
       ActiveRecord::Base.connection_pool.with_connection do
 
@@ -842,26 +842,34 @@ class ProjectsController < ApplicationController
 
         case @item_title
         when "raw_data_extraction_synthese"
-          workbook = raw_data_extraction_synthese(@organization, @organization_projects)
+          #workbook = raw_data_extraction_synthese(@organization, @organization_projects)
+          workbook = raw_data_extraction_synthese_before_sidekiq(@organization, @organization_projects)
 
         when "raw_data_extract_abaques_services_DE"
-          workbook = raw_data_extract_abaques_services_DE(@organization, @organization_projects)
+          #workbook = raw_data_extract_abaques_services_DE(@organization, @organization_projects)
+          workbook = raw_data_extract_abaques_services_DE_before_sidekiq(@organization, @organization_projects)
 
         when "raw_data_extract_services_ratio"
-          workbook = raw_data_extract_services_ratio(@organization, @organization_projects)
+          #workbook = raw_data_extract_services_ratio(@organization, @organization_projects)
+          workbook = raw_data_extract_services_ratio_before_sidekiq(@organization, @organization_projects)
 
         else
-          workbook = raw_data_extraction_synthese(@organization, @organization_projects)
+          #workbook = raw_data_extraction_synthese(@organization, @organization_projects)
+          workbook = raw_data_extraction_synthese_before_sidekiq(@organization, @organization_projects)
         end
 
 
-        workbook.write("#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx")
+        # workbook.write("#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx")
+        #
+        # # send_data(workbook.stream.string,
+        # #           filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
+        # #           type: "application/vnd.ms-excel")
+        #
+        # UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
 
-        # send_data(workbook.stream.string,
-        #           filename: "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-RAW_DATA.xlsx",
-        #           type: "application/vnd.ms-excel")
-
-        UserMailer.send_raw_data_extraction(current_user, @organization).deliver_now
+        filename = "#{@organization.name.gsub(" ", "_")}-#{current_user.id}-#{Time.now.strftime("%d-%m-%Y_%H-%M-%S")}-RAW_DATA.xlsx"
+        workbook.write("#{Rails.root}/public/#{filename}")
+        UserMailer.send_raw_data_extraction(current_user, @organization, filename).deliver_now
       end
     end
 

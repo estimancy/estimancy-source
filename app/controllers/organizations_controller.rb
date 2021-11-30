@@ -3423,13 +3423,37 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     filename = params[:filename]
 
-    # send_file(
-    #   "#{Rails.root}/public/#{filename}",
-    #   filename: "#{filename}",
-    #   type: "application/vnd.ms-excel"
-    # )
+    send_file(
+      "#{Rails.root}/public/#{filename}",
+      filename: "#{filename}",
+      type: "application/vnd.ms-excel"
+    )
 
-    send_file("#{Rails.root}/public/#{filename}", type: 'text/excel')
+    #send_file("#{Rails.root}/public/#{filename}", type: "application/vnd.ms-excel")
+
+    #send_file(file_path, type: 'text/excel')
+    # file_path = File.join(Rails.root, "public")
+    # send_file(File.join(file_path, filename))
+
+
+
+    # require 'open-uri'
+    # #url = 'http://someserver.com/path/../filename.jpg'
+    # data = open("#{Rails.root}/public/#{@filename}").read
+    # send_data data, :disposition => 'attachment', :filename=>@filename
+  end
+
+  def download_extraction_file_save
+    @organization = Organization.find(params[:organization_id])
+    filename = params[:filename]
+
+    send_file(
+      "#{Rails.root}/public/#{filename}",
+      filename: "#{filename}",
+      type: "application/vnd.ms-excel"
+    )
+
+    #send_file("#{Rails.root}/public/#{filename}", type: "application/vnd.ms-excel")
 
     #send_file(file_path, type: 'text/excel')
     # file_path = File.join(Rails.root, "public")
