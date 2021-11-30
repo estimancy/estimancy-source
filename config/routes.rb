@@ -537,7 +537,6 @@ Projestimate::Application.routes.draw do
 
   get "download/:organization_id" => 'projects#download', as: 'download'
   get "download_extraction_file/:organization_id" => 'organizations#download_extraction_file', as: 'download_extraction_file'
-  #get "download_extraction_file/:organization_id/:filename" => 'organizations#download_extraction_file', as: 'download_extraction_file'
 
   require 'sidekiq/web'
   authenticate :user, lambda { |u| u.super_admin? } do

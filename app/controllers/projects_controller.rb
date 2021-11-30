@@ -94,7 +94,7 @@ class ProjectsController < ApplicationController
   end
 
   # Extraction des données brutes avec Sidekiq
-  def raw_data_extraction_sidekiq
+  def raw_data_extraction #with_sidekiq
 
     #workbook = RubyXL::Workbook.new
     # timeago = 1.year
@@ -810,7 +810,7 @@ class ProjectsController < ApplicationController
     workbook
   end
 
-  def raw_data_extraction #raw_data_extraction_before_sidekiq
+  def raw_data_extraction_before_sidekiq
     Thread.new do
       ActiveRecord::Base.connection_pool.with_connection do
 
