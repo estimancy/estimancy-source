@@ -23,9 +23,10 @@ class UserMailer < ActionMailer::Base
   default from: SETTINGS['FROM']
   OLD_LOCALE = I18n.locale
 
-  def send_raw_data_extraction(user, organization)
+  def send_raw_data_extraction(user, organization, filename=nil)
     @organization = organization
     @user = user
+    @filename = filename
     mail(:to => [user.email], :subject => "[ESTIMANCY] - Export des données brutes")
   end
 
@@ -187,7 +188,7 @@ class UserMailer < ActionMailer::Base
     rescue
     end
 
-    mail(:to => "nicolas.renard@estimancy.com, eric.bellet@estimancy.com, patrick.hamon@estimancy.com", :subject => "Demande de service #{@organization.name} - #{@elements[:contact]}")
+    mail(:to => "safae.laqrichi@estimancy.com, eric.bellet@estimancy.com, patrick.hamon@estimancy.com, salimata.gaye@estimancy.com", :subject => "Demande de service #{@organization.name} - #{@elements[:contact]}")
   end
 
   protected

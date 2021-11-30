@@ -53,6 +53,7 @@ class Project < ActiveRecord::Base
   has_many :status_histories
 
   has_many :views_widgets, :through => :module_projects
+  has_many :module_project_ratio_elements, :through => :module_projects
   has_many :project_securities, inverse_of: :project, :dependent => :destroy
   has_many :project_fields, :dependent => :destroy
 

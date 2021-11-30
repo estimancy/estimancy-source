@@ -3,8 +3,10 @@ Bonjour <%= @user %>,
 <br>
 
 Votre export des données brutes lancé sur Estimancy pour le <%= @organization.name %> est téléchargeable directement en cliquant sur
-<%= link_to "lien suivant", download_url(@organization.id, :protocol => 'https') %>.
+<%#= link_to "lien suivant", download_url(@organization.id, :protocol => 'https' %>.
+<%= link_to "lien suivant", download_extraction_file_url(organization_id: @organization.id, filename: @filename, :protocol => 'https') %>.
 
+<%#= link_to "Download File", file.attachment_url %>
 <%#= link_to "lien suivant", download_url(@organization.id), download: true %>
 <%#= link_to "lien suivant", download_url(@organization.id), :target => '_blank' %>
 
