@@ -26,11 +26,11 @@ class RawDataExtractionWorker
 
     if !date_min.blank? || !date_max.blank?
       if !date_min.blank?
-        all_organization_projects = all_organization_projects.where("created_at > ?", date_min.to_date.beginning_of_day)
+        all_organization_projects = all_organization_projects.where("start_date > ?", date_min.to_date.beginning_of_day)
       end
 
       if !date_min.blank?
-        all_organization_projects = all_organization_projects.where("created_at < ?", date_max.to_date.end_of_day)
+        all_organization_projects = all_organization_projects.where("start_date < ?", date_max.to_date.end_of_day)
       end
 
     end
@@ -68,6 +68,7 @@ class RawDataExtractionWorker
     #           filename: "#{@organization.name.gsub(" ", "_")}-#{user_id}-RAW_DATA.xlsx",
     #           type: "application/vnd.ms-excel")
 
+    #DeleteRawDataExtractionFileWorker.perform_in(3.days, "#{Rails.root}/public/#{filename}")
     UserMailer.send_raw_data_extraction(user, @organization, filename).deliver_now
   end
 
