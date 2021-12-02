@@ -289,7 +289,8 @@ class Guw::GuwModelsController < ApplicationController
                                             guw_model_id: @guw_model.id)
 
             # [2,7,12].each do |column_index|
-            guw_model_guw_outputs_size = @guw_model.guw_outputs.size
+            complexity_config_size = ["enable_value", "bottom_range", "top_range", "weight", "weight_b"].size
+            guw_model_guw_outputs_size = [@guw_model.guw_outputs.size, complexity_config_size].max #@guw_model.guw_outputs.size
             [2, 2 + guw_model_guw_outputs_size, 2 + (guw_model_guw_outputs_size * 2)].each do |column_index|
               name = tab[9][column_index].nil? ? nil : tab[9][column_index].value
               default_value = (tab[9][column_index + 1].nil? ? nil : tab[9][column_index + 1].value) == "true" ? true : false
@@ -796,13 +797,31 @@ class Guw::GuwModelsController < ApplicationController
 
       @guw_complexities.each_with_index do |guw_complexity|
 
+        # guw_complexity_attributes_values = [
+        #     ["Prod", guw_complexity.enable_value ? 1 : 0],
+        #     ["[", guw_complexity.bottom_range],
+        #     ["[", guw_complexity.top_range],
+        #     ["#{I18n.t(:my_display)}(a)", guw_complexity.weight],
+        #     ["#{I18n.t(:my_display)}(b)", guw_complexity.weight_b]
+        # ]
+
+        if guw_type.allow_criteria == true
+          bottom_range = guw_complexity.bottom_range
+          top_range = guw_complexity.top_range
+        else
+          bottom_range = nil
+          top_range = nil
+        end
+
         guw_complexity_attributes_values = [
-            ["Prod", guw_complexity.enable_value ? 1 : 0],
-            ["[", guw_complexity.bottom_range],
-            ["[", guw_complexity.top_range],
-            ["#{I18n.t(:my_display)}(a)", guw_complexity.weight],
-            ["#{I18n.t(:my_display)}(b)", guw_complexity.weight_b]
+          ["Prod", guw_complexity.enable_value ? 1 : 0],
+          ["[", bottom_range],
+          ["[", top_range],
+          ["#{I18n.t(:my_display)}(a)", guw_complexity.weight],
+          ["#{I18n.t(:my_display)}(b)", guw_complexity.weight_b]
         ]
+
+        to_incremente_column_number = [guw_complexity_attributes_values.size, @guw_outputs.size].max
 
         worksheet.add_cell(ind2, column_number, guw_complexity.name)
         worksheet.add_cell(ind2, column_number + 1, guw_complexity.default_value)
@@ -846,9 +865,9 @@ class Guw::GuwModelsController < ApplicationController
             output_line += 1
           end
         end
-        cn += @guw_outputs.size
+        cn += to_incremente_column_number #@guw_outputs.size
         # column_number += guw_complexity_attributes_values.size
-        column_number +=  @guw_outputs.size
+        column_number +=  to_incremente_column_number #@guw_outputs.size
       end
 
       sln = 16 + @guw_outputs.size + @guw_model.guw_coefficients.where(organization_id: @guw_organisation.id).size + @guw_model.guw_coefficients.where(organization_id: @guw_organisation.id).map(&:guw_coefficient_elements).flatten.size
