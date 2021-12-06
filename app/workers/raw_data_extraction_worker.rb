@@ -2,9 +2,9 @@ class RawDataExtractionWorker
   include Sidekiq::Worker
   include DataExtractionsHelper
 
-  sidekiq_options retry: false
+  sidekiq_options retry: false, tags: ['Environnement de Production']
 
-  def perform(organization_id, item_title, user_id, date_min=nil, date_max=nil)
+  def perform(organization_name, user_name, organization_id, item_title, user_id, date_min=nil, date_max=nil)
 
     #workbook = RubyXL::Workbook.new
     # timeago = 1.year
@@ -62,7 +62,7 @@ class RawDataExtractionWorker
 
     #workbook.write("#{Rails.root}/public/#{@organization.name.gsub(" ", "_")}-#{user_id}-RAW_DATA.xlsx")
     filename = "#{@organization.name.gsub(" ", "_")}-#{user_id}-#{Time.now.strftime("%d-%m-%Y_%H-%M-%S")}-RAW_DATA_#{report_type}.xlsx"
-    workbook.write("#{Rails.root}/public/#{filename}")
+    workbook.write("#{Rails.root}/public/extraction_files/#{filename}")
 
     # send_data(workbook.stream.string,
     #           filename: "#{@organization.name.gsub(" ", "_")}-#{user_id}-RAW_DATA.xlsx",

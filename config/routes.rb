@@ -19,9 +19,14 @@
 #
 #############################################################################
 
-###require 'sidekiq/web'
+require 'sidekiq/web'
+require 'sidekiq-scheduler/web'
 
 Projestimate::Application.routes.draw do
+
+  authenticate :user, lambda { |u| u.super_admin? } do
+    mount Sidekiq::Web => '/estimancy_jobs'
+  end
 
   resources :iwidgets
   get 'update_iwidget_positions' => 'iwidgets#update_iwidget_positions', :as => 'update_iwidget_positions'
@@ -41,19 +46,13 @@ Projestimate::Application.routes.draw do
   post 'generate_report_excel' => 'budgets#generate_report_excel', :as => 'generate_report_excel'
   get 'recalculate_abaque_migrations_position' => 'views_widgets#recalculate_abaque_migrations_position', :as => 'recalculate_abaque_migrations_position'
 
-
-
   resources :autorization_log_events
-
 
   resources :providers
 
-
   resources :wbs_activity_ratio_variables
 
-
   resources :applications
-
 
   resources :fields
   resources :views_widgets
@@ -537,11 +536,6 @@ Projestimate::Application.routes.draw do
 
   get "download/:organization_id" => 'projects#download', as: 'download'
   get "download_extraction_file/:organization_id" => 'organizations#download_extraction_file', as: 'download_extraction_file'
-
-  require 'sidekiq/web'
-  authenticate :user, lambda { |u| u.super_admin? } do
-    mount Sidekiq::Web => '/estimancy_jobs'
-  end
 
   post 'delete' => 'demands#delete'
 

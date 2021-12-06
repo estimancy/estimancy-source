@@ -29,6 +29,7 @@ class ProjectsController < ApplicationController
   #include ViewsWidgetsHelper
   #include ActionView::Helpers::TextHelper
   include PemoduleEstimationMethods
+  include SidekiqMediatorHelper
 
   load_resource
 
@@ -103,7 +104,8 @@ class ProjectsController < ApplicationController
     @item_title = params[:item_title].to_s
 
     #RawDataExtractionWorker.perform_async(params[:organization_id], params[:item_title].to_s, params[:start_date], params[:end_date])
-    RawDataExtractionWorker.perform_async(params[:organization_id], params[:item_title].to_s, current_user.id, params[:date_min], params[:date_max])
+    #RawDataExtractionWorker.perform_async(params[:organization_id], params[:item_title].to_s, current_user.id, params[:date_min], params[:date_max])
+    perform_async(RawDataExtractionWorker, params[:organization_id], params[:item_title].to_s, current_user.id, params[:date_min], params[:date_max])
     #DeleteRawDataExtractionFile.perform_in(1.hour, @args)
 
     flash[:notice] = "Votre demande a bien été prise en compte. Un email contenant les données brutes vous sera envoyé."

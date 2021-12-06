@@ -157,6 +157,8 @@ gem 'time_diff', '~> 0.3.0'
 
 # Tool for asynchronous jobs processing
 gem 'sidekiq'#, '~> 5.2.5'
+gem  'sidekiq-scheduler'
+
 gem 'sinatra', :require => false
 gem 'slim'
 

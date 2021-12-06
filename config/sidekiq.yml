@@ -39,3 +39,10 @@
 ##-L, path to writable logfile
 ##-C, path to YAML config file
 ##-e, Application environment
+
+:schedule:
+  delete_raw_data_extraction_file_worker:
+    #cron: '0 * * * * *'   # Runs once per minute
+    #cron: '20 12 * * * * Europe/France'   # Runs once per minute
+    cron: '0 */10 * * * *'   # Runs once per 10 minute
+    class: DeleteRawDataExtractionFileWorker

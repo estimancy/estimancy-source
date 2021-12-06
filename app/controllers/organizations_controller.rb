@@ -3424,12 +3424,12 @@ class OrganizationsController < ApplicationController
     filename = params[:filename]
 
     send_file(
-      "#{Rails.root}/public/#{filename}",
+      "#{Rails.root}/public/extraction_files/#{filename}",
       filename: "#{filename}",
       type: "application/vnd.ms-excel"
     )
 
-    #send_file("#{Rails.root}/public/#{filename}", type: "application/vnd.ms-excel")
+    #send_file("#{Rails.root}/public/extraction_files/#{filename}", type: "application/vnd.ms-excel")
 
     #send_file(file_path, type: 'text/excel')
     # file_path = File.join(Rails.root, "public")
