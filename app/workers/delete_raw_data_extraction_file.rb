@@ -1,4 +1,5 @@
 require 'sidekiq-scheduler'
+require 'fileutils'
 
 class DeleteRawDataExtractionFileWorker
   include Sidekiq::Worker
@@ -11,8 +12,13 @@ class DeleteRawDataExtractionFileWorker
       # should_skip = File.basename( f ) =~ /^Counters.dat$/
       if File.basename(filename) != "dummy_extraction_file.xlsx"
         puts "Suppression des fichiers d'extraction des données brutes"
+        #File.delete(filename) if File.mtime(filename) < 10.minutes.ago
         #File.delete(filename) if File.mtime(filename) < 3.days.ago
-        File.delete(filename) if File.mtime(filename) < 10.minutes.ago
+
+        #if File.mtime(filename) < 2.minutes.ago
+        if File.mtime(filename) < 3.days.ago
+          FileUtils.rm filename
+        end
       end
     end
   end

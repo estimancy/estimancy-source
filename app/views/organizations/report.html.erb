@@ -43,7 +43,7 @@
                     </li>
 
                     <!-- Details accessible que pour les super-admin -->
-                    <% if current_user.super_admin? %>
+                    <%# if current_user.super_admin? %>
 
                       <li class="nav-item">
                         <a class="nav-link group" href="<%= organization_report_path(@organization,
@@ -62,7 +62,7 @@
                           <span><%= I18n.t("raw_data_extract_services_ratio") %></span>
                         </a>
                       </li>
-                    <% end %>
+                    <%# end %>
 
                   <% else %>
 
