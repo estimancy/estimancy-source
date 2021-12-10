@@ -3423,11 +3423,26 @@ class OrganizationsController < ApplicationController
     @organization = Organization.find(params[:organization_id])
     filename = params[:filename]
 
-    send_file(
-      "#{Rails.root}/public/extraction_files/#{filename}",
-      filename: "#{filename}",
-      type: "application/vnd.ms-excel"
-    )
+    filepath = Rails.root.join('public', SETTINGS['EXTRACTION_FILES_PATH'], filename)
+
+    if !filename.blank? && File.exist?(filepath)
+      send_file(
+        filepath,
+        filename: "#{filename}",
+        type: "application/vnd.ms-excel"
+      )
+
+      # send_file(
+      #   "#{Rails.root}/public/extraction_files/#{filename}",
+      #   filename: "#{filename}",
+      #   type: "application/vnd.ms-excel"
+      # )
+
+    else
+      error_message = "Le fichier que vous essayez de télécharger n'existe pas ou a été supprimé."
+      flash[:notice] = error_message
+      redirect_to organization_estimations_path(@organization) and return
+    end
 
     #send_file("#{Rails.root}/public/extraction_files/#{filename}", type: "application/vnd.ms-excel")
 
@@ -3747,7 +3762,7 @@ class OrganizationsController < ApplicationController
         session[:sort_column] = default_sort_column
         session[:sort_order] = default_sort_order
       else
-        session[:sort_column] = "created_at"
+        session[:sort_column] = "start_date"
         session[:sort_order] = "desc"
       end
     end
@@ -3852,9 +3867,10 @@ class OrganizationsController < ApplicationController
         all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id).where.not('private = ? and creator_id != ?', true, current_user.id)
       end
 
+      ability_user = current_user
       #organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
       organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
-      @current_ability = AbilityProject.new(current_user, @organization, organization_projects, $min, $max, $object_per_page)
+      @current_ability = AbilityProject.new(ability_user, @organization, organization_projects, $min, $max, $object_per_page)
       @projects_to_see = organization_projects.accessible_by(@current_ability, :see_project)
     rescue
       []
@@ -3876,8 +3892,11 @@ class OrganizationsController < ApplicationController
     #   end
     # end
 
-    #@projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
-    @projects = res[0..@object_per_page].nil? ? [] : res[0..@object_per_page-1]
+    if ability_user.super_admin == true
+      @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+    else
+      @projects = res[0..@object_per_page].nil? ? [] : res[0..@object_per_page-1]
+    end
 
     last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
     @last_page_min = (last_page.to_i-1) * @object_per_page

@@ -25,6 +25,7 @@ require 'sidekiq-scheduler/web'
 Projestimate::Application.routes.draw do
 
   authenticate :user, lambda { |u| u.super_admin? } do
+    #mount Sidekiq::Web, at: '/estimancy_jobs', as: 'sidekiq_web'
     mount Sidekiq::Web => '/estimancy_jobs'
   end
 
