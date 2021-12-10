@@ -2,11 +2,11 @@ Bonjour <%= @user %>,
 
 <br>
 
-Votre <%= @action_title %> lancé sur Estimancy pour le <%= @organization.name %> est téléchargeable directement en cliquant sur
+Votre <%= @action_title %> lancé sur Estimancy pour le <%= @organization.name %> (<%= @organization.headband_title %>) est téléchargeable directement en cliquant sur
 <%#= link_to "lien suivant", download_extraction_file_url(@filename, :protocol => 'https') %>.
-<%= link_to "lien suivant", download_extraction_file_url(@organization.id, :protocol => 'https') %>.
-
-Le fichier sera disponible durant 3 jours et sera supprimé au delà.
+<%= link_to "le lien", download_extraction_file_url(@organization.id, :protocol => 'https') %>.
+<br>
+Le fichier restera téléchargeable durant 3 jours.
 
 <%#= link_to "lien suivant", download_url(@organization.id), download: true %>
 <%#= link_to "lien suivant", download_url(@organization.id), :target => '_blank' %>
