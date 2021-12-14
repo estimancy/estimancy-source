@@ -45,5 +45,5 @@
     #cron: '0 * * * * *'   # Runs once per minute
     #cron: '0 */10 * * * *'   # Runs once per 10 minute
     #cron: '20 12 * * * * Europe/France'   # Runs once per minute
-    cron: '0 3 * * * *'   # Runs once day at 3AM
+    cron: '10 03 * * * *'   # Runs once day at 3AM
     class: DeleteRawDataExtractionFileWorker
