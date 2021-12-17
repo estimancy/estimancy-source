@@ -1,5 +1,11 @@
 <% unless user_signed_in? %>
-  <%= render "devise/shared/error_messages", resource: resource %>
+  <%#= render "devise/shared/error_messages", resource: resource %>
+
+  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
+    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+    <%= render "devise/shared/error_messages", resource: resource %>
+  </div>
+
 <% end %>
 
 <% if flash[:warning] %>
@@ -17,7 +23,7 @@
 <% end %>
 
 <% if flash[:error] %>
-  <div class="alert alert-warning alert-dismissible fade in text-center notifications_fixed_top" role="alert">
+  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
     &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
     <% if flash[:error].is_a? (String)%>
       <%= raw flash[:error].html_safe %>
@@ -38,7 +44,7 @@
 <% end -%>
 
 <% if flash[:custom] %>
-  <div class="alert alert-warning alert-dismissible fade in text-center notifications_fixed_top" role="alert">
+  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
     &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
     <%= flash[:custom] %>
   </div>
@@ -46,7 +52,7 @@
 
 <!-- for devise flash -->
 <% if alert && !alert.empty? %>
-  <div class="alert alert-warning alert-dismissible fade in text-center notifications_fixed_top" role="alert">
+  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
     &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
     <%= flash[:alert] %>
   </div>
@@ -54,7 +60,7 @@
 
 <% unless user_signed_in? %>
   <% if @disable_access == "1" %>
-    <div class="alert alert-warning alert-dismissible fade in text-center notifications_fixed_top" role="alert">
+    <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
       &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
       <%= simple_format @offline_message %>
     </div>
