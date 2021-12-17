@@ -2,7 +2,7 @@ class RawDataExtractionWorker
   include Sidekiq::Worker
   include DataExtractionsHelper
 
-  sidekiq_options retry: false, tags: ['Environnement de Production']
+  sidekiq_options queue: 'raw_data_extraction', retry: false, tags: ['Environnement de Production']
 
   def perform(organization_name, user_name, organization_id, item_title, user_id, date_min=nil, date_max=nil)
 
@@ -29,10 +29,9 @@ class RawDataExtractionWorker
         all_organization_projects = all_organization_projects.where("start_date > ?", date_min.to_date.beginning_of_day)
       end
 
-      if !date_min.blank?
+      if !date_max.blank?
         all_organization_projects = all_organization_projects.where("start_date < ?", date_max.to_date.end_of_day)
       end
-
     end
 
     @organization_projects = all_organization_projects.includes(:project_fields, :application, :project_area, :acquisition_category, :platform_category, :provider,
