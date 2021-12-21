@@ -3858,25 +3858,28 @@ class OrganizationsController < ApplicationController
     #   []
     # end
 
-    begin
-      if @historized == "1"
-        #all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id)
-        all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id).where.not('private = ? and creator_id != ?', true, current_user.id)
-      else
-        #all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
-        all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id).where.not('private = ? and creator_id != ?', true, current_user.id)
-      end
+    # #marche 22 décembre 2021
+    # begin
+    #   if @historized == "1"
+    #     #all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id)
+    #     all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id).where.not('private = ? and creator_id != ?', true, current_user.id)
+    #   else
+    #     #all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
+    #     all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id).where.not('private = ? and creator_id != ?', true, current_user.id)
+    #   end
+    #
+    #   ability_user = current_user
+    #   #organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+    #   organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+    #   @current_ability = AbilityProject.new(ability_user, @organization, organization_projects, $min, $max, $object_per_page)
+    #   @projects_to_see = organization_projects.accessible_by(@current_ability, :see_project)
+    # rescue
+    #   []
+    # end
+    # #res = $all_projects_to_see #[]
+    # res = @projects_to_see.includes([:application, :acquisition_category, :estimation_status, :creator]) rescue [] #:project_area
+    # #Fin marche 22 décembre 2021
 
-      ability_user = current_user
-      #organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
-      organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
-      @current_ability = AbilityProject.new(ability_user, @organization, organization_projects, $min, $max, $object_per_page)
-      @projects_to_see = organization_projects.accessible_by(@current_ability, :see_project)
-    rescue
-      []
-    end
-    #res = $all_projects_to_see #[]
-    res = @projects_to_see.includes([:application, :acquisition_category, :estimation_status, :creator]) rescue [] #:project_area
 
     # #if @historized
     #   organization_projects.each do |p|
@@ -3892,10 +3895,48 @@ class OrganizationsController < ApplicationController
     #   end
     # end
 
+    ability_user = current_user
     if ability_user.super_admin == true
+
+      begin
+        if @historized == "1"
+          #all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id)
+          all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id)
+        else
+          #all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
+          all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
+        end
+
+        organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+        @current_ability = AbilityProject.new(ability_user, @organization, organization_projects, $min, $max, $object_per_page)
+        @projects_to_see = organization_projects.accessible_by(@current_ability, :see_project)
+      rescue
+        []
+      end
+
+      res = @projects_to_see.includes([:application, :acquisition_category, :estimation_status, :creator]) rescue [] #:project_area
       @projects = res[@min..@max].nil? ? [] : res[@min..@max-1]
+
     else
+      begin
+        if @historized == "1"
+          #all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id)
+          all_projects = Project.unscoped.where(:is_model => [nil, false], organization_id: @organization.id).where.not('private = ? and creator_id != ?', true, current_user.id)
+        else
+          #all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id)
+          all_projects = OrganizationEstimation.unscoped.where(organization_id: @organization.id).where.not('private = ? and creator_id != ?', true, current_user.id)
+        end
+
+        organization_projects = get_sorted_estimations(@organization.id, all_projects, $sort_column, $sort_order, $search_hash)
+        @current_ability = AbilityProject.new(ability_user, @organization, organization_projects, $min, $max, $object_per_page)
+        @projects_to_see = organization_projects.accessible_by(@current_ability, :see_project)
+      rescue
+        []
+      end
+
+      res = @projects_to_see.includes([:application, :acquisition_category, :estimation_status, :creator]) rescue [] #:project_area
       @projects = res[0..@object_per_page].nil? ? [] : res[0..@object_per_page-1]
+
     end
 
     last_page = res.paginate(:page => 1, :per_page => @object_per_page).total_pages
