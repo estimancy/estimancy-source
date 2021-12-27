@@ -135,7 +135,7 @@ class AbilityProject
             begin
               input_projects = projects.all[min..projects_size]
             rescue
-              input_projects = projects
+              input_projects = projects.compact
             end
 
 
