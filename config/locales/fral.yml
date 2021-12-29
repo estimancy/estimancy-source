@@ -2587,3 +2587,5 @@ fral:
   history: "Historique"
   revised_effort: "Effort révisé"
   estimate_history: "Historique de l'estimation"
+
+  changes_list: "Liste des changements"
