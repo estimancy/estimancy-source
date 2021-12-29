@@ -3,7 +3,7 @@ require 'fileutils'
 
 class DeleteRawDataExtractionFileWorker
   include Sidekiq::Worker
-  sidekiq_options retry: false
+  sidekiq_options queue: 'files_deletion', retry: false
 
   def perform
     #Dir.glob(Rails.root.join('public', 'extraction_files', '*')).each do |filename|

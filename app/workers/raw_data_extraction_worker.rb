@@ -2,8 +2,8 @@ class RawDataExtractionWorker
   include Sidekiq::Worker
   include DataExtractionsHelper
 
-  #sidekiq_options queue: 'raw_data_extraction', retry: false, tags: ['Environnement de Production']
-  sidekiq_options retry: false, tags: ['Environnement de Production']
+  sidekiq_options queue: 'raw_data_extraction', retry: false, tags: ['Environnement de Production']
+  #sidekiq_options retry: false, tags: ['Environnement de Production']
 
   def perform(organization_name, user_name, organization_id, item_title, user_id, date_min=nil, date_max=nil)
 

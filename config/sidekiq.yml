@@ -18,13 +18,20 @@
 ##    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##
 ##############################################################################
-#
+
 ## Configuration file for Sidekiq.
-#
-#---
-#:verbose: false
-#:pidfile: ./tmp/pids/sidekiq.pid
-#:concurrency: 25
+
+---
+:verbose: false
+:pidfile: ./tmp/pids/sidekiq.pid
+:concurrency: 10 #25
+
+:queues:
+  - [default, 9]
+  - [raw_data_extraction, 5]
+  - [files_deletion, 3]
+
+
 ## Set timeout to 8 on Heroku, longer if you manage your own systems.
 #:timeout: 30
 #:queues:
@@ -39,6 +46,12 @@
 ##-L, path to writable logfile
 ##-C, path to YAML config file
 ##-e, Application environment
+
+
+# avec la gem 'sidekiq-limit_fetch'
+:limits:
+  default: 5
+  raw_data_extraction: 1
 
 :schedule:
   delete_raw_data_extraction_file_worker:
