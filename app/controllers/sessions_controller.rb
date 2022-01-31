@@ -1,6 +1,8 @@
 #encoding: utf-8
 class SessionsController < Devise::SessionsController
 
+  skip_before_filter :verify_authenticity_token
+
   def new
     unless params["SAMLResponse"].nil?
 
@@ -22,6 +24,8 @@ class SessionsController < Devise::SessionsController
             set_flash_message(:warning, :unconfirmed, :kind => "Compte non confirme")  #.devise.sessions.user.test
           elsif user.access_locked?
             set_flash_message(:warning, :locked, :kind => "Compte bloque")
+          # else
+          #   flash[:alert] = t("devise.failure.#{request.env['warden'].message}") unless request.env['warden'].message.blank?
           end
         else
           flash[:warning] = "Identifiant inconnu"
@@ -83,9 +87,21 @@ class SessionsController < Devise::SessionsController
   def destroy
     session[:user_return_to] = nil
     session[:module_project_id] = nil
+
+    #saml
+    # Preserve the saml_uid and saml_session_index in the session
+    saml_uid = session['saml_uid']
+    saml_session_index = session['saml_session_index']
+
+    #end saml
     # Monitoring.create(user: User.current, action: "Se Déconnecter", action_at: Time.now+3600)
     current_user.last_login = Time.now
-    super
+
+    #super
+    super do
+      session['saml_uid'] = saml_uid
+      session['saml_session_index'] = saml_session_index
+    end
   end
 
 end
