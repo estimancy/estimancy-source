@@ -60,7 +60,7 @@ gem 'mysql2', '~> 0.4.9' #'~> 0.3.11'
 #For PostgreSQL database
 #gem 'pg'
 
-gem 'curb'
+gem 'curb', '~> 0.9.11'
 
 #Permissions
 #gem 'cancancan', '~> 1.10'
