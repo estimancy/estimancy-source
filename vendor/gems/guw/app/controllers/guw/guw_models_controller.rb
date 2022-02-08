@@ -1390,9 +1390,9 @@ class Guw::GuwModelsController < ApplicationController
                                                                 guw_unit_of_work_id: guow.id).first
 
               if guw_coefficient.coefficient_type == "Pourcentage"
-                @worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f).to_s)
+                @worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f))
               elsif guw_coefficient.coefficient_type == "Coefficient"
-                @worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f).to_s)
+                @worksheet.add_cell(ind, 19+j, (ceuw.nil? ? 100 : ceuw.percent.to_f))
               else
                 @worksheet.add_cell(ind, 19+j, ceuw.nil? ? '' : ceuw.guw_coefficient_element.nil? ? ceuw.percent : ceuw.guw_coefficient_element.name)
               end
@@ -1407,7 +1407,7 @@ class Guw::GuwModelsController < ApplicationController
           unless guow.guw_type.nil?
             unless guw_output.nil?
               v = (guow.ajusted_size.nil? ? '' : (guow.ajusted_size.is_a?(Numeric) ? guow.ajusted_size : guow.ajusted_size["#{guw_output.id}"].to_f))
-              @worksheet.add_cell(ind, 19 + j, v.to_s)
+              @worksheet.add_cell(ind, 19 + j, v)
             end
           end
         end
@@ -1472,9 +1472,9 @@ class Guw::GuwModelsController < ApplicationController
 
             unless corresponding_ratio_elt.nil?
               final_formula = corresponding_ratio_elt.formula
-                                  .gsub("RTU", guw_output_effort_value.to_s)
-                                  .gsub("TEST", guw_output_test_value.to_s)
-                                  .gsub('%', ' * 0.01 ')
+                                                     .gsub("RTU", guw_output_effort_value.to_s)
+                                                     .gsub("TEST", guw_output_test_value.to_s)
+                                                     .gsub('%', ' * 0.01 ')
             end
 
             begin
