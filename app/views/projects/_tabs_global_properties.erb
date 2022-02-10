@@ -392,9 +392,15 @@
                     <div class="col-6">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <% creation_date =  @project.created_at %>
-                        <%= f.input :created_at, as: :string, :label => false,
-                                    :input_html => { :class => 'date-picker mdl-textfield__input', :value => I18n.l(creation_date.to_date), title: I18n.l(creation_date) },
-                                    :disabled => true %>
+                        <% if @project.new_record? %>
+                          <%= f.input :created_at, as: :string, :label => false,
+                                      :input_html => { :class => 'date-picker mdl-textfield__input', :value => nil, title: nil },
+                                      :disabled => true %>
+                        <% else %>
+                          <%= f.input :created_at, as: :string, :label => false,
+                                      :input_html => { :class => 'date-picker mdl-textfield__input', :value => I18n.l(creation_date.to_date), title: I18n.l(creation_date) },
+                                      :disabled => true %>
+                        <% end %>
                         <label class="mdl-textfield__label"><%= I18n.t('created_at') %></label>
                       </div>
                     </div>
