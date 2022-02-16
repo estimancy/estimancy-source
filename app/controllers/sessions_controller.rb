@@ -1,7 +1,7 @@
 #encoding: utf-8
 class SessionsController < Devise::SessionsController
 
-  skip_before_filter :verify_authenticity_token
+  skip_before_filter :verify_authenticity_token #skip devise to failed when first logged in
 
   def new
     unless params["SAMLResponse"].nil?
@@ -66,7 +66,7 @@ class SessionsController < Devise::SessionsController
       end
     end
 
-    if resource.auth_method.name == "Application"
+    if resource.auth_method.name == "Application" || resource.auth_method.name == "SAML"
       set_flash_message(:notice, :signed_in) if is_flashing_format?
       sign_in(resource_name, resource)
       # Monitoring.create(user: current_user.id, action: "Se Connecter", action_at: Time.now + 3600)
