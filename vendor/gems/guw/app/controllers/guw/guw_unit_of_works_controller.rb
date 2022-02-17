@@ -2327,7 +2327,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
         import!("", "", "", default_group, "Excel", "#")
       end
 
-      @module_project.toggle_done
+      #@module_project.toggle_done
 
     elsif params[:from] == "Jira"
       (1..5).step(1).each do |i|
