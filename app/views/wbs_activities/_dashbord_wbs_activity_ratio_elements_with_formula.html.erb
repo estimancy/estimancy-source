@@ -202,7 +202,7 @@
                   <% if mp_ratio_element.is_root? %>
                     <%= name_to_show %>
                   <% else %>
-                    <%= link_to name_to_show, module_project_ratio_element_load_name_description_path(mp_ratio_element), class: 'estimancy', id: "mp_ratio_element_name_description_#{mp_ratio_element.id}", title: I18n.t(:edit), method: "post", remote: true %>
+                    <%= link_to name_to_show, module_project_ratio_element_load_name_description_path(mp_ratio_element), class: 'estimancy', id: "mp_ratio_element_name_description_#{mp_ratio_element.id}", title: "#{mp_ratio_element.description}", method: "post", remote: true %>
                   <% end %>
                 </span>
               </td>
