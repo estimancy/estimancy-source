@@ -60,7 +60,7 @@ gem 'mysql2', '~> 0.4.9' #'~> 0.3.11'
 #For PostgreSQL database
 #gem 'pg'
 
-gem 'curb', '~> 0.9.11'
+gem 'curb', '~> 0.9.11' #sga to remove
 
 #Permissions
 #gem 'cancancan', '~> 1.10'
@@ -116,7 +116,7 @@ gem 'axlsx'
 gem 'roo', '~> 2.1.0'
 gem 'roo-xls'
 gem 'rubyXL', '3.3.33'
-gem 'nokogiri', "~> 1.11.7"
+gem 'nokogiri', "~> 1.11.7"   #tester le 1.12.5 #sga to remove
 gem 'mechanize'
 
 # Including
@@ -289,3 +289,5 @@ gem 'jquery-tablesorter'
 
 # gem 'jquery_block_ui'
 gem 'blockuijs-rails',  :git => 'git://github.com/rusanu/blockuijs-rails.git'
+
+gem 'faraday', '~> 1.8.0' #sga this line is to remove after updated ruby version
