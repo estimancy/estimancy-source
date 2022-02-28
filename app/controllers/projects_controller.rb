@@ -880,6 +880,148 @@ class ProjectsController < ApplicationController
   end
   #Fin sauvegarde 26/11/2021 sauvegarde des 3 fonction pour tester avec Sidekiq
 
+
+  #recherche doublons version
+  def projects_list_until_date #doublons
+    duplicated_project_versions = Project.select(:organization_id, :is_model, :title, :version_number).group(:organization_id, :is_model, :title, :version_number).having("count(*) > 1").size
+
+    Project.where(organization_id: 75, is_model: false).select(:organization_id, :is_model, :title, :version_number).group(:organization_id, :original_model_id).having("count(*) > 1").size
+
+    workbook = RubyXL::Workbook.new
+    worksheet_synt = workbook.worksheets[0]
+    worksheet_synt.sheet_name = 'Devis'
+
+    i = 1
+
+    worksheet_synt.add_cell(0, 0, "CDS")
+    worksheet_synt.add_cell(0, 1, "Date de création")
+    worksheet_synt.add_cell(0, 2, "Numéro devis")
+    worksheet_synt.add_cell(0, 3, "Version actuelle")
+    worksheet_synt.add_cell(0, 4, "Version modifiée")
+    worksheet_synt.add_cell(0, 5, "Statut")
+
+    pi = 1
+
+    duplicated_project_versions.each do |couple_array, nb|
+      projects = Project.where(organization_id: couple_array[0], is_model: couple_array[1], title: couple_array[2], version_number: couple_array[3])
+      nb_projects = 0
+      project_current_version = couple_array[3]
+      version_last_number = couple_array[3].last
+
+      project_with_priority_order = { }
+      projects.each do |project|
+        case project.estimation_status.name
+        when 'Accepté'
+          project_with_priority_order[project.id] = 0
+        when 'A valider'
+          project_with_priority_order[project.id] = 1
+        when 'A revoir'
+          project_with_priority_order[project.id] = 2
+        else
+          project_with_priority_order[project.id] = 3
+        end
+      end
+
+      #projects.order(created_at: :desc).each do |project|
+      ##projects.includes(:estimation_status).order("estimation_statuses.name desc").each do |project|
+      #projects.order(created_at: :desc).sort{|a,b| a.estimation_status.name <=> b.estimation_status.name}.each do |project|
+      projects.sort{|a,b| project_with_priority_order[a.id] <=> project_with_priority_order[b.id]}.each do |project|
+
+        if nb_projects <= 0
+          new_version = project.version_number
+        else
+          new_version = couple_array[3]
+
+          if version_last_number.to_i == 0
+            new_version = new_version + ".#{nb_projects}"
+            #new_version = new_version + ".#{version_last_number}"
+
+          elsif version_last_number.to_i == 1
+            new_version[-1] = "0"
+            new_version = new_version + ".#{nb_projects}"
+          else
+            new_version = project.version_number
+            new_version.chop!
+            new_version = new_version + "0.#{nb_projects}.#{version_last_number}"
+
+          end
+
+          random_string = (0...6).map { ('a'..'z').to_a[rand(26)] }.join
+
+          #project.version_number = "#{project.version_number}-#{random_string}"
+          #project.version_number = new_version
+          #project.save(validate: false)
+        end
+
+        nb_projects = nb_projects+1
+        #version_last_number = version_last_number.to_i+1
+
+        worksheet_synt.add_cell(pi, 0, project.organization.name)
+        #worksheet_synt.add_cell(pi, 1, I18n.l(project.created_at.to_date))
+        worksheet_synt.add_cell(pi, 1, I18n.l(project.created_at))
+        worksheet_synt.add_cell(pi, 2, project.title)
+        worksheet_synt.add_cell(pi, 3, project.version_number)
+        worksheet_synt.add_cell(pi, 4, new_version)
+        worksheet_synt.add_cell(pi, 5, project.estimation_status.name)
+
+        pi = pi + 1
+      end
+      pi = pi + 1
+    end
+
+    # Project.where('created_at >= ?', '2021-11-01').all.sort{ |a,b| a.created_at <=> b.created_at}.each do |project|
+    #   unless project.is_model == true
+    #     worksheet_synt.add_cell(pi, 0, project.organization.name)
+    #     worksheet_synt.add_cell(pi, 1, I18n.l(project.created_at.to_date))
+    #     worksheet_synt.add_cell(pi, 2, project.title)
+    #
+    #     pi = pi + 1
+    #   end
+    # end
+
+    workbook.write("#{Rails.root}/public/ProjectsDepuisNovembre2021.xlsx")
+    send_data(workbook.stream.string, filename: "doublons.xlsx", type: "application/vnd.ms-excel")
+  end
+
+  def projects_list_until_date_save
+    #sleep(0.010)
+    organization_projects = Project.where('created_at >= ?', '2021-11-01')
+    #Project.where('created_at >= ? AND created_at <= ?', '2021-01-01', '2021-12-31').count  #7745
+    #Project.where('created_at > ? AND created_at < ?', '2020-12-31', '2022-01-01').count  #7753
+    # User.joins(:groups).where(groups: {name: "SNCF"}).count   #914
+    # User.joins(:groups).where(groups: {name: ["SST-ENG", "SST-EST"]}).count   #1216
+    User.joins(:groups).where(groups: {name: "SST-EST"}).or(User.joins(:groups).where(groups: {name: "SST-ENG"})).count   #1216
+
+    workbook = RubyXL::Workbook.new
+    worksheet_synt = workbook.worksheets[0]
+    worksheet_synt.sheet_name = 'Devis'
+
+    i = 1
+
+    worksheet_synt.add_cell(0, 0, "CDS")
+    worksheet_synt.add_cell(0, 1, "Date de création")
+    worksheet_synt.add_cell(0, 2, "Numéro devis")
+
+    pi = 1
+
+    #organization_projects.order(:created_at).each do |project|
+    #Project.where('created_at >= ?', '2021-11-01').order("created_at ASC").each do |project|
+    Project.where('created_at >= ?', '2021-11-01').all.sort{ |a,b| a.created_at <=> b.created_at}.each do |project|
+      unless project.is_model == true
+
+        worksheet_synt.add_cell(pi, 0, project.organization.name)
+        worksheet_synt.add_cell(pi, 1, I18n.l(project.created_at.to_date))
+        worksheet_synt.add_cell(pi, 2, project.title)
+
+        pi = pi + 1
+      end
+    end
+
+    workbook.write("#{Rails.root}/public/ProjectsDepuisNovembre2021.xlsx")
+    send_data(workbook.stream.string, filename: "ProjectsDepuisNovembre2021.xlsx", type: "application/vnd.ms-excel")
+  end
+
+
   def test_me
 
     count = 0

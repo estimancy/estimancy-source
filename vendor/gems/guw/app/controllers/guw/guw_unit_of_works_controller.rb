@@ -59,7 +59,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                guw_model_id: @guw_model.id,
                                                project_id: params[:project_id],
                                                module_project_id: params[:module_project_id],
-                                               guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id])
+                                               guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id],
+                                               calculated: false)
 
     module_project = ModuleProject.where(organization_id: @organization.id, id: params[:module_project_id]).first #.find(params[:module_project_id])
     @project = module_project.project
@@ -76,7 +77,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                  guw_model_id: @guw_model.id,
                                                  project_id: params[:project_id],
                                                  module_project_id: params[:module_project_id],
-                                                 guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id])
+                                                 guw_unit_of_work_group_id: params[:guw_unit_of_work_group_id],
+                                                 calculated: false)
 
       @guw_unit_of_work.guw_model_id = @guw_model.id
       @guw_unit_of_work.pbs_project_element_id = current_component.id
@@ -126,6 +128,9 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           #calculate_attribute(@guw_unit_of_work)
         end
       end
+
+      #module_project.toggle_done(false, module_project.number_uncalculated_uows.to_i+1)
+      module_project.toggle_done(false)
     end
 
     # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
@@ -152,6 +157,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     module_project = @guw_unit_of_work.module_project
     organization = module_project.organization
     component = current_component
+    calculated = @guw_unit_of_work.calculated
 
     guw_unit_of_work_attributes = @guw_unit_of_work.guw_unit_of_work_attributes
     guw_coefficient_element_unit_of_works = @guw_unit_of_work.guw_coefficient_element_unit_of_works
@@ -159,6 +165,16 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     if @guw_unit_of_work.delete
       guw_unit_of_work_attributes.delete_all
       guw_coefficient_element_unit_of_works.delete_all
+
+      unless calculated == true
+        number_uncalculated_uows = module_project.number_uncalculated_uows.to_i - 1
+        module_project.number_uncalculated_uows = number_uncalculated_uows
+        if number_uncalculated_uows <= 0
+          number_uncalculated_uows = 0
+          module_project.done = true
+        end
+        module_project.save
+      end
     end
 
     reorder group
@@ -433,7 +449,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.effort = nil
     @guw_unit_of_work.guw_complexity_id = nil
     @guw_unit_of_work.project_id = @project.id
-    @guw_unit_of_work.save
+    @guw_unit_of_work.calculated = false
+
+    if @guw_unit_of_work.save
+      @guw_unit_of_work.module_project.toggle_done(false)
+    end
 
     #Changer le libelle du popup avec la description du nouveau type d'UO sélectionne
     @guw_types = @guw_model.guw_types.includes(:guw_complexities)
@@ -886,6 +906,10 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @project_id = @module_project.project_id
     @module_project_id = @module_project.id
     @guw_model_id = @module_project.guw_model_id
+    @all_guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization_id,
+                                                      guw_model_id: @guw_model_id,
+                                                      project_id:  @project_id,
+                                                      module_project_id: @module_project_id)
 
     if params['commit'].present?
       @modified_guw_line_ids = @module_project.guw_unit_of_work_ids
@@ -893,19 +917,26 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       unless params["modified_guw_line_ids"].nil?
         @modified_guw_line_ids = params["modified_guw_line_ids"].split(",").uniq.compact
       else
-        @modified_guw_line_ids = ""
+        @modified_guw_line_ids = [] #""
       end
+
+      #les lignes marquées comme non calculées seront aussi recalculées
+      non_calculated_line_ids = @all_guw_unit_of_works.where(calculated: false).map(&:id)
+      @modified_guw_line_ids = (@modified_guw_line_ids + non_calculated_line_ids).uniq.compact
+
     end
 
     if @modified_guw_line_ids.blank?
       @reload_partial = false
     else
       @reload_partial = true
-      @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization_id,
-                                                    guw_model_id: @guw_model_id,
-                                                    project_id:  @project_id,
-                                                    module_project_id: @module_project_id,
-                                                    id: @modified_guw_line_ids).includes(:guw_complexity, :guw_unit_of_work_group).order("name ASC")
+      # @guw_unit_of_works = Guw::GuwUnitOfWork.where(organization_id: @organization_id,
+      #                                               guw_model_id: @guw_model_id,
+      #                                               project_id:  @project_id,
+      #                                               module_project_id: @module_project_id,
+      #                                               id: @modified_guw_line_ids).includes(:guw_complexity, :guw_unit_of_work_group).order("name ASC")
+
+      @guw_unit_of_works = @all_guw_unit_of_works.where(id: @modified_guw_line_ids).includes(:guw_complexity, :guw_unit_of_work_group).order("name ASC")
 
       #@guw_coefficients = @guw_model.guw_coefficients.where(organization_id: @organization.id)
       # @all_guw_coefficient_elements = Guw::GuwCoefficientElement.where(organization_id: @organization_id, guw_model_id: @guw_model_id)
@@ -1652,11 +1683,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         if guw_unit_of_work.changed?
           @modified_guows << guw_unit_of_work
+          guw_unit_of_work.calculated = true
           guw_unit_of_work.save
         end
       end
 
-      current_module_project.toggle_done
+      @module_project.toggle_done(true) #current_module_project.toggle_done
 
       Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
       Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
@@ -2109,6 +2141,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     @guw_unit_of_work.summary_results = summary_results
 
     if @guw_unit_of_work.changed?
+      @guw_unit_of_work.calculated = true
       @guw_unit_of_work.save
     end
 
@@ -2117,7 +2150,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
     Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
 
-    current_module_project.toggle_done
+    @module_project.number_uncalculated_uows = @module_project.number_uncalculated_uows.to_i -1
+
+    if @module_project.number_uncalculated_uows-1 <= 0
+      @module_project.toggle_done(true, number_uncalculated_uows-1)
+    end
+    #current_module_project.toggle_done
 
     # redirect_to main_app.dashboard_path(@project, anchor: "accordion#{@guw_unit_of_work.guw_unit_of_work_group.id}")
   end
@@ -2423,6 +2461,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
       end
     end
 
+    @module_project.toggle_done(false)
+
     Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
     Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
 
@@ -2544,7 +2584,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 quantity: 1,
                 selected: true,
                 guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
-                url: url)
+                url: url,
+                calculated: false)
 
             calculate_attribute(guw_uow)
 
@@ -2648,7 +2689,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                            quantity: 1,
                                            selected: true,
                                            guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
-                                           url: url)
+                                           url: url,
+                                           calculated: false)
 
       results.each do |uo|
         @guw_model_guw_attributes.all.each do |gac|
@@ -2808,7 +2850,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                                   ajusted_size: nil,
                                                   intermediate_percent: row[18].nil? ? nil : row[18].value,
                                                   intermediate_weight: row[18].nil? ? nil : row[18].value,
-                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id)
+                                                  guw_type_id: @guw_type.nil? ? nil : @guw_type.id,
+                                                  calculated: false)
 
                 # begin
                 #   uo_type = module_project.guw_unit_of_works.where(guw_type_id: @guw_type.id)
@@ -3154,7 +3197,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                                           pbs_project_element_id: @component.id,
                                           guw_type_id: @guw_type.id,
                                           guw_complexity_id:  @guw_complexity.nil? ? nil : @guw_complexity.id,
-                                          url: url)
+                                          url: url,
+                                          calculated: false)
 
       guw_uow.save(validate: false)
 

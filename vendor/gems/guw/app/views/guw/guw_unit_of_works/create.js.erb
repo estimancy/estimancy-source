@@ -69,6 +69,8 @@ $("#modified_guw_line_ids").val("<%= @group.guw_unit_of_works.where(organization
                                                                     project_id: @project.id,
                                                                     module_project_id: @module_project.id).map(&:id).flatten.join(",") %>");
 
+$(".arrow_color").css("color", '<%= @module_project.done ? "green" : "red" %>');
+
 var my_array = [];
 $(document).on('ready turbolinks:load', function() {
 

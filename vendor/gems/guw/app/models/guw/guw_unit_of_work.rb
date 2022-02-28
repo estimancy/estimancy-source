@@ -22,6 +22,8 @@
 module Guw
   class GuwUnitOfWork < ActiveRecord::Base
 
+    after_create :update_module_project_nb_uncalculated_uows
+
     belongs_to :organization
     belongs_to :guw_type
     belongs_to :guw_model
@@ -276,5 +278,13 @@ module Guw
       # Reset all view_widget results
       ViewsWidget.reset_nexts_mp_estimation_values(@module_project, pbs_project_element)
     end
+
+    def update_module_project_nb_uncalculated_uows
+      mp = self.module_project
+      number_uncalculated_uows = mp.number_uncalculated_uows.to_i + 1
+      mp.number_uncalculated_uows = number_uncalculated_uows
+      mp.save
+    end
+
   end
 end
