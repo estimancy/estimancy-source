@@ -121,7 +121,9 @@ class SessionsController < Devise::SessionsController
     else
       #redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return
       respond_to do |format|
-        format.js { redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return }
+        #format.js { redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return }
+        flash.now[:notice] = "Compte non lié à une authentification SAML"
+        format.js { render :js => "window.location.href='"+sign_in_path+"'" }
         format.html { redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return }
       end
 
