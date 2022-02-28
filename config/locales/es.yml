@@ -2247,3 +2247,14 @@ es:
   text_details_estimates_ratio: "Estimates details report replaces the extraction of raw data: 'Services avec ratio' tab (May 2021)"
 
   changes_list: "List of changes"
+
+  #SAML INFOS
+  idp_name: "Identity Provider name (Issuer, IdP Entity ID)"
+  idp_login_url: "Login URL (Identity Provider Target URL, SSO Login URL,Redirect URL, or Identity Provider Endpoint)"
+  idp_logout_url: "Logout URL (Identity provider uses to redirect the user to sign out)"
+  idp_change_password_url: "Change Password URL"
+  text_idp_change_password_url: "The URL that the identity provider uses to redirect the user to change password."
+  idp_signing_certicate: "Signing certificate (The signer certificate or public key)"
+  idp_signing_certicate_fingerprint: "Signing Certificate Fingerprint"
+  idp_metadata: "Identity Provider Metadata"
+  idp_name_identifier_format: "Name identifier format"

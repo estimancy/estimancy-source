@@ -2686,3 +2686,14 @@ fr_acoss:
   allow_correction_before_change: "Autoriser la correction avant le changement"
 
   changes_list: "Liste des changements"
+
+  #SAML INFOS
+  idp_name: "Nom du fournisseur d'identité (Issuer, IdP Entity ID)"
+  idp_login_url: "URL de connexion (URL cible du fournisseur d'identité, URL de connexion SSO, URL de redirection ou point de terminaison du fournisseur d'identité)"
+  idp_logout_url: "URL de déconnexion (le fournisseur d'identité utilise pour rediriger l'utilisateur afin qu'il se déconnecte)"
+  idp_change_password_url: "Modifier l'URL du mot de passe"
+  text_idp_change_password_url: "L'URL que le fournisseur d'identité utilise pour rediriger l'utilisateur afin de modifier le mot de passe."
+  idp_signing_certicate: "Certificat de signature (le certificat de signataire ou la clé publique)"
+  idp_signing_certicate_fingerprint: "Empreinte digitale du certificat de signature"
+  idp_metadata: "Métadonnées du fournisseur d'identité"
+  idp_name_identifier_format: "Format de l'identifiant du nom(Name identifier format)"
