@@ -25,7 +25,8 @@ class Organization < ActiveRecord::Base
                   :limit1, :limit2, :limit3, :limit4, :estimations_counter, :estimations_counter_history, :headband_title, :automatic_quotation_number, :support_contact,
                   :limit1_coef, :limit2_coef, :limit3_coef, :limit4_coef,
                   :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit, :allow_demand, :show_reports, :show_kpi,
-                  :activate_indicators_dashboard, :activate_project_dashboard_indicators
+                  :activate_indicators_dashboard, :activate_project_dashboard_indicators,
+                  :idp_name, :idp_login_url, :idp_logout_url, :idp_change_password_url,:idp_signing_certicate, :idp_signing_certicate_fingerprint, :idp_metadata
 
 
   serialize :project_selected_columns, Array

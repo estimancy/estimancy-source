@@ -101,6 +101,84 @@
                     </div>
                   </div>
 
+
+                  <br><br>
+                  <h1>
+                    <%= "SMAL INFO" %><%#= I18n.t 'saml_info' %>
+                  </h1>
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_name, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_name"><%= I18n.t(:idp_name) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_login_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_login_url"><%= I18n.t(:idp_login_url) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_logout_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_logout_url"><%= I18n.t(:idp_logout_url) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_name_identifier_format, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_name_identifier_format"><%= I18n.t(:idp_name_identifier_format) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_change_password_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_change_password_url"><%= I18n.t(:idp_change_password_url) %></label>
+                        <br>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_signing_certicate, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
+                        <label class="mdl-textfield__label" for="idp_signing_certicate"><%= I18n.t(:idp_signing_certicate) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_signing_certicate_fingerprint, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
+                        <label class="mdl-textfield__label" for="idp_signing_certicate_fingerprint"><%= I18n.t(:idp_signing_certicate_fingerprint) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_metadata, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
+                        <label class="mdl-textfield__label" for="idp_metadata"><%= I18n.t(:idp_metadata) %></label>
+                      </div>
+                    </div>
+                  </div>
+
                   <div class="form-row">
                     <div class="col-12">
                       <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>

@@ -115,8 +115,11 @@ Projestimate::Application.routes.draw do
     #get "new_user_registration",    :to => "registrations#new"
     get "edit_user_registration",   :to => "devise/registrations#edit"
     get "help_login" => "registrations", :as => 'help_login'
+
+    match 'verify_connect_with_saml', :to => 'sessions#verify_connect_with_saml', :as => 'verify_connect_with_saml', via: [:get, :post]
   end
   get 'awaiting_confirmation' => 'registrations#awaiting_confirmation', :as => 'awaiting_confirmation'
+
 #=====================
 
   get 'sort' => 'projects#sort', :as => 'sort'
@@ -458,6 +461,7 @@ Projestimate::Application.routes.draw do
   get 'append_pemodule' => 'projects#append_pemodule'
   get 'select_categories' => 'projects#select_categories', :as => 'select_categories'
   post 'raw_data_extraction' => 'projects#raw_data_extraction', :as => 'raw_data_extraction'
+  get 'projects_list_until_date' => 'projects#projects_list_until_date', :as => 'projects_list_until_date'
 
   post 'run_estimation' => 'projects#run_estimation', :as => 'run_estimation'
   post 'copy_security/:project_id' => 'projects#copy_security', :as => 'copy_security'

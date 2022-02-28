@@ -290,4 +290,4 @@ gem 'jquery-tablesorter'
 # gem 'jquery_block_ui'
 gem 'blockuijs-rails',  :git => 'git://github.com/rusanu/blockuijs-rails.git'
 
-gem 'faraday', '~> 1.8.0' #sga this line is to remove after updated ruby version
+gem 'faraday', '~> 1.8.0' #essayer (1.9.3) #sga this line is to remove after updated ruby version

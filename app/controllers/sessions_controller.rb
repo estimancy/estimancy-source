@@ -104,4 +104,28 @@ class SessionsController < Devise::SessionsController
     end
   end
 
+
+  def verify_connect_with_saml
+    resource_name = params[:resource_name]
+    login_name = params[:login_name]
+
+    user = User.where(login_name: login_name).first
+
+    if user && user.auth_method.name.to_s == "SAML" && user.organizations.map(&:name).include?("ENEDIS")
+      #redirect_to omniauth_authorize_path(resource_name, :saml) and return
+
+      respond_to do |format|
+        format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'"  }
+        format.html { redirect_to omniauth_authorize_path(resource_name, :saml) and return }
+      end
+    else
+      #redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return
+      respond_to do |format|
+        format.js { redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return }
+        format.html { redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return }
+      end
+
+    end
+  end
+
 end

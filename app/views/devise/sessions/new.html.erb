@@ -8,11 +8,11 @@
     <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :method => :post, :class => 'simple_form') do |f| %>
       <h1><%= I18n.t('connect') %></h1>
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
-      <div class="input-group-prepend">
-        <div class="input-group-text"><i class="material-icons-outlined">account_circle</i></div>
+          <div class="input-group-prepend">
+            <div class="input-group-text"><i class="material-icons-outlined">account_circle</i></div>
+          </div>
+          <input placeholder="<%= I18n.t('login_name') %>" class="mdl-textfield__input" type="text" id="user_login_name" name="user[login_name]" style="width: 360px;">
       </div>
-      <input placeholder="<%= I18n.t('login_name') %>" class="mdl-textfield__input" type="text" id="user_login_name" name="user[login_name]" style="width: 360px;">
-    </div>
 
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
         <div class="input-group-prepend">
@@ -31,6 +31,7 @@
         <%= I18n.t('connect_me') %>
       </button>
 
+      <%= link_to "Test Redirect SAML", verify_connect_with_saml_path(resource_name: resource_name), remote:true, id: "saml_link", class: "login-form-link" %><br />
       <%= link_to "#{I18n.t(:Sign_in_with_SAML)}", omniauth_authorize_path(resource_name, :saml), class: "login-form-link" %><br />
 
       <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
@@ -42,6 +43,26 @@
      <%= link_to I18n.t(:call_support), "mailto:support@estimancy.com", class: "login-form-link" %><br />
     <% end %>
   </section>
+</div>
+
+<!--<div class="modal hide fade" id="modal_saml_login_name1" tabindex="-1" role="dialog" aria-labelledby="modal_saml_login_name_label" aria-hidden="true" backdrop="static">-->
+<!--  <div class="modal-dialog modal-lg">-->
+<!--    <div class="modal-saml_login_name modal-content" id="modal_saml_login_name_content1">-->
+      <%#= render :partial => "devise/sessions/login_name_for_saml" %>
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<div class="modal hide fade" id="modal_saml_login_name" tabindex="-1" role="dialog" aria-labelledby="modal_cotation_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-cotation modal-content" id="modal_saml_login_name_content" style="height: auto">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      </div>
+
+      <%= render :partial => "devise/sessions/login_name_for_saml" %>
+    </div>
+  </div>
 </div>
 
 
@@ -109,4 +130,34 @@
             e.stopPropagation();
         }
     });
+
+    // Recuperation du login pour saml
+    //saml_link
+    $("input#user_login_name").on("focus keyup", function () {
+        var login_name = $(this).val();
+    });
+
+    $("#saml_link").click(function(){
+        var test_id = $(this).attr('id');
+        var login_name = $("input#user_login_name").val();
+        //alert(login_name);
+
+        if (login_name.length == ''){
+            //alert('Veuillez renseigner votre identifiant de connexion!');
+            $("input#user_login_name").css("border-color", "red");
+            //$("#modal_saml_login_name_content").html("<%#= j(render :partial => "devise/sessions/login_name_for_saml") %>");
+            $('#modal_saml_login_name').modal('show');
+        }
+        else{
+            $.ajax({
+                url: "<%= verify_connect_with_saml_path(resource_name: resource_name) %>",
+                method: "GET",
+                data: {
+                    login_name: login_name,
+                    resource_name: '<%= "#{resource_name}" %>'
+                }
+            });
+        }
+    });
+
 </script>
