@@ -29,6 +29,11 @@ namespace :users do
     #delete all users unless (admin, ebelle, sgaye)
     #User.where.not(login_name: ["admin", "ebellet", "sgaye"]).delete_all
 
+    #changement des dates de fin d'abonnement
+    # estimancy_users =  User.where("email LIKE ?", "%@estimancy.com%")
+    # estimancy_emails = estimancy_users.map(&:email)
+    # estimancy_users.update_all(subscription_end_date: "2030-12-31")
+    # other_users = User.where.not(email: estimancy_emails).update_all(subscription_end_date: "2021-12-16")
 
     #update guw_type description
     Guw::GuwType.find_each do |uow_type|
@@ -40,3 +45,57 @@ namespace :users do
 
   end
 end
+
+
+
+
+# organizations = Organization.where(name: ["07_DSI Matériel_CdS Matériel"]).all
+#
+# organizations.each do |o|
+#
+#   p " **** =========> #{o.name} <========== **** "
+#
+#   o.guw_models.each do |guw_model|
+#
+#     p " =====> #{guw_model.name} <===== "
+#
+#     rtu_ris_outputs = Guw::GuwOutput.where(organization_id: o.id,
+#                                            guw_model_id: guw_model.id,
+#                                            name: ["Charge RIS (jh)", "Charge RTU (jh)", "Assiette Test (jh)", "Charge RTU Avec Dégr.", "Charge RTU avec prod. (jh)"])
+#
+#     t_outputs = Guw::GuwOutput.where(organization_id: o.id,
+#                                      guw_model_id: guw_model.id,
+#                                      name: ["Charges T (jh)", "Charge T (jh)", "Charge Services (jh)", "Coût Services (€)"])
+#
+#     guw_types = guw_model.guw_types
+#
+#     guw_model.guw_coefficients.each do |guw_coefficient|
+#
+#       if guw_coefficient.name.include?("Dégressivité")  || guw_coefficient.name.include?("Dégréssivité")
+#         guw_coefficient.guw_coefficient_elements.each do |guw_coefficient_element|
+#           if guw_coefficient_element.name == 'A5'
+#
+#           elsif guw_coefficient_element.name.in?(%w(A3 A4 A6 A7 A8 A9 A10))
+#             guw_coefficient_element.default = false
+#             guw_coefficient_element.save
+#
+#             guw_coefficient_element.guw_complexity_coefficient_elements.each do |cce|
+#               #guw_coefficient = cce.guw_coefficient
+#               #if guw_coefficient.name.include?("Dégressivité")  || guw_coefficient.name.include?("Dégréssivité")
+#                 cce_guw_output = cce.guw_output
+#                 unless cce_guw_output.nil?
+#                     if cce.guw_output.name.in?(["Charge RIS (jh)", "Charge RTU Avec Dégr.", "Charge RTU (jh)", "Assiette Test (jh)", "Charges T (jh)", "Charge T (jh)", "Coût Services (€)", "Charge Services (jh)"])
+#                     # cce.value = nil
+#                     # cce.save
+#                     cce.delete
+#                   end
+#                 end
+#               #end
+#
+#             end
+#           end
+#         end
+#       end
+#     end
+#   end
+# end
