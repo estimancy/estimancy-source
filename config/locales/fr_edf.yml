@@ -2733,3 +2733,5 @@ fr_edf:
   optimal_rayleigh_distribution: "Répartition Rayleigh Optimal"
   ajusted_rayleigh_distribution: "Répartition Rayleigh Ajusté"
   service_request: "Demande de service"
+  estimation_by_comparaison: "Estimation par comparaison"
+  nb_projects: "Nombre de projets"

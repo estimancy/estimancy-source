@@ -68,7 +68,7 @@
     <div class="card card-widget">
       <div class="card-body">
         <div class="edition-bloc-title">
-          Estimation par sélection graphique
+          <%= I18n.t(:estimation_by_comparaison) %>
         </div>
         <div class="edition-bloc-content pb-4">
 
@@ -76,7 +76,7 @@
             <div class="col-10">
               <h5>
                 <strong>
-                  <%= I18n.t(:nb_selected_projects) %> :
+                  <%= I18n.t(:nb_projects) %> :
                   <span class="project_numbers">
                     <%= @project_list.size %>
                   </span>

@@ -2144,3 +2144,5 @@ en-gb:
   optimal_rayleigh_distribution: "Optimal Rayleigh Distribution"
   ajusted_rayleigh_distribution: "Ajusted Rayleigh Distribution"
   service_request: "Service request"
+  estimation_by_comparaison: "Estimate by comparison"
+  nb_projects: "Number of projects"
