@@ -289,8 +289,8 @@
                                 <% effort_total_per_phase_to_sum <<  effort_per_phase %>
                                 <% cost_total_per_phase_to_sum <<  cost_per_phase %>
                             <% end %>
-                            <td style="text-align: right"><%= effort_per_phase.blank? ? "-" :  "#{convert_with_precision(effort_per_phase, user_number_precision, true)}" %></td> <!-- #{effort_unit} -->
-                            <td style="text-align: right"><%= cost_per_phase.blank? ? "-" :  "#{convert_with_precision(cost_per_phase, user_number_precision, true)}" %></td> <!-- #{cost_unit} -->
+                            <td style="text-align: right"><%= effort_per_phase.blank? ? "-" :  "#{convert_with_precision(effort_per_phase, user_number_precision, true)} #{effort_unit}" %></td>
+                            <td style="text-align: right"><%= cost_per_phase.blank? ? "-" :  "#{convert_with_precision(cost_per_phase, user_number_precision, true)} #{cost_unit}" %></td>
                           </tr>
                       <% end %>
                   <% end %>
@@ -334,7 +334,7 @@
                                   <% end %>
                               <% end %>
                               <br />
-                              <%= effort_root_effort_per_profile.blank? ? "-" : "#{convert_with_precision(effort_root_effort_per_profile, user_number_precision, true)}" %> <!-- #{effort_unit} -->
+                              <%= effort_root_effort_per_profile.blank? ? "-" : "#{convert_with_precision(effort_root_effort_per_profile, user_number_precision, true)} #{effort_unit}" %>
                             </td>
 
                             <!-- COST -->
@@ -352,7 +352,7 @@
                                   <% end %>
                               <% end %>
                               <br />
-                              <%= cost_root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(cost_root_effort_per_profile, user_number_precision, true)}" %> <!-- #{cost_unit} -->
+                              <%= cost_root_effort_per_profile.nil? ? "-" : "#{convert_with_precision(cost_root_effort_per_profile, user_number_precision, true)} #{cost_unit}" %>
                             </td>
                         <% end %>
                     <% else %>
@@ -363,16 +363,16 @@
 
                     <!-- EFFORT -->
                     <td>
-                      <div class="pull-right"><strong><%= effort_total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(effort_total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} " %></strong></div> <!-- #{effort_unit} -->
+                      <div class="pull-right"><strong><%= effort_total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(effort_total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} #{effort_unit}" %></strong></div>
                       <br />
-                      <div class="pull-left"><strong><%= effort_root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(effort_root_effort_per_phase, user_number_precision, true)}" %></strong></div> <!-- #{effort_unit} -->
+                      <div class="pull-left"><strong><%= effort_root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(effort_root_effort_per_phase, user_number_precision, true)} #{effort_unit}" %></strong></div>
                     </td>
 
                     <!-- COST -->
                     <td>
-                      <div class="pull-right"><strong><%= cost_total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(cost_total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)}" %></strong></div><!--#{cost_unit} -->
+                      <div class="pull-right"><strong><%= cost_total_per_phase_to_sum.compact.empty? ? "-" : "#{convert_with_precision(cost_total_per_phase_to_sum.map(&:to_f).sum.to_f, user_number_precision, true)} #{cost_unit}" %></strong></div>
                       <br />
-                      <div class="pull-left"><strong><%= cost_root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(cost_root_effort_per_phase, user_number_precision, true)}" %></strong></div><!-- #{cost_unit}-->
+                      <div class="pull-left"><strong><%= cost_root_effort_per_phase.nil? ? "-" : "#{convert_with_precision(cost_root_effort_per_phase, user_number_precision, true)} #{cost_unit}" %></strong></div>
                     </td>
 
                     <% tjm_global = convert_with_precision(cost_root_effort_per_phase.to_f / effort_root_effort_per_phase.to_f, 3, true) %>
