@@ -13,7 +13,7 @@
   <% if can? :demande_service, @organization %>
     <a href="<%= service_on_demand_path(organization_id: @organization.id) %>">
       <button type="button" class="btn btn-primary">
-        Demande de service
+        <%= I18n.t(:service_request) %>
       </button>
     </a>
   <% end %>
