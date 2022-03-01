@@ -2101,3 +2101,11 @@ it:
   idp_signing_certicate_fingerprint: "Signing Certificate Fingerprint"
   idp_metadata: "Identity Provider Metadata"
   idp_name_identifier_format: "Name identifier format"
+
+  cost_time_slider: "Cost time slider"
+  effort_with_unit: "Effort (m.d)"
+  update_the_module: "Update the module"
+  optimal_trapezium_distribution: "Optimal Trapezium Distribution"
+  ajusted_trapezium_distribution: "Ajusted Trapezium Distribution"
+  optimal_rayleigh_distribution: "Optimal Rayleigh Distribution"
+  ajusted_rayleigh_distribution: "Ajusted Rayleigh Distribution"

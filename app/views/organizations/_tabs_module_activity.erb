@@ -34,7 +34,7 @@
                             :class => 'material-icons', :title => I18n.t(:duplicate_module) %>
                 <%= link_to raw("<i class='material-icons'>place</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'wbs_activity_id', :instance_model_id => wbs_activity.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), wbs_activity,
-                            confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: :delete, organization_id: @organization.id %>
+                            data: { confirm: I18n.t(:are_you_sure) }, :class => 'material-icons', :title => I18n.t('delete'), method: :delete, organization_id: @organization.id %>
               <% end %>
             </td>
           </tr>

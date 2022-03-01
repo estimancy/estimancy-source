@@ -269,9 +269,12 @@ class Skb::SkbModelsController < ApplicationController
     @skb_model = Skb::SkbModel.find(params[:skb_model_id])
     @skb_input = @skb_model.skb_inputs.where(module_project_id: current_module_project.id).first
     @filters = params["filters"]
-    @skb_input.filters = params["filters"]
 
-    @skb_input.save
+    unless @skb_input.nil?
+      @skb_input.filters = params["filters"]
+      @skb_input.save
+    end
+
     redirect_to :back
   end
 
@@ -331,12 +334,14 @@ class Skb::SkbModelsController < ApplicationController
   def raz
     @skb_model = Skb::SkbModel.find(params[:skb_model_id])
     @skb_input = @skb_model.skb_inputs.where(module_project_id: current_module_project.id).first
+
     unless @skb_input.nil?
       @skb_input.data = nil
       @skb_input.processing = nil
       @skb_input.retained_size = nil
+      @skb_input.save
     end
-    @skb_input.save
+
     redirect_to :back
   end
 

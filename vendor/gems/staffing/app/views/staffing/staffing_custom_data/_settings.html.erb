@@ -93,7 +93,7 @@
               <div class="col-3">
                 <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">
                   <input class="mdl-textfield__input" type="text" id="name" value="<%= effort.to_f.round(2) %> <%= @staffing_model.effort_unit %>" disabled>
-                  <small>Effort (jh)</small>
+                  <small><%= I18n.t(:effort_with_unit) %></small>
                 </div>
               </div>
               <div class="col-9 pl-6">
@@ -200,7 +200,7 @@
               <div class="col-3"></div>
               <div class="col-9">
                 <div class="text-center text-black-50">
-                  Curseur coût - délai
+                  <%= I18n.t(:cost_time_slider) %>
                 </div>
               </div>
             </div>
@@ -256,7 +256,7 @@
                     <% else %>
                       -
                     <% end %>
-                  </span> sem.
+                  </span> <%= I18n.t(:weeks) %>
                   <span class="indicator-value-gain percent_duration">
                     <% if @module_project.done == true %>
                       <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
@@ -285,7 +285,8 @@
                   <span class="end_date staffing-indicator-value">
                     <% if @module_project.done == true %>
                       <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
-                        <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: "%d/%m/%Y") %>
+                        <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: I18n.t(:'date.formats.default')) %> <!-- format: "%d/%m/%Y" -->
+
                       <% end %>
                     <% else %>
                       -
@@ -298,7 +299,7 @@
                 <div class="indicator-optimal-value">
                   <span>
                     <% unless @md_duration.nil? %>
-                      <%= I18n.l((@project.start_date + @md_duration.weeks), format: "%d/%m/%Y") %>
+                      <%= I18n.l((@project.start_date + @md_duration.weeks), format: I18n.t(:'date.formats.default')) %>
                     <% end %>
                   </span>
                 </div>
@@ -386,7 +387,7 @@
               <%= hidden_field_tag "new_staffing_rayleigh", @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision), class: "new_staffing_rayleigh" %>
             <% rescue %>
               <span>
-                Mettez à jour le module.
+                <%= I18n.t(:update_the_module) %>
               </span>
             <% end %>
 
@@ -530,18 +531,18 @@
                         }
                     },
                     series: [{
-                        name: "Répartition en Trapèze Optimal",
+                        name: '<%= I18n.t(:optimal_trapezium_distribution) %>',
                         type: 'column',
                         color: '#AC6A35',
                         data: <%= @staffing_custom_data.chart_actual_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
                     },{
-                        name: "Répartition en Trapèze Ajusté",
+                        name: '<%= I18n.t(:ajusted_trapezium_distribution) %>',
                         type: 'column',
                         color: '#AA3538',
                         data: <%= @staffing_custom_data.trapeze_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
                     },{
                         type: 'spline',
-                        name: "Répartition Rayleigh Ajusté",
+                        name: '<%= I18n.t(:ajusted_rayleigh_distribution) %>',
                         data: <%= @staffing_custom_data.rayleigh_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
                         color: '#2F3EAF',
                         marker: {
@@ -549,7 +550,7 @@
                         }
                     },{
                         type: 'spline',
-                        name: "Répartition Rayleigh Optimal",
+                        name: '<%= I18n.t(:optimal_rayleigh_distribution) %>',
                         data: <%= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
                         color: '#2077A1',
                         marker: {
