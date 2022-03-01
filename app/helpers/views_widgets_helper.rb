@@ -1851,18 +1851,22 @@ module ViewsWidgetsHelper
 
                 if view_widget.use_organization_effort_unit == true
                   # use the organization effort unit
-                  activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(wbs_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)
+                  #activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(wbs_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, true)
+                  activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_effort_with_organization_unit(wbs_value, organization_effort_limit_coeff, organization_effort_unit), user_number_precision, false)
                 else
                   # use module instance effort unit
-                  activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, true)
+                  #activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, true)
+                  activity_value =  wbs_value.nil? ? 0 : convert_with_precision(convert_wbs_activity_value(wbs_value, effort_unit_coefficient), user_number_precision, false)
                 end
               else
-                activity_value = convert_with_precision(wbs_value.to_f, user_number_precision, true)
+                #activity_value = convert_with_precision(wbs_value.to_f, user_number_precision, true)
+                activity_value = convert_with_precision(wbs_value.to_f, user_number_precision, false)
               end
             end
 
             #chart_data << ["#{wbs_activity_elt.name}", activity_value.to_s.gsub(',', '.').to_f]
-            chart_data << ["#{mp_ratio_element.name_to_show}", activity_value.to_s.gsub(',', '.').to_f]
+            #chart_data << ["#{mp_ratio_element.name_to_show}", activity_value.to_s.gsub(',', '.').to_f]
+            chart_data << ["#{mp_ratio_element.name_to_show}", activity_value.to_s.gsub(',', '').to_f]
           end
         end
       end
