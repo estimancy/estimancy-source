@@ -178,7 +178,7 @@ class ModuleProject < ActiveRecord::Base
   end
 
   #def toggle_done(done=false, number_uncalculated_uows=nil)
-  def toggle_done(done=false)
+  def toggle_done(done=true)
     mp = self
     mp.done = done#true
 
