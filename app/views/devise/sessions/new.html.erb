@@ -31,8 +31,8 @@
         <%= I18n.t('connect_me') %>
       </button>
 
-      <%= link_to "#{I18n.t(:Sign_in_with_SAML)}", verify_connect_with_saml_path(resource_name: resource_name), remote:true, id: "saml_link", class: "login-form-link" %><br />
-      <%#= link_to "#{I18n.t(:Sign_in_with_SAML)}", omniauth_authorize_path(resource_name, :saml), class: "login-form-link" %><br />
+      <%= link_to "#{I18n.t(:Sign_in_with_SAML)}", verify_connect_with_saml_path(resource_name: resource_name), remote: true, id: "saml_link", class: "login-form-link" %><br />
+      <%#= link_to "#{I18n.t(:Sign_in_with_SAML)}", omniauth_authorize_path(resource_name, :saml), class: "login-form-link" %>
 
       <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
         <%= link_to I18n.t('button_forgotten_password'), new_password_path(resource_name), class: "login-form-link" %><br />
