@@ -381,7 +381,7 @@ class Guw::GuwModelsController < ApplicationController
 
             row_number = 0
 
-            [1,6,11].each do |column_index|
+            [1,6,11].each do |column_index|  #01/03/2022 je pense que ligne sera à modifier pour prendre en compte plus de 3 seuils
 
               (0..9999).each do |i|
                 unless tab[i].nil?
@@ -829,6 +829,9 @@ class Guw::GuwModelsController < ApplicationController
                   ["Visualisation des données", @guw_model.view_data]
                   ]
 
+    guw_complexity_attributes_values_size = ["Prod", "[", "[", "#{I18n.t(:my_display)}(a)", "#{I18n.t(:my_display)}(b)"].size
+    to_incremente_column_number = [guw_complexity_attributes_values_size, @guw_outputs.size].max
+
     # Add Action & Coeff & coefficientElements
     @guw_model.orders.each do |coefficient, value|
       first_page << [coefficient, value.blank? ? '' : value.to_i]
@@ -997,7 +1000,7 @@ class Guw::GuwModelsController < ApplicationController
     end
 
     # outputs_worksheet.change_row_bold(0,true)
-    counter_line += @guw_outputs.size
+    counter_line += to_incremente_column_number #@guw_outputs.size
 
     counter_line.times do |indx|
       outputs_attributes.each_with_index do |attr, col|
@@ -1135,13 +1138,14 @@ class Guw::GuwModelsController < ApplicationController
           sn += 1
         end
 
-        cn += @guw_outputs.size
+        cn += to_incremente_column_number #@guw_outputs.size
+        un_column_number = un_column_number + to_incremente_column_number
 
-        if @guw_outputs.size < 5
-          un_column_number = un_column_number + 5
-        else
-          un_column_number = un_column_number + @guw_outputs.size
-        end
+        # if @guw_outputs.size < 5
+        #   un_column_number = un_column_number + 5
+        # else
+        #   un_column_number = un_column_number + @guw_outputs.size
+        # end
 
       end
 
