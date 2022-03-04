@@ -45,6 +45,17 @@ it:
     sessions:
       signed_in: " "
       signed_out: " "
+      user:
+        success: Signed in successfully.
+        failure: Signed in error.
+        inactive: "Il tuo account non è ancora attivato."
+        invalid: "Nome utente / e-mail o la password errata."
+        last_attempt: "Avete una possibilità prima che l'account è bloccato."
+        locked: "Il tuo account è bloccato."
+        not_found_in_database: "Email o password errata."
+        timeout: "La sessione è scaduta , si prega di accedere nuovamente per continuare."
+        unauthenticated: ""
+        unconfirmed: "È necessario confermare il tuo account di posta elettronica."
     unlocks:
       send_instructions: "Riceverai in pochi minuti una mail con le istruzioni per sbloccare il tuo account."
       send_paranoid_instructions: "Se la vostra e-mail esiste nel nostro database, si riceverà in pochi minuti un messaggio con le istruzioni per sbloccare il tuo account."

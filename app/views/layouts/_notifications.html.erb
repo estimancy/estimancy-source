@@ -1,15 +1,25 @@
-<% unless user_signed_in? %>
+<%# unless user_signed_in? %>
+  <%#= devise_error_messages! %>
   <%#= render "devise/shared/error_messages", resource: resource %>
 
   <%# devise_error_messages = devise_error_messages! %>
   <%# unless  devise_error_messages.to_s.blank? %>
-    <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
-      &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+<!--    <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">-->
+<!--      &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>-->
       <%#= render "devise/shared/error_messages", resource: resource %>
       <%#= devise_error_messages! %>
       <%#= devise_error_messages %>
-    </div>
+<!--    </div>-->
   <%# end %>
+<%# end %>
+
+<!-- for devise flash -->
+<%# if alert && !alert.empty? %>
+<% if flash[:alert]  %>
+  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
+    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+    <%= flash[:alert] %>
+  </div>
 <% end %>
 
 <% if flash[:warning] %>
@@ -53,14 +63,6 @@
     <%= flash[:custom] %>
   </div>
 <% end -%>
-
-<!-- for devise flash -->
-<% if alert && !alert.empty? %>
-  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
-    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
-    <%= flash[:alert] %>
-  </div>
-<% end %>
 
 <% unless user_signed_in? %>
   <% if @disable_access == "1" %>

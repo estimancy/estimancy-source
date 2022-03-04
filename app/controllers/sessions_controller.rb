@@ -21,11 +21,14 @@ class SessionsController < Devise::SessionsController
 
         if user
           if devise_mapping.confirmable? && !user.confirmed?
-            set_flash_message(:warning, :unconfirmed, :kind => "Compte non confirme")  #.devise.sessions.user.test
+            #set_flash_message(:warning, :unconfirmed, :kind => "Compte non confirme")  #.devise.sessions.user.test
+            set_flash_message(:alert, :unconfirmed, :kind => I18n.t('devise.failure.unconfirmed'))  #.devise.sessions.user.test
           elsif user.access_locked?
-            set_flash_message(:warning, :locked, :kind => "Compte bloque")
-          # else
-          #   flash[:alert] = t("devise.failure.#{request.env['warden'].message}") unless request.env['warden'].message.blank?
+            set_flash_message(:alert, :locked, :kind => I18n.t('devise.failure.locked'))
+          else
+            set_flash_message(:alert, :invalid, :kind => I18n.t('devise.failure.invalid'))
+            # flash[:error] = resource.errors.full_messages.join('<br />')
+            # flash[:alert] = t("devise.failure.#{request.env['warden'].message}") unless request.env['warden'].message.blank?
           end
         else
           flash[:warning] = "Identifiant inconnu"
