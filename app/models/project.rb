@@ -127,7 +127,9 @@ class Project < ActiveRecord::Base
       QueryColumn.new(:created_at, :sortable => "#{Project.table_name}.created_at", :caption => "created_at"),
       QueryColumn.new(:updated_at, :sortable => "#{Project.table_name}.updated_at", :caption => "updated_at"),
       QueryColumn.new(:private, :sortable => "#{Project.table_name}.private", :caption => "private_estimation"),
-      QueryColumn.new(:urgent_project, :sortable => "#{Project.table_name}.urgent_project", :caption => "urgent_project")
+      QueryColumn.new(:urgent_project, :sortable => "#{Project.table_name}.urgent_project", :caption => "urgent_project"),
+      QueryColumn.new(:is_historized, :sortable => "#{Project.table_name}.is_historized", :caption => "is_historized"),
+      QueryColumn.new(:historization_time, :sortable => "#{Project.table_name}.historization_time", :caption => "historization_time")
     ]
 
   class_attribute :default_selected_columns
