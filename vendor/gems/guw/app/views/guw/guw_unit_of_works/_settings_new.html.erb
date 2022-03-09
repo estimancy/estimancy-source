@@ -135,13 +135,16 @@
               <strong>
                 <%= uowg %>
               </strong>
+            </a>
+
+            <a class="edition-bloc-title-link" style="font-size: 20px;" data-toggle="collapse" href=".group_<%= uowg.id %>" role="button" aria-expanded="false" aria-controls=".group_<%= uowg.id %>">
               <strong class="float-right">
                 <%= @uowg_guw_unit_of_works.size %> elements
               </strong>
             </a>
             <br>
 
-            <table class="table table-sm requirements-table estimation-table group_<%= uowg.id %>" id="guw">
+            <table class="table table-sm requirements-table estimation-table group_<%= uowg.id %> collapse show" id="guw">
               <tr>
                 <th colspan="2"><%= I18n.t :name %></th>
                 <th class="text-center"><%= I18n.t(:component) %></th>
