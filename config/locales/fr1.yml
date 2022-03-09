@@ -2310,3 +2310,4 @@ fr1:
   service_request: "Demande de service"
   estimation_by_comparaison: "Estimation par comparaison"
   nb_projects: "Nombre de projets"
+  validation_button: "Validation"

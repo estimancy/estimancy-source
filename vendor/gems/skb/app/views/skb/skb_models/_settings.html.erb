@@ -45,7 +45,7 @@
        @project_list = @project_list.uniq
 
        @project_list.map do |i|
-         @my_skb_datas << { x: i.data, y: i.processing, z: i.data.to_f + i.processing.to_f, name: i.name, description: i.description.to_s }
+         @my_skb_datas << { x: i.data, y: i.processing, z: i.data.to_f + i.processing.to_f, name: i.name, description: simple_format(i.description.to_s) }
        end
        @my_skb_input << { x: @skb_input.nil? ? 0 : @skb_input.data.to_i,
                           y: @skb_input.nil? ? 0 : @skb_input.processing.to_i,
@@ -56,13 +56,13 @@
 
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
       <span class="no_uppercase"><%= @skb_model %></span>
-      <div class="edition-bloc-tools">
-        <% if can? :execute_estimation_plan, @project %>
-          <button type="submit" class="btn btn-secondary">
-            <%= I18n.t(:update) %>
-          </button>
-        <% end %>
-      </div>
+<!--      <div class="edition-bloc-tools">-->
+        <%# if can? :execute_estimation_plan, @project %>
+<!--          <button type="submit" class="btn btn-secondary">-->
+            <%#= I18n.t(:update) %>
+<!--          </button>-->
+        <%# end %>
+<!--      </div>-->
     </div>
 
     <div class="card card-widget">
@@ -176,6 +176,15 @@
             </div>
           </div>
 
+          <div class="edition-bloc-tools">
+            <% if can? :execute_estimation_plan, @project %>
+              <button type="submit" class="btn btn-secondary">
+                <%= I18n.t(:update) %>
+              </button>
+            <% end %>
+          </div>
+
+          <br /><br />
           <p>
             <%= I18n.t :move_your_cursor %>. You can also <a id="button2" href="#!">reset zoom</a>
           </p>
@@ -186,7 +195,7 @@
               <hr>
               <% if can? :execute_estimation_plan, @project %>
                 <button type="submit" class="btn btn-primary btn-primary pull-right">
-                  <%= I18n.t(:calculate_button) %>
+                  <%= I18n.t(:validation_button) %>
                 </button>
               <% end %>
               <%= link_to "Reset", skb.skb_model_raz_path(@skb_model.id), class: "btn btn-secondary", method: "post" %>

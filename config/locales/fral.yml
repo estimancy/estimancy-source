@@ -1895,7 +1895,7 @@ fral:
   label_coef_conv_cost: "Coefficient de conversion en cout standard"
   eneable_effort: "Activer les efforts"
   label_coef_effort_unit: "Coefficient de l'unité d'effort du module"
-  modification_of_the_input_value_allow: "Modification de la valeur d'entrée permise"
+  modification_of_the_input_value_allow: "Modification de la valeur du filtre"
   equation: "Equation"
   project_number: "Nombre de projet"
   effort_week_unit: "Nombre d'heures par semaine"
@@ -2611,3 +2611,4 @@ fral:
   service_request: "Demande de service"
   estimation_by_comparaison: "Estimation par comparaison"
   nb_projects: "Nombre de projets"
+  validation_button: "Validation"
