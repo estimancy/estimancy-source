@@ -2670,3 +2670,5 @@ fr_bnp:
   generique_effort_calculation: "Calcul d'effort générique"
   wbs_activity_calculation: "Calcul WBS Activité"
   kb_calculation: "Calcul base de connaissance"
+  use_slider: "Utilisez le curseur pour ajuster les coûts et les délais."
+  use_slider_comments: "Plus le délai souhaité est court, plus l'équipe est grande, plus le projet est cher et inversement."

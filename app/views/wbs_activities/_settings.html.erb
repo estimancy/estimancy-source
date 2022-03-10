@@ -211,8 +211,11 @@
       <div class="card card-widget" style="<%= @wbs_activity.hide_wbs_header == 'show_all' ? '' : 'visibility:hidden; position: absolute;' %>">
         <div class="card-body">
           <div class="edition-bloc-title">
-            <%= I18n.t(:input_value) %>
+            <h5 class="page_module_subtitle">
+              <%= I18n.t(:input_value) %>
+            </h5>
           </div>
+
           <div class="edition-bloc-content pb-4">
             <table id="table" class="table phases-table">
               <% if wbs_activity.enabled_input %>

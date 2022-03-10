@@ -143,7 +143,8 @@ table td.guw-cell-ajustment{
 .alert-content{
   //margin-top: 10%;
   //margin-left: 50%;
-  font-size: xx-large;
+  font-family: "Roboto", "Helvetica", "Arial", sans-serif;
+  font-size: x-large;
   text-align: center;
 }
 
@@ -267,4 +268,10 @@ table td.guw-cell-ajustment{
   width: 100%;
   display: flex;
   align-items: center;
+}
+
+.page_module_subtitle{
+  text-transform: none;
+  color: #212529;
+  font-weight: bold;
 }
