@@ -6,7 +6,7 @@
   <% end %>
 
   <div classs="container p-5 alert-popup">
-    <div class="row no-gutters fixed-top">
+    <div class="row no-gutters fixed-top" style="top: 25%; left: 40%;">
       <div class="col-lg-4 col-md-12 m-auto">
         <div class="alert alert-<%= name_alert %> fade show" role="alert">
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -106,5 +106,5 @@
 <script>
   // $('#modal_alert').modal('show');
   //$(".alert").fadeOut(8000);
-  // window.setTimeout(function() { $(".alert").alert('close'); }, 5000);
+  window.setTimeout(function() { $(".alert").alert('close'); }, 5000);
 </script>
