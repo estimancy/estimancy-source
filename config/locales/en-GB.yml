@@ -2147,3 +2147,7 @@ en-gb:
   estimation_by_comparaison: "Estimate by comparison"
   nb_projects: "Number of projects"
   validation_button: "Validation"
+  staffing_duration_calculation: "Staffing / Duration calculation"
+  generique_effort_calculation: "Generic effort calculation"
+  wbs_activity_calculation: "WBS Activity calculation"
+  kb_calculation: "Knowledge base calculation"

@@ -5,11 +5,18 @@
 
   <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form', method: "POST" do %>
 
+    <div class="edition-page-module pt-3 pl-10 d-flex justify-content-between">
+      <div class="row page_module_title">
+        <div class="col-5 page_module_type">
+          <%= I18n.t(:generique_effort_calculation) %> :
+        </div>
+        <div class="col no_uppercase"><%= @ge_model %></div>
+      </div>
+    </div>
+
     <% if @ge_model.ge_factors.size > 0 %>
-      <h4>
-        <b>
+      <h4 class="no_uppercase" style="padding-left: 1.2rem; color: #666;">
           <%= I18n.t(:select_factor_value) %>
-        </b>
       </h4>
 
       <div class="effort-bloc">
@@ -500,7 +507,7 @@
                       <% current_outputs_evs.each do |ev| %>
                         <% is_modifiable = @ge_model.send("#{ev.pe_attribute.alias}_is_modifiable") %>
 
-                          <div class="col">
+                          <div class="col page_module_type">
                             <% if (is_modifiable == true) && can?(:alter_estimation_plan, @project) %>
                               <%= number_field_tag "effort_high[#{ev.id}]", ev.nil? ? '': convert_ge_model_value_with_precision(@ge_model, ev,ev.send("string_data_high")[component_id], user_number_precision), step: "any", id: "number_effort_most_high_#{ev.id}", class: "form-control form-control-sm" %>
                             <% else %>
@@ -522,7 +529,7 @@
             <div class="row">
                 <div class="col">
                   <h4>
-                    <b>
+                    <b style="color: #666">
                       <%= I18n.t(:ratio)%>
                     </b>
                   </h4>

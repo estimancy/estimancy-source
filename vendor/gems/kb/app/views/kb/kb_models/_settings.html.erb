@@ -2,9 +2,13 @@
 
     <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
 
-      <span class="no_uppercase">
-        <%= @kb_model %>
-      </span>
+<!--      <span class="no_uppercase"><%#= @kb_model %></span>-->
+      <div class="row page_module_title">
+        <div class="col page_module_type">
+          <%= I18n.t(:kb_calculation) %> :
+        </div>
+        <div class="col no_uppercase"><%= @kb_model %></div>
+      </div>
 
       <div class="row float-right">
         <div class="col-12">

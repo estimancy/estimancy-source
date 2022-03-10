@@ -244,3 +244,27 @@ table td.guw-cell-ajustment{
   text-transform: none;
   background-color: var(--widget-text-color) !important;
 }
+
+.page_module_title{
+  width: 50%;
+  padding-left: 1rem;
+}
+.page_module_title_padding{
+  padding: 0.5rem 0 1rem !important;
+}
+
+.page_module_name{
+}
+
+.page_module_type{
+  //padding: 0.5rem 0 2rem;
+  font-weight: bold;
+  font-size: 18px;
+  line-height: 23px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #007DAB;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}

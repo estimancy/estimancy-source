@@ -2612,3 +2612,7 @@ fral:
   estimation_by_comparaison: "Estimation par comparaison"
   nb_projects: "Nombre de projets"
   validation_button: "Validation"
+  staffing_duration_calculation: "Calcul équipe / durée"
+  generique_effort_calculation: "Calcul d'effort générique"
+  wbs_activity_calculation: "Calcul WBS Activité"
+  kb_calculation: "Calcul base de connaissance"
