@@ -543,7 +543,7 @@
                     },{
                         name: '<%= I18n.t(:ajusted_trapezium_distribution) %>',
                         type: 'column',
-                        color: '#2F3EAF', //'#AA3538',
+                        color: '#E26524', //'#AA3538',
                         data: <%= @staffing_custom_data.trapeze_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
                     },{
                         type: 'spline',
@@ -557,7 +557,7 @@
                         type: 'spline',
                         name: '<%= I18n.t(:optimal_rayleigh_distribution) %>',
                         data: <%= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
-                        color: 'green', //'#2077A1',
+                        color: '#2077A1',
                         marker: {
                             enabled: false
                         }
