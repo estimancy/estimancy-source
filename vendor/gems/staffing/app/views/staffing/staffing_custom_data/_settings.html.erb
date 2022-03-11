@@ -67,355 +67,362 @@
 
 %>
 
+<section class="estimation-modules-edition">
+
   <%= simple_form_for @staffing_custom_data, url: staffing.save_data_path(custom_data: @staffing_custom_data.id), method: :post do |f| %>
-    <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
-<!--      <span class="no_uppercase"><%#= @module_project %></span>-->
-
+    <div class="edition-page-module pt-3 d-flex justify-content-between">
       <div class="row page_module_title">
-        <div class="col page_module_type">
-          <%= I18n.t(:staffing_duration_calculation) %> :
+        <div class="col">
+          <p class="page_module_type"><%= I18n.t(:staffing_duration_calculation) %> : </p>
+          <span class="no_uppercase"><%= @module_project %></span>
         </div>
-        <div class="col no_uppercase"><%= @module_project %></div>
-      </div>
-
-      <div class="edition-bloc-tools">
-        <% if can? :execute_estimation_plan, @project %>
-          <button id="submit_staffing" name="actuals_based_on[custom]" type="submit" class="btn btn-estimancy btn-secondary float-right">
-            <%= I18n.t(:calculate_button) %>
-          </button>
-        <% end %>
-        <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn btn-secondary float-right"%>
       </div>
     </div>
 
-    <section class="estimation-modules-edition">
-      <div class="card card-widget">
-        <div class="card-body">
+    <div class="edition-page-module d-flex justify-content-between">
+      <h4 class="page_module_input_description">
+        <%= I18n.t :use_slider %>
+        <%= I18n.t :use_slider_comments %>
+      </h4>
 
-          <div class="edition-bloc-title">
-            <h5 class="page_module_subtitle">
-              <%= I18n.t :use_slider %>
-              <br>
-              <%= I18n.t :use_slider_comments %>
-            </h5>
-          </div>
-
-          <div class="edition-bloc-content pb-4">
-            <div class="form-row">
-              <div class="col-3">
-                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">
-                  <input class="mdl-textfield__input" type="text" id="name" value="<%= effort.to_f.round(2) %> <%= @staffing_model.effort_unit %>" disabled>
-                  <small><%= I18n.t(:effort_with_unit) %></small>
-                </div>
-              </div>
-              <div class="col-9 pl-6">
-                <div class="edition-bloc-slider">
-                  <span class="edition-bloc-slider-value"></span>
-                  <input name='percents' id="percent" class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent.nil? ? '100' : @staffing_custom_data.percent %>">
-                  <script>
-                      // var effort = $(".reference_effort").html();
-                      // var new_effort = (parseFloat(effort) / (parseFloat($('#percent').val())) * 100);
-                      // $(".effort").html(new_effort.toFixed(2));
-                      // $(".new_effort").val(new_effort.toFixed(2));
-
-                      $('.edition-bloc-slider-slider').slider({
-                          slide: function (e, value) {
-                              $('.edition-bloc-slider-value').text(value);
-
-                              set_staffing_values({
-                                  min: "<%= @staffing_model.min_range %>",
-                                  max: "<%= @staffing_model.max_range %>",
-                                  from: $('#percent').val(),
-                                  grid: true,
-                                  postfix: "%"
-                              });
+      <div class="edition-bloc-tools">
+        <%= link_to I18n.t(:export), staffing.staffing_model_export_staffing_path(@staffing_custom_data), :method => 'post', :class=> "btn btn-secondary button_link_to"%>
+        <% if can? :execute_estimation_plan, @project %>
+          <button id="submit_staffing" name="actuals_based_on[custom]" type="submit" class="btn btn-secondary">
+            <%= I18n.t(:calculate_button) %>
+          </button>
+        <% end %>
+      </div>
+    </div>
 
 
-                              // Get The Max-Staff value according to selected value from the Slider
-                              function set_staffing_values(data) {
+    <div class="card card-widget">
+      <div class="card-body">
 
-                                  var effort = $(".reference_effort").html();
-                                  var duration = $(".reference_duration").html();
-                                  var staffing_trapeze = $(".reference_staffing_trapeze").html();
-                                  var staffing_rayleigh = $(".reference_staffing_rayleigh").html();
+<!--          <div class="edition-bloc-title">-->
+<!--            <h5 class="page_module_subtitle">-->
+            <%#= I18n.t :use_slider %>
+<!--              <br>-->
+            <%#= I18n.t :use_slider_comments %>
+<!--            </h5>-->
+<!--          </div>-->
 
-                                  $("#standard_effort").val(parseFloat(effort));
-
-                                  var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);
-                                  $(".effort").html(new_effort.toFixed(2));
-                                  $(".new_effort").val(new_effort.toFixed(2));
-
-                                  var new_duration = (duration * (parseFloat(data.from)) / 100);
-                                  $(".duration").html(new_duration.toFixed(2));
-                                  $(".new_duration").val(new_duration.toFixed(2));
-
-                                  x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
-                                  x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
-                                  x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
-                                  x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
-                                  y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
-                                  y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
-
-                                  var new_staffing_trapeze = (2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;
-
-                                  $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2));
-                                  $(".new_staffing_trapeze").val(new_staffing_trapeze.toFixed(2));
-
-
-                                  var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
-                                  var t_max_staffing = Math.sqrt(1/(2*form_coef));
-                                  var new_staffing_rayleigh = (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / (t_max_staffing * Math.sqrt(Math.exp(1)))
-                                  $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));
-                                  $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2));
-
-                                  $(".percent_effort").html(sign((((new_effort-effort)/new_effort)*100).toFixed(1)) + " %");
-                                  $(".percent_duration").html(sign((((new_duration-duration)/duration)*100).toFixed(1)) + " %");
-                                  $(".percent_trapeze").html(sign((((new_staffing_trapeze-staffing_trapeze)/staffing_trapeze)*100).toFixed(1)) + " %");
-                                  $(".percent_rayleigh").html(sign((((new_staffing_rayleigh-staffing_rayleigh)/staffing_rayleigh)*100).toFixed(1)) + " %");
-
-                                  $(".gap_effort").html(sign((new_effort-effort).toFixed(2)));
-                                  $(".gap_duration").html(sign((new_duration-duration).toFixed(2)));
-                                  $(".gap_trapeze").html(sign((new_staffing_trapeze-staffing_trapeze).toFixed(2)));
-                                  $(".gap_rayleigh").html(sign((new_staffing_rayleigh-staffing_rayleigh).toFixed(2)));
-
-                                  var date = new Date(<%= @project.start_date.year %>, <%= @project.start_date.month %>, <%= @project.start_date.day %>);
-                                  date.setDate(date.getDate() + (new_duration * 7));
-
-                                  var dd = date.getDate();
-                                  var mm = date.getMonth();
-                                  var y = date.getFullYear();
-
-                                  if (mm <= 0) {
-                                      mm = 12;
-                                      y = y-1;
-                                  }
-
-                                  var someFormattedDate = dd + '/' + mm + '/' + y;
-                                  $(".end_date").html(someFormattedDate);
-
-                              }
-
-                              function sign(value){
-                                  if (value > 0) {
-                                      return value;
-                                  } else if (value < 0) {
-                                      return value;
-                                  } else {
-                                      return value;
-                                  }
-                              }
-
-                          },
-                          min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range.to_i %>,
-                          max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range.to_i %>
-                      });
-                  </script>
-                </div>
+        <div class="edition-bloc-content pb-4">
+          <div class="form-row">
+            <div class="col-3">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">
+                <input class="mdl-textfield__input" type="text" id="name" value="<%= effort.to_f.round(2) %> <%= @staffing_model.effort_unit %>" disabled>
+                <small><%= I18n.t(:effort_with_unit) %></small>
               </div>
             </div>
-            <div class="form-row">
-              <div class="col-3"></div>
-              <div class="col-9">
-                <div class="text-center text-black-50">
-                  <%= I18n.t(:cost_time_slider) %>
-                </div>
+            <div class="col-9 pl-6">
+              <div class="edition-bloc-slider">
+                <span class="edition-bloc-slider-value"></span>
+                <input name='percents' id="percent" class="edition-bloc-slider-slider" value="<%= @staffing_custom_data.percent.nil? ? '100' : @staffing_custom_data.percent %>">
+                <script>
+                    // var effort = $(".reference_effort").html();
+                    // var new_effort = (parseFloat(effort) / (parseFloat($('#percent').val())) * 100);
+                    // $(".effort").html(new_effort.toFixed(2));
+                    // $(".new_effort").val(new_effort.toFixed(2));
+
+                    $('.edition-bloc-slider-slider').slider({
+                        slide: function (e, value) {
+                            $('.edition-bloc-slider-value').text(value);
+
+                            set_staffing_values({
+                                min: "<%= @staffing_model.min_range %>",
+                                max: "<%= @staffing_model.max_range %>",
+                                from: $('#percent').val(),
+                                grid: true,
+                                postfix: "%"
+                            });
+
+
+                            // Get The Max-Staff value according to selected value from the Slider
+                            function set_staffing_values(data) {
+
+                                var effort = $(".reference_effort").html();
+                                var duration = $(".reference_duration").html();
+                                var staffing_trapeze = $(".reference_staffing_trapeze").html();
+                                var staffing_rayleigh = $(".reference_staffing_rayleigh").html();
+
+                                $("#standard_effort").val(parseFloat(effort));
+
+                                var new_effort = (parseFloat(effort) / (parseFloat(data.from)) * 100);
+                                $(".effort").html(new_effort.toFixed(2));
+                                $(".new_effort").val(new_effort.toFixed(2));
+
+                                var new_duration = (duration * (parseFloat(data.from)) / 100);
+                                $(".duration").html(new_duration.toFixed(2));
+                                $(".new_duration").val(new_duration.toFixed(2));
+
+                                x0 = <%= @staffing_model.trapeze_default_values[:x0].to_f / 100 %>
+                                x1 = <%= @staffing_model.trapeze_default_values[:x1].to_f / 100 %>
+                                x2 = <%= @staffing_model.trapeze_default_values[:x2].to_f / 100 %>
+                                x3 = <%= @staffing_model.trapeze_default_values[:x3].to_f / 100 %>
+                                y0 = <%= @staffing_model.trapeze_default_values[:y0].to_f / 100 %>
+                                y3 = <%= @staffing_model.trapeze_default_values[:y3].to_f / 100 %>
+
+                                var new_staffing_trapeze = (2 * (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / new_duration) / (x3 + x2 - x1 - x0 + y0 * (x1 - x0) + y3 * (x3 - x2)) ;
+
+                                $(".staffing_trapeze").html(new_staffing_trapeze.toFixed(2));
+                                $(".new_staffing_trapeze").val(new_staffing_trapeze.toFixed(2));
+
+
+                                var form_coef = -Math.log(1-0.97) / (new_duration * new_duration);
+                                var t_max_staffing = Math.sqrt(1/(2*form_coef));
+                                var new_staffing_rayleigh = (new_effort * <%= @staffing_model.standard_unit_coefficient.to_f / effort_week_unit %>) / (t_max_staffing * Math.sqrt(Math.exp(1)))
+                                $(".staffing_rayleigh").html(new_staffing_rayleigh.toFixed(2));
+                                $(".new_staffing_rayleigh").val(new_staffing_rayleigh.toFixed(2));
+
+                                $(".percent_effort").html(sign((((new_effort-effort)/new_effort)*100).toFixed(1)) + " %");
+                                $(".percent_duration").html(sign((((new_duration-duration)/duration)*100).toFixed(1)) + " %");
+                                $(".percent_trapeze").html(sign((((new_staffing_trapeze-staffing_trapeze)/staffing_trapeze)*100).toFixed(1)) + " %");
+                                $(".percent_rayleigh").html(sign((((new_staffing_rayleigh-staffing_rayleigh)/staffing_rayleigh)*100).toFixed(1)) + " %");
+
+                                $(".gap_effort").html(sign((new_effort-effort).toFixed(2)));
+                                $(".gap_duration").html(sign((new_duration-duration).toFixed(2)));
+                                $(".gap_trapeze").html(sign((new_staffing_trapeze-staffing_trapeze).toFixed(2)));
+                                $(".gap_rayleigh").html(sign((new_staffing_rayleigh-staffing_rayleigh).toFixed(2)));
+
+                                var date = new Date(<%= @project.start_date.year %>, <%= @project.start_date.month %>, <%= @project.start_date.day %>);
+                                date.setDate(date.getDate() + (new_duration * 7));
+
+                                var dd = date.getDate();
+                                var mm = date.getMonth();
+                                var y = date.getFullYear();
+
+                                if (mm <= 0) {
+                                    mm = 12;
+                                    y = y-1;
+                                }
+
+                                var someFormattedDate = dd + '/' + mm + '/' + y;
+                                $(".end_date").html(someFormattedDate);
+
+                            }
+
+                            function sign(value){
+                                if (value > 0) {
+                                    return value;
+                                } else if (value < 0) {
+                                    return value;
+                                } else {
+                                    return value;
+                                }
+                            }
+
+                        },
+                        min: <%= @staffing_model.min_range.nil? ? 70 : @staffing_model.min_range.to_i %>,
+                        max: <%= @staffing_model.max_range.nil? ? 150 : @staffing_model.max_range.to_i %>
+                    });
+                </script>
+              </div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="col-3"></div>
+            <div class="col-9">
+              <div class="text-center text-black-50">
+                <%= I18n.t(:cost_time_slider) %>
               </div>
             </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <div class="card card-widget card-reversed">
-        <div class="card-body">
-          <div class="row w-100">
-            <div class="col-4">
-              <div class="timecost-indicator">
-                <div class="indicator-title"><%= I18n.t :revised_effort %></div>
-                <div class="indicator-value">
-                  <span class="effort staffing-indicator-value">
-                    <% if @module_project.done == true %>
-                      <% unless @staffing_custom_data.global_effort_value.nil? %>
-                        <%= @staffing_custom_data.global_effort_value.round(user_number_precision) %>
-                      <% end %>
-                    <% else %>
-                      -
+    <div class="card card-widget card-reversed">
+      <div class="card-body">
+        <div class="row w-100">
+          <div class="col-4">
+            <div class="timecost-indicator">
+              <div class="indicator-title"><%= I18n.t :revised_effort %></div>
+              <div class="indicator-value">
+                <span class="effort staffing-indicator-value">
+                  <% if @module_project.done == true %>
+                    <% unless @staffing_custom_data.global_effort_value.nil? %>
+                      <%= @staffing_custom_data.global_effort_value.round(user_number_precision) %>
                     <% end %>
-                  </span> <%= @staffing_model.effort_unit %>
-                  <span class="indicator-value-gain percent_effort">
-                    <% if @module_project.done == true %>
-                      <% unless @staffing_custom_data.global_effort_value.nil? %>
-                        <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100).round(1)) %>
-                      <% end %> %
-                    <% else %>
-                      -
-                    <% end %>
-                  </span>
-                </div>
-                <div class="indicator-optimal"><%= I18n.t :optimal_effort %></div>
-                <div class="indicator-optimal-value">
-                  <span class="reference_effort">
-                    <% unless effort.nil? %>
-                      <%= effort.to_f.round(2) %>
-                    <% end %>
-                  </span>
-                </div>
+                  <% else %>
+                    -
+                  <% end %>
+                </span> <%= @staffing_model.effort_unit %>
+                <span class="indicator-value-gain percent_effort">
+                  <% if @module_project.done == true %>
+                    <% unless @staffing_custom_data.global_effort_value.nil? %>
+                      <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100).round(1)) %>
+                    <% end %> %
+                  <% else %>
+                    -
+                  <% end %>
+                </span>
               </div>
-            </div>
-            <div class="col-4">
-              <div class="timecost-indicator">
-                <div class="indicator-title"><%= I18n.t :duration_in_week %></div>
-                <div class="indicator-value">
-                  <span class="duration staffing-indicator-value">
-                    <% if @module_project.done == true %>
-                      <% unless @staffing_custom_data.duration.nil? %>
-                        <%= @staffing_custom_data.duration.round(user_number_precision) %>
-                      <% end %>
-                    <% else %>
-                      -
-                    <% end %>
-                  </span> <%= I18n.t(:weeks) %>
-                  <span class="indicator-value-gain percent_duration">
-                    <% if @module_project.done == true %>
-                      <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
-                        <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(1)) %>
-                      <% end %> %
-                    <% else %>
-                      -
-                    <% end %>
-                  </span>
-                </div>
-                <div class="indicator-optimal"><%= I18n.t :optimal_duration_in_week %></div>
-                <div class="indicator-optimal-value">
-                  <span class="reference_duration staffing-indicator-value">
-                    <% unless @md_duration.nil? %>
-                      <%= @md_duration.to_f.round(user_number_precision) %>
-                    <% end %>
-                  </span>
-                </div>
+              <div class="indicator-optimal"><%= I18n.t :optimal_effort %></div>
+              <div class="indicator-optimal-value">
+                <span class="reference_effort">
+                  <% unless effort.nil? %>
+                    <%= effort.to_f.round(2) %>
+                  <% end %>
+                </span>
               </div>
-            </div>
-
-            <div class="col-4">
-              <div class="timecost-indicator">
-                <div class="indicator-title"><%= I18n.t :end_date %></div>
-                <div class="indicator-value">
-                  <span class="end_date staffing-indicator-value">
-                    <% if @module_project.done == true %>
-                      <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
-                        <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: I18n.t(:'date.formats.default')) %> <!-- format: "%d/%m/%Y" -->
-
-                      <% end %>
-                    <% else %>
-                      -
-                    <% end %>
-                  </span>
-                </div>
-                <div class="indicator-optimal">
-                  <%= I18n.t :initial_date %>
-                </div>
-                <div class="indicator-optimal-value">
-                  <span>
-                    <% unless @md_duration.nil? %>
-                      <%= I18n.l((@project.start_date + @md_duration.weeks), format: I18n.t(:'date.formats.default')) %>
-                    <% end %>
-                  </span>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="row w-100">
-            <div class="col-4">
-              <div class="timecost-indicator">
-                <div class="indicator-title">
-                  <%= I18n.t :trapeze_staffing %>
-                </div>
-                <div class="indicator-value">
-                  <span class="staffing_trapeze staffing-indicator-value">
-                    <% if @module_project.done == true %>
-                      <% unless @staffing_custom_data.max_staffing.nil? %>
-                        <%= @staffing_custom_data.max_staffing.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
-                      <% end %>
-                    <% else %>
-                      -
-                    <% end %>
-                  </span> pers.
-                  <span class="indicator-value-gain percent_trapeze">
-                    <% if @module_project.done == true %>
-                      <% unless @staffing_custom_data.max_staffing.nil? %>
-                        <%= sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100).round(1)) %>
-                      <% end %> %
-                    <% else %>
-                    <% end %>
-                  </span>
-                </div>
-                <div class="indicator-optimal">Staffing optimal</div>
-                <div class="indicator-optimal-value">
-                  <span class="reference_staffing_trapeze">
-                    <%= staffing_trapeze.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
-                  </span> pers.
-                </div>
-              </div>
-            </div>
-            <div class="col-4">
-              <div class="timecost-indicator">
-                <div class="indicator-title">Rayleigh (pers.)</div>
-                <div class="indicator-value">
-                  <span class="staffing_rayleigh staffing-indicator-value">
-                    <% if @module_project.done == true %>
-                      <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
-                        <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
-                      <% end %>
-                    <% else %>
-                      -
-                    <% end %>
-                  </span> pers.
-                  <span class="indicator-value-gain percent_rayleigh">
-                    <% if @module_project.done == true %>
-                      <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
-                        <%= sign((((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh) / staffing_rayleigh) * 100).round(1)) %>
-                      <% end %> %
-                    <% else %>
-                      -
-                    <% end %>
-                  </span>
-                </div>
-                <div class="indicator-optimal">Optimal (pers.)</div>
-                <div class="indicator-optimal-value">
-                  <span class="reference_staffing_rayleigh">
-                    <% unless staffing_rayleigh.nil? %>
-                      <%= staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0%>
-                    <% end %>
-                  </span> pers.
-                </div>
-              </div>
-            </div>
-            <div class="col-4">
             </div>
           </div>
-          <div class="timecost-graph w-100 py-4">
+          <div class="col-4">
+            <div class="timecost-indicator">
+              <div class="indicator-title"><%= I18n.t :duration_in_week %></div>
+              <div class="indicator-value">
+                <span class="duration staffing-indicator-value">
+                  <% if @module_project.done == true %>
+                    <% unless @staffing_custom_data.duration.nil? %>
+                      <%= @staffing_custom_data.duration.round(user_number_precision) %>
+                    <% end %>
+                  <% else %>
+                    -
+                  <% end %>
+                </span> <%= I18n.t(:weeks) %>
+                <span class="indicator-value-gain percent_duration">
+                  <% if @module_project.done == true %>
+                    <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
+                      <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(1)) %>
+                    <% end %> %
+                  <% else %>
+                    -
+                  <% end %>
+                </span>
+              </div>
+              <div class="indicator-optimal"><%= I18n.t :optimal_duration_in_week %></div>
+              <div class="indicator-optimal-value">
+                <span class="reference_duration staffing-indicator-value">
+                  <% unless @md_duration.nil? %>
+                    <%= @md_duration.to_f.round(user_number_precision) %>
+                  <% end %>
+                </span>
+              </div>
+            </div>
+          </div>
 
-            <% begin %>
-              <%= hidden_field_tag "standard_effort", (@staffing_custom_data.standard_effort.blank? ? effort : @staffing_custom_data.standard_effort), class: "standard_effort" %>
-              <%= hidden_field_tag "new_effort", (@staffing_custom_data.global_effort_value.blank? ? effort : @staffing_custom_data.global_effort_value), class: "new_effort" %> <%#= hidden_field_tag "new_effort", effort, class: "new_effort" %>
-              <%= hidden_field_tag "new_duration", (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f), class: "new_duration" %>
-              <%= hidden_field_tag "new_staffing_trapeze", @staffing_custom_data.max_staffing.to_f.round(user_number_precision), class: "new_staffing_trapeze" %>
-              <%= hidden_field_tag "new_staffing_rayleigh", @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision), class: "new_staffing_rayleigh" %>
-            <% rescue %>
-              <span>
-                <%= I18n.t(:update_the_module) %>
-              </span>
-            <% end %>
+          <div class="col-4">
+            <div class="timecost-indicator">
+              <div class="indicator-title"><%= I18n.t :end_date %></div>
+              <div class="indicator-value">
+                <span class="end_date staffing-indicator-value">
+                  <% if @module_project.done == true %>
+                    <% unless @md_duration.nil? || @staffing_custom_data.duration.nil? %>
+                      <%= I18n.l((@project.start_date + @staffing_custom_data.duration.weeks), format: I18n.t(:'date.formats.default')) %> <!-- format: "%d/%m/%Y" -->
 
-            <hr>
+                    <% end %>
+                  <% else %>
+                    -
+                  <% end %>
+                </span>
+              </div>
+              <div class="indicator-optimal">
+                <%= I18n.t :initial_date %>
+              </div>
+              <div class="indicator-optimal-value">
+                <span>
+                  <% unless @md_duration.nil? %>
+                    <%= I18n.l((@project.start_date + @md_duration.weeks), format: I18n.t(:'date.formats.default')) %>
+                  <% end %>
+                </span>
+              </div>
+            </div>
+          </div>
 
-            <script src="https://code.highcharts.com/highcharts.src.js"></script>
-            <div id="staffing_trapeze_chart"></div>
+        </div>
 
+        <div class="row w-100">
+          <div class="col-4">
+            <div class="timecost-indicator">
+              <div class="indicator-title">
+                <%= I18n.t :trapeze_staffing %>
+              </div>
+              <div class="indicator-value">
+                <span class="staffing_trapeze staffing-indicator-value">
+                  <% if @module_project.done == true %>
+                    <% unless @staffing_custom_data.max_staffing.nil? %>
+                      <%= @staffing_custom_data.max_staffing.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                    <% end %>
+                  <% else %>
+                    -
+                  <% end %>
+                </span> pers.
+                <span class="indicator-value-gain percent_trapeze">
+                  <% if @module_project.done == true %>
+                    <% unless @staffing_custom_data.max_staffing.nil? %>
+                      <%= sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100).round(1)) %>
+                    <% end %> %
+                  <% else %>
+                  <% end %>
+                </span>
+              </div>
+              <div class="indicator-optimal">Staffing optimal</div>
+              <div class="indicator-optimal-value">
+                <span class="reference_staffing_trapeze">
+                  <%= staffing_trapeze.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                </span> pers.
+              </div>
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="timecost-indicator">
+              <div class="indicator-title">Rayleigh (pers.)</div>
+              <div class="indicator-value">
+                <span class="staffing_rayleigh staffing-indicator-value">
+                  <% if @module_project.done == true %>
+                    <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
+                      <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                    <% end %>
+                  <% else %>
+                    -
+                  <% end %>
+                </span> pers.
+                <span class="indicator-value-gain percent_rayleigh">
+                  <% if @module_project.done == true %>
+                    <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
+                      <%= sign((((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh) / staffing_rayleigh) * 100).round(1)) %>
+                    <% end %> %
+                  <% else %>
+                    -
+                  <% end %>
+                </span>
+              </div>
+              <div class="indicator-optimal">Optimal (pers.)</div>
+              <div class="indicator-optimal-value">
+                <span class="reference_staffing_rayleigh">
+                  <% unless staffing_rayleigh.nil? %>
+                    <%= staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0%>
+                  <% end %>
+                </span> pers.
+              </div>
+            </div>
+          </div>
+          <div class="col-4">
           </div>
         </div>
+        <div class="timecost-graph w-100 py-4">
+
+          <% begin %>
+            <%= hidden_field_tag "standard_effort", (@staffing_custom_data.standard_effort.blank? ? effort : @staffing_custom_data.standard_effort), class: "standard_effort" %>
+            <%= hidden_field_tag "new_effort", (@staffing_custom_data.global_effort_value.blank? ? effort : @staffing_custom_data.global_effort_value), class: "new_effort" %> <%#= hidden_field_tag "new_effort", effort, class: "new_effort" %>
+            <%= hidden_field_tag "new_duration", (@staffing_custom_data.duration.nil? ? @md_duration.round(user_number_precision).to_f : @staffing_custom_data.duration.round(user_number_precision).to_f), class: "new_duration" %>
+            <%= hidden_field_tag "new_staffing_trapeze", @staffing_custom_data.max_staffing.to_f.round(user_number_precision), class: "new_staffing_trapeze" %>
+            <%= hidden_field_tag "new_staffing_rayleigh", @staffing_custom_data.max_staffing_rayleigh.to_f.round(user_number_precision), class: "new_staffing_rayleigh" %>
+          <% rescue %>
+            <span>
+              <%= I18n.t(:update_the_module) %>
+            </span>
+          <% end %>
+
+          <hr>
+
+          <script src="https://code.highcharts.com/highcharts.src.js"></script>
+          <div id="staffing_trapeze_chart"></div>
+
+        </div>
       </div>
+    </div>
     <hr>
 
     <% begin %>
@@ -592,6 +599,6 @@
             });
         }
     </script>
-  </section>
-<% end %>
+  <% end %>
+</section>
 

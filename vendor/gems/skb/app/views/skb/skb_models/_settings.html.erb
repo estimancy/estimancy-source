@@ -53,16 +53,16 @@
                           name: @project.to_s,
                           description: @project.description.to_s }
     %>
-
-    <div class="edition-page-module pt-3 pl-10 d-flex justify-content-between">
+    <!--      <span class="no_uppercase"><%#= @skb_model %></span>-->
+<!--    <div class="edition-page-module pt-3 pl-10 d-flex justify-content-between">-->
+    <div class="edition-page-module pl-10 d-flex justify-content-between">
       <div class="row page_module_title">
-        <div class="col-6 page_module_type">
-          <%= I18n.t(:estimation_by_comparaison) %> :
+        <div class="col">
+          <p class="page_module_type"><%= I18n.t(:estimation_by_comparaison) %> : </p>
+          <span class="no_uppercase"><%= @skb_model %></span>
         </div>
-        <div class="col no_uppercase"><%= @skb_model %></div>
       </div>
     </div>
-<!--      <span class="no_uppercase"><%#= @skb_model %></span>-->
 
 <!--      <div class="edition-bloc-tools">-->
         <%# if can? :execute_estimation_plan, @project %>

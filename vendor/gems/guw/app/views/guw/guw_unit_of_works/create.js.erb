@@ -64,10 +64,14 @@ $(".<%= @group.id %>_selected").html("<%= @group_selected_of_unit_of_works %>");
 
 $("#output_data_view_widgets_results").html("<%= j(render(partial: "views_widgets/dashboard_views_widgets_results", object: [@module_positions, @module_positions_x, @wbs_activity_ratio])) %>");
 
-$("#modified_guw_line_ids").val("<%= @group.guw_unit_of_works.where(organization_id: organization_id,
+<% group_guw_unit_of_works =  @group.guw_unit_of_works.where(organization_id: organization_id,
                                                                     guw_model_id: @guw_model.id,
                                                                     project_id: @project.id,
-                                                                    module_project_id: @module_project.id).map(&:id).flatten.join(",") %>");
+                                                                    module_project_id: @module_project.id) %>
+
+$("#modified_guw_line_ids").val("<%= group_guw_unit_of_works.map(&:id).flatten.join(",") %>");
+
+$("#group_nb_elts_<%= @guw_unit_of_work_guw_unit_of_work_group.id %>").html("<%= group_guw_unit_of_works.size %> elements");
 
 $(".arrow_color").css("color", '<%= @module_project.done ? "green" : "red" %>');
 

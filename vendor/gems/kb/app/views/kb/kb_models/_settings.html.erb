@@ -1,19 +1,17 @@
 <%= form_tag kb.kb_model_save_efforts_path(@kb_model), method: "post" do %>
 
-    <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
-
-<!--      <span class="no_uppercase"><%#= @kb_model %></span>-->
+    <div class="edition-page-module pt-3 d-flex justify-content-between">
       <div class="row page_module_title">
-        <div class="col page_module_type">
-          <%= I18n.t(:kb_calculation) %> :
+        <div class="col">
+          <p class="page_module_type"><%= I18n.t(:kb_calculation) %> : </p>
+          <span class="no_uppercase"><%= @kb_model %></span>
         </div>
-        <div class="col no_uppercase"><%= @kb_model %></div>
       </div>
 
       <div class="row float-right">
         <div class="col-12">
           <% if can? :execute_estimation_plan, @project %>
-            <button type="submit" class="btn btn-primary button_margin_right">
+            <button type="submit" class="btn btn-secondary button_margin_right">
               <%= I18n.t(:calculate_button) %>
             </button>
           <% end %>

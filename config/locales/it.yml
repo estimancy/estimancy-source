@@ -2119,3 +2119,6 @@ it:
   kb_calculation: "Knowledge base calculation"
   use_slider: "Use the slider to adjust costs and deadlines."
   use_slider_comments: "The shorter the deadline, the larger the team, the more expensive the project and vice versa."
+  guw_model_calculation: "Generic unit of work calculation"
+  expert_judgement_calculation: "Expert judgment calculation"
+  operation_module_calculation: "Operations calculation"

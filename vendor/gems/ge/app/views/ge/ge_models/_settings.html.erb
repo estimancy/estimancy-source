@@ -5,17 +5,18 @@
 
   <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form', method: "POST" do %>
 
-    <div class="edition-page-module pt-3 pl-10 d-flex justify-content-between">
+<!--    <div class="edition-page-module pt-3 pl-10 d-flex justify-content-between">-->
+    <div class="edition-page-module pl-10 d-flex justify-content-between">
       <div class="row page_module_title">
-        <div class="col page_module_type">
-          <%= I18n.t(:generique_effort_calculation) %> :
+        <div class="col">
+          <p class="page_module_type"><%= I18n.t(:generique_effort_calculation) %> : </p>
+          <span class="no_uppercase"><%= @ge_model %></span>
         </div>
-        <div class="col no_uppercase"><%= @ge_model %></div>
       </div>
     </div>
 
     <% if @ge_model.ge_factors.size > 0 %>
-      <h4 class="no_uppercase" style="padding-left: 1.2rem; color: #666;">
+      <h4 class="page_module_input_description">
           <%= I18n.t(:select_factor_value) %>
       </h4>
 

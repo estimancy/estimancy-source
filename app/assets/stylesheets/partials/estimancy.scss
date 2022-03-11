@@ -247,16 +247,22 @@ table td.guw-cell-ajustment{
 }
 
 .page_module_title{
-  width: 50%;
+  width: 70%;
   padding-left: 1rem;
 }
 .page_module_title_padding{
   padding: 0.5rem 0 1rem !important;
 }
 
-.page_module_name{
+.page_module_input_description{
+  padding-left: 1.2rem; color: #666;
+  text-transform: none;
 }
 
+a.button_link_to{
+  font-weight: initial !important;
+  margin-right: 0 !important;
+}
 .page_module_type{
   //padding: 0.5rem 0 2rem;
   font-weight: bold;
@@ -265,9 +271,10 @@ table td.guw-cell-ajustment{
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: #007DAB;
-  width: 100%;
+  width: 70%;
   display: flex;
   align-items: center;
+  display: inline;
 }
 
 .page_module_subtitle{

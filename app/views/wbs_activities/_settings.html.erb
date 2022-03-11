@@ -172,14 +172,14 @@
 
   <%= form_tag save_effort_breakdown_path, id: 'save_effort_breakdown_form', remote: true do %>
 
-    <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">
-<!--      <span class="no_uppercase"><%#= @wbs_activity.name %></span>-->
-
+    <!--    <div class="edition-page-module pt-3 pl-3 d-flex justify-content-between">-->
+    <!--      <span class="no_uppercase"><%#= @wbs_activity.name %></span>-->
+    <div class="edition-page-module d-flex justify-content-between">
       <div class="row page_module_title">
-        <div class="col-4 page_module_type">
-          <%= I18n.t(:wbs_activity_calculation) %> :
+        <div class="col">
+          <p class="page_module_type"><%= I18n.t(:wbs_activity_calculation) %> : </p>
+          <span class="no_uppercase"><%= @wbs_activity.name %></span>
         </div>
-        <div class="col no_uppercase"><%= @wbs_activity.name %></div>
       </div>
 
       <div class="edition-bloc-tools">
@@ -195,7 +195,9 @@
       <div class="card card-widget">
         <div class="card-body">
           <div class="edition-bloc-title">
-            <%= I18n.t(:localization) %>
+            <h5 class="page_module_subtitle">
+              <%= I18n.t(:localization) %>
+            </h5>
           </div>
 
           <%= select_tag "ratio", options_for_select(wbs_activity.wbs_activity_ratios.map{|i| [i.name, i.id]},

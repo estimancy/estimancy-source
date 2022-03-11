@@ -2317,3 +2317,6 @@ fr1:
   kb_calculation: "Calcul base de connaissance"
   use_slider: "Utilisez le curseur pour ajuster les coûts et les délais."
   use_slider_comments: "Plus le délai souhaité est court, plus l'équipe est grande, plus le projet est cher et inversement."
+  guw_model_calculation: "Calcul d'unité d'oeuvre générique"
+  expert_judgement_calculation: "Calcul de jugement d'expert"
+  operation_module_calculation: "Calcul des opérations"
