@@ -2684,7 +2684,7 @@ en:
   staffing_duration_calculation: "Staffing / Duration calculation"
   generique_effort_calculation: "Generic effort calculation"
   wbs_activity_calculation: "WBS Activity calculation"
-  kb_calculation: "Knowledge base calculation"
+  kb_calculation: "Effort calculation by knowledge base"
   guw_model_calculation: "Generic unit of work calculation"
   expert_judgement_calculation: "Expert judgment calculation"
   operation_module_calculation: "Operations calculation"

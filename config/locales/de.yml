@@ -1881,7 +1881,7 @@ de:
   validation_button: "Validation"
   staffing_duration_calculation: "Staffing / Duration calculation"
   wbs_activity_calculation: "WBS Activity calculation"
-  kb_calculation: "Knowledge base calculation"
+  kb_calculation: "Effort calculation by knowledge base"
   use_slider: "Use the slider to adjust costs and deadlines."
   use_slider_comments: "The shorter the deadline, the larger the team, the more expensive the project and vice versa."
   guw_model_calculation: "Generic unit of work calculation"
