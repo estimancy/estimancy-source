@@ -22,7 +22,7 @@
 
       <div class="effort-bloc">
         <!--<ul class="nav nav-pills tabs">-->
-        <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+        <ul class="nav nav-pills tabs" id="pills-tab" role="tablist" style="margin-bottom: 1rem;">
           <% index = 0 %>
           <% number_elt_by_type_name = Hash.new %>
           <% @all_factors_values_hash.each do |scale_prod, factor_values_per_type| %>
@@ -80,11 +80,15 @@
                 <% else %>
                   <% index = index + 1 %>
                   <div class="tab-pane fade show <%= (index == 1) ? 'active' : '' %>" id="pills-<%= "#{scale_prod}-#{type.downcase.gsub(" ", "-")}" %>" role="tabpanel" aria-labelledby="pills-<%= type.downcase.gsub(" ", "-") %>-tab">
-                    <div class="card card-widget">
+                    <div class="card card-widget" style="padding-top: 1rem;">
                       <div class="card-body">
                         <div class="effort-table">
                           <div class="row">
                             <% factor_values.each do |key, values| %>
+                              <%# characterEncoding = "(?:\\\\.|[\\w-]|[^\\x00-\\xa0])+" %>
+                              <%# key_id = key.to_s.gsub(/\\/) { '\\\\' } %>
+                              <%# key_id = key.to_s.gsub('/', '') %>
+
                               <% if values.length == 1 %>
                                 <% unless values.first.nil? %>
                                   <%= hidden_field_tag("#{scale_prod}_factor[#{key}]", values.first.id) %>
@@ -95,9 +99,9 @@
                                   <% if ge_factor.description =~ /\A#{URI::regexp}\z/ %>
                                     <%= link_to key.humanize.upcase, ge_factor.description, target: "_blank", title: ge_factor.long_name %>
                                   <% else %>
-                                    <span title="<%= ge_factor.long_name %> :  <%= ge_factor.description %>">
-                                      <%= key.humanize.upcase %>
-                                    </span>
+                                    <h4 class="page_module_input_description" style="font-weight: normal;" title="<%= ge_factor.name_for_description %>  <%= ge_factor.description.to_s %>">
+                                      <%= key.humanize %>
+                                    </h4>
                                   <% end %>
 
                                   <% model_factor_description = Ge::GeModelFactorDescription.where(organization_id: @ge_model.organization_id, ge_model_id: @ge_model.id,
@@ -143,7 +147,7 @@
                                               value_from = default_value;
                                           }
 
-                                          $('.edition-bloc-slider-slider-<%= key %>').slider({
+                                          $(".edition-bloc-slider-slider-<%= key %>").slider({
                                               range: true,
                                               min: min_value,
                                               max: max_value,
@@ -151,13 +155,13 @@
                                               value: slide_current_value,
 
                                               slide: function (e, value) {
-                                                  $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[value]);
+                                                  $(".edition-bloc-slider-value-<%= key %>").text(data_text_hash[value]);
                                               }
                                           });
 
                                           $('#<%= "factor_#{key}" %>').on("change", function(data){
 
-                                              $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[parseInt($('#<%= "factor_#{key}" %>').val())]);
+                                              $(".edition-bloc-slider-value-<%= key %>").text(data_text_hash[parseInt($('#<%= "factor_#{key}" %>').val())]);
 
                                               var valuesToSubmit = $('form#ge_form').serialize();
                                               $.ajax({

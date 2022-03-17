@@ -39,6 +39,10 @@ module Ge
       })
     end
 
+    def name_for_description
+      self.long_name.blank? ? "#{self.short_name} : " : "#{self.long_name} : "
+    end
+
   end
 end
 
