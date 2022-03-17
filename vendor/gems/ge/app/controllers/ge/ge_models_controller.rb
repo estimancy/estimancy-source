@@ -928,7 +928,8 @@ class Ge::GeModelsController < ApplicationController
       @ge_input_values = Hash.new
       #Save Scale Factors data in GeInput table according to selected calculation method
       scale_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
+        #factor_value = Ge::GeFactorValue.find(factor_value_id)
+        factor_value = Ge::GeFactorValue.where(id: factor_value_id).first
         unless factor_value.nil?
           factor_value_number = factor_value.value_number
           ###scale_factor_sum += factor_value_number
@@ -940,7 +941,8 @@ class Ge::GeModelsController < ApplicationController
 
       #Save Prod Factors multiplier data in GeInput table according to selected calculation method
       prod_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
+        factor_value = Ge::GeFactorValue.where(id: factor_value_id).first #find(factor_value_id)
+        #factor_value = Ge::GeFactorValue.find(factor_value_id)
         unless factor_value.nil?
           factor_value_number = factor_value.value_number
           ###prod_factor_product *= factor_value_number
@@ -952,7 +954,8 @@ class Ge::GeModelsController < ApplicationController
 
       #Save Conversion Factors data in GeInput table according to selected calculation method
       conversion_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
+        factor_value = Ge::GeFactorValue.where(id: factor_value_id).first #.find(factor_value_id)
+        #factor_value = Ge::GeFactorValue.find(factor_value_id)
         unless factor_value.nil?
           factor_value_number = factor_value.value_number
           ###conversion_factor_product *= factor_value_number
