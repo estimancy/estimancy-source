@@ -551,7 +551,8 @@ class Ge::GeModelsController < ApplicationController
                 #FactorValues ==> :name, :alias, :value_number, :value_text, :ge_factor_id, :ge_model_id
                 factor_name = row_factor["factor"]
                 if !factor_name.nil? && !factor_name.empty?
-                  factor_alias = factor_name.gsub(/( )/, '_').downcase
+                  #factor_alias = factor_name.gsub(/( )/, '_').downcase
+                  factor_alias = factor_name.gsub(/\s*\W+\s*/, "_").downcase
                   factors = @ge_model.ge_factors.where(alias: factor_alias)
                   unless factors.nil?
                     factor = factors.first
