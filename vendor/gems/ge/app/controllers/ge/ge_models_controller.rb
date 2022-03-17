@@ -523,8 +523,7 @@ class Ge::GeModelsController < ApplicationController
                 #Create data in factors table
                 #sheet1_order = { :"0" => "scale_prod", :"1" => "type", :"2" => "short_name_factor", :"3" => "long_name_factor", :"4" => "description" }
                 short_name_factor = row_factor["short_name_factor"]
-                #factor_alias = short_name_factor.nil? ? "" : short_name_factor.gsub(/( )/, '_').downcase
-                factor_alias = short_name_factor.nil? ? "" : short_name_factor.gsub(/\s*\W+\s*/, "_").downcase
+                factor_alias = short_name_factor.nil? ? "" : short_name_factor.gsub(/( )/, '_').downcase
                 Ge::GeFactor.create(ge_model_id: @ge_model.id, short_name: short_name_factor, long_name: row_factor["long_name_factor"], factor_type: row_factor["type"],
                                     scale_prod: row_factor["scale_prod"],  data_filename: filename, description: row_factor["description"], alias: factor_alias)
               end
@@ -551,8 +550,8 @@ class Ge::GeModelsController < ApplicationController
                 #FactorValues ==> :name, :alias, :value_number, :value_text, :ge_factor_id, :ge_model_id
                 factor_name = row_factor["factor"]
                 if !factor_name.nil? && !factor_name.empty?
-                  #factor_alias = factor_name.gsub(/( )/, '_').downcase
-                  factor_alias = factor_name.gsub(/\s*\W+\s*/, "_").downcase
+                  #factor_alias = factor_name.gsub(/\s*\W+\s*/, "_").downcase
+                  factor_alias = factor_name.gsub(/( )/, '_').downcase
                   factors = @ge_model.ge_factors.where(alias: factor_alias)
                   unless factors.nil?
                     factor = factors.first

@@ -147,7 +147,7 @@
                                               value_from = default_value;
                                           }
 
-                                          $(".edition-bloc-slider-slider-<%= key %>").slider({
+                                          $('.edition-bloc-slider-slider-<%= key %>').slider({
                                               range: true,
                                               min: min_value,
                                               max: max_value,
@@ -155,13 +155,13 @@
                                               value: slide_current_value,
 
                                               slide: function (e, value) {
-                                                  $(".edition-bloc-slider-value-<%= key %>").text(data_text_hash[value]);
+                                                  $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[value]);
                                               }
                                           });
 
                                           $('#<%= "factor_#{key}" %>').on("change", function(data){
 
-                                              $(".edition-bloc-slider-value-<%= key %>").text(data_text_hash[parseInt($('#<%= "factor_#{key}" %>').val())]);
+                                              $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[parseInt($('#<%= "factor_#{key}" %>').val())]);
 
                                               var valuesToSubmit = $('form#ge_form').serialize();
                                               $.ajax({
