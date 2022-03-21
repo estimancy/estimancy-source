@@ -5,6 +5,9 @@
 
   <%= form_tag ge.ge_model_save_efforts_path(@ge_model), id: 'ge_form', method: "POST" do %>
 
+  <script>
+      var $factors_slider = {};
+  </script>
 <!--    <div class="edition-page-module pt-3 pl-10 d-flex justify-content-between">-->
     <div class="edition-page-module pl-10 d-flex justify-content-between">
       <div class="row page_module_title">
@@ -132,10 +135,24 @@
                                       <% slide_max_value =  ids_list.last %>
 
                                       <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %> factor-slider" value="" />
-
+                                      <%# rb_data_text_hash = {} %>
+                                      <%# ge_factor.ge_factor_values.all.each do |fv|
+                                        rb_data_text_hash["#{fv.id}"] = fv.value_text
+                                      end %>
                                       <script>
+
+                                          $(document).ready(function() {
+                                              $(".edition-bloc-slider-slider-<%= key %>").slider();
+                                              //('#<%#= "factor_#{key}" %>').slider();
+                                          });
+
+                                          function getKeyByValue(object, value) {
+                                              return Object.keys(object).find(key => object[key] === value);
+                                          }
+
                                           var data_ids = <%= raw ids_list.to_json.html_safe %> ;
                                           var data_text_hash = <%= raw js_factor_data.to_json.html_safe %>;
+                                          //var data_text_hash = <%#= raw rb_data_text_hash.to_json.html_safe %>;
                                           var value_from = parseInt(<%= selected_value %>);  //parseInt(<%#= ids_list.index(selected_value) %>);
                                           var default_value = parseInt(<%= default_value %>);
                                           var slide_current_value = parseInt(<%= slide_current_value %>);
@@ -147,28 +164,43 @@
                                               value_from = default_value;
                                           }
 
-                                          $('.edition-bloc-slider-slider-<%= key %>').slider({
+
+                                          //var $factors_slider = $(".edition-bloc-slider-slider-<%#= key %>").slider({
+                                          $factors_slider['<%= key %>'] = $(".edition-bloc-slider-slider-<%= key %>").slider({
                                               range: true,
                                               min: min_value,
                                               max: max_value,
                                               values: <%= raw ids_list.to_json.html_safe %>,
                                               value: slide_current_value,
+                                              //lock_to_ticks: true,
 
                                               slide: function (e, value) {
-                                                  $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[value]);
+                                                  var slider_text = data_text_hash[value];
+                                                  $(".edition-bloc-slider-value-<%= key %>").text(slider_text);
                                               }
+<!--                                              ,-->
+<!--                                               change: function (e, value) {-->
+<!--                                                   var slider_text = $(".edition-bloc-slider-value-<%#= key %>").text();-->
+<!--                                                   var slider_value = getKeyByValue(data_text_hash,slider_text);-->
+<!--                                                   $factors_slider['<%#= key %>'].value(slider_value);-->
+<!--                                               }-->
+
                                           });
 
                                           $('#<%= "factor_#{key}" %>').on("change", function(data){
 
-                                              $('.edition-bloc-slider-value-<%= key %>').text(data_text_hash[parseInt($('#<%= "factor_#{key}" %>').val())]);
+                                              //$(".edition-bloc-slider-value-<%#= key %>").text(data_text_hash[parseInt($('#<%#= "factor_#{key}" %>').val())]);
+                                              var slider_text = $(".edition-bloc-slider-value-<%= key %>").text();
+                                              var slider_value = getKeyByValue(data_text_hash,slider_text);
+                                              //$factors_slider['<%#= key %>'].value(slider_value);
 
                                               var valuesToSubmit = $('form#ge_form').serialize();
+
                                               $.ajax({
                                                   type: "POST",
                                                   //url: $('form#ge_form').attr('action'), //given url of the form
                                                   url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
-                                                  data: valuesToSubmit,
+                                                  data: valuesToSubmit + "&ge_factor_id=" + '<%= ge_factor.id %>' + "&scale_prod=" + '<%= "#{scale_prod}_factor" %>'  + "&factor_key=" + '<%= key %>'  + "&new_slider_text=" + slider_text  + "&new_slider_value=" + slider_value,
                                                   dataType: "script",
                                                   format: "js",
                                                   cache: true
@@ -585,4 +617,3 @@
     </div>
   <% end %>
 </section>
-

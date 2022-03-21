@@ -1,3 +1,6 @@
+//$('#<%#= "factor_#{@factor_key}" %>').val('<%#= raw @new_slider_value %>');
+//$("#factor_data_communications").slider( "value", 1000 );
+$factors_slider['<%= @factor_key %>'].value('<%= raw @new_slider_value %>');
 
 <% @output_attribute_evs.each do |ev| %>
 

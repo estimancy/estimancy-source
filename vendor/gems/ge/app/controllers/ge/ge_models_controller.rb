@@ -657,10 +657,23 @@ class Ge::GeModelsController < ApplicationController
       prod_factors = params["P_factor"]  || []
       conversion_factors = params["C_factor"] || []
 
+      scale_prod = params["scale_prod"]
+      @factor_key = params["factor_key"]
+      #@new_slider_value = params["new_slider_value"]
+
+      begin
+        ge_factor = Ge::GeFactor.where(id: params["ge_factor_id"]).first
+        ge_factor_values = ge_factor.ge_factor_values.where(value_text: params["new_slider_text"]).first
+        @new_slider_value = ge_factor_values.id
+        params[scale_prod][@factor_key] = @new_slider_value.to_s
+      rescue
+        @new_slider_value = nil
+      end
+
       @ge_input_values = Hash.new
       #Save Scale Factors data in GeInput table
       scale_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
+        factor_value = Ge::GeFactorValue.where(id: factor_value_id).first #find(factor_value_id)
         unless factor_value.nil?
           factor_value_number = factor_value.value_number
           ###scale_factor_sum += factor_value_number
@@ -672,7 +685,7 @@ class Ge::GeModelsController < ApplicationController
 
       #Save Prod Factors multiplier data in GeInput table
       prod_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
+        factor_value = Ge::GeFactorValue.where(id: factor_value_id).first #find(factor_value_id)
         unless factor_value.nil?
           factor_value_number = factor_value.value_number
           ###prod_factor_product *= factor_value_number
@@ -684,7 +697,7 @@ class Ge::GeModelsController < ApplicationController
 
       #Save Conversion Factors data in GeInput table
       conversion_factors.each do |key, factor_value_id|
-        factor_value = Ge::GeFactorValue.find(factor_value_id)
+        factor_value = Ge::GeFactorValue.where(id: factor_value_id).first #find(factor_value_id)
         unless factor_value.nil?
           factor_value_number = factor_value.value_number
           ###conversion_factor_product *= factor_value_number
