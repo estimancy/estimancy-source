@@ -116,7 +116,8 @@ Projestimate::Application.routes.draw do
     get "edit_user_registration",   :to => "devise/registrations#edit"
     get "help_login" => "registrations", :as => 'help_login'
 
-    match 'verify_connect_with_saml', :to => 'sessions#verify_connect_with_saml', :as => 'verify_connect_with_saml', via: [:get, :post]
+    match 'verify_connect_with_saml', :to => 'sessions#verify_connect_with_saml', :as => 'verify_connect_with_saml', via: :get
+    match 'connect_with_saml', :to => 'sessions#connect_with_saml', :as => 'connect_with_saml', via: :post
   end
   get 'awaiting_confirmation' => 'registrations#awaiting_confirmation', :as => 'awaiting_confirmation'
 

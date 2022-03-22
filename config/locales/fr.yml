@@ -2704,7 +2704,7 @@ fr:
   current_date: "Date du jour"
   enter_date: "Entrer une date"
   history: "Historique"
-  revised_effort: "Effort révisé"
+  revised_effort: "Effort ajusté"
   estimate_history: "Historique de l'estimation"
   allow_correction_before_change: "Autoriser la correction avant le changement"
 
@@ -2724,7 +2724,7 @@ fr:
   idp_metadata: "Métadonnées du fournisseur d'identité"
   idp_name_identifier_format: "Format de l'identifiant du nom(Name identifier format)"
 
-  cost_time_slider: "Curseur coût - délai"
+  cost_time_slider: "Curseur de durée pour le calcul du coût/délai"
   effort_with_unit: "Effort (jh)"
   update_the_module: "Mettez à jour le module."
   optimal_trapezium_distribution: "Répartition en Trapèze Optimal"

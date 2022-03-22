@@ -2232,7 +2232,7 @@ es:
   current_date: "Today's date"
   enter_date: "Enter a date"
   history: "History"
-  revised_effort: "Revised effort"
+  revised_effort: "Ajusted effort"
   estimate_history: "Estimate history"
   please_wait: "Please wait..."
 
@@ -2259,7 +2259,7 @@ es:
   idp_metadata: "Identity Provider Metadata"
   idp_name_identifier_format: "Name identifier format"
 
-  cost_time_slider: "Cost - time slider"
+  cost_time_slider: "Duration slider for cost/delay calculation"
   effort_with_unit: "Effort (m.d)"
   update_the_module: "Update the module"
   optimal_trapezium_distribution: "Optimal Trapezium Distribution"

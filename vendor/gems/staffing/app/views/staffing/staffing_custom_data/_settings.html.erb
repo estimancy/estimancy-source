@@ -127,7 +127,7 @@
 
                     $('.edition-bloc-slider-slider').slider({
                         slide: function (e, value) {
-                            $('.edition-bloc-slider-value').text(value);
+                            $('.edition-bloc-slider-value').text(value + " %");
 
                             set_staffing_values({
                                 min: "<%= @staffing_model.min_range %>",
@@ -557,18 +557,18 @@
                     series: [{
                         name: '<%= I18n.t(:optimal_trapezium_distribution) %>',
                         type: 'column',
-                        color: '#2077A1', //'#AC6A35',
+                        color: '#58585A', //'#2077A1', //'#AC6A35',
                         data: <%= @staffing_custom_data.chart_actual_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
                     },{
                         name: '<%= I18n.t(:ajusted_trapezium_distribution) %>',
                         type: 'column',
-                        color: '#E26524', //'#AA3538',
+                        color: '#2077A1', //'#E26524', //'#AA3538',
                         data: <%= @staffing_custom_data.trapeze_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>
                     },{
                         type: 'spline',
                         name: '<%= I18n.t(:ajusted_rayleigh_distribution) %>',
                         data: <%= @staffing_custom_data.rayleigh_chart_theoretical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
-                        color: '#E26524', //'#2F3EAF',
+                        color: '#2077A1', //'#E26524', //'#2F3EAF',
                         marker: {
                             enabled: false
                         }
@@ -576,7 +576,7 @@
                         type: 'spline',
                         name: '<%= I18n.t(:optimal_rayleigh_distribution) %>',
                         data: <%= @staffing_custom_data.mcdonnell_chart_theorical_coordinates.map{|i| i.last.nil? ? 0 : i.last.to_f.round(1)} %>,
-                        color: '#2077A1',
+                        color: '#58585A',
                         marker: {
                             enabled: false
                         }
