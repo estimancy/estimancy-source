@@ -99,22 +99,31 @@
     <div class="card card-widget">
       <div class="card-body">
 
-<!--          <div class="edition-bloc-title">-->
-<!--            <h5 class="page_module_subtitle">-->
-            <%#= I18n.t :use_slider %>
-<!--              <br>-->
-            <%#= I18n.t :use_slider_comments %>
-<!--            </h5>-->
-<!--          </div>-->
-
         <div class="edition-bloc-content pb-4">
+
+          <div class="edition-bloc-title" style="padding-bottom: initial;">
+            <h5 class="page_module_subtitle">
+              <%#= I18n.t :use_slider %> <%#= I18n.t :use_slider_comments %>
+              <%= I18n.t(:inputs) %>
+            </h5>
+          </div>
+          <hr>
+
           <div class="form-row">
-            <div class="col-3">
-              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">
-                <input class="mdl-textfield__input" type="text" id="name" value="<%= effort.to_f.round(2) %> <%= @staffing_model.effort_unit %>" disabled>
-                <small><%= I18n.t(:effort_with_unit) %></small>
-              </div>
+
+            <div class="col-2 timecost-indicator">
+              <div class="indicator-title"><%= I18n.t :effort_with_unit %></div>
+              <%= text_field_tag "", "#{effort.to_f.round(2)} ", disabled: true, id: "name", class: "form-control form-control-sm" %>
             </div>
+
+<!--            <div class="col-3" >-->
+<!--              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">-->
+<!--                <input class="mdl-textfield__input" type="text" id="name" value="<%#= effort.to_f.round(2) %> <%#= @staffing_model.effort_unit %>" disabled>-->
+<!--                <small><%#= I18n.t(:effort_with_unit) %></small>-->
+<!--              </div>-->
+              <%#= text_field_tag "", "#{effort.to_f.round(2)} ", disabled: true, id: "name", class: "form-control form-control-sm" %>
+<!--            </div>-->
+
             <div class="col-9 pl-6">
               <div class="edition-bloc-slider">
                 <span class="edition-bloc-slider-value"></span>
@@ -234,6 +243,16 @@
 
     <div class="card card-widget card-reversed">
       <div class="card-body">
+
+        <div class="edition-bloc-content pb-4">
+          <div class="edition-bloc-title" style="padding-bottom: initial;">
+            <h5 class="page_module_subtitle">
+              <%= I18n.t(:outputs) %>
+            </h5>
+          </div>
+          <hr>
+        </div>
+
         <div class="row w-100">
           <div class="col-4">
             <div class="timecost-indicator">
@@ -392,7 +411,7 @@
               <div class="indicator-optimal-value">
                 <span class="reference_staffing_rayleigh">
                   <% unless staffing_rayleigh.nil? %>
-                    <%= staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0%>
+                    <%= staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
                   <% end %>
                 </span> pers.
               </div>
