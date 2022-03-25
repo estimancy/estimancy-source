@@ -162,8 +162,10 @@ module OrganizationsHelper
       when :description
         content_tag("th class='text-left'", I18n.t(column.caption))
       when :version_number
-        content_tag("th class='text-left'", lk)
+        content_tag("th class='text-center'", lk)
       when :status_name
+        content_tag("th class='text-center'", lk)
+      when :start_date, :created_at, :updated_at
         content_tag("th class='text-center'", lk)
       else
         if column.field_id
@@ -327,7 +329,7 @@ module OrganizationsHelper
           end
         end
       when :business_need
-        content_tag("td", value)
+        content_tag("td class='text-left'", value)
       when :status_name
         if can_show_estimation?(project) || project.private == false || current_user.super_admin == true || can?(:manage, project)
           content_tag("td class='text-left'") do
@@ -361,9 +363,9 @@ module OrganizationsHelper
           content_tag("td") do
             if value == "-" or is_number?(value)
               if is_number?(value)
-                content_tag(:span, convert_with_precision(value, user_number_precision), class: "pull-right").to_s.html_safe
+                content_tag(:span, convert_with_precision(value, user_number_precision), class: "text-right").to_s.html_safe
               else
-                content_tag(:span, value, class: "pull-right").to_s.html_safe
+                content_tag(:span, value, class: "text-right").to_s.html_safe
               end
             else
               value

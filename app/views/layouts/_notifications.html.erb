@@ -13,8 +13,25 @@
             <span aria-hidden="True">&times;</span>
           </button>
           <h4 class="alert-heading"></h4>
+
           <p class="alert-content">
-            <%= msg.html_safe %>
+            <%#= msg.html_safe %>
+
+            <% if msg.is_a? (String)%>
+              <%= raw msg.html_safe %>
+            <% elsif msg.is_a?(Hash) %>
+              <% msg.each do |key, error| %>
+                <% if error.is_a?(Array) %>
+                  <% error.each do |error_n| %>
+                    <%= raw error_n.html_safe %>
+                  <% end %>
+                <% else %>
+                  <%= raw error.html_safe %>
+                <% end %>
+              <% end %>
+            <% else %>
+              <%= raw msg %>
+            <% end %>
           </p>
         </div>
       </div>
