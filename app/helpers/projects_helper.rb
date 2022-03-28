@@ -231,9 +231,11 @@ module ProjectsHelper
   def convert_with_precision(value, precision, delimiter = false)
     begin
       if current_user.locale == "en"
-        v = number_with_precision(value, precision: precision.to_i, locale: :en, delimiter: ',')
+        #v = number_with_precision(value, precision: precision.to_i, locale: :en, delimiter: ',')
+        v = number_with_precision(value, precision: precision.to_i, locale: :en)
       else
-        v = number_with_precision(value, precision: precision.to_i, locale: :fr, delimiter: '.')
+        #v = number_with_precision(value, precision: precision.to_i, locale: :fr, delimiter: '.')
+        v = number_with_precision(value, precision: precision.to_i, locale: :fr)
       end
     rescue
       begin

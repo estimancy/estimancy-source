@@ -18,6 +18,7 @@ en:
       timeout: "Your session expired. Please sign in again to continue."
       unauthenticated: "" #"You need to sign in or sign up before continuing."
       unconfirmed: "You have to confirm your email address before continuing."
+      unknown: "Unknown login/ID"
     mailer:
       confirmation_instructions:
         subject: "Confirmation instructions"
@@ -65,7 +66,7 @@ en:
         timeout: "Your session expired. Please sign in again to continue."
         unauthenticated: "" #"You need to sign in or sign up before continuing."
         unconfirmed: "You have to confirm your email address before continuing."
-
+        unknown: "Unknown login/ID"
     unlocks:
       send_instructions: "You will receive an email with instructions for how to unlock your account in a few minutes."
       send_paranoid_instructions: "If your account exists, you will receive an email with instructions for how to unlock it in a few minutes."

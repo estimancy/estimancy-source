@@ -1,7 +1,7 @@
 #encoding: utf-8
 class SessionsController < Devise::SessionsController
 
-  skip_before_filter :verify_authenticity_token #skip devise to failed when first logged in
+  skip_before_filter :verify_authenticity_token #, only: :create #skip devise to failed when first logged in
 
   def new
     unless params["SAMLResponse"].nil?
@@ -31,7 +31,7 @@ class SessionsController < Devise::SessionsController
             # flash[:alert] = t("devise.failure.#{request.env['warden'].message}") unless request.env['warden'].message.blank?
           end
         else
-          flash[:warning] = "Identifiant inconnu"
+          flash[:warning] = I18n.t('devise.failure.unknown') #"Identifiant inconnu"
         end
       end
 
@@ -108,6 +108,7 @@ class SessionsController < Devise::SessionsController
   end
 
 
+  #SAML request with isPassive=true to the IdP
   def verify_connect_with_saml
     resource_name = params[:resource_name]
     login_name = params[:login_name]
@@ -118,18 +119,21 @@ class SessionsController < Devise::SessionsController
       #redirect_to omniauth_authorize_path(resource_name, :saml) and return
 
       respond_to do |format|
-        format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'"  }
+        format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'" } and return
         format.html { redirect_to omniauth_authorize_path(resource_name, :saml) and return }
       end
     else
       #redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return
       respond_to do |format|
         #format.js { redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return }
-        flash[:notice] = "Compte non lié à une authentification SAML"
-        format.js { render :js => "window.location.href='"+sign_in_path+"'" }
-        format.html { redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return }
+        flash[:warning] = "Compte non lié à une authentification SAML"
+        #flash.now[:warning] = "Compte non lié à une authentification SAML"
+        #format.js { render :js => "window.location.href='"+sign_in_path+"'" and return}
+        #format.js { redirect_to sign_in_path, flash: { warning: "134263"} }
+        #format.js {render inline: "location.reload();", flash: { warning: "134263"} }
+        format.js { }
+        format.html { redirect_to :back, flash: { warning: "Compte non lié à une authentification SAML"} and return }
       end
-
     end
   end
 

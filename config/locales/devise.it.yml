@@ -18,6 +18,7 @@ it:
       timeout: "La sessione è scaduta , si prega di accedere nuovamente per continuare."
       unauthenticated: ""
       unconfirmed: "È necessario confermare il tuo account di posta elettronica."
+      unknown: "Unknown login/ID"
     mailer:
       confirmation_instructions:
         subject: "[Estimancy - stime del management] - Conferma"
@@ -56,6 +57,7 @@ it:
         timeout: "La sessione è scaduta , si prega di accedere nuovamente per continuare."
         unauthenticated: ""
         unconfirmed: "È necessario confermare il tuo account di posta elettronica."
+        unknown: "Unknown login/ID"
     unlocks:
       send_instructions: "Riceverai in pochi minuti una mail con le istruzioni per sbloccare il tuo account."
       send_paranoid_instructions: "Se la vostra e-mail esiste nel nostro database, si riceverà in pochi minuti un messaggio con le istruzioni per sbloccare il tuo account."
