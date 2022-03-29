@@ -261,7 +261,7 @@ en:
 
   # Estimation dashboard
   create_project: "Create an estimate"
-  projects_list: "Supplier quotations"
+  projects_list: "WP quotations"
   quick_access: "Quick access"
   to_the_latest_estimations_consulted : "to the latest estimations consulted"
   from_most_recent_to_least_recent: "From most recent to least recent"
@@ -518,7 +518,7 @@ en:
   platform_category: "Business value"
   project_category: "Project category"
   project_area: "Project Area"
-  label_acquisition: "Acquisition"
+  label_acquisition: "Batch number" #"Acquisition"
   label_platform: "Platform"
   label_version: "Version"
 
