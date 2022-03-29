@@ -332,7 +332,7 @@ module OrganizationsHelper
         content_tag("td class='text-left'", value)
       when :status_name
         if can_show_estimation?(project) || project.private == false || current_user.super_admin == true || can?(:manage, project)
-          content_tag("td class='text-left'") do
+          content_tag("td class='center'") do
             link_to project.status_name, main_app.add_comment_on_status_change_path(project_id: project.id),
                     remote: true, data: { toggle: "modal" },
                     class: "btn btn-status hide_overview load_modal",
