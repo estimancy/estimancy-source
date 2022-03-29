@@ -169,7 +169,7 @@ module OrganizationsHelper
         content_tag("th class='text-center'", lk)
       else
         if column.field_id
-          content_tag("th class='text-left'", column.caption)
+          content_tag("th class='text-center'", column.caption)
         else
           content_tag("th class='text-left'", lk)
         end
