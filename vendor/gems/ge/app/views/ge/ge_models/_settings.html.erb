@@ -134,7 +134,10 @@
                                       <% slide_min_value =  ids_list.first %>
                                       <% slide_max_value =  ids_list.last %>
 
-                                      <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %> factor-slider" value="" />
+                                      <span id='<%= "span_factor_#{key}" %>'>
+                                        <input type="text" name='<%= "#{scale_prod}_factor[#{key}]" %>' id='<%= "factor_#{key}" %>' class="edition-bloc-slider-slider-<%= key %> factor-slider" value="" />
+                                      </span>
+
                                       <%# rb_data_text_hash = {} %>
                                       <%# ge_factor.ge_factor_values.all.each do |fv|
                                         rb_data_text_hash["#{fv.id}"] = fv.value_text
@@ -185,6 +188,26 @@
 <!--                                                   $factors_slider['<%#= key %>'].value(slider_value);-->
 <!--                                               }-->
 
+                                          });
+
+
+                                          $('#<%= "span_factor_#{key}" %>').on("click", function(){
+                                              var slide_input_id = $(this).closest('div').find('input#<%= "factor_#{key}" %>').attr('id');
+                                              //alert(slide_input_id);
+                                              var slider_text = $(".edition-bloc-slider-value-<%= key %>").text();
+                                              var slider_value = getKeyByValue(data_text_hash,slider_text);
+                                              var valuesToSubmit = $('form#ge_form').serialize();
+
+                                              $.ajax({
+                                                  type: "POST",
+                                                  //url: $('form#ge_form').attr('action'), //given url of the form
+                                                  url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
+                                                  data: valuesToSubmit + "&ge_factor_id=" + '<%= ge_factor.id %>' + "&scale_prod=" + '<%= "#{scale_prod}_factor" %>'  + "&factor_key=" + '<%= key %>'  + "&new_slider_text=" + slider_text  + "&new_slider_value=" + slider_value,
+                                                  dataType: "script",
+                                                  format: "js",
+                                                  cache: true
+                                              });
+                                              return false;
                                           });
 
                                           $('#<%= "factor_#{key}" %>').on("change", function(data){
