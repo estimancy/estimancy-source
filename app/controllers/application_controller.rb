@@ -757,6 +757,10 @@ class ApplicationController < ActionController::Base
   # After authentication, user need to change their password during the first connection
   # So user will be redirect to the "edit_user_registration_path"
   def after_sign_in_path_for(resource)
+    request.env['omniauth.origin'] || root_path
+  end
+
+  def after_sign_in_path_for_save(resource)
     saml_auth = AuthMethod.where(name: "SAML").first
     unless saml_auth.nil?
       saml_auth_id = saml_auth.id
