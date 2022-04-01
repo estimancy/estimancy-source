@@ -31,4 +31,16 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to root_url
     end
   end
+
+  def saml
+    @user = User.find_for_saml_oauth(request.env['omniauth.auth'], current_user)
+    if @user.persisted?
+      sign_in_and_redirect @user, event: :authentication
+      set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+    else
+      session['devise.saml_data'] = request.env['omniauth.auth']
+      redirect_to redirect_to root_url
+    end
+  end
+
 end
