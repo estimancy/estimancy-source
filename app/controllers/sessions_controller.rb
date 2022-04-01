@@ -5,11 +5,55 @@ class SessionsController < Devise::SessionsController
   skip_before_action :authenticate_user!
 
   def new
+
+    set_flash_message(:warning, :invalid, :kind => "request.env['omniauth.auth'] = #{request.env['omniauth.auth']}")
+
+    unless params["SAMLResponse"].nil?
+      set_flash_message(:alert, :invalid, :kind => "SAMLResponse non nul = #{params["SAMLResponse"]}")
+
+      response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
+
+      @user = User.find_for_saml_oauth(response.attributes)
+
+      if @user.nil?
+        flash[:warning] = I18n.t("error_access_denied")
+        redirect_to root_url
+      else
+        sign_in_and_redirect @user, :event => :authentication
+      end
+    else
+      set_flash_message(:alert, :invalid, :kind => "SAMLResponse NUL = #{params["SAMLResponse"]}")
+      if params['user']
+        user = User.where(login_name: params['user']['login_name']).first
+
+        if user
+          if devise_mapping.confirmable? && !user.confirmed?
+            #set_flash_message(:warning, :unconfirmed, :kind => "Compte non confirme")  #.devise.sessions.user.test
+            set_flash_message(:alert, :unconfirmed, :kind => I18n.t('devise.failure.unconfirmed'))  #.devise.sessions.user.test
+          elsif user.access_locked?
+            set_flash_message(:alert, :locked, :kind => I18n.t('devise.failure.locked'))
+          else
+            set_flash_message(:alert, :invalid, :kind => I18n.t('devise.failure.invalid'))
+            # flash[:error] = resource.errors.full_messages.join('<br />')
+            # flash[:alert] = t("devise.failure.#{request.env['warden'].message}") unless request.env['warden'].message.blank?
+          end
+        else
+          flash[:warning] = I18n.t('devise.failure.unknown') #"Identifiant inconnu"
+        end
+      end
+
+      super
+    end
+  end
+
+
+  def new_save
     unless params["SAMLResponse"].nil?
 
       response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
 
       @user = User.find_for_saml_oauth(response.attributes)
+
       if @user.nil?
         flash[:warning] = I18n.t("error_access_denied")
         redirect_to root_url
@@ -108,6 +152,13 @@ class SessionsController < Devise::SessionsController
     end
   end
 
+  def after_sign_out_path_for_save()
+    if session['saml_uid'] && session['saml_session_index'] && APP_CONFIG['IDP_SLO_TARGET_URL']
+      user_saml_omniauth_authorize_path + "/spslo"
+    else
+      super
+    end
+  end
 
   #SAML request with isPassive=true to the IdP
   def verify_connect_with_saml
