@@ -214,8 +214,10 @@ class User < ActiveRecord::Base
 
 
   def self.find_for_saml_oauth(auth, signed_in_resource=nil)
+    #OmniAuth::AuthHash::InfoHash
     #user = User.find_by_email(auth.info.email)
-    user = User.find_by_login_name("UXFA15EN")
+    user = User.find_by_login_name(auth.uid)
+    #user = User.find_by_login_name("UXFA15EN")
     if user
       user.provider = "SAML"
       user

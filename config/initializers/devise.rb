@@ -317,15 +317,16 @@ CERTIFICATE
   #single IDP config
   config.omniauth :saml,
                   :idp_cert => CERTIFICATE,
-                  idp_cert_fingerprint: 'fingerprint',
-                  #:idp_cert_fingerprint_validator => lambda { |fingerprint| fingerprint },
                   idp_sso_target_url: APP_CONFIG['IDP_SSO_TARGET_URL'],
                   idp_slo_target_url: APP_CONFIG['IDP_SLO_TARGET_URL'],   #logout
                   issuer: APP_CONFIG['ISSUER'],
-                  #idp_entity_id: APP_CONFIG['IDP_ENTITY_ID'],
                   :assertion_consumer_service_url => APP_CONFIG['ASSERTION_CONSUMER_SERVICE_URL'],
                   :name_identifier_format => APP_CONFIG['NAME_IDENTIFIER_FORMAT'],
                   :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param }
+
+                  #idp_cert_fingerprint: 'fingerprint',
+                  #:idp_cert_fingerprint_validator => lambda { |fingerprint| fingerprint },
+                  # #idp_entity_id: APP_CONFIG['IDP_ENTITY_ID'],
 
   #To have support for multiple IDPs
   # config.omniauth :saml_idp_enedis,

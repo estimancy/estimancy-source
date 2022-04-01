@@ -49,8 +49,8 @@ class SessionsController < Devise::SessionsController
     unless params["SAMLResponse"].nil?
 
       response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
-
       @user = User.find_for_saml_oauth(response.attributes)
+      #flash[:warning] = "Response attributes = #{response.attributes}"
 
       if @user.nil?
         flash[:warning] = I18n.t("error_access_denied")

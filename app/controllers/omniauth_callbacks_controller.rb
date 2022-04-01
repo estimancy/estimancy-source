@@ -35,14 +35,21 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def saml
-    #@user = User.find_for_saml_oauth(request.env['omniauth.auth'])
-    @user = User.find_by_login_name("UXFA15EN")
-    if @user.persisted?
-      sign_in_and_redirect @user, event: :authentication
-      set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+    @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+    #@user = User.find_by_login_name("UXFA15EN")
+    #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
+
+    if @user.nil?
+      set_flash_message(:alert, :invalid, kind: "SAML : #{I18n.t("error_access_denied")}")
+      redirect_to root_url
     else
-      session['devise.saml_data'] = request.env['omniauth.auth']
-      redirect_to redirect_to root_url
+      if @user.persisted?
+        sign_in_and_redirect @user, event: :authentication
+        set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+      else
+        session['devise.saml_data'] = request.env['omniauth.auth']
+        redirect_to redirect_to root_url
+      end
     end
   end
 
