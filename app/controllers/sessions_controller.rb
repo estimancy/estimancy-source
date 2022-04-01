@@ -2,6 +2,7 @@
 class SessionsController < Devise::SessionsController
 
   skip_before_filter :verify_authenticity_token #, only: :create #skip devise to failed when first logged in
+  skip_before_action :authenticate_user!
 
   def new
     unless params["SAMLResponse"].nil?
