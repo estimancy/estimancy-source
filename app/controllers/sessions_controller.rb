@@ -6,10 +6,10 @@ class SessionsController < Devise::SessionsController
 
   def new
 
-    set_flash_message(:warning, :invalid, :kind => "request.env['omniauth.auth'] = #{request.env['omniauth.auth']}")
+    flash[:warning] = "request.env['omniauth.auth'] = #{request.env['omniauth.auth']}"
+    flash[:alert] = "SAMLResponse non nul = #{params["SAMLResponse"]}"
 
     unless params["SAMLResponse"].nil?
-      set_flash_message(:alert, :invalid, :kind => "SAMLResponse non nul = #{params["SAMLResponse"]}")
 
       response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
 
