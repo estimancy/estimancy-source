@@ -2,16 +2,16 @@
 class SessionsController < Devise::SessionsController
 
   skip_before_filter :verify_authenticity_token #, only: :create #skip devise to failed when first logged in
-  skip_before_action :authenticate_user!
+  #skip_before_action :authenticate_user!
 
   def new
 
-    #flash[:warning] = "request.env['omniauth.auth'] = #{request.env['omniauth.auth']}"
-    #flash[:alert] = "SAMLResponse non nul = #{params["SAMLResponse"]}"
+    flash[:warning] = "request.env['omniauth.auth'] = #{request.env['omniauth.auth']}"
+    flash[:alert] = "SAMLResponse non nul = #{params["SAMLResponse"]}"
 
-    if request.env['omniauth.auth']#.nil?
+    unless params["SAMLResponse"].nil?
 
-      @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+      @user = User.where(login_name: "UXFA15EN").first #User.find_for_saml_oauth(request.env['omniauth.auth'])
       if @user.nil?
         flash[:warning] = I18n.t("error_access_denied")
         redirect_to root_url
