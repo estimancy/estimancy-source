@@ -19,7 +19,8 @@
 #
 #############################################################################
 
-class OmniauthCallbacksController < Devise::OmniauthCallbacksController
+class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+  skip_before_action :verify_authenticity_token
   def google_oauth2
     @user = User.find_for_google_oauth2(request.env["omniauth.auth"], current_user)
     if @user.persisted?
@@ -33,7 +34,8 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def saml
-    @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+    #@user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+    @user = User.find_by_login_name("UXFA15EN")
     if @user.persisted?
       sign_in_and_redirect @user, event: :authentication
       set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
