@@ -33,7 +33,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def saml
-    @user = User.find_for_saml_oauth(request.env['omniauth.auth'], current_user)
+    @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
     if @user.persisted?
       sign_in_and_redirect @user, event: :authentication
       set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?

@@ -6,15 +6,12 @@ class SessionsController < Devise::SessionsController
 
   def new
 
-    flash[:warning] = "request.env['omniauth.auth'] = #{request.env['omniauth.auth']}"
-    flash[:alert] = "SAMLResponse non nul = #{params["SAMLResponse"]}"
+    #flash[:warning] = "request.env['omniauth.auth'] = #{request.env['omniauth.auth']}"
+    #flash[:alert] = "SAMLResponse non nul = #{params["SAMLResponse"]}"
 
-    unless params["SAMLResponse"].nil?
+    if request.env['omniauth.auth']#.nil?
 
-      response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
-
-      @user = User.find_for_saml_oauth(response.attributes)
-
+      @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
       if @user.nil?
         flash[:warning] = I18n.t("error_access_denied")
         redirect_to root_url
@@ -22,7 +19,6 @@ class SessionsController < Devise::SessionsController
         sign_in_and_redirect @user, :event => :authentication
       end
     else
-      set_flash_message(:alert, :invalid, :kind => "SAMLResponse NUL = #{params["SAMLResponse"]}")
       if params['user']
         user = User.where(login_name: params['user']['login_name']).first
 
