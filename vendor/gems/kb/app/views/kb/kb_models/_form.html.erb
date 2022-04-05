@@ -78,6 +78,15 @@
                   <div class="form-row">
                     <div class="col-6">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :enable_filters, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                        <label class="mdl-textfield__label" for="enable_filters" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:modification_of_the_filters_value_allow) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <label class="mdl-textfield__label" for="date_min" style="margin-top: -30px;"><%= I18n.t(:start_date) %></label>
                         <%#= f.input :date_min, :label => false, :class => 'date-picker form-control' %>
                           <% if @kb_model.date_min.nil? %>
@@ -184,6 +193,7 @@
                             <%= k %>
                           </th>
                         <% end %>
+                        <th><%= I18n.t(:description) %></th>
                         <th>Actions</th>
                       </tr>
                       </thead>
@@ -200,7 +210,7 @@
                           <% end %>
                           <th>
                             <%= select_tag "filter_#{arr[i]}",
-                                           options_for_select([I18n.t(:project_area), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category)], filter),
+                                           options_for_select([I18n.t(:project_area), I18n.t(:applications), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category), I18n.t(:providers)], filter),
                                            style: "margin-top: -3px;",
                                            class: "span12" %>
                           </th>
@@ -218,6 +228,7 @@
                               <%= v %>
                             </td>
                           <% end %>
+                          <td><%= kb_data.description %></td>
                           <td class="span1 center">
                             <%= link_to "", kb_data, method: :delete, class: "fa fa-trash", data: {confirm: "Etes vous sur de vouloir supprimer cette donnée ?"} %>
                           </td>

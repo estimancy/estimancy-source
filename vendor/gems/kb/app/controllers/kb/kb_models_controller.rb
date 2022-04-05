@@ -45,16 +45,19 @@ class Kb::KbModelsController < ApplicationController
 
     worksheet = workbook.add_worksheet("Données")
     kb_model_datas = @kb_model.kb_datas
-    default_attributs = [I18n.t(:size), I18n.t(:effort_import), "Date", I18n.t(:project_area)]
+    default_attributs = [I18n.t(:size), I18n.t(:effort_import), "Date", I18n.t(:description)]
 
     if !kb_model_datas.nil? && !kb_model_datas.empty?
       kb_model_datas.each_with_index do |kb_data, index|
         worksheet.add_cell(index + 1, 0, kb_data.size).change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 1, kb_data.effort).change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 2, kb_data.project_date).change_horizontal_alignment('center')
-        kb_data.custom_attributes.each_with_index  do |(custom_attr_k, custom_attr_v),index_2|
-          worksheet.add_cell(index + 1, index_2 + 3, custom_attr_v).change_horizontal_alignment('center')
-          if index_2 + 3 > 2
+        worksheet.add_cell(index + 1, 3, kb_data.description)
+
+        nb_col = 4 # ancienne valeur nb_col = 3
+        kb_data.custom_attributes.each_with_index do |(custom_attr_k, custom_attr_v),index_2|
+          worksheet.add_cell(index + 1, index_2 + nb_col, custom_attr_v).change_horizontal_alignment('center')
+          if index_2 + nb_col > 2
             default_attributs.include?(custom_attr_k.to_s) ? default_attributs : default_attributs  << custom_attr_k.to_s
           end
         end
@@ -181,9 +184,11 @@ class Kb::KbModelsController < ApplicationController
         size   = file.cell(line, 'A')
         effort   = file.cell(line, 'B')
         pd   = file.cell(line, 'C')
+        description   = file.cell(line, 'D')
 
         h = Hash.new
-        ('D'..'ZZ').each_with_index do |letter, i|
+        #('D'..'ZZ').each_with_index do |letter, i|
+        ('E'..'ZZ').each_with_index do |letter, i|
           if i < file.sheet(1).last_column
             begin
               h[file.cell(1, letter.to_s).to_sym] = file.cell(line, letter.to_s)
@@ -198,7 +203,8 @@ class Kb::KbModelsController < ApplicationController
                           project_date: pd,
                           unit: "UF",
                           custom_attributes: h,
-                          kb_model_id: @kb_model.id)
+                          kb_model_id: @kb_model.id,
+                          description: description)
       end
     end
 
@@ -277,7 +283,8 @@ class Kb::KbModelsController < ApplicationController
     organization_id = module_project.organization_id
 
     @kb_model = Kb::KbModel.find(params[:kb_model_id])
-    @kb_input = @kb_model.kb_inputs.where(module_project_id: module_project.id).first_or_create
+    @kb_input = @kb_model.kb_inputs.where(module_project_id: module_project.id)
+                                   .first_or_create(kb_model_id: @kb_model.id, module_project_id: module_project.id, organization_id: organization_id)
 
     if @kb_model.date_min.nil? || @kb_model.date_max.nil?
       if @kb_model.n_max.nil?
@@ -305,9 +312,17 @@ class Kb::KbModelsController < ApplicationController
 
     @kb_datas.each do |i|
       unless params["filters"].nil?
-        params["filters"].each do |f|
-          if (params["filters"].values.reject { |c| c.empty? }.include?(i.custom_attributes[f.first.to_sym]))
-            @project_list << i
+        # params["filters"].each do |f|
+        #   if (params["filters"].values.reject { |c| c.empty? }.include?(i.custom_attributes[f.first.to_sym]))
+        #     @project_list << i
+        #   end
+        # end
+
+        params["filters"].each do |key, value|
+          unless value.blank?
+            if value.to_s == i.custom_attributes[key.to_sym].to_s
+              @project_list << i
+            end
           end
         end
       end
@@ -355,7 +370,7 @@ class Kb::KbModelsController < ApplicationController
     end
 
     @project_list.map do |kb_data|
-      @values << [kb_data.size.round(2), kb_data.effort.round(2)]
+      @values << [kb_data.size.round(2), kb_data.effort.round(2), kb_data.description]
     end
 
     @project_list.map(&:size).each do |i|

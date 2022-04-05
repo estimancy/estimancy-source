@@ -881,8 +881,62 @@ class ProjectsController < ApplicationController
   #Fin sauvegarde 26/11/2021 sauvegarde des 3 fonction pour tester avec Sidekiq
 
 
+  #Liste des utilisateurs par groupe
+  def projects_list_until_date
+
+    # User.joins(:groups).where(groups: {name: "SNCF"}).count   #914
+    # User.joins(:groups).where(groups: {name: ["SST-ENG", "SST-EST"]}).count   #1216
+    #User.joins(:groups).where(groups: {name: "SST-EST"}).or(User.joins(:groups).where(groups: {name: "SST-ENG"})).count   #121
+
+    workbook = RubyXL::Workbook.new
+    worksheet_synt = workbook.worksheets[0]
+    worksheet_synt.sheet_name = 'Liste utilisateurs par CDS'
+
+    i = 1
+
+    worksheet_synt.add_cell(0, 0, "CDS")
+    worksheet_synt.add_cell(0, 1, "Nom")
+    worksheet_synt.add_cell(0, 2, "Prénom")
+    worksheet_synt.add_cell(0, 3, "Identifiant")
+    worksheet_synt.add_cell(0, 4, "Email")
+    worksheet_synt.add_cell(0, 5, "Groupes")
+
+    pi = 1
+
+    Organization.all.each_with_index do |organization, index|
+
+      ref_group_names = ["SST-EST", "SST-ENG", "SNCF", "*USER"]
+
+      user_groups = organization.groups.where(name: ref_group_names)
+      user_group_ids = user_groups.map(&:id)
+
+      dsi_groups = organization.groups.where.not(name: ref_group_names)
+      dsi_group_ids = dsi_groups.map(&:id)
+
+      #User.where(organization_id: organization.id).joins(:groups).where(groups: {id: dsi_group_ids}).uniq.each do |user|
+      organization.users.joins(:groups).where(groups: {id: dsi_group_ids}).uniq.each do |user|
+
+        user.groups.where(organization_id: organization.id).where.not(id: user_group_ids).each do |group|
+          worksheet_synt.add_cell(pi, 0, organization.name)
+          worksheet_synt.add_cell(pi, 1, user.last_name)
+          worksheet_synt.add_cell(pi, 2, user.first_name)
+          worksheet_synt.add_cell(pi, 3, user.login_name)
+          worksheet_synt.add_cell(pi, 4, user.email)
+          #worksheet_synt.add_cell(pi, 5, "#{user.groups.where(organization_id: organization.id).where.not(id: user_group_ids).join('; ')}")
+          worksheet_synt.add_cell(pi, 5, group.name)
+
+          pi = pi + 1
+        end
+      end
+    end
+
+
+    workbook.write("#{Rails.root}/public/ListeUsersCDS.xlsx")
+    send_data(workbook.stream.string, filename: "ProjectsDepuisNovembre2021.xlsx", type: "application/vnd.ms-excel")
+  end
+
   #recherche doublons version
-  def projects_list_until_date #doublons
+  def projects_list_until_date_gestion_doublons_devis #gestion doublons
     duplicated_project_versions = Project.select(:organization_id, :is_model, :title, :version_number).group(:organization_id, :is_model, :title, :version_number).having("count(*) > 1").size
 
     Project.where(organization_id: 75, is_model: false).select(:organization_id, :is_model, :title, :version_number).group(:organization_id, :original_model_id).having("count(*) > 1").size
@@ -2590,11 +2644,12 @@ class ProjectsController < ApplicationController
 
     elsif @module_project.pemodule.alias == "kb"
       @kb_model = @module_project.kb_model
-      @kb_input = @module_project.kb_inputs.last
+      @kb_input = @module_project.kb_inputs.where(kb_model_id: @kb_model.id).last
 
       if @kb_input.nil?
-        @kb_input = Kb::KbInput.create(organization_id: @project_organization.id,
-                                       module_project_id: @module_project.id)
+        @kb_input = Kb::KbInput.create(module_project_id: @module_project.id,
+                                       kb_model_id: @kb_model.id,
+                                       organization_id: @project_organization.id)
       end
 
       @project_list = []

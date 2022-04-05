@@ -192,7 +192,7 @@
 
 
                                           $('#<%= "span_factor_#{key}" %>').on("click", function(){
-                                              var slide_input_id = $(this).closest('div').find('input#<%= "factor_#{key}" %>').attr('id');
+                                              //var slide_input_id = $(this).closest('div').find('input#<%#= "factor_#{key}" %>').attr('id');
                                               //alert(slide_input_id);
                                               var slider_text = $(".edition-bloc-slider-value-<%= key %>").text();
                                               var slider_value = getKeyByValue(data_text_hash,slider_text);
@@ -200,7 +200,6 @@
 
                                               $.ajax({
                                                   type: "POST",
-                                                  //url: $('form#ge_form').attr('action'), //given url of the form
                                                   url: '<%= "/ge/ge_models/#{@ge_model.id}/update_calculated_effort" %>',
                                                   data: valuesToSubmit + "&ge_factor_id=" + '<%= ge_factor.id %>' + "&scale_prod=" + '<%= "#{scale_prod}_factor" %>'  + "&factor_key=" + '<%= key %>'  + "&new_slider_text=" + slider_text  + "&new_slider_value=" + slider_value,
                                                   dataType: "script",

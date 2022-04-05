@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20220224095752) do
+ActiveRecord::Schema.define(version: 20220330141202) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1275,6 +1275,7 @@ ActiveRecord::Schema.define(version: 20220224095752) do
     t.text    "custom_attributes", limit: 65535
     t.integer "kb_model_id",       limit: 4
     t.date    "project_date"
+    t.text    "description",       limit: 65535
   end
 
   create_table "kb_kb_inputs", force: :cascade do |t|
@@ -1293,6 +1294,7 @@ ActiveRecord::Schema.define(version: 20220224095752) do
     t.string   "name",                      limit: 255
     t.boolean  "three_points_estimation"
     t.boolean  "enabled_input"
+    t.boolean  "enable_filters"
     t.integer  "organization_id",           limit: 4
     t.float    "standard_unit_coefficient", limit: 24
     t.string   "effort_unit",               limit: 255

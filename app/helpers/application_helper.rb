@@ -35,12 +35,17 @@ module ApplicationHelper
         tmp = "platform_category"
       when I18n.t(:acquisition_category)
         tmp = "acquisition_category"
-      else
+    else
+      tmp = value.underscore
         # type code here
     end
 
     unless tmp.nil?
-      project.send(tmp)
+      begin
+        project.send(tmp)
+      rescue
+        nil
+      end
     end
   end
 

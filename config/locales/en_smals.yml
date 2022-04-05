@@ -1892,7 +1892,8 @@ en_smals:
   label_coef_conv_cost: "Conversion factor in standard cost"
   enable_effort: "Enable effort"
   label_coef_effort_unit: "Module effort unit coefficient"
-  modification_of_the_input_value_allow: "Changing the filter value"
+  modification_of_the_input_value_allow: "Modify input values"
+  modification_of_the_filters_value_allow: "Modify filter values"
   equation: "Equation"
   project_number: "Project number"
   effort_week_unit: "Hours per week"
@@ -2687,5 +2688,10 @@ en_smals:
   guw_model_calculation: "Generic unit of work calculation"
   expert_judgement_calculation: "Expert judgment calculation"
   operation_module_calculation: "Operations calculation"
+  input_size_with_unit: "Input size"
+  input_effort_with_unit: "Input effort (m.d)"
+  input_effort_without_unit: "Input effort"
+  gap_difference: "Difference"
+  all_projects_in_list: "All"
 
 
