@@ -35,8 +35,12 @@ module ApplicationHelper
         tmp = "platform_category"
       when I18n.t(:acquisition_category)
         tmp = "acquisition_category"
+    when "Fournisseurs"
+      tmp = "provider"
+    when "Applications"
+      tmp = "application"
     else
-      tmp = value.underscore
+      tmp = value.singularize.underscore
         # type code here
     end
 
