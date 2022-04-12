@@ -58,6 +58,15 @@
                   </div>
 
                   <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 3 } %>
+                        <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
                     <div class="col-6">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :three_points_estimation, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
@@ -185,19 +194,22 @@
                     <table class="table table-bordered">
                       <thead>
                       <tr>
-                        <th><%= I18n.t(:size) %></th>
-                        <th>Effort</th>
+                        <th><%= I18n.t(:name) %></th>
+                        <th><%= I18n.t(:description) %></th>
                         <th>Date</th>
+                        <th><%= I18n.t(:size_label) %></th>
+                        <th><%= I18n.t(:effort_label) %></th>
                         <% @kb_model.kb_datas.first.custom_attributes.keys.each do |k| %>
                           <th>
                             <%= k %>
                           </th>
                         <% end %>
-                        <th><%= I18n.t(:description) %></th>
                         <th>Actions</th>
                       </tr>
                       </thead>
                       <tr>
+                        <th></th>
+                        <th></th>
                         <th></th>
                         <th></th>
                         <th></th>
@@ -220,15 +232,16 @@
                       <tbody>
                       <% @kb_model.kb_datas.each do |kb_data| %>
                         <tr>
+                          <td><%= kb_data.name %></td>
+                          <td><%= kb_data.description %></td>
+                          <td><%= kb_data.project_date %></td>
                           <td><%= kb_data.size %></td>
                           <td><%= kb_data.effort %></td>
-                          <td><%= kb_data.project_date %></td>
                           <% kb_data.custom_attributes.values.each do |v| %>
                             <td>
                               <%= v %>
                             </td>
                           <% end %>
-                          <td><%= kb_data.description %></td>
                           <td class="span1 center">
                             <%= link_to "", kb_data, method: :delete, class: "fa fa-trash", data: {confirm: "Etes vous sur de vouloir supprimer cette donnée ?"} %>
                           </td>

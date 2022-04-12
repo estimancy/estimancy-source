@@ -2724,3 +2724,8 @@ fr_acoss:
   input_effort_without_unit: "Effort en entrée"
   gap_difference: "Ecart"
   all_projects_in_list: "Tous"
+  treatments: "Traitements"
+  size_dt: "Taille (D+T)"
+  size_label: "Taille"
+  effort_label: "Effort"
+  filter: "Filtre"

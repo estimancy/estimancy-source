@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20220330141202) do
+ActiveRecord::Schema.define(version: 20220411094659) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1310,6 +1310,7 @@ ActiveRecord::Schema.define(version: 20220330141202) do
     t.string   "filter_b",                  limit: 255
     t.string   "filter_c",                  limit: 255
     t.string   "filter_d",                  limit: 255
+    t.text     "description",               limit: 65535
   end
 
   add_index "kb_kb_models", ["organization_id", "name"], name: "index_kb_kb_models_on_organization_id_and_name", unique: true, using: :btree
@@ -2157,6 +2158,7 @@ ActiveRecord::Schema.define(version: 20220330141202) do
     t.string   "size_unit",               limit: 255
     t.boolean  "three_points_estimation"
     t.boolean  "enabled_input"
+    t.boolean  "enable_filters"
     t.integer  "organization_id",         limit: 4
     t.integer  "copy_number",             limit: 4
     t.integer  "copy_id",                 limit: 4

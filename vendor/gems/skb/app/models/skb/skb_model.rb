@@ -22,7 +22,7 @@
 module Skb
   class SkbModel < ActiveRecord::Base
 
-    attr_accessible :name, :size_unit, :three_points_estimation, :enabled_input, :organization_id, :copy_number, :copy_id,
+    attr_accessible :name, :size_unit, :three_points_estimation, :enabled_input, :enable_filters, :organization_id, :copy_number, :copy_id,
                     :description, :label_x, :label_y, :filter_a, :filter_b, :filter_c, :filter_d, :selected_attributes,
                     :date_min, :date_max, :n_max
 

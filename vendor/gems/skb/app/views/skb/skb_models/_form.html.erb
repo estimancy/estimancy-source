@@ -27,7 +27,7 @@
                 <%= hidden_field_tag :organization_id, @organization.id %>
                 <%= file_field_tag :file %>
                 <%= hidden_field_tag :skb_model_id, nil %>
-                <%= submit_tag I18n.t(:import_instance_model), :class => 'btn' %>
+                <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-primary' %>
               <% end %>
             </div>
           <% end %>
@@ -89,6 +89,15 @@
                     <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                       <%= f.input :enabled_input, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
                       <label class="mdl-textfield__label" for="enabled_input" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:modification_of_the_input_value_allow) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-6">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :enable_filters, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="enable_filters" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:modification_of_the_filters_value_allow) %></label>
                     </div>
                   </div>
                 </div>
@@ -190,12 +199,12 @@
               <table class="table table-bordered tablesorterPager">
                 <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Description</th>
+                  <th><%= I18n.t(:name) %></th>
+                  <th><%= I18n.t(:description) %></th>
                   <th>Date</th>
-                  <th>Données</th>
-                  <th>Traitements</th>
-                  <th>Taille (D+P)</th>
+                  <th><%= I18n.t(:data) %></th>
+                  <th><%= I18n.t(:treatments) %></th>
+                  <th><%= I18n.t(:size_dt) %></th>
                   <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
                     <th>
                       <%= k %>
@@ -214,7 +223,7 @@
                   <% @skb_model.skb_datas.first.custom_attributes.keys.each_with_index do |j, i| %>
                     <th>
                       <%= select_tag "filter_#{arr[i]}",
-                                     options_for_select([I18n.t(:project_area), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category)], @skb_model.send("filter_#{arr[i]}")),
+                                     options_for_select([I18n.t(:project_area), I18n.t(:applications), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category), I18n.t(:providers)], @skb_model.send("filter_#{arr[i]}")),
                                      style: "margin-top: -3px;",
                                      class: "span12" %>
                     </th>

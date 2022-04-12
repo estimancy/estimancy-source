@@ -2163,3 +2163,8 @@ en-gb:
   modification_of_the_input_value_allow: "Modify input values"
   modification_of_the_filters_value_allow: "Modify filter values"
   all_projects_in_list: "All"
+  treatments: "Treatments"
+  size_dt: "Size (D+T)"
+  size_label: "Size"
+  effort_label: "Effort"
+  filter: "Filter"

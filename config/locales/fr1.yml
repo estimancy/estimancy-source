@@ -2327,3 +2327,8 @@ fr1:
   modification_of_the_input_value_allow: "Modification des valeurs d'entrée"
   modification_of_the_filters_value_allow: "Modification des valeurs des filtres"
   all_projects_in_list: "Tous"
+  treatments: "Traitements"
+  size_dt: "Taille (D+T)"
+  size_label: "Taille"
+  effort_label: "Effort"
+  filter: "Filtre"

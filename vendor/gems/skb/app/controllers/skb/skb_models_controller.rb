@@ -105,21 +105,24 @@ class Skb::SkbModelsController < ApplicationController
     worksheet.add_cell(5, 0, I18n.t(:modification_of_the_input_value_allow))
     worksheet.add_cell(5, 1, @skb_model.enabled_input ? 1 : 0)
 
-    worksheet.add_cell(6, 0, I18n.t(:start_date))
-    worksheet.add_cell(6, 1, @skb_model.date_min)
+    worksheet.add_cell(6, 0, I18n.t(:modification_of_the_filters_value_allow))
+    worksheet.add_cell(6, 1, @skb_model.enable_filters ? 1 : 0)
 
-    worksheet.add_cell(7, 0, I18n.t(:end_date))
-    worksheet.add_cell(7, 1, @skb_model.date_max)
+    worksheet.add_cell(7, 0, I18n.t(:start_date))
+    worksheet.add_cell(7, 1, @skb_model.date_min)
 
-    worksheet.add_cell(8, 0, "N derniers projets")
-    worksheet.add_cell(8, 1, @skb_model.n_max)
+    worksheet.add_cell(8, 0, I18n.t(:end_date))
+    worksheet.add_cell(8, 1, @skb_model.date_max)
 
-    worksheet.add_cell(9, 0, I18n.t(:size_unit))
-    worksheet.add_cell(9, 1, @skb_model.size_unit)
+    worksheet.add_cell(9, 0, "N derniers projets")
+    worksheet.add_cell(9, 1, @skb_model.n_max)
 
-    worksheet.add_cell(10, 0, I18n.t(:filters))
+    worksheet.add_cell(10, 0, I18n.t(:size_unit))
+    worksheet.add_cell(10, 1, @skb_model.size_unit)
+
+    worksheet.add_cell(11, 0, I18n.t(:filters))
     unless @skb_model.selected_attributes.empty?
-      worksheet.add_cell(10, 1,@skb_model.selected_attributes.join(','))
+      worksheet.add_cell(11, 1,@skb_model.selected_attributes.join(','))
     end
 
     worksheet.change_column_width(0, I18n.t(:modification_of_the_input_value_allow).size)
@@ -127,19 +130,19 @@ class Skb::SkbModelsController < ApplicationController
 
     worksheet = workbook.add_worksheet("Données")
     skb_model_datas = @skb_model.skb_datas
-    default_attributs = ["Nom", "Description", "Date", "Données", "Traitements"]
+    default_attributs = [I18n.t(:name), I18n.t(:description), "Date", "Données", "Traitements"]
 
     if !skb_model_datas.nil? && !skb_model_datas.empty?
 
-      worksheet.add_cell(0, 0, "ID").change_horizontal_alignment('center')
-      worksheet.add_cell(0, 1, "Nom").change_horizontal_alignment('center')
+      worksheet.add_cell(0, 0, I18n.t(:name)).change_horizontal_alignment('center')
+      worksheet.add_cell(0, 1, I18n.t(:description)).change_horizontal_alignment('center')
       worksheet.add_cell(0, 2, "Date").change_horizontal_alignment('center')
       worksheet.add_cell(0, 3, "X").change_horizontal_alignment('center')
       worksheet.add_cell(0, 4, "Y").change_horizontal_alignment('center')
 
       if @skb_model.selected_attributes.nil? ||  @skb_model.selected_attributes.empty?
-        worksheet.add_cell(0, 5, "F1").change_horizontal_alignment('center')
-        worksheet.add_cell(0, 6, "F2").change_horizontal_alignment('center')
+        worksheet.add_cell(0, 5, "#{I18n.t(:filter)} 1").change_horizontal_alignment('center')
+        worksheet.add_cell(0, 6, "#{I18n.t(:filter)} 2").change_horizontal_alignment('center')
       else
         @skb_model.selected_attributes.each_with_index do |filter, index|
           worksheet.add_cell(0, 5+index, "#{filter}").change_horizontal_alignment('center')
@@ -188,13 +191,14 @@ class Skb::SkbModelsController < ApplicationController
                                        label_x: file.cell(3,2), label_y: file.cell(4,2),
                                        three_points_estimation: (file.cell(5,2) == 1 ? true : false),
                                        enabled_input: (file.cell(6,2) == 1 ? true : false),
-                                       date_min: file.cell(7,2), date_max: file.cell(8,2),
-                                       n_max: file.cell(9,2),  size_unit: file.cell(10,2),
+                                       enable_filters: (file.cell(7,2) == 1 ? true : false),
+                                       date_min: file.cell(8,2), date_max: file.cell(9,2),
+                                       n_max: file.cell(10,2),  size_unit: file.cell(11,2),
                                        organization_id: @organization.id)
 
 
-        unless file.cell(11,2).empty?
-          @skb_model.selected_attributes = file.cell(11,2).split(',')
+        unless file.cell(12,2).empty?
+          @skb_model.selected_attributes = file.cell(12,2).split(',')
         end
 
         if @skb_model.save

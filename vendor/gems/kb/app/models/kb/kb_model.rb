@@ -22,7 +22,7 @@
 module Kb
   class KbModel < ActiveRecord::Base
 
-    attr_accessible :name, :standard_unit_coefficient, :effort_unit, :three_points_estimation, :enabled_input, :enable_filters,
+    attr_accessible :name, :description, :standard_unit_coefficient, :effort_unit, :three_points_estimation, :enabled_input, :enable_filters,
                     :organization_id, :standard_unit_coefficient, :effort_unit, :selected_attributes,
                     :copy_number, :copy_id, :n_max, :date_max, :date_min, :filter_a, :filter_b, :filter_c, :filter_d
 

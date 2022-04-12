@@ -39,9 +39,15 @@ module ApplicationHelper
       tmp = "provider"
     when "Applications"
       tmp = "application"
+    when nil
+      tmp = nil
     else
-      tmp = value.singularize.underscore
-        # type code here
+      # type code here
+      begin
+        tmp = value.singularize.underscore
+      rescue
+        tmp = nil
+      end
     end
 
     unless tmp.nil?

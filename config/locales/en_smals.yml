@@ -2693,5 +2693,10 @@ en_smals:
   input_effort_without_unit: "Input effort"
   gap_difference: "Difference"
   all_projects_in_list: "All"
+  treatments: "Treatments"
+  size_dt: "Size (D+T)"
+  size_label: "Size"
+  effort_label: "Effort"
+  filter: "Filter"
 
 

@@ -373,7 +373,9 @@
                 <% unless @kb_model.kb_datas.empty? %>
                   <p>
                     <% arr = ["a", "b", "c", "d"] %>
-                    <% @kb_model.kb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
+                    <% @kb_datas_custom_attributes = @kb_model.kb_datas.map(&:custom_attributes) %>
+
+                    <% @kb_datas_custom_attributes.first.keys.each_with_index do |key, i| %>
                       <% if key.to_s.in?(@kb_model.selected_attributes) %>
                         <% begin %>
                           <% filter = @kb_model.send("filter_#{arr[i]}") %>
@@ -394,7 +396,7 @@
                           <% end %>
 
                           <%= select_tag "filters[#{key}]",
-                                         options_for_select(@kb_model.kb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq.unshift(project_filter_value).compact,
+                                         options_for_select(@kb_datas_custom_attributes.map{|ca| ca[key] }.uniq.unshift(project_filter_value).compact,
                                                             selected: project_filter_value),
                                          class: "string required form-control filters",
                                          #prompt: I18n.t(:Indifferent),

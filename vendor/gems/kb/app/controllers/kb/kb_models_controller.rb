@@ -34,27 +34,55 @@ class Kb::KbModelsController < ApplicationController
     worksheet = workbook[0]
     worksheet.sheet_name = "Modèle"
 
-    worksheet.add_cell(0, 0, "Nom")
+    worksheet.add_cell(0, 0, I18n.t(:name))
     worksheet.add_cell(0, 1, @kb_model.name)
 
-    worksheet.add_cell(1, 0, "Coefficient de conversion en unité standard")
-    worksheet.add_cell(1, 1, @kb_model.standard_unit_coefficient)
+    worksheet.add_cell(1, 0, I18n.t(:description))
+    worksheet.add_cell(1, 1, @kb_model.description)
 
-    worksheet.add_cell(2, 0, "Coefficient de conversion en unité standard")
-    worksheet.add_cell(2, 1, @kb_model.effort_unit)
+    worksheet.add_cell(2, 0, I18n.t(:standard_coef_conv))
+    worksheet.add_cell(2, 1, @kb_model.standard_unit_coefficient)
+
+    worksheet.add_cell(3, 0, I18n.t(:standard_conversion_coefficient_only_effort)) #"Coefficient de conversion de l'unité d'effort"
+    worksheet.add_cell(3, 1, @kb_model.effort_unit)
+
+    worksheet.add_cell(4, 0, I18n.t(:three_points_estimation))
+    worksheet.add_cell(4, 1, @kb_model.three_points_estimation ? 1 : 0)
+
+    worksheet.add_cell(5, 0, I18n.t(:modification_of_the_input_value_allow))
+    worksheet.add_cell(5, 1, @kb_model.enabled_input ? 1 : 0)
+
+    worksheet.add_cell(6, 0, I18n.t(:modification_of_the_filters_value_allow))
+    worksheet.add_cell(6, 1, @kb_model.enable_filters ? 1 : 0)
+
+    worksheet.add_cell(7, 0, I18n.t(:start_date))
+    worksheet.add_cell(7, 1, @kb_model.date_min)
+
+    worksheet.add_cell(8, 0, I18n.t(:end_date))
+    worksheet.add_cell(8, 1, @kb_model.date_max)
+
+    worksheet.add_cell(9, 0, "N derniers projets")
+    worksheet.add_cell(9, 1, @kb_model.n_max)
+
+    worksheet.add_cell(10, 0, I18n.t(:filters))
+    unless @kb_model.selected_attributes.empty?
+      worksheet.add_cell(10, 1, @kb_model.selected_attributes.join(','))
+    end
 
     worksheet = workbook.add_worksheet("Données")
     kb_model_datas = @kb_model.kb_datas
-    default_attributs = [I18n.t(:size), I18n.t(:effort_import), "Date", I18n.t(:description)]
+    #default_attributs = [I18n.t(:size), I18n.t(:effort_import), "Date", I18n.t(:description)]
+    default_attributs = [I18n.t(:name), I18n.t(:description), "Date", "X", "Y"]
 
     if !kb_model_datas.nil? && !kb_model_datas.empty?
       kb_model_datas.each_with_index do |kb_data, index|
-        worksheet.add_cell(index + 1, 0, kb_data.size).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 1, kb_data.effort).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 0, kb_data.name).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 1, kb_data.description)
         worksheet.add_cell(index + 1, 2, kb_data.project_date).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 3, kb_data.description)
+        worksheet.add_cell(index + 1, 3, kb_data.size).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 4, kb_data.effort).change_horizontal_alignment('center')
 
-        nb_col = 4 # ancienne valeur nb_col = 3
+        nb_col = 5 # ancienne valeur nb_col = 3
         kb_data.custom_attributes.each_with_index do |(custom_attr_k, custom_attr_v),index_2|
           worksheet.add_cell(index + 1, index_2 + nb_col, custom_attr_v).change_horizontal_alignment('center')
           if index_2 + nb_col > 2
@@ -63,7 +91,8 @@ class Kb::KbModelsController < ApplicationController
         end
       end
     else
-      default_attributs << [ "#{I18n.t(:custom_attribute)}_1", "#{I18n.t(:custom_attribute)}_2", "ect..."]
+      #default_attributs << [ "#{I18n.t(:custom_attribute)}_1", "#{I18n.t(:custom_attribute)}_2", "ect..."]
+      default_attributs << [ "#{I18n.t(:filter)} 1", "#{I18n.t(:filter)} 2", "ect..."]
     end
 
     default_attributs.flatten.each_with_index do |w_header, index|
@@ -148,10 +177,19 @@ class Kb::KbModelsController < ApplicationController
 
       file.default_sheet = file.sheets[0]
       if params[:kb_model_id].nil?
-        @kb_model = Kb::KbModel.new(name: file.cell(1,2),
-                                       standard_unit_coefficient: file.cell(2,2),
-                                       effort_unit: file.cell(3,2),
-                                       organization_id: @organization.id)
+        @kb_model = Kb::KbModel.new(name: file.cell(1,2), description: file.cell(2,2),
+                                    standard_unit_coefficient: file.cell(3,2), effort_unit: file.cell(4,2),
+                                    three_points_estimation: (file.cell(5,2) == 1 ? true : false),
+                                    enabled_input: (file.cell(6,2) == 1 ? true : false),
+                                    enable_filters: (file.cell(7,2) == 1 ? true : false),
+                                    date_min: file.cell(8,2), date_max: file.cell(9,2),
+                                    n_max: file.cell(10,2),
+                                    organization_id: @organization.id)
+
+        unless file.cell(11,2).empty?
+          @kb_model.selected_attributes = file.cell(11,2).split(',')
+        end
+
         #@kb_model.save(validate: false)
         if @kb_model.save
           flash[:notice] = "Modèle créé avec succès"
@@ -181,14 +219,17 @@ class Kb::KbModelsController < ApplicationController
 
       file.default_sheet = file.sheets[1]
       ((file.first_row.to_i + 1)..file.last_row).each do |line|
-        size   = file.cell(line, 'A')
-        effort   = file.cell(line, 'B')
+        name   = file.cell(line, 'A')
+        description   = file.cell(line, 'B')
         pd   = file.cell(line, 'C')
-        description   = file.cell(line, 'D')
+        size   = file.cell(line, 'D')
+        effort   = file.cell(line, 'E')
+
+
 
         h = Hash.new
         #('D'..'ZZ').each_with_index do |letter, i|
-        ('E'..'ZZ').each_with_index do |letter, i|
+        ('F'..'ZZ').each_with_index do |letter, i|
           if i < file.sheet(1).last_column
             begin
               h[file.cell(1, letter.to_s).to_sym] = file.cell(line, letter.to_s)
@@ -198,13 +239,11 @@ class Kb::KbModelsController < ApplicationController
           end
         end
 
-        Kb::KbData.create(size: size,
-                          effort: effort,
+        Kb::KbData.create(name: name, description: description, size: size, effort: effort,
                           project_date: pd,
                           unit: "UF",
                           custom_attributes: h,
-                          kb_model_id: @kb_model.id,
-                          description: description)
+                          kb_model_id: @kb_model.id)
       end
     end
 
@@ -599,7 +638,7 @@ class Kb::KbModelsController < ApplicationController
     kb_input.values.each_with_index do |one_dot, index|
       if index == 0
         worksheet.add_cell(index, 4, I18n.t(:effort_import))
-        worksheet.add_cell(index, 3, I18n.t(:size))
+        worksheet.add_cell(index, 3, I18n.t(:size_label))
         worksheet.sheet_data[index][3].change_font_bold(true)
         worksheet.sheet_data[index][4].change_font_bold(true)
         worksheet.sheet_data[index][4].change_border(:left, 'thin')
