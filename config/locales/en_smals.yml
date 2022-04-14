@@ -2694,9 +2694,10 @@ en_smals:
   gap_difference: "Difference"
   all_projects_in_list: "All"
   treatments: "Treatments"
-  size_dt: "Size (D+T)"
+  size_xy: "Size (X+Y)"
   size_label: "Size"
   effort_label: "Effort"
   filter: "Filter"
+  past_projects_size: "Size of past projects"
 
 

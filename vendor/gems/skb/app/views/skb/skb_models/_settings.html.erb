@@ -21,6 +21,7 @@
        @my_skb_datas = []
        @my_skb_input = []
        @project_list = []
+       @skb_input_filters =  @skb_input.filters
 
        @skb_datas.each_with_index do |i, index_i|
          @skb_input.filters.values.each_with_index do |f|
@@ -62,17 +63,17 @@
           <span class="no_uppercase"><%= @skb_model %></span>
         </div>
       </div>
+
+      <div class="edition-bloc-tools">
+        <% if can? :execute_estimation_plan, @project %>
+          <button type="submit" class="btn btn-primary">
+            <%= I18n.t(:update) %>
+          </button>
+        <% end %>
+      </div>
     </div>
 
-<!--      <div class="edition-bloc-tools">-->
-        <%# if can? :execute_estimation_plan, @project %>
-<!--          <button type="submit" class="btn btn-secondary">-->
-            <%#= I18n.t(:update) %>
-<!--          </button>-->
-        <%# end %>
-<!--      </div>-->
-<!--    </div>-->
-
+    <!-- debut sorties -->
     <div class="card card-widget">
       <div class="card-body">
 <!--        <div class="edition-bloc-title">-->
@@ -123,30 +124,67 @@
           </div>
 
           <div class="row">
-
+            <!-- Début Filtres -->
             <div class="col">
+              <p style="margin-bottom: inherit;">
+                <strong>
+                  <%= I18n.t(:filters) %> :
+                </strong>
+              </p>
+
               <% unless @skb_model.skb_datas.empty? %>
                 <p>
-                    <% arr = ["a", "b", "c", "d"] %>
-                    <% @skb_model.skb_datas.map(&:custom_attributes).first.keys.each_with_index do |key, i| %>
-                    <div class="input string required project_title">
-                      <label class="string required control-label">
-                        <strong>
-                          <%= @skb_model.send("filter_#{arr[i]}") %>
-                        </strong>
-                      </label>
-                      <%= select_tag "filters[#{key}]",
-                                     options_for_select(@skb_model.skb_datas.map(&:custom_attributes).map{|ca| ca[key] }.uniq,
-                                                        selected: @skb_input.filters[key]),
-                                     class: "form-control filters",
-                                     prompt: I18n.t(:Indifferent),
-                                     disabled: !@skb_model.enabled_input %>
+                  <% arr = ["a", "b", "c", "d"] %>
+                  <% @skb_datas_custom_attributes = @skb_model.skb_datas.map(&:custom_attributes) %>
 
-                    </div>
+                  <% @skb_datas_custom_attributes.first.keys.each_with_index do |key, i| %>
+                    <% if key.to_s.in?(@skb_model.selected_attributes) %>
+
+                      <% begin %>
+                        <% filter = @skb_model.send("filter_#{arr[i]}") %>
+                      <% rescue %>
+                        <% filter = "-" %>
+                      <% end %>
+
+                      <div class="input string required project_title">
+                        <label class="string required control-label">
+                          <strong>
+                            <%#= @skb_model.send("filter_#{arr[i]}") %>
+                            <%= filter %>
+                          </strong>
+                        </label>
+
+                        <% if @skb_input_filters.blank? || @skb_input_filters[key].blank? %>
+                          <% project_filter_value =  convert_project_category(@project, filter) %>
+                        <% else %>
+                          <% project_filter_value =  @skb_input_filters[key] %>
+                        <% end %>
+
+                        <%#= select_tag "filters[#{key}]",
+                                       options_for_select(@skb_datas_custom_attributes.map{|ca| ca[key] }.uniq,
+                                                          selected: @skb_input.filters[key]),
+                                       class: "form-control filters",
+                                       prompt: I18n.t(:all_projects_in_list),
+                                       disabled: !@skb_model.enable_filters %>
+
+                        <%= select_tag "filters[#{key}]",
+                                       options_for_select(@skb_datas_custom_attributes.map{|ca| ca[key] }.uniq.unshift(project_filter_value).compact,
+                                                          selected: project_filter_value),
+                                       class: "string form-control filters",
+                                       prompt: I18n.t(:all_projects_in_list),
+                                       disabled: !@skb_model.enable_filters %>
+
+                        <% if !@skb_model.enable_filters %>
+                          <input type="hidden" name="filters[<%= key %>]" value="<%= @skb_input_filters.nil? ? project_filter_value : @skb_input_filters[key] %>" />
+                        <% end %>
+
+                      </div>
+                    <% end %>
                   <% end %>
                 </p>
               <% end %>
             </div>
+            <!-- Fin Filtres -->
 
             <div class="col">
               <h5>
@@ -178,19 +216,20 @@
               </h5>
               <p>
                 <span class="skb_input_total page_module_type">
-                  <%= (@skb_input.data.to_i + @skb_input.processing.to_i) == 0 ? '-' : (@skb_input.data.to_i + @skb_input.processing.to_i) %> <%= @skb_model.size_unit %>
+                  <%#= (@skb_input.data.to_i + @skb_input.processing.to_i) == 0 ? '-' : (@skb_input.data.to_i + @skb_input.processing.to_i) %> <%#= @skb_model.size_unit %>
+                  <%= @skb_input.retained_size.blank? ? '-' : (@skb_input.retained_size.to_i) %> <%= @skb_model.size_unit %>
                 </span>
               </p>
             </div>
           </div>
 
-          <div class="edition-bloc-tools">
-            <% if can? :execute_estimation_plan, @project %>
-              <button type="submit" class="btn btn-secondary">
-                <%= I18n.t(:update) %>
-              </button>
-            <% end %>
-          </div>
+<!--          <div class="edition-bloc-tools">-->
+            <%# if can? :execute_estimation_plan, @project %>
+<!--              <button type="submit" class="btn btn-secondary">-->
+                <%#= I18n.t(:update) %>
+<!--              </button>-->
+            <%# end %>
+<!--          </div>-->
 
           <br /><br />
           <p>
@@ -345,5 +384,6 @@
         </div>
       </div>
     </div>
+    <!-- fin sortie -->
   <% end %>
 </section>

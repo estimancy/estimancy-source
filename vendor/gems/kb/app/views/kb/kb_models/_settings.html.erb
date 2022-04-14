@@ -136,7 +136,7 @@
       </div>
     </div>
 
-    <!-- debut -->
+    <!-- debut entree -->
     <div class="card card-widget">
       <div class="card-body">
 
@@ -144,7 +144,7 @@
 
           <div class="edition-bloc-title" style="padding-bottom: initial;">
             <h5 class="page_module_subtitle">
-              <%= I18n.t(:past_projects_effort) %>
+              <%= I18n.t(:inputs) %>
             </h5>
           </div>
           <hr>
@@ -201,37 +201,41 @@
 
 
             <div class="col">
-              <div class="timecost-indicator">
-                <div class="indicator-title"><%= I18n.t :input_effort_without_unit %>:</div>
-              </div>
+              <% unless input_effort_ev.nil? %>
+                <% unless input_effort_ev.estimation_value_id.nil? %>
+                  <div class="timecost-indicator">
+                    <div class="indicator-title"><%= I18n.t :input_effort_without_unit %>:</div>
+                  </div>
 
-              <% array.each do |level| %>
-                <div class="col-4 ">
-                  <strong class="timecost-indicator">
-                    <%= level.humanize %> (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)
-                  </strong>
+                  <% array.each do |level| %>
+                    <div class="col-4 ">
+                      <strong class="timecost-indicator">
+                        <%= level.humanize %> (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)
+                      </strong>
 
 
-                  <% if output_effort_current_ev.nil?
-                       @effort = 0
-                     else
-                       @effort = output_effort_current_ev.send("string_data_#{level}")[current_component.id].to_f / (@kb_model.standard_unit_coefficient.nil? ? 1 : @kb_model.standard_unit_coefficient)
-                     end
-                  %>
+                      <% if output_effort_current_ev.nil?
+                           @effort = 0
+                         else
+                           @effort = output_effort_current_ev.send("string_data_#{level}")[current_component.id].to_f / (@kb_model.standard_unit_coefficient.nil? ? 1 : @kb_model.standard_unit_coefficient)
+                         end
+                      %>
 
-                  <% unless @kb_model.enabled_input %>
-                    <span id="effort_label">
-                      <%= hidden_field_tag "effort", @effort %>
-                      <%= text_field_tag "", convert_with_precision(@effort, user_number_precision, true),
-                                         class: "string required form-control-sm effort",
-                                         disabled: true %>
-                    </span>
-                  <% else %>
-                    <%= number_field_tag "effort", @effort.nil? ? '' : convert_with_precision(@effort, user_number_precision, true),
-                                         class: "string required form-control", step: "any" %>
+                      <% unless @kb_model.enabled_input %>
+                        <span id="effort_label">
+                          <%= hidden_field_tag "effort", @effort %>
+                          <%= text_field_tag "", convert_with_precision(@effort, user_number_precision, true),
+                                             class: "string required form-control-sm effort",
+                                             disabled: true %>
+                        </span>
+                      <% else %>
+                        <%= number_field_tag "effort", @effort.nil? ? '' : convert_with_precision(@effort, user_number_precision, true),
+                                             class: "string required form-control", step: "any" %>
+                      <% end %>
+                    </div>
+
                   <% end %>
-                </div>
-
+                <% end %>
               <% end %>
             </div>
           </div>
@@ -279,6 +283,7 @@
               <% end %>
             <% end %>
           <% end %>
+
           <!-- end Effort Benchmark -->
 
         </div>

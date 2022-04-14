@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20220411094659) do
+ActiveRecord::Schema.define(version: 20220412154836) do
 
   create_table "abacus_organizations", force: :cascade do |t|
     t.float    "value",                          limit: 24
@@ -1269,6 +1269,7 @@ ActiveRecord::Schema.define(version: 20220411094659) do
 
   create_table "kb_kb_datas", force: :cascade do |t|
     t.string  "name",              limit: 255
+    t.float   "size_x",            limit: 24
     t.float   "size",              limit: 24
     t.float   "effort",            limit: 24
     t.string  "unit",              limit: 255
@@ -1276,9 +1277,11 @@ ActiveRecord::Schema.define(version: 20220411094659) do
     t.integer "kb_model_id",       limit: 4
     t.date    "project_date"
     t.text    "description",       limit: 65535
+    t.float   "size_y",            limit: 24
   end
 
   create_table "kb_kb_inputs", force: :cascade do |t|
+    t.float   "retained_size",     limit: 24
     t.string  "formula",           limit: 255
     t.text    "values",            limit: 65535
     t.text    "regression",        limit: 65535
@@ -1286,6 +1289,7 @@ ActiveRecord::Schema.define(version: 20220411094659) do
     t.integer "module_project_id", limit: 4
     t.integer "kb_model_id",       limit: 4
     t.text    "filters",           limit: 65535
+    t.float   "retained_effort",   limit: 24
   end
 
   add_index "kb_kb_inputs", ["organization_id", "kb_model_id", "module_project_id"], name: "by_organization_kbModel_mp", using: :btree
@@ -2133,18 +2137,21 @@ ActiveRecord::Schema.define(version: 20220411094659) do
 
   create_table "skb_skb_datas", force: :cascade do |t|
     t.string  "name",              limit: 255
+    t.float   "size",              limit: 24
     t.float   "data",              limit: 24
     t.float   "processing",        limit: 24
     t.integer "skb_model_id",      limit: 4
     t.text    "description",       limit: 65535
     t.text    "custom_attributes", limit: 65535
     t.date    "project_date"
+    t.float   "effort",            limit: 24
   end
 
   create_table "skb_skb_inputs", force: :cascade do |t|
     t.float   "data",              limit: 24
     t.float   "processing",        limit: 24
     t.float   "retained_size",     limit: 24
+    t.float   "retained_effort",   limit: 24
     t.integer "organization_id",   limit: 4
     t.integer "module_project_id", limit: 4
     t.integer "skb_model_id",      limit: 4

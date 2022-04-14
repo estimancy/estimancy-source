@@ -130,36 +130,56 @@ class Skb::SkbModelsController < ApplicationController
 
     worksheet = workbook.add_worksheet("Données")
     skb_model_datas = @skb_model.skb_datas
-    default_attributs = [I18n.t(:name), I18n.t(:description), "Date", "Données", "Traitements"]
+    #default_attributs = [I18n.t(:name), I18n.t(:description), "Date", "Données", "Traitements"]
+    default_attributs = [I18n.t(:name), I18n.t(:description), "Date", "#{I18n.t(:size_label)} X", "#{I18n.t(:size_label)} Y", "#{I18n.t(:total_size)}", "#{I18n.t(:effort_label)}"]
 
     if !skb_model_datas.nil? && !skb_model_datas.empty?
 
-      worksheet.add_cell(0, 0, I18n.t(:name)).change_horizontal_alignment('center')
-      worksheet.add_cell(0, 1, I18n.t(:description)).change_horizontal_alignment('center')
-      worksheet.add_cell(0, 2, "Date").change_horizontal_alignment('center')
-      worksheet.add_cell(0, 3, "X").change_horizontal_alignment('center')
-      worksheet.add_cell(0, 4, "Y").change_horizontal_alignment('center')
+      # worksheet.add_cell(0, 0, I18n.t(:name)).change_horizontal_alignment('center')
+      # worksheet.add_cell(0, 1, I18n.t(:description)).change_horizontal_alignment('center')
+      # worksheet.add_cell(0, 2, "Date").change_horizontal_alignment('center')
+      # worksheet.add_cell(0, 3, "X").change_horizontal_alignment('center')
+      # worksheet.add_cell(0, 4, "Y").change_horizontal_alignment('center')
+
+      skb_model_datas.first.custom_attributes.each_with_index do |(custom_attr_k, custom_attr_v), index_ca|
+        default_attributs  << "#{I18n.t(:filter)} #{index_ca+1}"
+      end
+
+      # if @skb_model.selected_attributes.nil? ||  @skb_model.selected_attributes.empty?
+      #   worksheet.add_cell(0, 5, "#{I18n.t(:filter)} 1").change_horizontal_alignment('center')
+      #   worksheet.add_cell(0, 6, "#{I18n.t(:filter)} 2").change_horizontal_alignment('center')
+      # else
+      #   @skb_model.selected_attributes.each_with_index do |filter, index|
+      #     worksheet.add_cell(0, 5+index, "#{filter}").change_horizontal_alignment('center')
+      #   end
+      # end
 
       if @skb_model.selected_attributes.nil? ||  @skb_model.selected_attributes.empty?
-        worksheet.add_cell(0, 5, "#{I18n.t(:filter)} 1").change_horizontal_alignment('center')
-        worksheet.add_cell(0, 6, "#{I18n.t(:filter)} 2").change_horizontal_alignment('center')
-      else
-        @skb_model.selected_attributes.each_with_index do |filter, index|
-          worksheet.add_cell(0, 5+index, "#{filter}").change_horizontal_alignment('center')
-        end
+        default_attributs << [ "#{I18n.t(:filter)} 1", "#{I18n.t(:filter)} 2", "ect..."]
+      end
+
+      default_attributs.flatten.each_with_index do |w_header, index|
+        worksheet.add_cell(0, index, w_header).change_horizontal_alignment('center')
       end
 
       skb_model_datas.each_with_index do |skb_data, index|
-        worksheet.add_cell(index + 1, 0, skb_data.name).change_horizontal_alignment('center')
+        size = skb_data.size.blank? ? (skb_data.data.to_f + skb_data.processing.to_f) : skb_data.size
+
+        worksheet.add_cell(index + 1, 0, skb_data.name)#.change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 1, skb_data.description).change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 2, skb_data.project_date).change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 3, skb_data.data).change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 4, skb_data.processing).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 5, size).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 6, skb_data.effort).change_horizontal_alignment('center')
+
+        nb_col = 7 # ancienne valeur nb_col = 5
         skb_data.custom_attributes.each_with_index  do |(custom_attr_k, custom_attr_v),index_2|
-          worksheet.add_cell(index + 1, index_2 + 5, custom_attr_v).change_horizontal_alignment('center')
-          if index_2 + 3 > 2
-            default_attributs.include?(custom_attr_k.to_s) ? default_attributs : default_attributs  << custom_attr_k.to_s
-          end
+          worksheet.add_cell(index + 1, index_2 + nb_col, custom_attr_v).change_horizontal_alignment('center')
+
+          # if index_2 + 3 > 2
+          #   default_attributs.include?(custom_attr_k.to_s) ? default_attributs : default_attributs  << custom_attr_k.to_s
+          # end
         end
       end
     end
@@ -231,9 +251,11 @@ class Skb::SkbModelsController < ApplicationController
         pd   = file.cell(line, 'C')
         data = file.cell(line, 'D')
         traitement   = file.cell(line, 'E')
+        size   = file.cell(line, 'F')
+        effort   = file.cell(line, 'G')
 
         h = Hash.new
-        ('F'..'ZZ').each_with_index do |letter, i|
+        ('H'..'ZZ').each_with_index do |letter, i|
           if i < file.last_column
             begin
               h[file.cell(1, letter.to_s).to_sym] = file.cell(line, letter.to_s)
@@ -243,11 +265,9 @@ class Skb::SkbModelsController < ApplicationController
           end
         end
 
-        Skb::SkbData.create(name: name,
-                            description: description,
-                            data: data,
-                            project_date: pd,
-                            processing: traitement,
+        Skb::SkbData.create(name: name, description: description, project_date: pd,
+                            data: data, processing: traitement,  #TailleX et TailleY
+                            size: size, effort: effort,
                             custom_attributes: h,
                             skb_model_id: @skb_model.id)
       end

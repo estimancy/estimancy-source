@@ -169,11 +169,8 @@
                     <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn btn-secondary" %>
                   </div>
             <% end %>
-
           </div>
-
         </div>
-
       </div>
 
       <% if action_name.in?(["edit", "update"]) %>
@@ -190,68 +187,71 @@
               <%= link_to I18n.t(:export), skb.skb_model_data_export_path(@skb_model), :class => 'btn btn-primary' %>
             <% end %>
           </div>
-
           <br>
 
-          <div class="span8">
-          <%= form_tag skb.skb_model_save_filters_path(@skb_model) do %>
-            <% unless @skb_model.skb_datas.empty? %>
-              <table class="table table-bordered tablesorterPager">
-                <thead>
-                <tr>
-                  <th><%= I18n.t(:name) %></th>
-                  <th><%= I18n.t(:description) %></th>
-                  <th>Date</th>
-                  <th><%= I18n.t(:data) %></th>
-                  <th><%= I18n.t(:treatments) %></th>
-                  <th><%= I18n.t(:size_dt) %></th>
-                  <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
-                    <th>
-                      <%= k %>
-                    </th>
-                  <% end %>
-                </tr>
-                </thead>
-                <tr>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <th></th>
-                  <% arr = ["a", "b", "c", "d"] %>
-                  <% @skb_model.skb_datas.first.custom_attributes.keys.each_with_index do |j, i| %>
-                    <th>
-                      <%= select_tag "filter_#{arr[i]}",
-                                     options_for_select([I18n.t(:project_area), I18n.t(:applications), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category), I18n.t(:providers)], @skb_model.send("filter_#{arr[i]}")),
-                                     style: "margin-top: -3px;",
-                                     class: "span12" %>
-                    </th>
-                  <% end %>
-                </tr>
-                <tbody>
-                <% @skb_model.skb_datas.each do |skb_data| %>
+          <div class="span8" style="padding-right: 2rem;">
+            <%= form_tag skb.skb_model_save_filters_path(@skb_model) do %>
+              <% unless @skb_model.skb_datas.empty? %>
+                <table class="table table-bordered tablesorterPager">
+                  <thead>
                   <tr>
-                    <td><%= skb_data.name %></td>
-                    <td><%= skb_data.description %></td>
-                    <td><%= skb_data.project_date %></td>
-                    <td><%= skb_data.data %></td>
-                    <td><%= skb_data.processing %></td>
-                    <td><%= skb_data.data.to_f + skb_data.processing.to_f %></td>
-                    <% skb_data.custom_attributes.values.each do |v| %>
-                      <td>
-                        <%= v %>
-                      </td>
+                    <th><%= I18n.t(:name) %></th>
+                    <th style="width: 30rem;"><%= I18n.t(:description) %></th>
+                    <th>Date</th>
+                    <th><%= "#{I18n.t(:size_label)} X" %><%#= I18n.t(:data) %>
+                      <%= @skb_model.label_x.blank? ? "" : "(#{@skb_model.label_x})" %>
+                    </th>
+                    <th><%= "#{I18n.t(:size_label)} Y" %><%#= I18n.t(:treatments) %>
+                      <%= @skb_model.label_y.blank? ? "" : "(#{@skb_model.label_y})" %>
+                    </th>
+                    <th><%= I18n.t(:size_xy) %></th>
+                    <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
+                      <th>
+                        <%= k %>
+                      </th>
                     <% end %>
                   </tr>
-                <% end %>
-                </tbody>
-                <%= render :partial => 'layouts/footer_table' %>
-              </table>
+                  </thead>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <% arr = ["a", "b", "c", "d"] %>
+                    <% @skb_model.skb_datas.first.custom_attributes.keys.each_with_index do |j, i| %>
+                      <th>
+                        <%= select_tag "filter_#{arr[i]}",
+                                       options_for_select([I18n.t(:project_area), I18n.t(:applications), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category), I18n.t(:providers)], @skb_model.send("filter_#{arr[i]}")),
+                                       style: "margin-top: -3px;",
+                                       class: "span12" %>
+                      </th>
+                    <% end %>
+                  </tr>
+                  <tbody>
+                  <% @skb_model.skb_datas.each do |skb_data| %>
+                    <tr>
+                      <td><%= skb_data.name %></td>
+                      <td><%= skb_data.description %></td>
+                      <td><%= skb_data.project_date %></td>
+                      <td><%= skb_data.data %></td>
+                      <td><%= skb_data.processing %></td>
+                      <td><%= skb_data.data.to_f + skb_data.processing.to_f %></td>
+                      <% skb_data.custom_attributes.values.each do |v| %>
+                        <td>
+                          <%= v %>
+                        </td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                  </tbody>
+                  <%= render :partial => 'layouts/footer_table' %>
+                </table>
+              <% end %>
+              <%= submit_tag "Sauvegarder les filtres", class: "btn btn-primary" %>
             <% end %>
-            <%= submit_tag "Sauvegarder les filtres", class: "btn btn-primary" %>
-          <% end %>
-        </div>
+          </div>
         </div>
       <% end %>
 

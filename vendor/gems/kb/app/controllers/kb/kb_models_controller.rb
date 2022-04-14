@@ -72,22 +72,30 @@ class Kb::KbModelsController < ApplicationController
     worksheet = workbook.add_worksheet("Données")
     kb_model_datas = @kb_model.kb_datas
     #default_attributs = [I18n.t(:size), I18n.t(:effort_import), "Date", I18n.t(:description)]
-    default_attributs = [I18n.t(:name), I18n.t(:description), "Date", "X", "Y"]
+    default_attributs = [I18n.t(:name), I18n.t(:description), "Date", "#{I18n.t(:size_label)} X", "#{I18n.t(:size_label)} Y", "#{I18n.t(:total_size)}", "#{I18n.t(:effort_label)}"]
+
+    kb_model_datas.first.custom_attributes.each_with_index do |(custom_attr_k, custom_attr_v), index_ca|
+      default_attributs  << "#{I18n.t(:filter)} #{index_ca+1}"
+    end
 
     if !kb_model_datas.nil? && !kb_model_datas.empty?
       kb_model_datas.each_with_index do |kb_data, index|
         worksheet.add_cell(index + 1, 0, kb_data.name).change_horizontal_alignment('center')
         worksheet.add_cell(index + 1, 1, kb_data.description)
         worksheet.add_cell(index + 1, 2, kb_data.project_date).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 3, kb_data.size).change_horizontal_alignment('center')
-        worksheet.add_cell(index + 1, 4, kb_data.effort).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 3, kb_data.size_x).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 4, kb_data.size_y).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 5, kb_data.size).change_horizontal_alignment('center')
+        worksheet.add_cell(index + 1, 6, kb_data.effort).change_horizontal_alignment('center')
 
-        nb_col = 5 # ancienne valeur nb_col = 3
-        kb_data.custom_attributes.each_with_index do |(custom_attr_k, custom_attr_v),index_2|
+        nb_col = 7 # ancienne valeur nb_col = 3
+        kb_data.custom_attributes.each_with_index do |(custom_attr_k, custom_attr_v), index_2|
           worksheet.add_cell(index + 1, index_2 + nb_col, custom_attr_v).change_horizontal_alignment('center')
-          if index_2 + nb_col > 2
-            default_attributs.include?(custom_attr_k.to_s) ? default_attributs : default_attributs  << custom_attr_k.to_s
-          end
+
+          #if index_2 + nb_col > 2
+            #default_attributs.include?(custom_attr_k.to_s) ? default_attributs : default_attributs  << custom_attr_k.to_s
+            #default_attributs.include?(custom_attr_k.to_s) ? default_attributs : default_attributs  << "#{I18n.t(:filter)} #{index_2+1}"
+          #end
         end
       end
     else
@@ -222,14 +230,14 @@ class Kb::KbModelsController < ApplicationController
         name   = file.cell(line, 'A')
         description   = file.cell(line, 'B')
         pd   = file.cell(line, 'C')
-        size   = file.cell(line, 'D')
-        effort   = file.cell(line, 'E')
-
-
+        size_x   = file.cell(line, 'D')
+        size_y   = file.cell(line, 'E')
+        size   = file.cell(line, 'F')
+        effort   = file.cell(line, 'G')
 
         h = Hash.new
         #('D'..'ZZ').each_with_index do |letter, i|
-        ('F'..'ZZ').each_with_index do |letter, i|
+        ('H'..'ZZ').each_with_index do |letter, i|
           if i < file.sheet(1).last_column
             begin
               h[file.cell(1, letter.to_s).to_sym] = file.cell(line, letter.to_s)
@@ -239,8 +247,9 @@ class Kb::KbModelsController < ApplicationController
           end
         end
 
-        Kb::KbData.create(name: name, description: description, size: size, effort: effort,
-                          project_date: pd,
+        Kb::KbData.create(name: name, description: description, project_date: pd,
+                          size_x: size_x, size_y: size_y,
+                          size: size, effort: effort,
                           unit: "UF",
                           custom_attributes: h,
                           kb_model_id: @kb_model.id)
