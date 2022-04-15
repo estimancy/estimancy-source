@@ -122,7 +122,21 @@ class Skb::SkbModelsController < ApplicationController
 
     worksheet.add_cell(11, 0, I18n.t(:filters))
     unless @skb_model.selected_attributes.empty?
-      worksheet.add_cell(11, 1,@skb_model.selected_attributes.join(','))
+      corresponding_selected_attributes = {:F1 => "#{I18n.t(:filter)} 1", :F2 => "#{I18n.t(:filter)} 2",
+                                           :F3 => "#{I18n.t(:filter)} 3", :F4 => "#{I18n.t(:filter)} 4",
+                                           :F5 => "#{I18n.t(:filter)} 5", :F6 => "#{I18n.t(:filter)} 6"}
+
+      old_selected_attributes = ["F1", "F2", "F3", "F4", "F5", "F6"]
+      new_selected_attributes = []
+      @skb_model.selected_attributes.each do |attr|
+        if old_selected_attributes.include? (attr.to_s)
+          new_selected_attributes << corresponding_selected_attributes[attr.to_sym]
+        else
+          new_selected_attributes << attr
+        end
+      end
+      #worksheet.add_cell(11, 1,@skb_model.selected_attributes.join(','))
+      worksheet.add_cell(11, 1, new_selected_attributes.join(','))
     end
 
     worksheet.change_column_width(0, I18n.t(:modification_of_the_input_value_allow).size)
@@ -218,7 +232,23 @@ class Skb::SkbModelsController < ApplicationController
 
 
         unless file.cell(12,2).empty?
-          @skb_model.selected_attributes = file.cell(12,2).split(',')
+          #@skb_model.selected_attributes = file.cell(12,2).split(',')
+          corresponding_selected_attributes = {:F1 => "#{I18n.t(:filter)} 1", :F2 => "#{I18n.t(:filter)} 2",
+                                               :F3 => "#{I18n.t(:filter)} 3", :F4 => "#{I18n.t(:filter)} 4",
+                                               :F5 => "#{I18n.t(:filter)} 5", :F6 => "#{I18n.t(:filter)} 6"}
+
+          old_selected_attributes = ["F1", "F2", "F3", "F4", "F5", "F6"]
+          new_selected_attributes = []
+
+          file.cell(12,2).split(',').each do |attr|
+            if old_selected_attributes.include? (attr.to_s)
+              new_selected_attributes << corresponding_selected_attributes[attr.to_sym]
+            else
+              new_selected_attributes << attr
+            end
+          end
+
+          @skb_model.selected_attributes = new_selected_attributes #file.cell(12,2).split(',')
         end
 
         if @skb_model.save
