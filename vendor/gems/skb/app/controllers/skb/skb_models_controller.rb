@@ -233,23 +233,24 @@ class Skb::SkbModelsController < ApplicationController
 
 
         unless file.cell(12,2).empty?
-          #@skb_model.selected_attributes = file.cell(12,2).split(',')
-          corresponding_selected_attributes = {:F1 => "#{I18n.t(:filter)} 1", :F2 => "#{I18n.t(:filter)} 2",
-                                               :F3 => "#{I18n.t(:filter)} 3", :F4 => "#{I18n.t(:filter)} 4",
-                                               :F5 => "#{I18n.t(:filter)} 5", :F6 => "#{I18n.t(:filter)} 6"}
+          @skb_model.selected_attributes = file.cell(12,2).split(',')
 
-          old_selected_attributes = ["F1", "F2", "F3", "F4", "F5", "F6"]
-          new_selected_attributes = []
-
-          file.cell(12,2).split(',').each do |attr|
-            if old_selected_attributes.include? (attr.to_s)
-              new_selected_attributes << corresponding_selected_attributes[attr.to_sym]
-            else
-              new_selected_attributes << attr
-            end
-          end
-
-          @skb_model.selected_attributes = new_selected_attributes #file.cell(12,2).split(',')
+          # corresponding_selected_attributes = {:F1 => "#{I18n.t(:filter)} 1", :F2 => "#{I18n.t(:filter)} 2",
+          #                                      :F3 => "#{I18n.t(:filter)} 3", :F4 => "#{I18n.t(:filter)} 4",
+          #                                      :F5 => "#{I18n.t(:filter)} 5", :F6 => "#{I18n.t(:filter)} 6"}
+          #
+          # old_selected_attributes = ["F1", "F2", "F3", "F4", "F5", "F6"]
+          # new_selected_attributes = []
+          #
+          # file.cell(12,2).split(',').each do |attr|
+          #   if old_selected_attributes.include? (attr.to_s)
+          #     new_selected_attributes << corresponding_selected_attributes[attr.to_sym]
+          #   else
+          #     new_selected_attributes << attr
+          #   end
+          # end
+          #
+          # @skb_model.selected_attributes = new_selected_attributes #file.cell(12,2).split(',')
         end
 
         if @skb_model.save

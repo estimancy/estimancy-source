@@ -91,7 +91,7 @@
                             :class => 'material-icons', :title => I18n.t("Duplicate knowledge base"), method: "post" %>
                 <%= link_to raw("<i class='material-icons'>place</i>"), { :controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'kb_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), kb.kb_model_path(i, organization_id: @organization.id),
-                            confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                            data: { confirm: I18n.t(:are_you_sure) }, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
               <% end %>
             </td>
           </tr>
@@ -150,7 +150,7 @@
                             :class => 'material-icons', :title => I18n.t(:duplicate_module), method: "post" %>
                 <%= link_to raw("<i class='material-icons'>place</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'operation_model_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
                 <%= link_to raw("<i class='material-icons'>delete</i>"), operation.operation_model_path(i, organization_id: @organization.id),
-                            confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                            data: { confirm: I18n.t(:are_you_sure) }, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
               <% end %>
             </td>
           </tr>
@@ -203,7 +203,7 @@
               <%#= link_to I18n.t(:delete), expert_judgement.instance_path(i, organization_id: @organization.id),  confirm: I18n.t('are_you_sure'), method: "DELETE",  :class => 'fa fa-trash', :title => I18n.t('delete') %>
               <%= link_to raw("<i class='material-icons'>place</i>"), {:controller => 'pemodules', :action => 'find_use_pemodule', :instance_model_name => 'expert_judgement_instance_id', :instance_model_id => i.id, organization_id: @organization.id}, :remote => true, :title => I18n.t('button_find_use') %>
               <%= link_to raw("<i class='material-icons'>delete</i>"), expert_judgement.instance_path(i, organization_id: @organization.id),
-                          confirm: I18n.t(:are_you_sure), :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
+                          data: { confirm: I18n.t(:are_you_sure) }, :class => 'material-icons', :title => I18n.t('delete'), method: "DELETE" %>
             <% end %>
           </td>
         </tr>
