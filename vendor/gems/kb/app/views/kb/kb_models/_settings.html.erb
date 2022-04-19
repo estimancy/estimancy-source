@@ -473,7 +473,7 @@
           <% @kb_input.values.each{|i| scatter_chart_series_data << { x: i[0], y: i[1], description: i[2].to_s } } %>
 
           <%
-            chart_data = {
+            r_chart_data = {
 
               chart: { zoomType: 'xy'},
               title: { text: @kb_model.name },
@@ -562,12 +562,95 @@
               ]
           }
           %>
-
-
-
           //chart = $('#scatter_chart').highcharts(<%#= chart_data %>);
 
-          chart = $('#scatter_chart').highcharts({
+          <%# if module_project.previous.size > 1 && !input_effort_ev.nil? && input_effort_ev.estimation_value_id.nil? %>
+          <% if module_project.previous.size > 1 && effort_current_ev && !effort_current_ev.estimation_value_id.nil? %>
+
+            chart = $('#scatter_chart').highcharts({
+                chart: {
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: "<%= @kb_model.name %>"
+                },
+                xAxis: {
+                    title: {
+                        enabled: true,
+                        text: '<%= I18n.t(:size) %>',
+                    },
+                    min: 0
+                },
+                yAxis: {
+                    title: {
+                        //text: 'Effort (<%#= @kb_model.effort_unit %>)'
+                        text: 'Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)'
+                    },
+                    min: 0
+                },
+                series: [{
+                    name: '<%= I18n.t("distribution_taille_effort") %>',
+                    marker: {
+                        radius: 3
+                    },
+                    type: 'scatter',
+                    color: 'rgba(223, 83, 83, 1)',
+                    tooltip: {
+                        pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %> <br> <%= "#{I18n.t(:description)} : " %> {point.description}'
+                    },
+                    //data: <%#= @kb_input.values %>
+                    data: <%= scatter_chart_series_data.to_json.html_safe  %>
+                },{
+                    name: '<%= I18n.t("regression_lineaire") %>',
+                    marker: {
+                        radius: 0
+                    },
+                    type: 'line',
+                    color: 'rgba(200, 200, 200, 1)',
+                    data: <%= @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort %>
+
+                },{
+                    name: '<%= I18n.t("regression_lineaire_plus_80") %>',
+                    marker: {
+                        radius: 0
+                    },
+                    type: 'line',
+                    color: 'rgba(83, 223, 83, 1)',
+                    data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort %>
+                },{
+                    name: '<%= I18n.t("regression_lineaire_moins_80") %>',
+                    marker: {
+                        radius: 0
+                    },
+                    type: 'line',
+                    color: 'rgba(83, 223, 255, 1)',
+                    data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
+                },{
+                    name: '<%= I18n.t :input_effort_without_unit %>', //'Effort précédent',
+                    marker: {
+                        radius: 5
+                    },
+                    type: 'scatter',
+                    color: 'rgba(0, 0, 0, 1)',
+                    data: <%= [
+                [
+                  @previous_effort.nil? ? 0 : @size,
+                  @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
+                ]
+              ] %>
+                },{
+                    name: '<%= I18n.t(:calculated_effort) %><%#= I18n.t("effort_retained") %>',
+                    marker: {
+                        radius: 5
+                    },
+                    type: 'scatter',
+                    color: 'rgba(0, 0, 0, 1)',
+                    data: <%= [[@size, @effort.to_f.round(2)]] %>
+                }]
+            });
+
+          <% else %>
+            chart = $('#scatter_chart').highcharts({
               chart: {
                   zoomType: 'xy'
               },
@@ -625,20 +708,9 @@
                   type: 'line',
                   color: 'rgba(83, 223, 255, 1)',
                   data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
-              },{
-                  name: '<%= I18n.t :input_effort_without_unit %>', //'Effort précédent',
-                  marker: {
-                      radius: 5
-                  },
-                  type: 'scatter',
-                  color: 'rgba(0, 0, 0, 1)',
-                  data: <%= [
-              [
-                @previous_effort.nil? ? 0 : @size,
-                @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
-              ]
-            ] %>
-              },{
+              },
+
+              {
                   name: '<%= I18n.t(:calculated_effort) %><%#= I18n.t("effort_retained") %>',
                   marker: {
                       radius: 5
@@ -648,6 +720,9 @@
                   data: <%= [[@size, @effort.to_f.round(2)]] %>
               }]
           });
+          <% end %>
+
+
 
           //$(document).ready(function () {
           $(document).ready(function() {
