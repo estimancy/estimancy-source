@@ -29,6 +29,7 @@ class Kb::KbModelsController < ApplicationController
     authorize! :show_modules_instances, ModuleProject
 
     @kb_model = Kb::KbModel.find(params[:kb_model_id])
+    kb_model_datas = @kb_model.kb_datas
     workbook = RubyXL::Workbook.new
 
     worksheet = workbook[0]
@@ -65,12 +66,30 @@ class Kb::KbModelsController < ApplicationController
     worksheet.add_cell(9, 1, @kb_model.n_max)
 
     worksheet.add_cell(10, 0, I18n.t(:filters))
+
     unless @kb_model.selected_attributes.empty?
-      worksheet.add_cell(10, 1, @kb_model.selected_attributes.join(','))
+      corresponding_selected_attributes = {}
+
+      kb_model_datas.first.custom_attributes.each_with_index do |(custom_attr_k, custom_attr_v), index_ca|
+        corresponding_selected_attributes["#{custom_attr_k}".to_sym] = "#{I18n.t(:filter)} #{index_ca+1}"
+      end
+
+      old_selected_attributes = kb_model_datas.first.custom_attributes.keys.map(&:to_s) rescue []
+      new_selected_attributes = []
+      @kb_model.selected_attributes.each do |attr|
+        if old_selected_attributes.include? (attr.to_s)
+          new_selected_attributes << corresponding_selected_attributes["#{attr}".to_sym]
+        else
+          new_selected_attributes << attr
+        end
+      end
+
+      #worksheet.add_cell(10, 1, @kb_model.selected_attributes.join(','))
+      worksheet.add_cell(10, 1, new_selected_attributes.join(','))
     end
 
+
     worksheet = workbook.add_worksheet("Données")
-    kb_model_datas = @kb_model.kb_datas
     #default_attributs = [I18n.t(:size), I18n.t(:effort_import), "Date", I18n.t(:description)]
     default_attributs = [I18n.t(:name), I18n.t(:description), "Date", "#{I18n.t(:size_label)} X", "#{I18n.t(:size_label)} Y", "#{I18n.t(:total_size)}", "#{I18n.t(:effort_label)}"]
 
