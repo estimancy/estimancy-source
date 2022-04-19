@@ -131,7 +131,11 @@
 
                     <div class="col-4">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                        <%= f.input :allow_full_screen_dashboard, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                        <% if @user.new_record? %>
+                          <%= f.input :allow_full_screen_dashboard, as: :boolean, :label => false, :input_html => {:checked => true, :class => 'mdl-checkbox__inputs'}  %>
+                        <% else %>
+                          <%= f.input :allow_full_screen_dashboard, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                        <% end %>
                         <label class="mdl-textfield__label" for="allow_full_screen_dashboard" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:allow_full_screen_dashboard) %></label>
                       </div>
                     </div>
