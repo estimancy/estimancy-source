@@ -159,6 +159,11 @@ class Skb::SkbModelsController < ApplicationController
         default_attributs  << "#{I18n.t(:filter)} #{index_ca+1}"
       end
 
+      #if @skb_model.selected_attributes.nil? ||  @skb_model.selected_attributes.empty?
+      if skb_model_datas.first.custom_attributes.keys.blank?
+        default_attributs << [ "#{I18n.t(:filter)} 1", "#{I18n.t(:filter)} 2", "ect..."]
+      end
+
       # if @skb_model.selected_attributes.nil? ||  @skb_model.selected_attributes.empty?
       #   worksheet.add_cell(0, 5, "#{I18n.t(:filter)} 1").change_horizontal_alignment('center')
       #   worksheet.add_cell(0, 6, "#{I18n.t(:filter)} 2").change_horizontal_alignment('center')
@@ -167,10 +172,6 @@ class Skb::SkbModelsController < ApplicationController
       #     worksheet.add_cell(0, 5+index, "#{filter}").change_horizontal_alignment('center')
       #   end
       # end
-
-      if @skb_model.selected_attributes.nil? ||  @skb_model.selected_attributes.empty?
-        default_attributs << [ "#{I18n.t(:filter)} 1", "#{I18n.t(:filter)} 2", "ect..."]
-      end
 
       default_attributs.flatten.each_with_index do |w_header, index|
         worksheet.add_cell(0, index, w_header).change_horizontal_alignment('center')
