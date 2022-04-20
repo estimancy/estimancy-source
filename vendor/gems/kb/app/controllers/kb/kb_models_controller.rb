@@ -437,7 +437,7 @@ class Kb::KbModelsController < ApplicationController
     end
 
     @project_list.map do |kb_data|
-      @values << [kb_data.size.round(2), kb_data.effort.round(2), kb_data.description]
+      @values << [kb_data.size.round(2), kb_data.effort.round(2), kb_data.name, kb_data.description]
     end
 
     @project_list.map(&:size).each do |i|
@@ -500,7 +500,7 @@ class Kb::KbModelsController < ApplicationController
     #===
     effort_attribute = module_project.pemodule.pe_attributes.where(alias: "effort").first
     unless effort_attribute.nil?
-      input_effort = params[:previous_effort].to_f
+      input_effort = params[:previous_effort].to_f * @kb_model.standard_unit_coefficient.to_f
       input_effort_ev = EstimationValue.where(organization_id: organization_id,
                                               module_project_id: module_project.id,
                                               pe_attribute_id: effort_attribute.id, in_out: "input").first
@@ -523,7 +523,8 @@ class Kb::KbModelsController < ApplicationController
     unless ecart_pe_attribute.nil?
       begin
         ###ecart_percent = ((output_effort.to_f - input_effort.to_f)/output_effort.to_f) * 100
-        ecart_percent = ((input_effort.to_f - output_effort.to_f) / output_effort.to_f) * 100
+        ##ecart_percent = ((input_effort.to_f - output_effort.to_f) / output_effort.to_f) * 100
+        ecart_percent = ((output_effort.to_f - input_effort.to_f) / input_effort.to_f) * 100
       rescue
         ecart_percent = nil
       end

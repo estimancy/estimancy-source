@@ -222,7 +222,8 @@
                               <%= text_field_tag "", convert_with_precision(previous_effort_to_show, user_number_precision, true),
                                                  class: "string required form-control-sm previous_effort",
                                                  disabled: true %>
-                              <%= hidden_field_tag "previous_effort", @previous_effort %>
+                              <%#= hidden_field_tag "previous_effort", @previous_effort %>
+                              <%= hidden_field_tag "previous_effort", previous_effort_to_show %>
                             </span>
                           <% else %>
                             <%= number_field_tag "previous_effort", @previous_effort.nil? ? '' : convert_with_precision(previous_effort_to_show, user_number_precision, true),
@@ -350,7 +351,7 @@
                           <% end %>
 
                           <%= select_tag "filters[#{key}]",
-                                         options_for_select(@kb_datas_custom_attributes.map{|ca| ca[key] }.uniq.unshift(project_filter_value).compact,
+                                         options_for_select(@kb_datas_custom_attributes.map{|ca| ca[key] unless ca[key].blank? }.unshift(project_filter_value).uniq.compact,
                                                             selected: project_filter_value),
                                          class: "string required form-control filters",
                                          #prompt: I18n.t(:Indifferent),
@@ -406,7 +407,6 @@
                 <%# end %>
             <% end %>
 
-
             <% if module_project.previous.size > 1 %>
                 <!-- debut Effort Benchmark -->
                 <% unless input_effort_ev.nil? %>
@@ -414,9 +414,8 @@
                     <br>
                     <!--  <hr>-->
                     <p style="margin-top: 2rem;">
-                      <strong>
-                        Benchmark :
-                      </strong>
+                      <strong>Benchmark </strong> (<%= I18n.t(:calculated_effort) %> vs <%= I18n.t(:input_effort_without_unit) %>)
+                      <strong>:</strong>
                     </p>
 
                     <p>
@@ -434,13 +433,15 @@
                            if ecart_percent.nan?
                              ecart_percent = nil
                            end
-
                          rescue
                            ecart_percent = nil
                          end
                       %>
 
                       <span>
+                        <%= convert_with_precision((@effort-previous_effort_to_show), user_number_precision, true) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+                      </span><br>
+                      <span style="margin-left: 8.4rem;">
                         <% if ecart_percent.nil? %>
                           <%= " - " %>
                         <% else %>
@@ -470,7 +471,7 @@
       <script src="https://code.highcharts.com/modules/export-data.js"></script>
       <script>
           <% scatter_chart_series_data = [] %>
-          <% @kb_input.values.each{|i| scatter_chart_series_data << { x: i[0], y: i[1], description: i[2].to_s } } %>
+          <% @kb_input.values.each{|i| scatter_chart_series_data << { x: i[0], y: i[1].round(2), name: i[2], description: i[3].to_s } } %>
 
           <%
             r_chart_data = {
@@ -577,7 +578,7 @@
                 xAxis: {
                     title: {
                         enabled: true,
-                        text: '<%= I18n.t(:size) %>',
+                        text: '<%= I18n.t(:size_label) %>',
                     },
                     min: 0
                 },
@@ -596,7 +597,7 @@
                     type: 'scatter',
                     color: 'rgba(223, 83, 83, 1)',
                     tooltip: {
-                        pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %> <br> <%= "#{I18n.t(:description)} : " %> {point.description}'
+                        pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %> <br> <strong>{point.name}<strong /> <br> {point.description}'
                     },
                     //data: <%#= @kb_input.values %>
                     data: <%= scatter_chart_series_data.to_json.html_safe  %>
@@ -628,20 +629,30 @@
                 },{
                     name: '<%= I18n.t :input_effort_without_unit %>', //'Effort précédent',
                     marker: {
-                        radius: 5
+                        radius: 5,
+                        symbol: 'triangle-down'
+                    },
+                    tooltip: {
+                        headerFormat: '{series.scatter.marker.symbol} <b>{series.name}</b><br>',
+                        pointFormat: 'X : {point.x} <br> Y : {point.y} <%= @kb_model.effort_unit %>'
                     },
                     type: 'scatter',
                     color: 'rgba(0, 0, 0, 1)',
                     data: <%= [
-                [
-                  @previous_effort.nil? ? 0 : @size,
-                  @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
-                ]
-              ] %>
+                                [
+                                  @previous_effort.nil? ? 0 : @size,
+                                  @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
+                                ]
+                          ] %>
                 },{
                     name: '<%= I18n.t(:calculated_effort) %><%#= I18n.t("effort_retained") %>',
                     marker: {
-                        radius: 5
+                        radius: 5,
+                        symbol: 'circle'
+                    },
+                    tooltip: {
+                        headerFormat: '{series.scatter.marker.symbol} <b>{series.name}</b><br>',
+                        pointFormat: 'X : {point.x} <br> Y : {point.y} <%= @kb_model.effort_unit %>'
                     },
                     type: 'scatter',
                     color: 'rgba(0, 0, 0, 1)',
@@ -650,6 +661,7 @@
             });
 
           <% else %>
+
             chart = $('#scatter_chart').highcharts({
               chart: {
                   zoomType: 'xy'
@@ -660,7 +672,7 @@
               xAxis: {
                   title: {
                       enabled: true,
-                      text: '<%= I18n.t(:size) %>',
+                      text: '<%= I18n.t(:size_label) %>',
                   },
                   min: 0
               },
@@ -679,7 +691,7 @@
                   type: 'scatter',
                   color: 'rgba(223, 83, 83, 1)',
                   tooltip: {
-                      pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %> <br> <%= "#{I18n.t(:description)} : " %> {point.description}'
+                      pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %> <br> <strong>{point.name}<strong /> <br> {point.description}'
                   },
                   //data: <%#= @kb_input.values %>
                   data: <%= scatter_chart_series_data.to_json.html_safe  %>
@@ -713,7 +725,12 @@
               {
                   name: '<%= I18n.t(:calculated_effort) %><%#= I18n.t("effort_retained") %>',
                   marker: {
-                      radius: 5
+                      radius: 5,
+                      symbol: 'circle'
+                  },
+                  tooltip: {
+                      headerFormat: '{series.scatter.marker.symbol} <b>{series.name}</b><br>',
+                      pointFormat: 'X : {point.x} <br> Y : {point.y} <%= @kb_model.effort_unit %>'
                   },
                   type: 'scatter',
                   color: 'rgba(0, 0, 0, 1)',

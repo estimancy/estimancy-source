@@ -2745,7 +2745,7 @@ fr:
   operation_module_calculation: "Calcul des opérations"
   input_size_with_unit: "Taille en entrée"
   input_effort_with_unit: "Effort en entrée (jh)"
-  input_effort_without_unit: "Effort en entrée"
+  input_effort_without_unit: "Effort d'entrée"
   gap_difference: "Ecart"
   all_projects_in_list: "Tous"
   treatments: "Traitements"
