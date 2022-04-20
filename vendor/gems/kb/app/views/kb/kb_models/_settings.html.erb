@@ -441,7 +441,7 @@
                       <span>
                         <%= convert_with_precision((@effort-previous_effort_to_show), user_number_precision, true) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
                       </span><br>
-                      <span style="margin-left: 8.4rem;">
+                      <span style="margin-left: 82px;">
                         <% if ecart_percent.nil? %>
                           <%= " - " %>
                         <% else %>
@@ -640,7 +640,7 @@
                     color: 'rgba(0, 0, 0, 1)',
                     data: <%= [
                                 [
-                                  @previous_effort.nil? ? 0 : @size,
+                                  @previous_effort.nil? ? 0 : @size.round(2),
                                   @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
                                 ]
                           ] %>
@@ -656,7 +656,7 @@
                     },
                     type: 'scatter',
                     color: 'rgba(0, 0, 0, 1)',
-                    data: <%= [[@size, @effort.to_f.round(2)]] %>
+                    data: <%= [[@size.round(2), @effort.to_f.round(2)]] %>
                 }]
             });
 
@@ -734,7 +734,7 @@
                   },
                   type: 'scatter',
                   color: 'rgba(0, 0, 0, 1)',
-                  data: <%= [[@size, @effort.to_f.round(2)]] %>
+                  data: <%= [[@size.round(2), @effort.to_f.round(2)]] %>
               }]
           });
           <% end %>
