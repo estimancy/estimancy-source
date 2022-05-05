@@ -305,7 +305,7 @@ Devise.setup do |config|
   Organization.where.not(idp_name: nil).each do |organization|
     idp_name = organization.idp_name
 
-    with organization config
+    #with organization config
     config.omniauth :"#{idp_name}",
                     idp_cert_fingerprint: organization.idp_signing_certicate_fingerprint,
                     idp_sso_target_url: organization.idp_login_url,
