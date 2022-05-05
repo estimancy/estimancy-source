@@ -151,8 +151,8 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   # end
 
   def failure
-    #return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
-    flash[:alert] == I18n.t('devise.failure.unauthenticated')
+    return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
+    #flash[:alert] = I18n.t('devise.failure.unauthenticated')
     redirect_to root_path
   end
 
