@@ -118,6 +118,15 @@
                   <div class="form-row">
                     <div class="col-5">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_assertion_consumer_service_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_assertion_consumer_service_url"><%= I18n.t(:idp_assertion_consumer_service_url) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :idp_login_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
                         <label class="mdl-textfield__label" for="idp_login_url"><%= I18n.t(:idp_login_url) %></label>
                       </div>

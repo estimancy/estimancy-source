@@ -2700,3 +2700,4 @@ en:
   effort_label: "Effort"
   filter: "Filter"
   past_projects_size: "Size of past projects"
+  idp_assertion_consumer_service_url: "Redirection url to Estimancy after SAML authentication"

@@ -20,7 +20,6 @@
 #
 #############################################################################
 
-
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
@@ -280,54 +279,59 @@ Devise.setup do |config|
 # CERTIFICATE
 
 
-CERTIFICATE =<<CERTIFICATE
------BEGIN CERTIFICATE-----
-MIIFljCCA36gAwIBAgICB24wDQYJKoZIhvcNAQELBQAwaTELMAkGA1UEBhMCRlIxHjAcBgNVBAoM
-FUVMRUNUUklDSVRFIERFIEZSQU5DRTEXMBUGA1UECwwOMDAwMiA1NTIwODEzMTcxITAfBgNVBAMM
-GEFDIElORlJBU1RSVUNUVVJFIEVERiBHMjAeFw0yMTA0MjExNjM5NTBaFw0yNDA0MjAxNjM5NTBa
-MGsxCzAJBgNVBAYTAkZSMR4wHAYDVQQKDBVFTEVDVFJJQ0lURSBERSBGUkFOQ0UxFzAVBgNVBAsM
-DjAwMDIgNTUyMDgxMzE3MSMwIQYDVQQDDBpyZWNldHRlLWlkcC1nYXJkaWFuLmVkZi5mcjCCASIw
-DQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALazeojqVLxI8EUfDsHn9MoA14f/XS9Ed0dWcTLB
-oe/DbqqSps8+JhqzlCen7ZuBYdyqNx4wnAIEiYlpgbo3IxKpeZ67hOvUcRyrHesM2QnQutPD146W
-WDanqjMwpiTd8uDZANpjH4W8+gfpEvAeZr/L0z6IfOjpT5eYs5qLnUwPuVt/mQnddkx2+rTT9zT7
-lw3I2AmT5J8xNddS0sNFWhIPCwGGyRrhliqKEuHTTnG7I3EKK2WxtWzaBfb20Y1haqRvkP9mg0i+
-dnyd9P5Ol7IXlqo1ncWrq2A7jCa58c5qlZdGYvQexR7rVgNiOZ5pWJ9ueKCJ0pRxIeB19/7BEYEC
-AwEAAaOCAUQwggFAMB0GA1UdDgQWBBS4o0EuwLkT0cyEASmcgYyKG/6maDAfBgNVHSMEGDAWgBSJ
-E24SzUttS36arh51UaAaNyGrLDBfBgNVHSAEWDBWMFQGDiqBegGBcAABAQIBGwEBMEIwQAYIKwYB
-BQUHAgEWNGh0dHA6Ly9wYy1lZGYuZWRmLmZyL3BjL2FjX2luZnJhc3RydWN0dXJlX2VkZl9nMi5w
-ZGYwHQYDVR0lBBYwFAYIKwYBBQUHAwIGCCsGAQUFBwMBMA4GA1UdDwEB/wQEAwIFoDAlBgNVHREE
-HjAcghpyZWNldHRlLWlkcC1nYXJkaWFuLmVkZi5mcjBHBgNVHR8EQDA+MDygOqA4hjZodHRwOi8v
-Y3JsLWVkZi5lZGYuZnIvY3JsL2FjX2luZnJhc3RydWN0dXJlX2VkZl9nMi5jcmwwDQYJKoZIhvcN
-AQELBQADggIBABadwPNPNpYD7Pn5/cJzR7c122N2+Y58+fsSw0NIUCu14E06QY66vonHKF2gd0YL
-5YwvnIWlkkizkn0Jv27EgqTktAQH4ODlaWtag9IJlfb/MCb6lNcvX1HbVIAdO1p4Fo/pvu1sCsoa
-hZ2DWLa1F27r+zNNmKBZKujSNVm6qwceDWgMwttRnSvPzwAmvDy9N9FJqZ1h1/4OpZvY8J9raQCr
-nHmoMISy1VZ2lrB1HwiYPRIuJWnNfKZJ5esTOKFMFY9oXS0iVA/XUpWpakva+Sv3w5KyhDjWQXnW
-U7djsWZJnZrjULlBb0ex5AkP2JIVL0pRv8sqwN2Bpb1eWw5sDUEnAqqTnaZnkEOFohB3gBT+ojUo
-70rPunGlbbr1lZ77OL2FouzEYUrLweeP04Mz4nq+dGXDNmVYI0KubMNcfVXGnzKm3iOOkH+Hz+AW
-6Y6tmJJExu6qhcWWTCdcWhI/ZrGNio4eoQQ3zRfwVMWPzfacPaUCx3BBr7CJMu5jaWXqJhgTdvy5
-+vKGIfy7r2nfWir3+FOjDWZu0KeTBv3s/bjWj961rBFWZGNq20NCZhkhIwQKeYbRP2eptnOVbaVK
-D9lvAgPpyScBBuleuyoszO81Ej+jf5QNtQxzhQRA19ro+0uJ7ZRQbeYhUhOQjKvDq5mOo2sLifi2
-V2fM17lBKDqt
------END CERTIFICATE-----
-CERTIFICATE
+# CERTIFICATE =<<CERTIFICATE
+# -----BEGIN CERTIFICATE-----
+# #{APP_CONFIG['IDP_CERTIFICATE']}
+# -----END CERTIFICATE-----
+# CERTIFICATE
 
   # OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
 
   config.omniauth :google_oauth2, "504921486051-vb2gi8tfaff5hqgnnosamjto3sv5gabp.apps.googleusercontent.com", "wLnNbhyZGrdkcjnxWe95SRr7", { access_type: "offline", approval_prompt: I18n.t(:text_ask_connect_to_estimancy_via_google) }
   #single IDP config
   config.omniauth :saml,
-                  :idp_cert => CERTIFICATE,
+                  #:idp_cert => CERTIFICATE,
+                  idp_cert_fingerprint: APP_CONFIG['IDP_FINGERPRINT'],
                   idp_sso_target_url: APP_CONFIG['IDP_SSO_TARGET_URL'],
                   idp_slo_target_url: APP_CONFIG['IDP_SLO_TARGET_URL'],   #logout
                   issuer: APP_CONFIG['ISSUER'],
                   :assertion_consumer_service_url => APP_CONFIG['ASSERTION_CONSUMER_SERVICE_URL'],
                   :name_identifier_format => APP_CONFIG['NAME_IDENTIFIER_FORMAT'],
                   :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param }
-
-                  #idp_cert_fingerprint: 'fingerprint',
                   #:idp_cert_fingerprint_validator => lambda { |fingerprint| fingerprint },
-                  # #idp_entity_id: APP_CONFIG['IDP_ENTITY_ID'],
+                  # #idp_entity_id: APP_CONFIG['IDP_ENTITY_ID']
 
+  #SAML config for each organization
+  Organization.where.not(idp_name: nil).each do |organization|
+    idp_name = organization.idp_name
+
+    #with organization config
+    config.omniauth :"#{idp_name}",
+                    idp_cert_fingerprint: organization.idp_signing_certicate_fingerprint,
+                    idp_sso_target_url: organization.idp_login_url,
+                    idp_slo_target_url: organization.idp_logout_url,
+                    issuer: APP_CONFIG['ISSUER'],
+                    :assertion_consumer_service_url => organization.idp_assertion_consumer_service_url,
+                    :name_identifier_format => organization.idp_name_identifier_format,
+                    :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param },
+                    strategy_class: ::OmniAuth::Strategies::SAML,
+                    name: :"#{idp_name}"
+
+    #with sensitive_settings
+    # config.omniauth :"#{idp_name}",
+    #                 idp_cert_fingerprint: APP_CONFIG["#{idp_name}"]['IDP_FINGERPRINT'],
+    #                 idp_sso_target_url: APP_CONFIG["#{idp_name}"]['IDP_SSO_TARGET_URL'],
+    #                 idp_slo_target_url: APP_CONFIG["#{idp_name}"]['IDP_SLO_TARGET_URL'],   #logout
+    #                 issuer: APP_CONFIG["#{idp_name}"]['ISSUER'],
+    #                 :assertion_consumer_service_url => APP_CONFIG["#{idp_name}"]['ASSERTION_CONSUMER_SERVICE_URL'],
+    #                 :name_identifier_format => APP_CONFIG["#{idp_name}"]['NAME_IDENTIFIER_FORMAT'],
+    #                 :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param },
+    #                 strategy_class: ::OmniAuth::Strategies::SAML,
+    #                 name: :"#{idp_name}"
+
+  end
+
+  #config.omniauth :saml, setup: OmniauthSamlSetup
   #To have support for multiple IDPs
   # config.omniauth :saml_idp_enedis,
   #                 idp_cert_fingerprint: 'fingerprint',

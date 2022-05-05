@@ -142,6 +142,7 @@ gem 'omniauth', '~> 1.9.0'
 gem 'omniauth-google-oauth2'
 gem 'omniauth-saml'
 gem 'omniauth-rails_csrf_protection'
+#gem 'repost'
 #gem 'devise_saml_authenticatable'
 #gem 'devise_ldap_authenticatable'
 

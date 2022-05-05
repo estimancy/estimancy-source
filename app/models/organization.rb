@@ -26,7 +26,7 @@ class Organization < ActiveRecord::Base
                   :limit1_coef, :limit2_coef, :limit3_coef, :limit4_coef,
                   :limit1_unit, :limit2_unit, :limit3_unit, :limit4_unit, :allow_demand, :show_reports, :show_kpi,
                   :activate_indicators_dashboard, :activate_project_dashboard_indicators,
-                  :idp_name, :idp_login_url, :idp_logout_url, :idp_change_password_url,:idp_signing_certicate, :idp_signing_certicate_fingerprint, :idp_metadata
+                  :idp_name, :idp_assertion_consumer_service_url, :idp_login_url, :idp_logout_url, :idp_change_password_url, :idp_name_identifier_format, :idp_signing_certicate, :idp_signing_certicate_fingerprint, :idp_metadata
 
 
   serialize :project_selected_columns, Array

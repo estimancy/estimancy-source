@@ -29,7 +29,8 @@ class User < ActiveRecord::Base
   devise :database_authenticatable, :registerable, :timeoutable, :lockable,# :saml_authenticatable, :trackable,
          :recoverable, :rememberable,
          :confirmable, # account confirmation
-         :omniauthable, :omniauth_providers => [:google_oauth2, :saml],
+         #:omniauthable, :omniauth_providers => [:google_oauth2, :saml],
+         :omniauthable, :omniauth_providers => [:google_oauth2, :saml, :saml_enedis],
          :authentication_keys => [:login_name]
 
   validates_presence_of :password, :on => :create
@@ -48,6 +49,13 @@ class User < ActiveRecord::Base
   attr_accessor :updating_password, :current_password
 
   # Hair-Triggers
+
+  # def email_required?
+  #   super && provider.blank?
+  # end
+  # def password_required?
+  #   super && provider.blank?
+  # end
 
   # Get the current user in model
   def self.current

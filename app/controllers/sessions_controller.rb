@@ -1,7 +1,7 @@
 #encoding: utf-8
 class SessionsController < Devise::SessionsController
 
-  skip_before_filter :verify_authenticity_token #, only: :create #skip devise to failed when first logged in
+  skip_before_action :verify_authenticity_token #, only: :create #skip devise to failed when first logged in
   #skip_before_action :authenticate_user!
 
   def new_save
@@ -48,6 +48,8 @@ class SessionsController < Devise::SessionsController
   def new
     unless params["SAMLResponse"].nil?
 
+      #env['omniauth.auth'].extra.response_object
+      # request = OneLogin::RubySaml::Authrequest.new
       response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
       @user = User.find_for_saml_oauth(response.attributes)
       #flash[:warning] = "Response attributes = #{response.attributes}"
@@ -169,8 +171,15 @@ class SessionsController < Devise::SessionsController
       #redirect_to omniauth_authorize_path(resource_name, :saml) and return
 
       respond_to do |format|
-        format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'" } #and return
-        format.html { redirect_to omniauth_authorize_path(resource_name, :saml) and return }
+        # format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'" } #and return
+        # format.html { redirect_to omniauth_authorize_path(resource_name, :saml) and return }
+
+        format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym)+"'" } #and return
+        format.html { redirect_to omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym) and return }
+
+        #format.html { repost(omniauth_authorize_path(resource_name, :saml)) }
+        #format.html { redirect_post(omniauth_authorize_path(resource_name, :saml), options: {authenticity_token: :auto, autosubmit_nonce: 'content_security_policy_nonce'}) }
+        #format.html { redirect_post(omniauth_authorize_path(resource_name, :saml), options: {method: :post, autosubmit_nonce: '1234'}) and return }
       end
     else
       #redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return
@@ -179,6 +188,7 @@ class SessionsController < Devise::SessionsController
         @warning_message = "Compte non lié à une authentification SAML"
         flash[:warning] = @warning_message
         flash.keep[:warning]
+        return unless flash[:alert].blank? || flash[:alert] == "Compte non lié à une authentification SAML" #I18n.t('devise.failure.unauthenticated')
         #flash.now[:warning] = "Compte non lié à une authentification SAML"
         format.js { render :js => "window.location.href='"+sign_in_path+"'" and return}
         #format.js {render inline: "location.reload();", flash: { warning: @warning_message } }

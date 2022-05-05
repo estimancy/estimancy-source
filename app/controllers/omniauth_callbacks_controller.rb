@@ -28,7 +28,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => "Google"
       sign_in_and_redirect @user, :event => :authentication
     else
-      session["devise.user_attributes"] = @user.attributes
+      session["devise.user_attributes"] = request.env["omniauth.auth"].except('extra') #@user.attributes
       flash[:warning] = I18n.t(:text_almost_done_provide_password_to_finish, kind: "Google")
       redirect_to root_url
     end
@@ -36,7 +36,6 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
 
   def saml
     @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
-    #@user = User.find_by_login_name("UXFA15EN")
     #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
 
     if @user.nil?
@@ -46,11 +45,52 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       if @user.persisted?
         sign_in_and_redirect @user, event: :authentication
         set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+        #return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
       else
         session['devise.saml_data'] = request.env['omniauth.auth']
         redirect_to root_url and return
       end
     end
+  end
+
+
+  def saml_enedis
+    @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+    #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
+
+    if @user.nil?
+      set_flash_message(:alert, :invalid, kind: "SAML : #{I18n.t("error_access_denied")}")
+      redirect_to sign_in_path, warning: "SAML : #{I18n.t(:error_access_denied)}"  and return
+    else
+      if @user.persisted?
+        sign_in_and_redirect @user, event: :authentication
+        set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+        #return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
+      else
+        session['devise.saml_data'] = request.env['omniauth.auth']
+        redirect_to root_url and return
+      end
+    end
+  end
+
+
+  def before_request_phase()
+    #OmniAuth.config.before_request_phase = block
+    puts "test"
+  end
+
+  # def request_phase
+  #   if env['rack.session']['warden.user.user.key'].present?
+  #     super
+  #   else
+  #     redirect '/'
+  #   end
+  # end
+
+  def failure
+    #return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
+    flash[:alert] == I18n.t('devise.failure.unauthenticated')
+    redirect_to root_path
   end
 
 end

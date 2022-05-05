@@ -2719,7 +2719,7 @@ fr_edf:
   idp_name: "Nom du fournisseur d'identité (Issuer, IdP Entity ID)"
   idp_login_url: "URL de connexion (URL cible du fournisseur d'identité, URL de connexion SSO, URL de redirection ou point de terminaison du fournisseur d'identité)"
   idp_logout_url: "URL de déconnexion (le fournisseur d'identité utilise pour rediriger l'utilisateur afin qu'il se déconnecte)"
-  idp_change_password_url: "Modifier l'URL du mot de passe"
+  idp_change_password_url: "URL de modification de mot de passe (URL utilisée par le fournisseur d'identité pour rediriger l'utilisateur afin qu'il modifie le mot de passe)"
   text_idp_change_password_url: "L'URL que le fournisseur d'identité utilise pour rediriger l'utilisateur afin de modifier le mot de passe."
   idp_signing_certicate: "Certificat de signature (le certificat de signataire ou la clé publique)"
   idp_signing_certicate_fingerprint: "Empreinte digitale du certificat de signature"
@@ -2755,3 +2755,4 @@ fr_edf:
   effort_label: "Effort"
   filter: "Filtre"
   past_projects_size: "Taille des projets passés"
+  idp_assertion_consumer_service_url: "URL de redirection vers Estimancy après authentification SAML"

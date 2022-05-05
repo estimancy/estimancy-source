@@ -2,7 +2,9 @@
   <section class="login-form text-left">
     <%#= simple_form_for(resource, as: resource_name, url: verify_connect_with_saml_path(resource_name), :method => :post, :class => 'simple_form') do |f| %>
     <%#= form_tag connect_with_saml_path, :method => 'POST', :class => 'simple_form' do %>
+
     <%= form_tag verify_connect_with_saml_path, :method => 'POST', :class => 'simple_form' do %>
+    <%#= form_tag user_saml_omniauth_authorize_path, :method => 'POST', :class => 'simple_form' do %>
       <h1><%= I18n.t('connect') %> SAML</h1>
       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
         <%= hidden_field_tag "resource_name", resource_name %>

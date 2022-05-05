@@ -99,14 +99,12 @@ Projestimate::Application.routes.draw do
   get 'add_note_to_attribute' => 'estimation_values#add_note_to_attribute', :as => 'add_note_to_attribute'
 
   #devise_for :users, :controllers => {:registrations => "registrations", :omniauth_callbacks => "omniauth_callbacks"}
-  #devise_scope :user do
-  #  get "help_login" => "registrations", :as => 'help_login'
-  #end
   #==========
   devise_for :users, :controllers => {:registrations => "registrations", :omniauth_callbacks => "omniauth_callbacks", sessions: 'sessions'}, :skip => [:registrations]
 
   devise_scope :user do
     #get "metadata",   :to => "sessions#metadata"
+    #  get "help_login" => "registrations", :as => 'help_login'
     get "sign_in",   :to => "devise/sessions#new"
     get "sign_out",  :to => "devise/sessions#destroy"
     get "cancel_user_registration", :to => "devise/registrations#cancel"
@@ -117,6 +115,8 @@ Projestimate::Application.routes.draw do
     get "help_login" => "registrations", :as => 'help_login'
 
     match 'verify_connect_with_saml', :to => 'sessions#verify_connect_with_saml', :as => 'verify_connect_with_saml', via: [:get, :post]
+    match 'connect_with_saml', :to => 'sessions#connect_with_saml', :as => 'connect_with_saml', via: :post
+    match 'verify_matching_with_saml', :to => 'sessions#verify_matching_with_saml', :as => 'verify_matching_with_saml', via: :get
   end
   get 'awaiting_confirmation' => 'registrations#awaiting_confirmation', :as => 'awaiting_confirmation'
 
