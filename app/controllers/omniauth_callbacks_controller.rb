@@ -50,7 +50,14 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
           flash[:warning] = I18n.t("error_access_denied")
           redirect_to root_url
         else
-          sign_in_and_redirect @user, :event => :authentication
+          #sign_in_and_redirect @user, :event => :authentication
+          if @user.persisted?
+            sign_in_and_redirect @user, event: :authentication
+            set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+          else
+            session['devise.saml_data'] = request.env['omniauth.auth']
+            redirect_to root_url and return
+          end
         end
       else
         flash[:alert] == I18n.t('devise.failure.unauthenticated')
@@ -95,7 +102,14 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
           flash[:warning] = I18n.t("error_access_denied")
           redirect_to root_url
         else
-          sign_in_and_redirect @user, :event => :authentication
+          #sign_in_and_redirect @user, :event => :authentication
+          if @user.persisted?
+            sign_in_and_redirect @user, event: :authentication
+            set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+          else
+            session['devise.saml_data'] = request.env['omniauth.auth']
+            redirect_to root_url and return
+          end
         end
       else
         flash[:alert] == I18n.t('devise.failure.unauthenticated')
