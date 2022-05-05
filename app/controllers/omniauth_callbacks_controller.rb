@@ -35,40 +35,88 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   def saml
-    @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
-    #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
+    auth = request.env['omniauth.auth']
 
-    if @user.nil?
-      set_flash_message(:alert, :invalid, kind: "SAML : #{I18n.t("error_access_denied")}")
-      redirect_to sign_in_path, warning: "SAML : #{I18n.t(:error_access_denied)}"  and return
-    else
-      if @user.persisted?
-        sign_in_and_redirect @user, event: :authentication
-        set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
-        #return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
+    if auth.nil?
+
+      unless params["SAMLResponse"].nil?
+
+        #env['omniauth.auth'].extra.response_object
+        # request = OneLogin::RubySaml::Authrequest.new
+        response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
+        @user = User.find_for_saml_oauth(response.attributes)
+
+        if @user.nil?
+          flash[:warning] = I18n.t("error_access_denied")
+          redirect_to root_url
+        else
+          sign_in_and_redirect @user, :event => :authentication
+        end
       else
-        session['devise.saml_data'] = request.env['omniauth.auth']
+        flash[:alert] == I18n.t('devise.failure.unauthenticated')
         redirect_to root_url and return
+      end
+
+    else
+      @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+      #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
+
+      if @user.nil?
+        set_flash_message(:alert, :invalid, kind: "SAML : #{I18n.t("error_access_denied")}")
+        redirect_to sign_in_path, warning: "SAML : #{I18n.t(:error_access_denied)}"  and return
+      else
+        if @user.persisted?
+          sign_in_and_redirect @user, event: :authentication
+          set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+          #return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
+        else
+          session['devise.saml_data'] = request.env['omniauth.auth']
+          redirect_to root_url and return
+        end
       end
     end
   end
 
 
   def saml_enedis
-    @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
-    #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
+    auth = request.env['omniauth.auth']
 
-    if @user.nil?
-      set_flash_message(:alert, :invalid, kind: "SAML : #{I18n.t("error_access_denied")}")
-      redirect_to sign_in_path, warning: "SAML : #{I18n.t(:error_access_denied)}"  and return
-    else
-      if @user.persisted?
-        sign_in_and_redirect @user, event: :authentication
-        set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
-        #return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
+    if auth.nil?
+
+      unless params["SAMLResponse"].nil?
+
+        #env['omniauth.auth'].extra.response_object
+        # request = OneLogin::RubySaml::Authrequest.new
+        response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
+        @user = User.find_for_saml_oauth(response.attributes)
+
+        if @user.nil?
+          flash[:warning] = I18n.t("error_access_denied")
+          redirect_to root_url
+        else
+          sign_in_and_redirect @user, :event => :authentication
+        end
       else
-        session['devise.saml_data'] = request.env['omniauth.auth']
+        flash[:alert] == I18n.t('devise.failure.unauthenticated')
         redirect_to root_url and return
+      end
+
+    else
+      @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+      #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
+
+      if @user.nil?
+        set_flash_message(:alert, :invalid, kind: "SAML : #{I18n.t("error_access_denied")}")
+        redirect_to sign_in_path, warning: "SAML : #{I18n.t(:error_access_denied)}"  and return
+      else
+        if @user.persisted?
+          sign_in_and_redirect @user, event: :authentication
+          set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+          #return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
+        else
+          session['devise.saml_data'] = request.env['omniauth.auth']
+          redirect_to root_url and return
+        end
       end
     end
   end
