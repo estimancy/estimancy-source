@@ -244,7 +244,7 @@ class User < ActiveRecord::Base
     end
   end
 
-  def self.find_for_saml_oauth_save_sga_01042022(attributes)
+  def self.find_for_saml_oauth_with_onelogin(attributes) #self.find_for_saml_oauth_save_sga_01042022(attributes)
     user = User.find_by_login_name(attributes["cn"])
     if user
       user.provider = "SAML"

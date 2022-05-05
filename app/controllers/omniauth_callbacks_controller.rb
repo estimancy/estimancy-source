@@ -88,7 +88,8 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
         #env['omniauth.auth'].extra.response_object
         # request = OneLogin::RubySaml::Authrequest.new
         response = OneLogin::RubySaml::Response.new(params["SAMLResponse"])
-        @user = User.find_for_saml_oauth(response.attributes)
+        #@user = User.find_for_saml_oauth(response.attributes)
+        @user = User.find_for_saml_oauth_with_onelogin(response.attributes)
 
         if @user.nil?
           flash[:warning] = I18n.t("error_access_denied")
