@@ -171,11 +171,14 @@ class SessionsController < Devise::SessionsController
       #redirect_to omniauth_authorize_path(resource_name, :saml) and return
 
       respond_to do |format|
-        # format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'" } #and return
-        # format.html { redirect_to omniauth_authorize_path(resource_name, :saml) and return }
+        format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'" } #and return
+        format.html { redirect_to omniauth_authorize_path(resource_name, :saml) and return }
 
-        format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym)+"'" } #and return
-        format.html { redirect_to omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym) and return }
+
+        # format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym)+"'" } #and return
+        # format.html { redirect_to omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym) and return }
+
+
 
         #format.html { repost(omniauth_authorize_path(resource_name, :saml)) }
         #format.html { redirect_post(omniauth_authorize_path(resource_name, :saml), options: {authenticity_token: :auto, autosubmit_nonce: 'content_security_policy_nonce'}) }

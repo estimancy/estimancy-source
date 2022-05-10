@@ -34,7 +34,48 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
     end
   end
 
+  #### DEBUT ANCIEN CODE ######
   def saml
+    @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+    #@user = User.find_by_login_name("UXFA15EN")
+    #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
+
+    if @user.nil?
+      set_flash_message(:alert, :invalid, kind: "SAML : #{I18n.t("error_access_denied")}")
+      redirect_to sign_in_path, warning: "SAML : #{I18n.t(:error_access_denied)}"  and return
+    else
+      if @user.persisted?
+        sign_in_and_redirect @user, event: :authentication
+        set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+      else
+        session['devise.saml_data'] = request.env['omniauth.auth']
+        redirect_to root_url and return
+      end
+    end
+  end
+
+
+  def saml_enedis
+    @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
+    #@user = User.find_by_login_name("UXFA15EN")
+    #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
+
+    if @user.nil?
+      set_flash_message(:alert, :invalid, kind: "SAML : #{I18n.t("error_access_denied")}")
+      redirect_to sign_in_path, warning: "SAML : #{I18n.t(:error_access_denied)}"  and return
+    else
+      if @user.persisted?
+        sign_in_and_redirect @user, event: :authentication
+        set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+      else
+        session['devise.saml_data'] = request.env['omniauth.auth']
+        redirect_to root_url and return
+      end
+    end
+  end
+  #### FIN ANCIEN CODE ######
+
+  def saml_save
     auth = request.env['omniauth.auth']
 
     if auth.nil?
@@ -85,7 +126,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
 
-  def saml_enedis
+  def saml_enedis_save
     auth = request.env['omniauth.auth']
 
     if auth.nil?
@@ -137,7 +178,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
 
-  def before_request_phase()
+  def before_request_phase_save()
     #OmniAuth.config.before_request_phase = block
     puts "test"
   end
@@ -150,7 +191,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   #   end
   # end
 
-  def failure
+  def failure_save
     return unless flash[:alert].blank? || flash[:alert] == I18n.t('devise.failure.unauthenticated')
     #flash[:alert] = I18n.t('devise.failure.unauthenticated')
     redirect_to root_path
