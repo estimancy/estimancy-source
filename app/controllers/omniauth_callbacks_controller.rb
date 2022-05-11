@@ -35,7 +35,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
   #### DEBUT ANCIEN CODE ######
-  def saml
+  def saml_old
     @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
     #@user = User.find_by_login_name("UXFA15EN")
     #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
@@ -55,7 +55,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
 
-  def saml_enedis
+  def saml_enedis_old
     @user = User.find_for_saml_oauth(request.env['omniauth.auth'])
     #@user = User.find_by_login_name("UXFA15EN")
     #flash[:notice] = "Response attributes = #{request.env['omniauth.auth']}"
@@ -75,7 +75,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
   #### FIN ANCIEN CODE ######
 
-  def saml_save
+  def saml
     auth = request.env['omniauth.auth']
 
     if auth.nil?
@@ -126,7 +126,7 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
   end
 
 
-  def saml_enedis_save
+  def saml_enedis
     auth = request.env['omniauth.auth']
 
     if auth.nil?

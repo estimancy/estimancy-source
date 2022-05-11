@@ -323,16 +323,16 @@ Devise.setup do |config|
     idp_name = organization.idp_name
 
     #with organization config
-    # config.omniauth :"#{idp_name}",
-    #                 idp_cert_fingerprint: organization.idp_signing_certicate_fingerprint,
-    #                 idp_sso_target_url: organization.idp_login_url,
-    #                 idp_slo_target_url: organization.idp_logout_url,
-    #                 issuer: APP_CONFIG['ISSUER'],
-    #                 :assertion_consumer_service_url => organization.idp_assertion_consumer_service_url,
-    #                 :name_identifier_format => organization.idp_name_identifier_format,
-    #                 :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param },
-    #                 strategy_class: ::OmniAuth::Strategies::SAML,
-    #                 name: :"#{idp_name}"
+    config.omniauth :"#{idp_name}",
+                    idp_cert_fingerprint: organization.idp_signing_certicate_fingerprint,
+                    idp_sso_target_url: organization.idp_login_url,
+                    idp_slo_target_url: organization.idp_logout_url,
+                    issuer: APP_CONFIG['ISSUER'],
+                    :assertion_consumer_service_url => organization.idp_assertion_consumer_service_url,
+                    :name_identifier_format => organization.idp_name_identifier_format,
+                    :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param },
+                    strategy_class: ::OmniAuth::Strategies::SAML,
+                    name: :"#{idp_name}"
 
 
     #with sensitive_settings
@@ -349,6 +349,21 @@ Devise.setup do |config|
 
   end
 
+  #### ce qui marche sur la R7 actuellement
+  # config.omniauth :saml,
+  #                   #:idp_cert => CERTIFICATE,
+  #                   idp_cert_fingerprint: APP_CONFIG['IDP_FINGERPRINT'],
+  #                   #:idp_cert_fingerprint_validator => lambda { |fingerprint| fingerprint },
+  #                   idp_sso_target_url: APP_CONFIG['IDP_SSO_TARGET_URL'],
+  #                   idp_slo_target_url: APP_CONFIG['IDP_SLO_TARGET_URL'],   #logout
+  #                   issuer: APP_CONFIG['ISSUER'],
+  #                   #idp_entity_id: APP_CONFIG['IDP_ENTITY_ID'],
+  #                   :assertion_consumer_service_url => APP_CONFIG['ASSERTION_CONSUMER_SERVICE_URL'],
+  #                   :name_identifier_format => APP_CONFIG['NAME_IDENTIFIER_FORMAT'],
+  #                   :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param }
+  #
+  #### FIN ce qui marche sur la R7 actuellement
+  #
   #config.omniauth :saml, setup: OmniauthSamlSetup
   #To have support for multiple IDPs
   # config.omniauth :saml_idp_enedis,

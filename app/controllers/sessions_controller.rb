@@ -166,23 +166,41 @@ class SessionsController < Devise::SessionsController
     login_name = params[:login_name]
 
     user = User.where(login_name: login_name).first
+    error_message = "Erreur lors de l'authentification SAML"
 
-    if user && user.auth_method.name.to_s == "SAML" && user.organizations.map(&:name).include?("ENEDIS")
+    if user && user.auth_method.name.to_s == "SAML" #&& user.organizations.map(&:name).include?("ENEDIS")
       #redirect_to omniauth_authorize_path(resource_name, :saml) and return
+      user_first_organization_with_saml = user.organizations.where.not(idp_name: nil).first
 
       respond_to do |format|
-        format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'" } #and return
-        format.html { redirect_to omniauth_authorize_path(resource_name, :saml) and return }
+        # format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml)+"'" } #and return
+        # format.html { redirect_to omniauth_authorize_path(resource_name, :saml) and return }
 
+        # format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, :saml_enedis)+"'" } #and return
+        # format.html { redirect_to omniauth_authorize_path(resource_name, :saml_enedis) and return }
 
-        # format.js { render :js => "window.location.href='"+omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym)+"'" } #and return
-        # format.html { redirect_to omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym) and return }
+        format.js {
+          begin
+            render :js => "window.location.href='"+omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym)+"'"
+          rescue
+            flash[:alert] = error_message
+            render :js => "window.location.href='"+sign_in_path+"'" and return
+          end
+        } #and return
 
+        format.html {
+          begin
+            redirect_to omniauth_authorize_path(resource_name, user.organizations.first.idp_name.to_sym) and return
+          rescue
+            flash[:alert] = error_message
+            redirect_to :back, flash: { alert: error_message } and return
+          end
+        }
 
+          #format.html { repost(omniauth_authorize_path(resource_name, :saml)) }
+          #format.html { redirect_post(omniauth_authorize_path(resource_name, :saml), options: {authenticity_token: :auto, autosubmit_nonce: 'content_security_policy_nonce'}) }
+          #format.html { redirect_post(omniauth_authorize_path(resource_name, :saml), options: {method: :post, autosubmit_nonce: '1234'}) and return }
 
-        #format.html { repost(omniauth_authorize_path(resource_name, :saml)) }
-        #format.html { redirect_post(omniauth_authorize_path(resource_name, :saml), options: {authenticity_token: :auto, autosubmit_nonce: 'content_security_policy_nonce'}) }
-        #format.html { redirect_post(omniauth_authorize_path(resource_name, :saml), options: {method: :post, autosubmit_nonce: '1234'}) and return }
       end
     else
       #redirect_to :back, flash: { alert: "Compte non lié à une authentification SAML"} and return
