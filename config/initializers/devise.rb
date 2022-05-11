@@ -328,7 +328,7 @@ Devise.setup do |config|
                     idp_sso_target_url: organization.idp_login_url,
                     idp_slo_target_url: organization.idp_logout_url,
                     issuer: APP_CONFIG['ISSUER'],
-                    :assertion_consumer_service_url => organization.idp_assertion_consumer_service_url,
+                    #:assertion_consumer_service_url => organization.idp_assertion_consumer_service_url,
                     :name_identifier_format => organization.idp_name_identifier_format,
                     :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param },
                     strategy_class: ::OmniAuth::Strategies::SAML,
