@@ -60,7 +60,8 @@ module ViewsWidgetsHelper
         if result_value.is_a?(Float) && result_value.nan?
           '-'
         else
-          "#{ActionController::Base.helpers.number_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr"))} #{view_widget.kpi_unit.to_s}"
+          #"#{ActionController::Base.helpers.number_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: user_nnumber_with_precision(result_value.to_f, separator: ',', delimiter: ' ', precision: user_number_precision, locale: (current_user.language.locale rescue "fr")umber_precision, locale: (current_user.language.locale rescue "fr"))} #{view_widget.kpi_unit.to_s}"
+          "#{number_with_precision(result_value.to_f)} #{view_widget.kpi_unit.to_s}"
         end
       else
         '-'
@@ -564,7 +565,7 @@ module ViewsWidgetsHelper
       probable_value_text = result
     end
 
-    return probable_value_text
+    return number_with_precision(probable_value_text)
   end
 
 
@@ -998,8 +999,8 @@ module ViewsWidgetsHelper
                   max_value_text = "Max. #{data_high.nil? ? '-' : display_value(data_high[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
                   min_value_text = "Min. #{data_low.nil? ? '-' : display_value(data_low[wbs_activity_elt_root_id], estimation_value, module_project_id)}"
                 else
-                  max_value_text = "Max: #{data_high.nil? ? '-' : data_high.round(user_precision)}"
-                  min_value_text = "Min: #{data_low.nil? ? '-' : data_low.round(user_precision)}"
+                  max_value_text = "Max: #{data_high.nil? ? '-' : number_with_precision(data_high, precision: user_precision)}"
+                  min_value_text = "Min: #{data_low.nil? ? '-' : number_with_precision(data_low, precision: user_precision)}"
                 end
               rescue
                 max_value_text = "Max: #{data_high.nil? ? '-' : data_high}"

@@ -304,18 +304,18 @@ Devise.setup do |config|
                     strategy_class: ::OmniAuth::Strategies::SAML,
                     name: :saml
 
-  config.omniauth :saml_enedis,
-                  #:idp_cert => CERTIFICATE,
-                  idp_cert_fingerprint: APP_CONFIG['IDP_FINGERPRINT'],
-                  idp_sso_target_url: APP_CONFIG['IDP_SSO_TARGET_URL'],
-                  idp_slo_target_url: APP_CONFIG['IDP_SLO_TARGET_URL'],   #logout
-                  issuer: APP_CONFIG['ISSUER'],
-                  :assertion_consumer_service_url => APP_CONFIG['ASSERTION_CONSUMER_SERVICE_URL'],
-                  :name_identifier_format => APP_CONFIG['NAME_IDENTIFIER_FORMAT'],
-                  :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param },
-
-                  strategy_class: ::OmniAuth::Strategies::SAML,
-                  name: :saml_enedis
+  # config.omniauth :saml_enedis,
+  #                 #:idp_cert => CERTIFICATE,
+  #                 idp_cert_fingerprint: APP_CONFIG['IDP_FINGERPRINT'],
+  #                 idp_sso_target_url: APP_CONFIG['IDP_SSO_TARGET_URL'],
+  #                 idp_slo_target_url: APP_CONFIG['IDP_SLO_TARGET_URL'],   #logout
+  #                 issuer: APP_CONFIG['ISSUER'],
+  #                 :assertion_consumer_service_url => APP_CONFIG['ASSERTION_CONSUMER_SERVICE_URL'],
+  #                 :name_identifier_format => APP_CONFIG['NAME_IDENTIFIER_FORMAT'],
+  #                 :idp_sso_target_url_runtime_params  => { :original_request_param => :mapped_idp_param },
+  #
+  #                 strategy_class: ::OmniAuth::Strategies::SAML,
+  #                 name: :saml_enedis
 
 
   #SAML config for each organization

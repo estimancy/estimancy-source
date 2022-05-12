@@ -25,6 +25,26 @@ module ApplicationHelper
     true if Float(v) rescue false
   end
 
+  def number_with_precision(number, options = {})
+    locale = current_user.language.locale rescue "fr"
+    case locale
+    when "fr", "fr_smals", "fr_edf", "fr_acoss", "fral"
+      options[:delimiter] ||= ' '
+      options[:separator] ||= ','
+
+    when "en", "en_smals", "en-gb", "fr_acoss"
+      options[:delimiter] ||= ','
+      options[:separator] ||= '.'
+
+    else
+      options[:delimiter] ||= ' '
+      options[:separator] ||= ','
+    end
+    options[:precision] ||= current_user.number_precision.nil? ? 2 : current_user.number_precision #2
+
+    super(number, options)
+  end
+
   def convert_project_category(project, value)
     case value
       when I18n.t(:project_area)

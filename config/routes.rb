@@ -358,6 +358,7 @@ Projestimate::Application.routes.draw do
     post "generate_report_excel_from_file" => 'organizations#generate_report_excel_from_file'
     post "import_user" => 'organizations#import_user'
     post "export_user" => 'organizations#export_user'
+    post "delete_multiple_users_from_organization" => 'organizations#delete_multiple_users_from_organization'
     get "export_groups" => 'organizations#export_groups'
     post "import_groups" => 'organizations#import_groups'
     get "export_appli" => 'organizations#export_appli'

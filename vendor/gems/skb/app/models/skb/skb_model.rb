@@ -72,6 +72,9 @@ module Skb
 
     # Display Value and unit
     def self.display_value(data_probable, estimation_value, view_widget, user)
+      precision, delimiter, separator = Organization.get_number_precision_params(user)
+      user_locale = user.language.locale rescue "fr"
+
       module_project = estimation_value.module_project
       skb_model = module_project.skb_model
       value = data_probable
@@ -112,7 +115,7 @@ module Skb
         result_value = nil
       end
 
-      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: user.number_precision.nil? ? 2 : user.number_precision, delimiter: ' ', locale: (user.language.locale rescue "fr"))} #{unit}"
+      return "#{ActionController::Base.helpers.number_with_precision(result_value, precision: precision, delimiter: delimiter, separator: separator, locale: user_locale)} #{unit}"
     end
 
 

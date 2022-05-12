@@ -232,10 +232,10 @@ module ProjectsHelper
     begin
       if current_user.locale == "en"
         #v = number_with_precision(value, precision: precision.to_i, locale: :en, delimiter: ',')
-        v = number_with_precision(value, precision: precision.to_i, locale: :en)
+        v = number_with_precision(value)
       else
-        #v = number_with_precision(value, precision: precision.to_i, locale: :fr, delimiter: '.')
-        v = number_with_precision(value, precision: precision.to_i, locale: :fr)
+        #v = number_with_precision(value, precision: precision.to_i, locale: :fr, delimiter: '.') #devrait avoir virgule comme separateur
+        v = number_with_precision(value)
       end
     rescue
       begin
@@ -331,7 +331,8 @@ module ProjectsHelper
       if value.nil?
         result_value = nil
       else
-        result_value = (value.to_f / in_out_standard_unit_coefficient.to_f).round(precision)
+        #result_value = (value.to_f / in_out_standard_unit_coefficient.to_f).round(precision)
+        result_value = number_with_precision((value.to_f / in_out_standard_unit_coefficient.to_f), precision: precision)
       end
     rescue
       result_value = nil
@@ -347,17 +348,18 @@ module ProjectsHelper
       value = v.to_f
       #(value / standard_unit_coefficient.to_f).round(precision)
       if estimation_value.nil?
-        value.round(precision)
+        number_with_precision(value, precision: precision) #value.round(precision)
       else
         case estimation_value.pe_attribute.alias
           when "effort"
-            (value / standard_unit_coefficient.to_f).round(precision)
+            #(value / standard_unit_coefficient.to_f).round(precision)
+            number_with_precision((value / standard_unit_coefficient.to_f), precision: precision)
           when "retained_size"
-            value.round(precision)
+            number_with_precision(value, precision: precision) #value.round(precision)
           when "introduced_defects"
-            value.round(precision)
+            number_with_precision(value, precision: precision) #value.round(precision)
           when "remaining_defects"
-            value.round(precision)
+            number_with_precision(value, precision: precision) #value.round(precision)
           else
             # type code here
         end

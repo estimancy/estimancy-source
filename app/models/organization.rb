@@ -173,6 +173,23 @@ class Organization < ActiveRecord::Base
   #end
 
 
+  def self.get_number_precision_params(user)
+    locale = user.language.locale rescue "fr"
+    precision = user.number_precision.nil? ? 2 : user.number_precision
+    case locale
+    when "fr", "fr_smals", "fr_edf", "fr_acoss", "fral"
+      delimiter = ' '
+      separator = ','
+    when "en", "en_smals", "en-gb", "fr_acoss"
+      delimiter = ','
+      separator = '.'
+    else
+      delimiter = ' '
+      separator = ','
+    end
+    precision, delimiter, separator = precision, delimiter, separator
+  end
+
   # Get organisation
   def self.get_organization_unit(v, organization)
     unless v.class == Hash

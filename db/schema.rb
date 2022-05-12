@@ -2667,7 +2667,7 @@ BEGIN
             old_value = OLD.id,
             new_value = NEW.id;
 
-          
+          -- Pour le super_admin
           IF (OLD.super_admin != NEW.super_admin) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,
@@ -2680,7 +2680,7 @@ BEGIN
               created_at = UTC_TIMESTAMP() ;
           END IF;
 
-          
+          -- Pour le mot de passe
           IF (OLD.encrypted_password != NEW.encrypted_password) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,
@@ -2693,7 +2693,7 @@ BEGIN
               created_at = UTC_TIMESTAMP() ;
           END IF;
 
-          
+          -- Pour le mot de passe
           IF (OLD.email != NEW.email) THEN
             INSERT INTO autorization_log_events SET
               event_organization_id = NEW.event_organization_id,
