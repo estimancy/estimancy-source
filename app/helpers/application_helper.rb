@@ -40,6 +40,7 @@ module ApplicationHelper
       options[:delimiter] ||= ' '
       options[:separator] ||= ','
     end
+
     options[:precision] ||= current_user.number_precision.nil? ? 2 : current_user.number_precision #2
 
     super(number, options)

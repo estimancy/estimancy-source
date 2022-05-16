@@ -4,6 +4,7 @@
 <% require 'rounding' %>
 
 <%
+  user = current_user
    attribute = @module_project.pemodule.pe_attributes.where(alias: "effort").first
    effort_week_unit = @staffing_model.effort_week_unit.nil? ? 1 : @staffing_model.effort_week_unit.to_f
    organization_id = @module_project.organization_id
@@ -114,6 +115,7 @@
             <div class="col-2 timecost-indicator">
               <div class="indicator-title"><%= I18n.t :effort_with_unit %></div>
               <%= text_field_tag "", "#{effort.to_f.round(2)} ", disabled: true, id: "name", class: "form-control form-control-sm" %>
+              <%#= text_field_tag "", number_with_precision(effort.to_f), disabled: true, id: "name", class: "form-control form-control-sm" %>
             </div>
 
 <!--            <div class="col-3" >-->
@@ -262,6 +264,7 @@
                   <% if @module_project.done == true %>
                     <% unless @staffing_custom_data.global_effort_value.nil? %>
                       <%= @staffing_custom_data.global_effort_value.round(user_number_precision) %>
+                      <%#= number_with_precision(@staffing_custom_data.global_effort_value) %>
                     <% end %>
                   <% else %>
                     -
@@ -271,6 +274,7 @@
                   <% if @module_project.done == true %>
                     <% unless @staffing_custom_data.global_effort_value.nil? %>
                       <%= sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100).round(1)) %>
+                      <%#= number_with_precision(sign(((effort.to_f - @staffing_custom_data.global_effort_value.to_f) / @staffing_custom_data.global_effort_value * 100)), precision: 1) %>
                     <% end %> %
                   <% else %>
                     -
@@ -282,6 +286,7 @@
                 <span class="reference_effort">
                   <% unless effort.nil? %>
                     <%= effort.to_f.round(2) %>
+                    <%#= number_with_precision(effort.to_f) %>
                   <% end %>
                 </span>
               </div>
@@ -295,6 +300,7 @@
                   <% if @module_project.done == true %>
                     <% unless @staffing_custom_data.duration.nil? %>
                       <%= @staffing_custom_data.duration.round(user_number_precision) %>
+                      <%#= number_with_precision(@staffing_custom_data.duration) %>
                     <% end %>
                   <% else %>
                     -
@@ -304,6 +310,7 @@
                   <% if @module_project.done == true %>
                     <% unless @staffing_custom_data.duration.nil? || @md_duration.nil? %>
                       <%= sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100).round(1)) %>
+                      <%#= number_with_precision(sign(((@staffing_custom_data.duration - @md_duration.to_f) / @md_duration.to_f * 100))) %>
                     <% end %> %
                   <% else %>
                     -
@@ -315,6 +322,7 @@
                 <span class="reference_duration staffing-indicator-value">
                   <% unless @md_duration.nil? %>
                     <%= @md_duration.to_f.round(user_number_precision) %>
+                    <%#= number_with_precision(@md_duration.to_f) %>
                   <% end %>
                 </span>
               </div>
@@ -362,6 +370,7 @@
                   <% if @module_project.done == true %>
                     <% unless @staffing_custom_data.max_staffing.nil? %>
                       <%= @staffing_custom_data.max_staffing.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                      <%#= number_with_precision(@staffing_custom_data.max_staffing.to_f.round_up_by_step(0.1), precision: 1) rescue 0 %>
                     <% end %>
                   <% else %>
                     -
@@ -371,6 +380,7 @@
                   <% if @module_project.done == true %>
                     <% unless @staffing_custom_data.max_staffing.nil? %>
                       <%= sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100).round(1)) %>
+                      <%#= number_with_precision(sign((((@staffing_custom_data.max_staffing.to_f - staffing_trapeze.to_f) / staffing_trapeze.to_f) * 100)), precision: 1) %>
                     <% end %> %
                   <% else %>
                   <% end %>
@@ -380,6 +390,7 @@
               <div class="indicator-optimal-value">
                 <span class="reference_staffing_trapeze">
                   <%= staffing_trapeze.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                  <%#= number_with_precision(staffing_trapeze.to_f.round_up_by_step(0.1), precision: 1) rescue 0 %>
                 </span> pers.
               </div>
             </div>
@@ -392,6 +403,7 @@
                   <% if @module_project.done == true %>
                     <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
                       <%= @staffing_custom_data.max_staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                      <%#= number_with_precision(@staffing_custom_data.max_staffing_rayleigh.to_f.round_up_by_step(0.1), precision: 1) rescue 0 %>
                     <% end %>
                   <% else %>
                     -
@@ -401,6 +413,7 @@
                   <% if @module_project.done == true %>
                     <% unless @staffing_custom_data.max_staffing_rayleigh.nil? %>
                       <%= sign((((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh) / staffing_rayleigh) * 100).round(1)) %>
+                      <%#= number_with_precision(sign((((@staffing_custom_data.max_staffing_rayleigh - staffing_rayleigh) / staffing_rayleigh) * 100)), precision: 1) %>
                     <% end %> %
                   <% else %>
                     -
@@ -412,6 +425,7 @@
                 <span class="reference_staffing_rayleigh">
                   <% unless staffing_rayleigh.nil? %>
                     <%= staffing_rayleigh.to_f.round_up_by_step(0.1).round(1) rescue 0 %>
+                    <%#= number_with_precision(staffing_rayleigh.to_f.round_up_by_step(0.1), precision: 1) rescue 0 %>
                   <% end %>
                 </span> pers.
               </div>

@@ -614,7 +614,8 @@
                             <% end %>
 
                               <% input = ( (entry_value.nil? || entry_value ==0) ? 1 : convert_ge_model_value_with_precision(@ge_model, corresponding_input_ev, entry_value.to_f, user_number_precision)) %>
-                              <%= (output.to_f/input.to_f).round(user_number_precision) %>
+                              <%#= (output.to_f/input.to_f).round(user_number_precision) %>
+                              <%= number_with_precision((output.to_f/input.to_f), precision: user_number_precision) %>
                           <% rescue %>
                               -
                           <% end %>

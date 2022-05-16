@@ -103,7 +103,8 @@ module ProjectsHelper
       unless v.class == Hash
         begin
           value = v.to_f
-          (value / effort_unit_coefficient.to_f).round(user_number_precision)
+          #(value / effort_unit_coefficient.to_f).round(user_number_precision)
+          number_with_precision((value / effort_unit_coefficient.to_f))
         rescue
           0
         end
@@ -309,13 +310,14 @@ module ProjectsHelper
       if value.nil?
         result_value = nil
       else
-        result_value = (value.to_f / in_out_effort_standard_unit_coefficient.to_f).round(precision)
+        result_value = (value.to_f / in_out_effort_standard_unit_coefficient.to_f)#.round(precision)
       end
     rescue
       result_value = nil
     end
 
-    result_value
+    #result_value
+    number_with_precision(result_value, precision: precision)
   end
 
 

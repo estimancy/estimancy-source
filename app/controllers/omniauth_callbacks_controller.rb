@@ -45,8 +45,9 @@ class OmniauthCallbacksController < Devise::OmniauthCallbacksController
       redirect_to sign_in_path, warning: "SAML : #{I18n.t(:error_access_denied)}"  and return
     else
       if @user.persisted?
-        sign_in_and_redirect @user, event: :authentication
+        flash[:notice] = I18n.t "devise.omniauth_callbacks.success", :kind => "SAML"
         set_flash_message(:notice, :success, kind: 'SAML') #if is_navicational_format?
+        sign_in_and_redirect @user, event: :authentication
       else
         session['devise.saml_data'] = request.env['omniauth.auth']
         redirect_to root_url and return
