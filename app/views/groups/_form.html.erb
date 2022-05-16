@@ -48,7 +48,7 @@
                     <div class="form-row">
                       <div class="col-5">
                         <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
-                          <%= f.input :is_protected_group, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                          <%= f.input :is_protected_group, as: :boolean, :label => false, disabled: !@current_user.super_admin, :input_html => {:class => 'mdl-checkbox__inputs'} %>
                           <label class="mdl-textfield__label" for="is_protected_group" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_protected_group') %></label>
                         </div>
                       </div>
