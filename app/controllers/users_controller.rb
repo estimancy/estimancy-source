@@ -298,45 +298,67 @@ public
     @user.transaction_id = @user.transaction_id.nil? ? "#{@user.id}_1" : @user.transaction_id.next rescue "#{@user.id}_1"
     @user.event_organization_id = @current_organization.id #params[:organization_id]
     @user.originator_id = @current_user.id
+    anonymous_user = User.where(login_name: "anonymous").first_or_create(login_name: "anonymous", first_name: "*", last_name: "ANONYMOUS", initials: "*ANONYMOUS", email: "contact@estimancy.com")
 
     if params[:organization_id].present?
       @organization = Organization.find(params[:organization_id])
     end
 
     if @organization.nil?
-      if params[:organizations].nil?
-        @user.organizations.each do |organization|
-          organization.groups.each do |group|
-            if @user.projects.where(organization_id: organization.id).empty?
-              GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
-              @user.organization_ids = []
-            else
-              specific_message = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: organization.id).join(', ')})"
+      begin
+        @user.transaction do
+          if params[:organizations].nil?
+            @user.organizations.each do |organization|
+
+              organization.groups.each do |group|
+                #if @user.projects.where(organization_id: organization.id).empty?
+                  GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+                  @user.organization_ids = []
+                # else
+                #   specific_message = "L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: organization.id).join(', ')})"
+                # end
+              end
+
+              user_projects = @user.projects.where(organization_id: organization.id)
+              # On met à jour les propriétaires des projets
+              unless user_projects.empty?
+                change_user_project_creator(@user, user_projects, anonymous_user)
+              end
             end
+            @user.save
+          elsif current_user.super_admin == true
+            old_organizations = @user.organization_ids - params[:organizations].keys.map(&:to_i)
+            new_organizations_array = params[:organizations].keys.map(&:to_i)
+
+            old_organizations.each do |organization_id|
+              organization = Organization.find(organization_id)
+
+              user_projects = @user.projects.where(organization_id: organization.id)
+              # On met à jour les propriétaires des projets
+              unless user_projects.empty?
+                change_user_project_creator(@user, user_projects, anonymous_user)
+              end
+
+              organization.groups.each do |group|
+                #if @user.projects.where(organization_id: organization.id).empty?
+                  GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
+                # else
+                #   new_organizations_array << organization_id
+                #   specific_message = "#{organization.name} : L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: organization.id).join(', ')})"
+                # end
+              end
+            end
+
+            @user.organization_ids = new_organizations_array.uniq
+            @user.save
+          else
+            #il ne se passe rien, un user non super admin ne peux pas décoché un autre utilisateur d'une organisation
           end
         end
-        @user.save
-      elsif current_user.super_admin == true
-        old_organizations = @user.organization_ids - params[:organizations].keys.map(&:to_i)
-        new_organizations_array = params[:organizations].keys.map(&:to_i)
-
-        old_organizations.each do |organization_id|
-          organization = Organization.find(organization_id)
-          organization.groups.each do |group|
-            if @user.projects.where(organization_id: organization.id).empty?
-              GroupsUsers.delete_all("user_id = #{@user.id} and group_id = #{group.id}")
-            else
-              new_organizations_array << organization_id
-              specific_message = "#{organization.name} : L'utilisateur est propriétaire de plusieurs estimations privées et modèles d'estimations (#{@user.projects.where(organization_id: organization.id).join(', ')})"
-            end
-          end
-        end
-
-        @user.organization_ids = new_organizations_array.uniq
-        @user.save
-      else
-        #il ne se passe rien, un user non super admin ne peux pas décoché un autre utilisateur d'une organisation
+      rescue
+        flash[:warning] = "Erreur lors de la mise à jour des organisations de l'utilisateur"
       end
+
     else
       if can?(:manage, Group)
         if params[:groups].nil?
