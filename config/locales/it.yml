@@ -2136,3 +2136,4 @@ it:
   filter: "Filter"
   past_projects_size: "Size of past projects"
   idp_assertion_consumer_service_url: "URL de redirection vers Estimancy après authentification SAML"
+  non_existing_users: "Ces utilisateurs n'existent pas (login introuvable): %{parameter}"

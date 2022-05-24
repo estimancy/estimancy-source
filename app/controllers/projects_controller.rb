@@ -884,7 +884,6 @@ class ProjectsController < ApplicationController
   #Liste des utilisateurs par groupe
   def projects_list_until_date
 
-    # User.joins(:groups).where(groups: {name: "SNCF"}).count   #914
     # User.joins(:groups).where(groups: {name: ["SST-ENG", "SST-EST"]}).count   #1216
     #User.joins(:groups).where(groups: {name: "SST-EST"}).or(User.joins(:groups).where(groups: {name: "SST-ENG"})).count   #121
 
@@ -905,7 +904,7 @@ class ProjectsController < ApplicationController
 
     Organization.all.each_with_index do |organization, index|
 
-      ref_group_names = ["SST-EST", "SST-ENG", "SNCF", "*USER"]
+      ref_group_names = ["SST-EST", "SST-ENG", "*USER"] #compléter liste des groupes concernés
 
       user_groups = organization.groups.where(name: ref_group_names)
       user_group_ids = user_groups.map(&:id)
@@ -1042,7 +1041,6 @@ class ProjectsController < ApplicationController
     organization_projects = Project.where('created_at >= ?', '2021-11-01')
     #Project.where('created_at >= ? AND created_at <= ?', '2021-01-01', '2021-12-31').count  #7745
     #Project.where('created_at > ? AND created_at < ?', '2020-12-31', '2022-01-01').count  #7753
-    # User.joins(:groups).where(groups: {name: "SNCF"}).count   #914
     # User.joins(:groups).where(groups: {name: ["SST-ENG", "SST-EST"]}).count   #1216
     User.joins(:groups).where(groups: {name: "SST-EST"}).or(User.joins(:groups).where(groups: {name: "SST-ENG"})).count   #1216
 
