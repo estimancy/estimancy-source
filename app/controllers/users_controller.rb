@@ -546,7 +546,6 @@ public
     end
   end
 
-
   def change_user_project_creator(current_owner, user_projects, anonymous_user)
 
     unless user_projects.blank?

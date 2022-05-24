@@ -5933,6 +5933,91 @@ class OrganizationsController < ApplicationController
   end
 
 
+  #Supprimer une liste d'utilisateurs d'une organisation depuis un fichier excel
+  # Après détachement d'une organisation : lorsque l'utilisateur n'appartient à aucune autre organisation, il sera définitivement supprimé
+  def delete_multiple_users_from_organization
+
+    authorize! :manage, User
+
+    organization_id = params[:organization_id].to_i
+    organization = Organization.where(id: organization_id).first
+    anonymous_user = User.where(login_name: "anonymous").first_or_create(login_name: "anonymous", first_name: "*", last_name: "ANONYMOUS", initials: "*ANONYMOUS", email: "contact@estimancy.com")
+
+    non_users_existing = []
+    user_with_no_name = []
+
+    if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      workbook = RubyXL::Parser.parse(params[:file].path)
+      worksheet = workbook[0]
+      tab = worksheet
+
+      tab.each_with_index do |row, index_row|
+        if index_row > 0
+          if !row.blank?
+
+            if row[0] #&& row[1]
+
+              #user = User.find_by_login_name(row[0].nil? ? '' : row[0].value)
+              user = organization.users.where(login_name: row[0].value).first rescue nil
+
+              if user.nil?
+                # L'utilisateur n'existe ou n'est pas rattaché à l'organisation
+                non_users_existing << (row[0].nil? ? '' : row[0].value)
+              else
+                user_projects = user.projects.where(organization_id: organization_id)
+                #on le détache de l'organisation
+                user.transaction do
+                  unless user_projects.empty?
+                    user_controller = UsersController.new
+                    user_controller.change_user_project_creator(user, user_projects, anonymous_user)
+                  end
+
+                  # Detach user from all groups of the current organization
+                  current_orga_user_group_ids = user.groups.where(organization_id: organization_id)#.map(&:id)
+                  user.groups.delete(current_orga_user_group_ids)
+
+                  # Detach user from the current organization
+                  OrganizationsUsers.where(organization_id: organization_id, user_id: user.id).delete_all
+
+                  #Et puis si l'utilisateur n'appartient à aucune autre organisation, il sera définitivement supprimé
+                  if user.organizations.all.size == 0
+                    user.destroy
+                  end
+                end
+              end
+            else
+              user_with_no_name << index_row
+            end
+          end
+        end
+      end
+
+      final_error = []
+      flash_err = false
+      unless non_users_existing.empty?
+        final_error <<  I18n.t(:non_existing_users, parameter: non_users_existing.join(", "))
+      end
+
+      unless user_with_no_name.empty?
+        final_error << I18n.t(:user_with_no_name, parameter: user_with_no_name.join(", "))
+      end
+
+      unless final_error.empty?
+        flash[:error] = final_error.join("<br/>").html_safe
+        flash_err = true
+      end
+      if final_error.empty? && flash_err==false
+        flash[:notice] = I18n.t(:user_importation_success)
+      end
+    else
+      flash[:error] = I18n.t(:route_flag_error_4)
+    end
+
+    flash[:notice] = "Les utilisateurs ont bien été supprimés"
+    redirect_to organization_users_path(@current_organization) and return
+  end
+
+
 #   def import_user_SAVE
 #
 #     authorize! :manage, User
