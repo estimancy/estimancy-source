@@ -2294,3 +2294,7 @@ es:
   past_projects_size: "Size of past projects"
   idp_assertion_consumer_service_url: "Redirection url to Estimancy after SAML authentication"
   non_existing_users: "Users don't exist (login not found): %{parameter}"
+  explanation_users_deletion: "Users whose logins are found in the excel fil will be deleted from the organization. Then, if the user doesn't belong to any other organization, he will be permanently deleted."
+  excel_head_exist: "Exist"
+  excel_head_removed_from: "Removed from"
+  excel_head_deleted: "Permanent deletion"

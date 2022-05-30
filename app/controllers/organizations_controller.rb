@@ -5934,7 +5934,10 @@ class OrganizationsController < ApplicationController
 
 
   #Supprimer une liste d'utilisateurs d'une organisation depuis un fichier excel
-  # Après détachement d'une organisation : lorsque l'utilisateur n'appartient à aucune autre organisation, il sera définitivement supprimé
+  # Après détachement d'une organisation : lorsque l'utilisateur n'appartient à aucune autre organisation, il sera définitivement supprim
+  #CREATE A EXCEL FILE WITH THE SUMMARY OF WHAT HAPPEN DURING THE DELETION OF USER :
+  # while we delete the users from the multiple deletions button.
+
   def delete_multiple_users_from_organization
 
     authorize! :manage, User
@@ -5947,12 +5950,27 @@ class OrganizationsController < ApplicationController
     user_with_no_name = []
 
     if !params[:file].nil? && (File.extname(params[:file].original_filename) == ".xlsx" || File.extname(params[:file].original_filename) == ".Xlsx")
+      #Reading the xlsx file
       workbook = RubyXL::Parser.parse(params[:file].path)
       worksheet = workbook[0]
       tab = worksheet
 
+      #Creating the summary/report xlsx file
+      summary_workbook = RubyXL::Workbook.new
+      summary_worksheet = summary_workbook[0]
+
+      #Head of file
+      first_row = [ I18n.t(:login_name_or_email) ,  I18n.t(:excel_head_exist), I18n.t(:first_name_attribute), I18n.t(:last_name_attribute), I18n.t(:groups)  , I18n.t(:excel_head_removed_from), I18n.t(:excel_head_deleted)]
+
+      first_row.each_with_index do |name, index|
+        summary_worksheet.add_cell(0, index, name)
+        #add_cell(line, column, content)
+      end
+
+
       tab.each_with_index do |row, index_row|
         if index_row > 0
+
           if !row.blank?
 
             if row[0] #&& row[1]
@@ -5963,8 +5981,20 @@ class OrganizationsController < ApplicationController
               if user.nil?
                 # L'utilisateur n'existe ou n'est pas rattaché à l'organisation
                 non_users_existing << (row[0].nil? ? '' : row[0].value)
+
+                summary_worksheet.add_cell(index_row, 1, "NON")
+                #display the login even if it doesn't exist
+                summary_worksheet.add_cell(index_row, 0, row[0].value)
+
               else
+                #add the cell with the infos IF the user exist
+                row =  [ user.login_name, "OUI" ,user.first_name, user.last_name, nil,organization.name,nil ]
+                row.each_with_index do |content, index_column|
+                  summary_worksheet.add_cell(index_row, index_column, content)
+                end
+
                 user_projects = user.projects.where(organization_id: organization_id)
+
                 #on le détache de l'organisation
                 user.transaction do
                   unless user_projects.empty?
@@ -5974,14 +6004,16 @@ class OrganizationsController < ApplicationController
 
                   # Detach user from all groups of the current organization
                   current_orga_user_group_ids = user.groups.where(organization_id: organization_id)#.map(&:id)
-                  user.groups.delete(current_orga_user_group_ids)
+                  summary_worksheet.add_cell(index_row, 4, current_orga_user_group_ids.map(&:name).join(", "))
 
+                  user.groups.delete(current_orga_user_group_ids)
                   # Detach user from the current organization
                   OrganizationsUsers.where(organization_id: organization_id, user_id: user.id).delete_all
 
                   #Et puis si l'utilisateur n'appartient à aucune autre organisation, il sera définitivement supprimé
                   if user.organizations.all.size == 0
                     user.destroy
+                    summary_worksheet.add_cell(index_row, 6, "OUI")
                   end
                 end
               end
@@ -6014,11 +6046,16 @@ class OrganizationsController < ApplicationController
     end
 
     flash[:notice] = "Les utilisateurs ont bien été supprimés"
-    redirect_to organization_users_path(@current_organization) and return
+
+    #suggest to download the created file, the summary
+    send_data(summary_workbook.stream.string, filename: "#{organization.name[0..4]}-Summary_deletion-#{Time.now.strftime("%Y-%m-%d_%H-%M")}.xlsx", type: "application/vnd.ms-excel") and return
+    #redirect_to organization_users_path(@current_organization) and return
   end
 
+  ##End of function
 
-#   def import_user_SAVE
+
+  #   def import_user_SAVE
 #
 #     authorize! :manage, User
 #

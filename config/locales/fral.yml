@@ -2635,3 +2635,7 @@ fral:
   past_projects_size: "Taille des projets passés"
   idp_assertion_consumer_service_url: "URL de redirection vers Estimancy après authentification SAML"
   non_existing_users: "Ces utilisateurs n'existent pas (login introuvable): %{parameter}"
+  explanation_users_deletion: "Les utilisateurs dont les identifiants figurent dans le fichier excel seront supprimés de l'organisation. Puis, lorsqu'un utilisateur n'appartient à aucune autre organisation, il sera définitivement supprimé."
+  excel_head_exist: "Existe"
+  excel_head_removed_from: "Détaché de"
+  excel_head_deleted: "Suppression définitive"
