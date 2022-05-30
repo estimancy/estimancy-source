@@ -1,0 +1,477 @@
+<!-- Show the estimate graph with Chart.js et ChartNewjs -->
+<script>
+    $(document).ready(function() {
+        // Get the current module estimation results
+        <% attributes_array = current_module_project.pemodule.pe_attributes.all.map(&:alias).to_json.html_safe %>
+        <% modules = @project.pemodules.map(&:alias).to_json.html_safe %>
+        var module_labels = <%= modules %>;
+
+        <% data_array = []
+           input_data_array = []
+           cocomo_advanced_input_data_array = []
+           #fillColor_array = ["rgb(135,206,250)", "rgb(255,165,0)", "rgb(0,255,255)", "rgb((255,255,0)", "rgba(220,220,220,0.5)", "rgba(151,187,205,0.5)", "rgba(151,187,205,1)", "rgba(220,220,220,1)"]
+           fillColor_array = ["rgb(135,206,250)", "rgb(255,165,0)", "rgb(0,255,255)", "rgb(151,187,205)", "rgb(151,187,205)"]
+           pie_fillColor_array = ["#F38630", "#E0E4CC", "#69D2E7", "#D97041", "#C7604C", "#21323D", "#9D9B7F", "#7D4F6D", "#584A5E"]
+           iteration = -1
+           input_iter = -1
+           cocomo_ad_iter = -1
+        %>
+
+        var js_fillColor_array = fillColor_array = ["rgb(135,206,250)", "rgb(255,165,0)", "rgb(0,255,255)", "rgb(151,187,205)", "rgb(151,187,205)"];
+        var js_pie_fillColor_array = ["#F38630", "#E0E4CC", "#69D2E7", "#D97041", "#C7604C", "#21323D", "#9D9B7F", "#7D4F6D", "#584A5E"];
+
+        // Attributes Unit : Table of Attributes units according to their aliases
+        var js_attribute_yAxisUnit_array = <%= @attribute_yAxisUnit_array.to_json.html_safe %>;
+
+        // Contains all attribute name according to their aliases
+        var js_all_attributes_names = <%= @all_attributes_names.to_json.html_safe %>;
+
+        // Value to increment for getting new color
+        var js_hue_color = 0;
+        <% $rb_hue_color = 0 %>
+
+
+        ///============== datasets for input data Radar chart for Cocomo_Advanced and CocomoII (Modules using Factors) =======================
+        <% if @current_module_project.pemodule.alias.in? Projestimate::Application::MODULES_WITH_FACTORS %>
+        //Radar option
+        var radarOptions = {
+            //Boolean - If we show the scale above the chart data
+            scaleOverlay: true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: true,
+            //Boolean - If we want to override with a hard coded scale
+            scaleOverride: true,
+            //** Required if scaleOverride is true **
+            //Number - The number of steps in a hard coded scale
+            scaleSteps: 7,
+            //Number - The value jump in the hard coded scale
+            scaleStepWidth: 1,
+            //Number - The scale starting value
+            scaleStartValue: 0,
+            //String - Colour of the scale line
+            scaleLineColor: "rgba(0,0,0,.1)",
+            //Number - Pixel width of the scale line
+            scaleLineWidth: 1,
+            //Boolean - Whether to show labels on the scale
+            scaleShowLabels: true,
+            //Number - Scale label font size in pixels
+            scaleFontSize: 12,
+            scaleFontColor: "#000",
+            annotateLabel: true,
+
+            // new attribute for the CharNew.js library
+            annotateDisplay : true,
+            savePng : true,
+            canvasBorders : true,
+            canvasBordersWidth : 2,
+            canvasBordersColor : "grey",
+            yAxisLeft : true,
+            yAxisRight : true,
+            yAxisLabel : "Y axis",
+            yAxisFontFamily : "'Arial'",
+            yAxisFontSize : 14,
+            yAxisFontStyle : "normal",
+            yAxisFontColor : "#666",
+            xAxisLabel : "",
+            xAxisFontFamily : "'Arial'",
+            xAxisFontSize : 14,
+            xAxisFontStyle : "normal",
+            xAxisFontColor : "#666",
+            yAxisUnit : "UNIT",
+            yAxisUnitFontFamily : "'Arial'",
+            yAxisUnitFontSize : 12,
+            yAxisUnitFontStyle : "normal",
+            yAxisUnitFontColor : "#666",
+            graphTitle : "",
+            graphTitleFontFamily : "'Arial'",
+            graphTitleFontSize : 18,
+            graphTitleFontStyle : "bold",
+            graphTitleFontColor : "#666",
+            graphSubTitle : "",
+            graphSubTitleFontFamily : "'Arial'",
+            graphSubTitleFontSize : 16,
+            graphSubTitleFontStyle : "normal",
+            graphSubTitleFontColor : "#666",
+            footNote : "<%= I18n.t(:title_input_data_factors, :module_name => @current_module_project.pemodule.title.to_s) %>", //"Cocomo 2 input data factors",
+            footNoteFontFamily : "'Arial'",
+            footNoteFontSize : 14,
+            footNoteFontStyle : "bold",
+            footNoteFontColor : "#666",
+            legend : true,
+            legendFontFamily : "'Arial'",
+            legendFontSize : 14,
+            legendFontStyle : "normal",
+            legendFontColor : "#666",
+            legendBlockSize : 12,
+            legendBorders : true,
+            legendBordersWidth : 1,
+            legendBordersColor : "#666",
+            //  ADDED PARAMETERS
+            graphMin : "DEFAULT",
+            graphMax : "DEFAULT"
+        }
+
+        // Cocomo-Advanced input data
+        <% @cocomo_advanced_input_dataset.each do |corresponding_graph_name, array_value|
+            factor_data_hash =
+                {
+                   fillColor: "hsla(#{$rb_hue_color+=222.5}, 75%, 50%, 0.5)",
+                   strokeColor: "rgba(220,220,220,1)",
+                   pointColor: "rgba(220,220,220,1)",
+                   pointStrokeColor: "#fff",
+                   data: array_value,
+                   title: corresponding_graph_name.humanize
+                }
+           cocomo_advanced_input_data_array << factor_data_hash
+           puts "JS_COCOMO_DATA = #{cocomo_advanced_input_data_array}"
+        end %>
+
+        var cocomo_advanced_input_data = {
+            labels: <%= @cocomo_advanced_factor_corresponding.to_json.html_safe %>,
+            datasets: <%= cocomo_advanced_input_data_array.to_json.html_safe %>
+        };
+
+        //create the radar char div for the Cocomo-Advanced inputs factors
+        $("#estimation_graph_box").append('<div class="span4" style="margin-left: 0px"><canvas id="canvas_radar" class="canvas" width="350" height="300"></canvas></div>');
+
+        // Radar chart for input data
+        var radar_ctx = $('#canvas_radar').get(0).getContext("2d");
+        var radarChart = new Chart(radar_ctx).Radar(cocomo_advanced_input_data, radarOptions);
+
+        // Line chart for staffing profile curve
+        $("#estimation_graph_box").append('<div class="span8" style="margin-left: 0px"><canvas id="staffing_curve" class="canvas" width="750" height="300"></canvas></div>');
+
+        var data = {
+            labels : <%= @staffing_labels.to_json.html_safe %>,
+            datasets : [
+                {
+                    fillColor : "rgba(0,220,0,1)",
+                    strokeColor : "rgba(220,220,220,1)",
+                    pointColor : "rgba(220,220,220,1)",
+                    pointStrokeColor : "#fff",
+                    data : <%= @staffing_profile_data.to_json.html_safe %>
+                }
+            ]
+        }
+
+        var staffing_options = {
+            bezierCurve: false,
+            scaleSteps: 11,
+            scaleOverlay: true,
+            footNote : "Staffing Distribution",
+            // new attribute for the CharNew.js library
+            savePng : true,
+            canvasBorders : true,
+            canvasBordersWidth : 2,
+            canvasBordersColor : "grey",
+            yAxisLeft : true,
+            yAxisRight : true,
+            yAxisLabel : "Y axis",
+            yAxisFontFamily : "'Arial'",
+            yAxisFontSize : 14,
+            yAxisFontStyle : "normal",
+            yAxisFontColor : "#666",
+            xAxisLabel : "",
+            xAxisFontFamily : "'Arial'",
+            xAxisFontSize : 14,
+            xAxisFontStyle : "normal",
+            xAxisFontColor : "#666",
+            yAxisUnit : "Staffing",
+            yAxisUnitFontFamily : "'Arial'",
+            yAxisUnitFontSize : 12,
+            yAxisUnitFontStyle : "normal",
+            yAxisUnitFontColor : "#666",
+            graphTitle : "",
+            graphTitleFontFamily : "'Arial'",
+            graphTitleFontSize : 18,
+            graphTitleFontStyle : "bold",
+            graphTitleFontColor : "#666",
+            graphSubTitle : "",
+            graphSubTitleFontFamily : "'Arial'",
+            graphSubTitleFontSize : 16,
+            graphSubTitleFontStyle : "normal",
+            graphSubTitleFontColor : "#666",
+            footNote : "Profile distribution",
+            footNoteFontFamily : "'Arial'",
+            footNoteFontSize : 14,
+            footNoteFontStyle : "bold",
+            footNoteFontColor : "#666",
+            legendFontFamily : "'Arial'",
+            legendFontSize : 14,
+            legendFontStyle : "normal",
+            legendFontColor : "#666",
+            legendBlockSize : 12,
+            legendBorders : true,
+            legendBordersWidth : 1,
+            legendBordersColor : "#666"
+        }
+
+        var staffing_ctx = $('#staffing_curve').get(0).getContext("2d");
+        var staffing_bar_chart = new Chart(staffing_ctx).Bar(data, staffing_options);
+
+        <% end %>
+        ///========================================= END COCOMO-ADVANCED AND COCOMOII (MODULES USING FACTORS  ======================================
+
+
+
+        //========================================= DATASET FOR THE CURRENT MODULE AND CURRENT COMPONENT ===========================================
+
+        //create dynamique div and canvas for each output attribute graph
+        var current_mp_outputs_attributes_aliases = <%= @current_mp_outputs_attributes_aliases.to_json.html_safe %>;
+        $.each(current_mp_outputs_attributes_aliases, function( index, value ) {
+            <% unless @current_module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN %>
+            $("#estimation_graph_box").append('<div class="span4" style="margin-left: 0px"><canvas id="'+value+'" class="canvas" width="350" height="300"></canvas></div>');
+            <% end %>
+        });
+
+        var outputs_data_levels = ["Low", "Most Likely", "High", "probable"];
+        var output_iter = -1;
+
+        //generate data for each attribute
+        var js_current_mp_outputs_dataset = <%= @current_mp_outputs_dataset.to_json.html_safe %> ;
+        var js_current_mp_outputs_attributes_aliases = <%= @current_mp_outputs_attributes_aliases.to_json.html_safe %> ;
+        var graph_title = [];
+        var pie_chart_effort_per_activity;
+        var stacked_bar_effort_per_activity;
+
+        $.each( js_current_mp_outputs_attributes_aliases, function( key, value ) {
+
+            <%# if @current_module_project.pemodule.with_activities.in?(%w(yes_for_output_with_ratio yes_for_input_output_without_ratio yes_for_input_output_without_ratio yes_for_input_output_without_ratio)) %>
+            <% if !@current_mp_effort_per_activity.empty? && !@current_mp_effort_per_activity.nil? %>
+            if((value == "effort") || (value == "effort_person_hour")){
+                graph_title = "Effort per activity (probable)";
+            }
+
+            //create div for the Pie chart
+            $("#estimation_graph_box").append('<div class="span6" style="margin-left: 0px"><canvas id="canvas_pie_effort_per_activity" class="canvas" width="600" height="300"></canvas></div>');
+            $("#estimation_graph_box").append('<div class="span6" style="margin-left: 0px"><canvas id="canvas_stacked_bar_effort_per_activity" class="canvas" width="600" height="300"></canvas></div>');
+            // only get the Probable value for the Pie chart
+            <%
+               r_pie_chart_effort_per_activity = []
+               r_stacked_bar_effort_per_activity = []
+               r_colors = {}
+               pie_chart_iter = -1
+               effort_per_activity_probable_value = @current_mp_effort_per_activity["probable"]
+               if !effort_per_activity_probable_value.nil?
+                    effort_per_activity_probable_value.each do |key, value|
+                        $rb_hue_color+=222.5
+                        activity_data = {
+                            value: value,
+                            color: "hsla(#{$rb_hue_color}, 75%, 50%, 0.5)", #color: "hsla(#{$rb_hue_color+=222.5}, 75%, 50%, 0.5)",
+                            title: key
+                        }
+                        r_pie_chart_effort_per_activity << activity_data
+
+                        # For the stacked Bar: Create the stacked bar chart data
+                        if !@effort_breakdown_stacked_bar_dataset.nil?
+                            array_values = @effort_breakdown_stacked_bar_dataset["#{key}"]
+                            activity_data = {
+                                fillColor: "hsla(#{$rb_hue_color}, 75%, 50%, 0.5)",
+                                strokeColor: "rgba(220,220,220,1)",
+                                pointColor: "rgba(220,220,220,1)",
+                                pointstrokeColor: "yellow",
+                                data: (array_values.empty? ? [0,0,0,0] : array_values),
+                                title: "#{key}"
+                            }
+                            r_stacked_bar_effort_per_activity << activity_data
+                       end
+                    end
+               end
+            %>
+
+            //create the Pie chart data
+            pie_chart_effort_per_activity = <%= r_pie_chart_effort_per_activity.to_json.html_safe %> ;
+
+            //Create the Stacked Bar chart dataset
+            stacked_bar_effort_per_activity = {
+                labels : ["low", "most_likely", "high", "probable"],
+                datasets : <%= r_stacked_bar_effort_per_activity.to_json.html_safe %>
+            }
+            <% end %>
+
+            <% $rb_hue_color +=222.5 %>
+            var attr_data = {
+                labels : outputs_data_levels,
+                datasets : [
+                    {
+                        fillColor : js_fillColor_array[output_iter+=1],
+                        strokeColor : "rgba(220,220,220,1)",
+                        pointColor : "rgba(220,220,220,1)",
+                        pointStrokeColor : "#fff",
+                        data : js_current_mp_outputs_dataset[value],
+                        //data : (value === 'end_date') ? (new Date(js_current_mp_outputs_dataset[value] * 1000)) : js_current_mp_outputs_dataset[value], //js_current_mp_outputs_dataset[value],
+                        title : value
+                    }
+                ]
+            }
+
+            var attr_options = {
+                annotateLabel: true,
+                // new attribute for the CharNew.js library
+                annotateDisplay : true,
+                savePng : true,
+                canvasBorders : true,
+                canvasBordersWidth : 2,
+                canvasBordersColor : "grey",
+                yAxisLeft : true,
+                yAxisRight : true,
+                yAxisLabel : "Y axis",
+                yAxisFontFamily : "'Arial'",
+                yAxisFontSize : 14,
+                yAxisFontStyle : "normal",
+                yAxisFontColor : "#666",
+                xAxisLabel : "",
+                xAxisFontFamily : "'Arial'",
+                xAxisFontSize : 14,
+                xAxisFontStyle : "normal",
+                xAxisFontColor : "#666",
+                yAxisUnit : js_attribute_yAxisUnit_array[value], //"UNIT",
+                yAxisUnitFontFamily : "'Arial'",
+                yAxisUnitFontSize : 12,
+                yAxisUnitFontStyle : "bold", //"normal",
+                yAxisUnitFontColor : "#666",
+                graphTitle : graph_title,
+                graphTitleFontFamily : "'Arial'",
+                graphTitleFontSize : 24,
+                graphTitleFontStyle : "normal",
+                graphTitleFontColor : "#666",
+                graphSubTitle : "",
+                graphSubTitleFontFamily : "'Arial'",
+                graphSubTitleFontSize : 16,
+                graphSubTitleFontStyle : "normal", //"bold"
+                graphSubTitleFontColor : "#666",
+                footNote : js_all_attributes_names[value], //''+value,
+                footNoteFontFamily : "'Arial'",
+                footNoteFontSize : 16,
+                footNoteFontStyle : "bold",
+                footNoteFontColor : "#666",
+                legend : true,
+                legendFontFamily : "'Arial'",
+                legendFontSize : 14,
+                legendFontStyle : "normal",
+                legendFontColor : "#666",
+                legendBlockSize : 50, //12,
+                legendBorders : true,
+                legendBordersWidth : 2,
+                legendBordersColor : "#666",
+                //  ADDED PARAMETERS
+                graphMin : "DEFAULT",
+                graphMax : "DEFAULT"
+            };
+
+            //generate Bar chart for current output attribute (unless for the Effort_breakdown)
+            <% unless @current_module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN %>
+            var myBar = new Chart(document.getElementById(value).getContext("2d")).Bar(attr_data, attr_options);
+            <% end %>
+
+            //Pie chart for Effort per activity
+            <% if !@current_mp_effort_per_activity.empty? && !@current_mp_effort_per_activity.nil? %>
+            var myPie = new Chart(document.getElementById("canvas_pie_effort_per_activity").getContext("2d")).Pie(pie_chart_effort_per_activity, attr_options);
+            attr_options["graphTitle"] = "Effort per activity";
+            var myStacked_bar = new Chart(document.getElementById("canvas_stacked_bar_effort_per_activity").getContext("2d")).StackedBar(stacked_bar_effort_per_activity, attr_options);
+            <% end %>
+        });
+
+        //========================================= DATASET FOR THE INITIALIZATION MODULE ===================================
+
+        <% if @current_module_project.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+
+        //create dynamique div and canvas for each output attribute graph
+        var init_attributes_aliases = <%= @init_attributes_labels.to_json.html_safe %>;
+        $.each(init_attributes_aliases, function( index, value ) {
+            $("#estimation_graph_box").append('<div class="span4" style="margin-left: 0px"><canvas id="'+value+'" class="canvas" width="350" height="300"></canvas></div>');
+        });
+
+        var init_attribute_iter = -1;
+
+        //generate data for each attribute
+        var js_init_outputs_dataset = <%= @init_module_dataset.to_json.html_safe %> ;
+        var js_init_attributes_aliases = <%= @init_attributes_labels.to_json.html_safe %> ;
+        var graph_title = "";
+
+        $.each( js_init_attributes_aliases, function( key, value ) {
+
+            var attr_data = {
+                labels : <%= @init_project_modules.to_json.html_safe %>,
+                datasets : [
+                    {
+                        fillColor : js_fillColor_array[init_attribute_iter+=1],
+                        strokeColor : "rgba(220,220,220,1)",
+                        pointColor : "rgba(220,220,220,1)",
+                        pointStrokeColor : "#fff",
+                        data : js_init_outputs_dataset[value],
+                        title : value
+                    }
+                ]
+            }
+
+            var attr_options = {
+                annotateLabel: true,
+                // new attribute for the CharNew.js library
+                annotateDisplay : true,
+                savePng : true,
+                canvasBorders : true,
+                canvasBordersWidth : 2,
+                canvasBordersColor : "grey",
+                yAxisLeft : true,
+                yAxisRight : true,
+                yAxisLabel : "Y axis",
+                yAxisFontFamily : "'Arial'",
+                yAxisFontSize : 14,
+                yAxisFontStyle : "normal",
+                yAxisFontColor : "#666",
+                xAxisLabel : "",
+                xAxisFontFamily : "'Arial'",
+                xAxisFontSize : 14,
+                xAxisFontStyle : "normal",
+                xAxisFontColor : "#666",
+                yAxisUnit : js_attribute_yAxisUnit_array[value], //"UNIT",
+                yAxisUnitFontFamily : "'Arial'",
+                yAxisUnitFontSize : 12,
+                yAxisUnitFontStyle : "bold", //"normal",
+                yAxisUnitFontColor : "#666",
+                graphTitle : graph_title,
+                graphTitleFontFamily : "'Arial'",
+                graphTitleFontSize : 24,
+                graphTitleFontStyle : "normal",
+                graphTitleFontColor : "#666",
+                graphSubTitle : "",
+                graphSubTitleFontFamily : "'Arial'",
+                graphSubTitleFontSize : 16,
+                graphSubTitleFontStyle : "normal", //"bold"
+                graphSubTitleFontColor : "#666",
+                footNote : js_all_attributes_names[value], //''+value,
+                footNoteFontFamily : "'Arial'",
+                footNoteFontSize : 16,
+                footNoteFontStyle : "bold",
+                footNoteFontColor : "#666",
+                legend : true,
+                legendFontFamily : "'Arial'",
+                legendFontSize : 14,
+                legendFontStyle : "normal",
+                legendFontColor : "#666",
+                legendBlockSize : 12,
+                legendBorders : true,
+                legendBordersWidth : 2,
+                legendBordersColor : "#666",
+                //  ADDED PARAMETERS
+                graphMin : "DEFAULT",
+                graphMax : "DEFAULT"
+            };
+
+            //generate Bar chart for current output attribute
+            var myBar = new Chart(document.getElementById(value).getContext("2d")).Bar(attr_data, attr_options);
+        });
+        <% end %>
+
+
+        //========================================= TEST  ===============================================
+
+        // get the data
+        var all_attribute_data = {
+            labels : module_labels,
+            datasets : <%= data_array.to_json.html_safe %>
+        }
+
+    });
+</script>

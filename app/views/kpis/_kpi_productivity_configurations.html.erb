@@ -1,0 +1,52 @@
+<% @organization_kpi_productivities = @organization.kpis %>
+
+<div id="organization_kpi_configurations" style="width:100%; overflow:auto; white-space:nowrap;">
+  <table class="table tablesorter table-list table-sm mt-2" style="width:100%; overflow: auto;">
+    <thead>
+    <tr>
+      <th>#</th>
+      <th><%= I18n.t(:name) %></th>
+      <th><%= I18n.t(:description) %></th>
+      <th><%= I18n.t(:estimation_models) %></th>
+      <!--<th><%#= "N derniers projets" %></th>-->
+      <th><%= "Champs de calcul" %></th>
+      <th><%= I18n.t(:kpi_unit) %></th>
+      <th><%= I18n.t(:outputs) %></th>
+      <!--<th><%#= I18n.t(:estimations_statuses) %></th>-->
+      <th><%= I18n.t(:application)%></th>
+      <th><%= I18n.t(:indicator_start_date)%></th>
+      <th><%= I18n.t(:indicator_end_date)%></th>
+
+      <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    <% @organization_kpi_productivities.each do |productivity| %>
+        <tr>
+          <td><%= check_box_tag "selected_kpi_configuration[#{productivity.id}]", nil, productivity.is_selected? %></td>
+
+          <td><%= productivity.name %></td>
+          <td><%= productivity.description %></td>
+          <td><%= productivity.estimation_model %></td>
+          <!--<td><%#= productivity.nb_last_projects %></td>-->
+          <td><%= productivity.field.name rescue nil %></td>
+          <td><%= productivity.kpi_unit %></td>
+
+          <td><%= productivity.output_type.blank? ? "-" : I18n.t("#{productivity.output_type}") %></td>
+          <!--<td><%#= productivity.estimation_statuses.join("; ") %></td>-->
+          <td><%= productivity.application %></td>
+          <td><%= productivity.start_date.blank? ? "-" : I18n.l(productivity.start_date.to_date)  %></td>
+          <td><%= productivity.end_date.blank? ? "-" : I18n.l(productivity.end_date.to_date)  %></td>
+
+          <td class="align-center">
+            <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_kpi_path(@organization, productivity), class: "material-icons", :title => I18n.t('edit') %>
+            <%= link_to raw("<i class='material-icons'>delete</i>"), organization_kpi_path(@organization, productivity), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+          </td>
+        </tr>
+    <% end %>
+
+    <%= render :partial => 'layouts/footer_table' %>
+    </tbody>
+  </table>
+</div>

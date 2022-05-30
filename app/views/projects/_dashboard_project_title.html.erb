@@ -1,0 +1,24 @@
+<div class="row" style="width: inherit;">
+  <div class="col-9 text-left">
+    <h2>
+      <%= @project.to_s %>
+      <small style="color: <%= @project.status_background_color %>">
+        <b>
+          <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
+        </b>
+      </small>
+    </h2>
+    <p><%= @project.description %></p>
+  </div>
+  <div class="col-3">
+    <small class="tools float-right">
+      <% if current_module_project.show_results_view %>
+        <%= link_to I18n.t(:hide_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+      <% else %>
+        <%= link_to I18n.t(:show_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+      <% end %>
+    </small>
+  </div>
+</div>
+
+<!--<hr>-->

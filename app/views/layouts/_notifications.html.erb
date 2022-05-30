@@ -1,0 +1,125 @@
+
+  <% flash.each do |name, msg| %>
+    <% if name.to_s == "notice" %>
+      <% name_alert = "success" %>
+    <% else %>
+      <% name_alert = "warning" %>
+    <% end %>
+
+    <div classs="container p-5 alert-popup">
+      <div class="row no-gutters fixed-top" style="top: 25%; left: 40%;">
+        <div class="col-lg-4 col-md-12 ml-auto">
+          <div class="alert alert-<%= name_alert %> fade show" role="alert">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="True">&times;</span>
+            </button>
+            <h4 class="alert-heading"></h4>
+
+            <p class="alert-content">
+              <%#= msg.html_safe %>
+              <% if msg.is_a? (String)%>
+                <%= raw msg.html_safe %>
+              <% elsif msg.is_a?(Hash) %>
+                <% msg.each do |key, error| %>
+                  <% if error.is_a?(Array) %>
+                    <% error.each do |error_n| %>
+                      <%= raw error_n.html_safe %>
+                    <% end %>
+                  <% else %>
+                    <%= raw error.html_safe %>
+                  <% end %>
+                <% end %>
+              <% else %>
+                <%= raw msg %>
+              <% end %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  <% end %>
+<!--<div classs="container p-5">-->
+<!--  <div class="row no-gutters fixed-bottom">-->
+<!--    <div class="col-lg-4 col-md-12 m-auto">-->
+<!--      <div class="alert alert-warning fade show" role="alert">-->
+<!--        <button type="button" class="close" data-dismiss="alert" aria-label="Close">-->
+<!--          <span aria-hidden="True">&times;</span>-->
+<!--        </button>-->
+<!--        <h4 class="alert-heading"></h4>-->
+<!--        <p class="alert-content">-->
+          <%#= flash[:warning].html_safe %>
+<!--        </p>-->
+<!--      </div>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<!-- for devise flash -->
+<%# if alert && !alert.empty? %>
+
+<%# if flash[:alert]  %>
+<!--  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">-->
+<!--    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>-->
+    <%#= flash[:alert] %>
+<!--  </div>-->
+<%# end %>
+
+<%# if flash[:warning] %>
+<!--  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">-->
+<!--    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>-->
+    <%#= flash[:warning].html_safe %>
+<!--  </div>-->
+<%# end -%>
+
+<%# if flash[:notice] %>
+<!--  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">-->
+<!--    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>-->
+    <%#= flash[:notice].html_safe %>
+<!--  </div>-->
+<%# end %>
+
+<%# if flash[:error] %>
+<!--  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">-->
+<!--    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>-->
+    <%# if flash[:error].is_a? (String)%>
+      <%#= raw flash[:error].html_safe %>
+    <%# elsif flash[:error].is_a?(Hash) %>
+      <%# flash[:error].each do |key, error| %>
+        <%# if error.is_a?(Array) %>
+          <%# error.each do |error_n| %>
+            <%#= raw error_n.html_safe %>
+          <%# end %>
+        <%# else %>
+          <%#= raw error.html_safe %>
+        <%# end %>
+      <%# end %>
+    <%# else %>
+      <%#= raw flash[:error] %>
+    <%# end %>
+<!--  </div>-->
+<%# end -%>
+
+<%# if flash[:custom] %>
+<!--  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">-->
+<!--    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>-->
+    <%#= flash[:custom] %>
+<!--  </div>-->
+<%# end -%>
+
+<% unless user_signed_in? %>
+  <% if @disable_access == "1" %>
+
+    <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
+      &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+      <%= simple_format @offline_message %>
+    </div>
+
+  <% end %>
+<% end %>
+
+
+<script>
+  //$(".alert").fadeOut(8000);
+  window.setTimeout(function() { $(".alert").alert('close'); }, 5000);
+</script>

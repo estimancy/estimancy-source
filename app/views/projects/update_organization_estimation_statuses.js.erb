@@ -1,0 +1,3 @@
+$("#notifications").html("");
+$("#project_estimation_status_id").html("<%=raw j select_tag 'project_estimation_status_id', options_for_select(@estimation_statuses), :prompt => I18n.t('helpers.select.prompt')  %>");
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");

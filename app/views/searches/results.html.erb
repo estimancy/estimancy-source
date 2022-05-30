@@ -1,0 +1,53 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:search_results) %></a></li>
+  </ul>
+
+  <div id="tabs-1">
+
+    <div class="container-fluid">
+        <% if @results.empty? %>
+          <p>
+            <%= I18n.t(:no_results) %>
+            <strong>
+              <%= params[:search] %>
+          </strong>
+          </p>
+        <% else %>
+          <% classes = @results.map { |i| i.class }.uniq %>
+          <% classes.each do |cla| %>
+          <div class="row-fluid">
+            <div class="span12">
+              <h5>
+                <b>
+                  <%= I18n.t("label_#{cla.to_s}") %> <%= "(#{ @result_count[cla]})"  %>
+                </b>
+              </h5>
+              <ul class="unstyled">
+                <% if cla == Project %>
+                  <% @results.each do |res| %>
+                    <% if res.class == cla and can? :show_project, res %>
+                      <li><%= display_link(res, params[:search]) %></li>
+                      <li><%= res.description %></li>
+                      <li style="font-style: italic; font-size: 10px;"><%= display_description(res, params[:search]) %></li>
+                      <li style="font-size: 10px;"><%= display_update(res, params[:search]) %></li>
+                    <% end %>
+                  <% end %>
+                <% else %>
+                  <% @results.each do |res| %>
+                    <% if res.class == cla %>
+                      <li><%= display_link(res, params[:search]) %></li>
+                      <li style="font-style: italic; font-size: 10px;"><%= display_description(res, params[:search]) %></li>
+                      <li style="font-size: 10px;"><%= display_update(res, params[:search]) %></li>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              </ul>
+            </div>
+          </div>
+        <% end %>
+      <% end %>
+
+    </div>
+  </div>
+</div>

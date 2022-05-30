@@ -1,0 +1,17 @@
+Hello <%= @user.name %>,
+
+Your account creation request has been fully taken into account.
+
+Please remember your login details:
+  Login: <%= @user.login_name %>
+  Password: <% if @user.auth_method && @user.auth_method.name == 'Application'
+                 @user.password
+               else
+                 'Password of your corporate directory'
+               end
+%>
+
+Sincerly,
+
+-----------------------------------------------
+This email have been sent automatically through the Estimancy server.

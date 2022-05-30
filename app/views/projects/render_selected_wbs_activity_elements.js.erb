@@ -1,0 +1,9 @@
+$("#notifications").html("");
+//$("#wbs_project_elements_section").html("<%#= escape_javascript(render :partial => 'generate_wbs_project_elt_tree', :object => [:pe_wbs_project_activity => @pe_wbs_project_activity, :show_hidden => @show_hidden, :is_project_show_view => params[:is_project_show_view] ]) %>");
+$("#wbs_project_elements_section").html("<div style='margin-left:20px'><%= raw j generate_activity_element_tree(@wbs_activity_elements.first, '') %></div>");
+$("#wbs_project_elements_section").prepend("<span class='block_label'><%= "#{@pe_wbs_project_activity.name} WBS-Activity" %></span>");
+$("#wbs_project_elements_section").prepend("<p style='color: blue; font-size:16px'><%= I18n.t(:preview_selected_wbs_activity) %></p>");
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");
+
+
+//preview_selected_wbs_activity();

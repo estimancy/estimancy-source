@@ -1,0 +1,56 @@
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h4>
+          <a href="#tabs-1"><%= I18n.t(:label_wbs_activity_ratio) %> </a>
+        </h4>
+      </div>
+    </div>
+
+    <div class="edition-bloc-content">
+      <div class="edition-bloc-form">
+        <%= simple_form_for(@wbs_activity_ratio) do |f| %>
+          <%= f.error_notification %>
+
+          <%= f.input :organization_id, :as => :hidden, :input_html => { value:  @organization.id} %>
+          <%= f.input :wbs_activity_id, :label => 'WBS Activity', :as => :hidden, :input_html => {:class => 'input-xxlarge', :rows => 5, :value => @activity_id} %>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, :label => false, :input_html => {:class => 'mdl-textfield__input', :rows => 5} %>
+                <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="actions-tabs">
+
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <% end %>
+
+            <% params[:activity_id].nil? ? @activity_id=@wbs_activity_ratio.wbs_activity_id : @activity_id=params[:activity_id] %>
+            <%= link_to I18n.t('back'), edit_wbs_activity_path(@activity_id), :class => 'btn btn-secondary' %>
+          </div>
+
+        <% end %>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+

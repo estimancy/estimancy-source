@@ -1,0 +1,57 @@
+<div>
+  <div class="pull-left">
+    <h4 style="color: #0073ea;"><%= I18n.t(:label_output_data_with_activities_profiles) %></h4>
+  </div><br>
+
+    <table id="profiles_per_activity"  class="table table-list">
+      <tr>
+        <% module_project.estimation_values.order('display_order ASC').each do |est_val| %>
+            <% if (est_val.in_out == 'output' or est_val.in_out=='both') and est_val.module_project.id == module_project.id %>
+                <% probable_est_value_for_consistency = est_val.send("string_data_probable") %>
+                <th colspan="<%= project_organization_profiles.length+2 %>" style="text-align: center"><span class='attribute_tooltip' title=<%= "#{est_val.pe_attribute.description} #{display_rule(est_val)}"%>> <%= "#{est_val.pe_attribute.name} (#{get_attribute_unit(est_val.pe_attribute)})" %></span></th>
+            <% end %>
+        <% end %>
+      </tr>
+
+      <tr>
+        <td  colspan="2"><%= I18n.t(:wbs_activity) %></td>
+        <td colspan="<%= project_organization_profiles.length %>"><%= I18n.t(:profiles) %></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><%= I18n.t(:probable) %></td>
+        <% if project_organization_profiles.length > 0 %>
+            <% project_organization_profiles.each do |profile| %>
+                <td><%= profile.name %></td>
+            <% end %>
+        <% else %>
+            <td><%= I18n.t(:no_profiles_for_wbs_activity_organization) %></td>
+        <% end %>
+      </tr>
+
+      <% unless estimation_pbs_probable_results.nil? %>
+        <% project.pe_wbs_projects.activities_wbs.first.wbs_project_elements.each do |wbs_project_elt| %>
+          <% wbs_probable_value =  estimation_pbs_probable_results[wbs_project_elt.id] %>
+          <% unless wbs_probable_value.nil? %>
+            <% wbs_estimation_profiles_values = wbs_probable_value["profiles"] %>
+            <tr>
+              <td><span style="float: left; margin-left:<%=wbs_project_elt.depth%>em"> <%= wbs_project_elt.name %> </span></td>
+              <td><%= (wbs_project_elt.is_root? || wbs_probable_value[:value].nil?) ? "-" : "#{number_with_delimiter(wbs_probable_value[:value].round(effort_attribute.precision.nil? ? user_number_precision : effort_attribute.precision))} #{get_attribute_unit(effort_attribute)}" %></td>
+
+              <% if project_organization_profiles.length > 0 %>
+                <% project_organization_profiles.each do |profile| %>
+                    <% wbs_profiles_value = nil %>
+                    <% unless  (wbs_estimation_profiles_values.nil? || wbs_estimation_profiles_values.empty?) %>
+                        <% wbs_profiles_value = wbs_estimation_profiles_values["profile_id_#{profile.id}"]["ratio_id_#{ratio_reference.id}"][:value] %>
+                    <% end %>
+                    <td style="text-align: center"><%= (wbs_project_elt.is_root? || wbs_profiles_value.nil?) ? "-" : "#{number_with_delimiter(wbs_profiles_value.round(effort_attribute.precision.nil? ? user_number_precision : effort_attribute.precision))} #{get_attribute_unit(effort_attribute)}" %></td>
+                <% end %>
+              <% else %>
+                  <td></td>
+              <% end %>
+            </tr>
+          <% end %>
+        <% end %>
+      <% end %>
+    </table>
+</div>

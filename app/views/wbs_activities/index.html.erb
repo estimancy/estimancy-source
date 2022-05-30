@@ -1,0 +1,73 @@
+<h4 class="ui-widget">&nbsp;<i class="icon-list"></i>&nbsp;<b><%= I18n.t(:wbs_activities) %> </b></h4>
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:wbs_activities) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <% if can? :show_modules_instances, ModuleProject %>
+        <% if can? :manage_modules_instances, ModuleProject %>
+            <table border="0" width="100%">
+              <tr>
+                <td style="text-align:right;">
+                  <a href="#myWBSModal" role="button" class="btn" title="<%= I18n.t(:guide_import_wbs_activity) %>" data-toggle="modal"><%= I18n.t(:import_wbs_activity) %></a>
+                  <%= link_to I18n.t(:new_wbs_activity), new_wbs_activity_path, :class => 'btn btn-primary', :title => "#{I18n.t(:guide_create_wbs_activity)}" %>
+                </td>
+              </tr>
+            </table>
+        <% end %>
+    <% end %>
+
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:description) %></th>
+        <th class="action" style="width: 160px"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>**
+
+      <% @wbs_activities.each do |wbs_activity| %>
+        <tr>
+          <td><%= link_to(wbs_activity.name, edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-1')) %></td>
+          <td><%= wbs_activity.description %></td>
+          <td class="center">
+            <%= link_to '', edit_wbs_activity_path(wbs_activity, :anchor => 'tabs-1'), :class => 'button_attribute_tooltip icon-pencil', :title => I18n.t(:edit) %>
+            <% if can? :manage_modules_instances, ModuleProject %>
+              <%= link_to('', "wbs_activities/#{wbs_activity.id}/duplicate_wbs_activity", :class => 'button_attribute_tooltip icon-copy', :title => 'Duplicate') %>
+              <%= link_to '', wbs_activity, data: {confirm: I18n.t(:are_you_sure)}, method: :delete, :class => 'button_attribute_tooltip icon-trash', :style => 'color:red', :title => I18n.t(:delete) %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+      <%= render :partial => 'layouts/footer_table' %>
+    </table>
+
+    <div id="myWBSModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+      <%= form_tag import_wbs_activities_path, :multipart => true, :class => 'simple_form' do %>
+          <div class="modal-header modal-drag">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel"><%= I18n.t(:import) %> WBS Activity</h3>
+          </div>
+          <div class="modal-body">
+            <label><%= I18n.t(:file_csv) %></label>
+            <%= file_field_tag :file %>
+
+            <label><%= I18n.t(:separator) %>'<%= I18n.t(:general_csv_separator) %>') </label>
+            <%= text_field_tag :separator %>
+
+            <label><%= I18n.t(:encoding) %></label>
+            <%= select_tag :encoding, options_for_select(Project::encoding, :selected => I18n.t(:general_csv_encoding)) %>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+          </div>
+          <div class="loading span11 hide">
+            <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+          </div>
+      <% end %>
+    </div>
+
+  </div>
+</div>

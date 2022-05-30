@@ -1,0 +1,127 @@
+<section class="card card-content-bloc estimancy-form">
+
+  <div class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1><%= I18n.t('coefficient_configuration') %></h1>
+      </div>
+    </div>
+
+    <div class="edition-bloc-content">
+      <div class="edition-bloc-form">
+        <%= simple_form_for([@guw_model, @guw_coefficient]) do |f| %>
+          <%= f.error_notification %>
+
+      <%= f.input :guw_model_id, as: :hidden, input_html: { value: params[:guw_model_id] } %>
+      <%= f.input :organization_id, as: :hidden, input_html: { value: @guw_model.organization_id } %>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label:false,
+                            :input_html => {:class => 'mdl-textfield__input',
+                            :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, :input_html => { class: "mdl-textfield__input", rows: "5" } %>
+                <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%#= f.input :coefficient_type, as: :select, collection: ["Liste", "Pourcentage", "Coefficient", "Application"] %>
+              <%= f.input :coefficient_type, as: :select, collection: [["Liste", "Liste"], ["Pourcentage", "Pourcentage"], ["Coefficient", "Coefficient"], ["Application", "Application"], ["#{I18n.t(:provider)}", "Provider"], ["#{I18n.t(:project_area)}", "ProjectArea"], ["#{I18n.t(:project_category)}", "ProjectCategory"], ["#{I18n.t(:platform_category)}", "PlatformCategory"], ["#{I18n.t(:acquisition_category)}", "AcquisitionCategory"]],
+                          :label => false,
+                          :input_html => {:class => 'mdl-textfield__input'},
+                          :include_blank => false %>
+                <label class="mdl-textfield__label" for="coefficient_type">
+                  <%= I18n.t('coefficient_type') %>
+                </label>
+              </div>
+            </div>
+          </div>
+
+            <%= f.input :show_coefficient_label, label: I18n.t(:show_coefficient_application_label) %>
+            <%= f.input :math_set, as: :select, label: "Ensemble autorisé", collection: [["N (entier de 0 à ∞)", "N"], ["Z (entier de -∞ à +∞)", "Z"], ["R (réel)", "R"]] %>
+
+
+            <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :allow_comments, label: false,
+                            as: :boolean,
+                    :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                <label class="mdl-textfield__label" for="allow_comments" style="padding-left: 20px; margin-top: -7px;"><%=  I18n.t('allow_comments') %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :allow_intermediate_value, label: false,
+                            as: :boolean,
+                            :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                <label class="mdl-textfield__label" for="allow_intermediate_value" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('allow_change') %></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="col-5">
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :deported, label: false,
+                            as: :boolean,
+                            :input_html => {:class => 'mdl-checkbox__inputs'} %>
+                <label class="mdl-textfield__label" for="deported" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('deported_coefficient') %></label>
+              </div>
+            </div>
+          </div>
+
+          <% if can? :manage_modules_instances, ModuleProject %>
+            <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+          <% end %>
+          <%= link_to I18n.t(:back), :back, class: "btn btn-secondary", anchor: "tabs-coefficients" %>
+        <% end %>
+
+        </div>
+      </div>
+
+  </div>
+
+</section>
+
+<script>
+  // on affiche le checkbox "show_coefficient_label" que si le "coefficient_type" = "Application"
+
+  var current_coefficient_type = $("#guw_coefficient_coefficient_type").val();
+  if (current_coefficient_type == "Application"){
+    $('#guw_coefficient_show_coefficient_label').removeAttr('disabled');
+  }
+  else {
+    $('#guw_coefficient_show_coefficient_label').attr('checked', false);
+    $('#guw_coefficient_show_coefficient_label').attr('disabled','disabled');
+  }
+
+  $("#guw_coefficient_coefficient_type").change(function() {
+    var coefficient_type = $(this).val();
+
+    if (coefficient_type == "Application"){
+      $('#guw_coefficient_show_coefficient_label').removeAttr('disabled');
+    }
+    else {
+      $('#guw_coefficient_show_coefficient_label').attr('checked', false);
+      $('#guw_coefficient_show_coefficient_label').attr('disabled','disabled');
+    }
+  });
+
+</script>

@@ -1,0 +1,25 @@
+<% if @resource.super_admin? && @token.nil? %>
+
+  <% @confirmation_text =  I18n.t(:create_organization_confirmation_instructions, firstname: @resource.first_name, lastname: @resource.last_name, password: @resource.password, login_name: @resource.login_name, organization_name: @resource.organizations.last, connexion_url: SETTINGS['HOST_URL']) %>
+
+  <%= simple_format(@confirmation_text.to_s) %>
+<% else %>
+  <p>
+    Bonjour <%= @resource.first_name %> <%= @resource.last_name %>,
+  </p>
+
+  <% unless @resource.password.nil? %>
+    <p>
+      <%= I18n.t(:text_your_password_message, password: @resource.password, account: @resource.login_name) %>
+    </p>
+  <% end %>
+
+  <p>
+    <%= I18n.t(:mail_confirm_account_through_link_below) %>
+  </p>
+
+  <p><%= link_to I18n.t(:label_confirm_my_account), confirmation_url(@resource, confirmation_token: @token) %></p>
+
+  <%=simple_format(I18n.t(:mail_footer)) %>
+  <a href='<%= "#{SETTINGS['HOST_URL']}" %>'>Estimancy</a>
+<% end %>

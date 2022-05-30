@@ -1,0 +1,57 @@
+<div class="row">
+  <div class="col-10">
+
+    <div class="mb-5">
+      <div class="effort-bloc">
+        <% if @partial_name.blank? %>
+          <%= render :partial => "demand_types/tabs_demand_type" %>
+        <% else %>
+          <%= render :partial => "demand_types/#{@partial_name}" %>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+
+<% unless @demand_type.new_record?  %>
+  <div class="col-2">
+    <div id="edition-sidebar">
+      <h4 class="mb-0">Navigation</h4>
+      <ul class="nav flex-column">
+
+<!--        <li class="nav-item">-->
+<!--          <a class="nav-link group" href="<#%= new_organization_demand_type_path(@organization,-->
+<!--                                               partial_name: 'tabs_demand_type')%>">-->
+<!--            <span>Type de demande</span></a>-->
+<!--        </li>-->
+
+        <li class="nav-item">
+          <a class="nav-link group" href="<%= edit_organization_demand_type_path(@organization,
+                                                                                 @demand_type,
+                                                 partial_name: 'tabs_demand_type_associated_services')%>">
+          <span>Services</span></a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link group" href="<%= edit_organization_demand_type_path(@organization, @demand_type,
+                                                   partial_name: 'tabs_demand_type_billing') %>">
+            <span>Facturation</span></a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link group" href="<%= edit_organization_demand_type_path(@organization, @demand_type,
+                                                                                 partial_name: 'tabs_demand_type_SLA_configuration') %>">
+            <span>Configuration des SLA</span></a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link group" href="<%= edit_organization_demand_type_path(@organization, @demand_type,
+                                                                                 partial_name: 'tabs_demand_type_statuses_workflow') %>">
+            <span>Workflow des statuts</span></a>
+        </li>
+
+      </ul>
+    </div>
+  </div>
+<% end %>
+</div>

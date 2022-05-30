@@ -1,0 +1,9 @@
+<%=simple_format(I18n.t(:mail_salutation, :value => @user.name)) %>
+
+<%= #noinspection RubyQuotedStringsInspection
+    simple_format(I18n.t(:mail_body_account_suspended), :value => @user.login_name, :adm =>  AdminSetting.find_by_key('notifications_email').value) %>
+
+<%=simple_format(I18n.t(:mail_complimentary_close)) %>
+
+<%=simple_format(I18n.t(:mail_footer)) %>
+<a href='<%= "#{SETTINGS['HOST_URL']}" %>'>Estimancy</a>

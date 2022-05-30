@@ -1,0 +1,56 @@
+<% if can? :manage_estimation_models, Project %>
+  <%= link_to I18n.t('create_button'), new_project_path(organization_id: @organization.id, is_model: true), :class => 'btn btn-primary' %>
+<% end %>
+<hr>
+
+<table id="table_list_10" class="table tablesorter table-list">
+  <thead>
+    <tr>
+      <th class="text_left"><%= I18n.t(:label_model_name) %></th>
+      <th class="center">Vers.</th>
+      <th class="center"><%= I18n.t(:is_historized) %></th>
+      <th class="center"><%= I18n.t(:created_at) %></th>
+      <th class="center"><%= I18n.t(:actions) %></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% @estimation_models.where("title LIKE ?", "%#{params[:advanced_search]}%").each do |project| %>
+      <% if can_see_estimation?(project) %>
+          <tr>
+            <td>
+              <% if can?(:create_project_from_template, Project) %>
+                  <%= link_to(project.title, change_new_estimation_data_path(template_id: project.id,
+                                                                             organization_id: project.organization_id,
+                                                                             demand_id: params[:demand_id],
+                                                                             action_name: "create_project_from_template"),
+                                                                             title: I18n.t('button_duplicate_model'),
+                                                                             remote: true) %>
+              <% else %>
+                  <% if can_show_estimation?(project) %>
+                      <%= link_to(project.title, edit_project_path(project, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties'), :title => I18n.t('edit')) %>
+                  <% else %>
+                      <%= project.title %>
+                  <% end %>
+              <% end %>
+            </td>
+            <td class="center"><%= project.version_number %></td>
+            <td class="center"><%= check_box_tag "is_historized", project.is_historized, project.is_historized, disabled: true %></td>
+            <td class="center"><%= I18n.l(project.created_at) %></td>
+            <td style="min-width:130px;">
+              <% if can? :manage_estimation_models, Project %>
+                <%= link_to raw("<i class='material-icons'>file_copy</i>"), main_app.duplicate_path(project, organization_id: @organization, action_name: 'duplication_model'), :class => 'materials-icons', :title => I18n.t('duplicate'), :method => "POST" %>
+              <% end %>
+
+              <% if can_show_estimation?(project) %>
+                <%= link_to raw("<i class='material-icons'>edit</i>"), edit_project_path(project, is_model: true, tabs_name: 'tabs_global_properties', anchor: 'tabs-global-properties'), :class => 'material-icons', :title => I18n.t('edit') %>
+              <% end %>
+              <% if can? :manage_estimation_models, Project %>
+                <%= link_to(raw("<i class='material-icons'>delete</i>"), confirm_deletion_path(project_id: project.id), :class => 'material-icons', :title => I18n.t('delete')) %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+    <% end %>
+  </tbody>
+</table>

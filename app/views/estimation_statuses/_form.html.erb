@@ -1,0 +1,127 @@
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+    <div class="edition-bloc-left">
+      <div class="edition-bloc-title">
+        <h1>
+          <%= I18n.t(:estimations_statuses) %></a></li>
+        </h1>
+      </div>
+    </div>
+
+
+    <%= simple_form_for(@estimation_status) do |f| %>
+      <%= f.error_notification %>
+
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-7">
+              <%= f.input :organization_id, as: :hidden, :input_html => { value: @organization.id } %>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_number, label: false, input_html: {:class => 'mdl-textfield__input form-control'}  %>
+                <label class="mdl-textfield__label" for="status_number"><%= I18n.t(:status_number) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label: false, input_html: {:class => 'mdl-textfield__input form-control'}  %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_alias, label: false, input_html: {:class => 'mdl-textfield__input form-control'}  %>
+                <label class="mdl-textfield__label" for="status_alias"><%= I18n.t(:alias) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :allow_correction_before_change, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="allow_correction_before_change" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('allow_correction_before_change') %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :is_archive_status, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="is_archive_status" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_archive_status') %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :is_new_status, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="is_new_status" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_new_status') %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :create_new_version_when_changing_status, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="create_new_version_when_changing_status" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('create_new_version_when_status_changed') %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :is_historization_status, as: :boolean, label: false, input_html: {:class => 'mdl-checkbox__inputs'}  %>
+                <label class="mdl-textfield__label" for="is_historization_status" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_historization_status') %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :nb_day_before_historization, label: false, input_html: {:class => 'mdl-textfield__input form-control'}  %> <%= I18n.t(:unit_days) %>
+                <label class="mdl-textfield__label" for="nb_day_before_historization"><%= I18n.t(:nb_day_before_historization) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :status_color, label: I18n.t(:status_color), input_html: {class: 'color mdl-textfield__input form-control'} %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :description, label: false, input_html: {:class => 'mdl-textfield__input form-control', :rows => 5} %>
+                <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :notification_emails, label: false, input_html: {:class => 'mdl-textfield__input form-control'} %>
+                <label class="mdl-textfield__label" for="notification_emails"><%= I18n.t(:notification_emails) %></label>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
+
+      <div class="actions-tabs">
+        <% if can? :manage, EstimationStatus %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary btn-estimancy' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, anchor: 'tabs-estimations-statuses', partial_name: 'tabs_estimation_statuses'), :class => 'btn btn-secondary btn-estimancy' %>
+      </div>
+    <% end %>
+  </div>
+</section>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+
+    var nb_day_before = $("#estimation_status_nb_day_before_historization").val();
+    if (nb_day_before == ""){
+        nb_day_before = "1";
+    }
+
+    $("#estimation_status_is_historization_status").change(function(){
+
+        if($(this).is(':checked')){
+            $('#estimation_status_nb_day_before_historization').removeAttr('disabled');
+            $("#estimation_status_nb_day_before_historization").val(nb_day_before);
+            $('#estimation_status_nb_day_before_historization').attr('value', nb_day_before)
+        } else{
+            $('#estimation_status_nb_day_before_historization').attr("disabled", 'disabled');
+            $("#estimation_status_nb_day_before_historization").val("");
+            $('#estimation_status_nb_day_before_historization').attr('value', '')
+        }
+    });
+
+
+    if ($("#estimation_status_is_historization_status").is(':checked')){
+        $('#estimation_status_nb_day_before_historization').removeAttr('disabled');
+    }
+    else {
+        $('#estimation_status_nb_day_before_historization').attr('disabled','disabled');
+        $("#estimation_status_nb_day_before_historization").val('');
+        $('#estimation_status_nb_day_before_historization').attr('value', '')
+    }
+
+</script>

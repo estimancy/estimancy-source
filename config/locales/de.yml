@@ -1,0 +1,1908 @@
+de:
+#  #standard local format
+#  # Text direction: Left-to-Right (ltr) or Right-to-Left (rtl)
+#  direction: ltr
+#  date:
+#    abbr_day_names:
+#    - Sun
+#    - Mon
+#    - Tue
+#    - Wed
+#    - Thu
+#    - Fri
+#    - Sat
+#    # Don't forget the nil at the beginning; there's no such thing as a 0th month
+#    abbr_month_names:
+#    - ~
+#    - Jan
+#    - Feb
+#    - Mar
+#    - Apr
+#    - May
+#    - Jun
+#    - Jul
+#    - Aug
+#    - Sep
+#    - Oct
+#    - Nov
+#    - Dec
+#    day_names:
+#    - Sunday
+#    - Monday
+#    - Tuesday
+#    - Wednesday
+#    - Thursday
+#    - Friday
+#    - Saturday
+#    formats:
+#      # Use the strftime parameters for formats.
+#      # When no format has been given, it uses default.
+#      # You can provide other formats here if you like!
+#      default: '%m/%d/%Y'
+#      long: '%B %d, %Y'
+#      short: '%b %d'
+#    # Don't forget the nil at the beginning; there's no such thing as a 0th month
+#    month_names:
+#    - ~
+#    - January
+#    - February
+#    - March
+#    - April
+#    - May
+#    - June
+#    - July
+#    - August
+#    - September
+#    - October
+#    - November
+#    - December
+#    # Used in date_select and datime_select.
+#    order:
+#    - :year
+#    - :month
+#    - :day
+#
+#  datetime:
+#    distance_in_words:
+#      about_x_hours:
+#        one: about 1 hour
+#        other: about %{count} hours
+#      about_x_months:
+#        one: about 1 month
+#        other: about %{count} months
+#      about_x_years:
+#        one: about 1 year
+#        other: about %{count} years
+#      almost_x_years:
+#        one: almost 1 year
+#        other: almost %{count} years
+#      half_a_minute: half a minute
+#      less_than_x_minutes:
+#        zero: "less than a minute"
+#        one: less than a minute
+#        other: less than %{count} minutes
+#      less_than_x_seconds:
+#        zero: less than 1 second
+#        one: less than 1 second
+#        other: less than %{count} seconds
+#      over_x_years:
+#        one: over 1 year
+#        other: over %{count} years
+#      x_months:
+#        one: 1 month
+#        other: ! '%{count} months'
+#      x_weeks:
+#        one: 1 week
+#        other: ! '%{count} weeks'
+#      x_hours:
+#        one: 1 hour
+#        other: ! '%{count} hours'
+#      x_days:
+#        one: 1 day
+#        other: ! '%{count} days'
+#      x_minutes:
+#        one: 1 minute
+#        other: ! '%{count} minutes'
+#      x_months:
+#        one: 1 month
+#        other: ! '%{count} months'
+#      x_seconds:
+#        one: 1 second
+#        other: ! '%{count} seconds'
+#    prompts:
+#      day: Day
+#      hour: Hour
+#      minute: Minute
+#      month: Month
+#      second: Seconds
+#      year: Year
+#      week: Week
+#
+#  time:
+#    formats:
+#      default: "%m/%d/%Y %I:%M %p"
+#      time: "%I:%M %p"
+#      short: "%d %b %H:%M"
+#      long: "%B %d, %Y %H:%M"
+#      audit: "%m/%d/%Y %I:%M:%S"
+#    am: "am"
+#    pm: "pm"
+#
+#  number:
+#    format:
+#      separator: .
+#      delimiter: ! ','
+#      precision: 3
+#      significant: false
+#      strip_insignificant_zeros: false
+#    currency:
+#      format:
+#        format: ! '%u%n'
+#        unit: $
+#        separator: .
+#        delimiter: ! ','
+#        precision: 2
+#        significant: false
+#        strip_insignificant_zeros: false
+#    percentage:
+#      format:
+#        delimiter: ''
+#    precision:
+#      format:
+#        delimiter: ''
+#    human:
+#      decimal_units:
+#        format: ! '%n %u'
+#        units:
+#          billion: Billion
+#          million: Million
+#          quadrillion: Quadrillion
+#          thousand: Thousand
+#          trillion: Trillion
+#          unit: ''
+#      format:
+#        delimiter: ''
+#        precision: 3
+#        significant: true
+#        strip_insignificant_zeros: true
+#      storage_units:
+#        format: ! '%n %u'
+#        units:
+#          byte:
+#            one: Byte
+#            other: Bytes
+#          gb: GB
+#          skb: KB
+#          mb: MB
+#          tb: TB
+#
+#  support:
+#    array:
+#      last_word_connector: ! ', and '
+#      two_words_connector: ! ' and '
+#      words_connector: ! ', '
+#
+#  errors: &errors
+#    format: ! '%{attribute} %{message}'
+#    messages:
+#      accepted: must be accepted
+#      blank: can't be blank
+#      confirmation: doesn't match confirmation
+#      empty: can't be empty
+#      equal_to: must be equal to %{count}
+#      even: must be even
+#      exclusion: is reserved
+#      greater_than: must be greater than %{count}
+#      greater_than_or_equal_to: must be greater than or equal to %{count}
+#      inclusion: is not included in the list
+#      invalid: is invalid
+#      less_than: must be less than %{count}
+#      less_than_or_equal_to: must be less than or equal to %{count}
+#      not_a_number: is not a number
+#      not_an_integer: must be an integer
+#      odd: must be odd
+#      record_invalid: ! 'Validation failed: %{errors}'
+#      taken: has already been taken
+#      too_long:
+#        one: is too long (maximum is 1 character)
+#        other: is too long (maximum is %{count} characters)
+#      too_short:
+#        one: is too short (minimum is 1 character)
+#        other: is too short (minimum is %{count} characters)
+#      wrong_length:
+#        one: is the wrong length (should be 1 character)
+#        other: is the wrong length (should be %{count} characters)
+#    template:
+#      body: ! 'There were problems with the following fields:'
+#      header:
+#        one: 1 error prohibited this %{model} from being saved
+#        other: ! '%{count} errors prohibited this %{model} from being saved'
+#
+#  helpers:
+#    select:
+#      prompt: Please select
+#    submit:
+#      create: Create %{model}
+#      submit: Save %{model}
+#      update: Update %{model}
+#
+#  # remove these aliases after 'activemodel' and 'activerecord' namespaces are removed from Rails repository
+#  activemodel:
+#    errors:
+#      <<: *errors
+#  activerecord:
+#    errors:
+#      <<: *errors
+#
+# #  Menu
+#  projects: "Projekte"
+#  label_menu_projects: "Projekte"
+#  project: "Projekt"
+#  recent_project: "J�ngste Projekte"
+#  home: "Meine Sch�tzung"
+#  all_projects: "Alle Kostenvoranschl�operation"
+#  create_new_project: "Erstellen Sie eine neue Sch�tzung"
+#  label_user_security_resume: "Benutzer Wertpapiere Zusammenfassung"
+#  label_group_security_resume: "Gruppe Wertpapiere Zusammenfassung"
+#
+#  label_menu_library: "Bibliothek"
+#  project_global_setting: "Globale Projekteinstellungen"
+#  estimation_setting: "Sch�tz Einstellungen"
+#  organization_setting: "Organisations Einstellung"
+#  wbs_activities: "WBS-Aktivit�ten"
+#  template: "Schablone"
+#
+#  label_menu_admin: "Admin"
+#  administration: "Admin-Einstellungen"
+#  user: "Verwenden"
+#  groups: "Gruppen"
+#  label_role: "Rollen"
+#  global_permissions: "Globale Berechtigungen"
+#  text_global_permission: "Auf dieser Seite zuweisen"
+#  all_permissions: "Berechtigungen"
+#  project_permissions: "Projektrechte"
+#  master_permissions: "Master-Berechtigungen"
+#  auth_methods: "Authentifizierungsmethoden"
+#  authentication_mode: "Users's Authentication mode"
+#  events: "Geschehen"
+#
+#  master: "Master Parameter"
+#  label_menu_master_admin: "Master Admin"
+#  project_global_parameters: "Gesamtprojektparameter"
+#  pemodule_global_parameters: "Globale Modulparameter"
+#  pe_attributes: "Attribute"
+#  attribute_categories: "Attribute Kategorien"
+#  labor_categories: "Arbeits Kategorien"
+#  projestimate_module: "Module"
+#  work_element: "Arbeitselemente"
+#  security_level: "Securities Ebenen"
+#  languages: "Sprachen"
+#  label_language: "Sprache"
+#  translations: "�bersetzungen"
+#  community: "Gemeinde"
+#
+#  connected_as: "verbunden als"
+#  logout: "Abmelden"
+#  help: "Hilfe"
+#  services: "Dienstleistungen"
+#  about: "�ber"
+#
+#  #attributes
+#  name: "Name"
+#  category: "Kategorie"
+#  description: "Beschreibung"
+#  alias: "Alias"
+#  change_comment: "Kommentar (erl�utern und begr�nden Sie Ihre �nderungsanforderung)"
+#  record_status: "Rekordstand"
+#  label_object_status: "Status"
+#  custom_value: "Benutzerdefinierte Wert (wenn Status=Brauch)"
+#  notice_no_module_use_current_attribute: "Es gibt keine Einheit mit der \"%{value}\" Attribut"
+#  text_finduse_attribute: "Diese Liste der Objekte die \"%{value}\" Attribut"
+#  text_module_name: "Module"
+#  text_attribute_specification_in_current_module: "Wie Attribut wird in diesem Ger�t verwendet"
+#  text_use_as: "Verwenden Sie als"
+#  text_organization_name: "Organisationen"
+#  text_attribute_specification_in_current_organization: "Wie Attribut wird in der aktuellen Organisation verwendet"
+#
+#  wbs_activity_elements: "WBS-Aktivit�t Elemente"
+#
+#  #CRUD
+#  save: "Sparen"
+#  apply: "Anwenden"
+#  save_and_create: "Speichern und erstellen Sie eine neue"
+#  edit: ""
+#  delete: "L�schen"
+#  cancel: "Stornieren"
+#  show: "Zeigen"
+#  restore: "Wiederherstellen"
+#  validate: "Best�tigen"
+#  update: "UpdateAktualisierung"
+#  empty: "keiner"
+#  are_you_sure: "Sind Sie sicher?"
+#  back: "zur�ck"
+#  restore_title: "Wiederherstellen Austausch"
+#  validate_title: "�berpr�ft Austausch"
+#  previous: "< fr�her"
+#  next: "n�chste >"
+#  of: "von"
+#  display: "Anzeige"
+#  record_per_page: "Datens�tze pro Seite"
+#  quick_search: "Schnellsuche"
+#  search: "Suche"
+#  search_action: "Suchoptionen"
+#  search_all_words: "alle W�rter"
+#  search_any_words: "Jedes Wort"
+#  search_phrase: "Satz"
+#  search_query: "Abfrage"
+#  import: "Import"
+#  export: "Export"
+#  up: "r�cken"
+#  down: "Nach unten"
+#
+#  #Project settings
+#  activity_categories: "Aktivit�t Kategorien"
+#  acquisition_categories: "Erwerb Kategorien"
+#  platform_categories: "Platform Kategorien"
+#  project_categories: "Projektkategorien"
+#  project_areas: "Projektbereiche"
+#  acquisition_category: "Erwerb Kategorie"
+#  platform_category: "Platform Kategorie"
+#  project_category: "Projektkategorie"
+#  project_area: "Projektbereich"
+  label_acquisition: "Acquisition"
+  label_platform: "Platform"
+  label_version: "Version"
+#
+#  #Project areas
+#  edit_project_area: "Bearbeiten Sie die \"%{value}\" Projektgebietproject..."
+#  new_project_area: "Neue Projektgebiet"
+#
+#  #Project categories
+#  edit_project_category: "Bearbeiten Sie die \"%{value}\" Projektkategorie..."
+#  new_project_category: "Neues Projekt Kategorie"
+#
+#  #Platform categories
+#  edit_platform_category: "Bearbeiten Sie die \"%{value}\" Plattform Kategorie..."
+#  new_platform_category: "Neue Plattform Kategorie"
+#
+#  #Acquisition categories
+#  edit_acquisition_category: "Bearbeiten Sie die \"%{value}\" Erwerb Kategorie..."
+#  new_acquisition_category: "New Erwerb Kategorie"
+#  notice_acquisition_category_successful_created: "Erwerb Kategorie wurde erfolgreich erstellt."
+#  notice_acquisition_category_successful_destroyed: "Erwerb Kategorie wurde erfolgreich gel�scht."
+#  warning_acquisition_category_cannot_be_updated: "Diese Kategorie kann nicht bearbeitet, fr�here Austausch haben wurde noch nicht validiert Zertifikate erworben werden"
+#  notice_acquisition_category_successful_updated: "Erwerb Kategorie wurde erfolgreich aktualisiert."
+#
+#  #Admin_settings
+#  edit_admin_settings: "Bearbeiten Sie die Admin Einstellungen \"%{value}\" ..."
+#  new_admin_settings: "Neue Admin-Einstellung"
+#  key: "Schl�ssel"
+#  value: "Wert"
+#
+#  #attributes
+#  aggregation: "Anh�ufung"
+#  validation_options: "Validierungen und Optionen"
+#  attributes_type: "Typ"
+#  edit_pe_attribute: "Bearbeiten Sie die \"%{value}\" Attribut..."
+#  edit_attribute_category: "Bearbeiten Sie die \"%{value}\"  Kategorie..."
+#  new_pe_attribute: "Neues Attribut"
+#  new_attribute_category: "Neue Attributkategorie"
+#
+#  #auth_method
+#  server_name: "Server Name"
+#  port: "Port"
+#  certificate: "Zertifikat"
+#  base_dn: "LDAP Basis DN"
+#  user_name_attribute: "Loginname (d. h. gemeinsamen Namen)"
+#  ldap_attributes: "LDAP Attribute f�r den Benutzer"
+#  ldap_bind_dn: "LDAP Bind DN Konto"
+#  ldap_bind_encrypted_password: "LDAP Bind Passwort"
+#  on_the_fly_user_creation: "on the fly Benutzererstellung"
+#  warning_on_the_fly_user_creation: "Kann nicht leer sein, wenn 'on the fly Benutzererstellung' aktiviert wird"
+#  first_name_attribute: "Vorname"
+#  last_name_attribute: "Nachname"
+#  email_attribute: "E-Mail"
+#  initials_attribute: "Initialen"
+#  priority_order: "Priorit�tenfolge"
+#  edit_auth_method: "Bearbeiten Sie die \"%{value}\" Authentifizierungsverfahren..."
+#  new_auth_method: "Neue Authentifizierungsmethode"
+#  encryption: "Verschl�sselungsmethode"
+#
+#  #currencies
+#  currencies: "W�hrungen"
+#  edit_currency: "W�hrung Bearbeiten"
+#  new_currency: "Neue W�hrung"
+#
+#  #event_types
+#  icon_url: "URL Symbol"
+#  edit_event_type: "Bearbeiten Sie einen Ereignistyp"
+#  new_event_type: "Neue Event-Typ"
+#  event_types: "Ereignistypen"
+#
+#  #events
+#  start_date: "Startdatum"
+#  end_date: "Datum Ende"
+#  event_type_id: "Ereignis ID"
+#  project_id: "Projekt ID"
+#  edit_event: "Bearbeiten eines Ereignisses"
+#  new_event: "Neue Veranstaltungs"
+#
+#  #groups
+#  global: "allumfassend"
+#  text_group_associated_users: "Assoziierte Benutzer (Benutzer Mitglied der Gruppe)"
+#  edit_group: "Bearbeiten Sie die Gruppe \"%{value}\" ..."
+#  new_group: "Neue Gruppe"
+#
+#  #Labor categories
+#  edit_labor_category: "Bearbeiten Sie die \"%{value}\" Arbeits Kategorie..."
+#  new_labor_category: "Neue Arbeits Kategorie"
+#
+#  #languages
+#  edit_language: "Bearbeiten Sie \"%{value}\" Sprache..."
+#  new_language: "Neue Sprache"
+#  local: "lokal"
+#
+#  #estimation_values
+#  in_out: "In / Out"
+#  input: "Eingang"
+#  output: "Ausgang"
+#  both: "Eingang und Ausgang"
+#  edit_estimation_value: "Bearbeiten Sie ein Modul Projektattribut"
+#  new_estimation_value: "Neues Modul Projektattribut"
+#
+#  #module_project
+#  edit_module_project: "Bearbeiten einer \"%{value}\" Modul Projekt ..."
+#  new_module_project: "Neues Modul Projekt"
+#  related_attributes: "�hnliche Attribute"
+#  module_ratio_settings: "Ratio Einstellungen"
+#  module_links_settings: "Module Links"
+#  mandatory: "verpflichtend"
+#  links_to: "Links zu"
+#  current_link: "Aktuelle Link"
+#  edit_link: "Bearbeiten Sie einen Link"
+#  module_name: "Modulname"
+#  pe_module: "Pe-Modul"
+#  position: "Position"
+#  associate_Product_element_module_project: "Mitarbeiterin Produkt-Element mit den aktuellen Modul Projekt"
+#  ratio_settings_message: "Es gibt keine Ratio Parameter f�r dieses Modul eingestellt."
+#  select_unselect_all: "Aktivieren/deaktivieren Sie alle"
+#
+#  #organization_labor_categories
+#  labor_category: "Arbeits Kategorie"
+#  level: "Ebene"
+#  cost_per_hour: "Kosten pro Stunde"
+#  base_year: "Basisjahr"
+#  currency: "W�hrung"
+#  hour_per_day: "Stunden pro Tag"
+#  days_per_year: "Tage pro Jahr"
+#  edit_organization_labor_category: "Bearbeiten Sie die \"%{value}\" Organisation Arbeits Kategorie..."
+#  new_organization_labor_category: "Neue Organisation Arbeits Kategorie"
+#
+#  #Organization
+#  organizations: "Organisation"
+#  edit_organization: "Bearbeiten Sie die \"%{value}\" Organisation ..."
+#  new_organization: "Neue Organisation"
+#  inflation: "Inflation"
+#  organizationals_labors_categories: "Organisatorische Arbeiten Kategorien"
+#  text_organization_attributes: "Attribute, auf dem die Organisation beabsichtigt, zu nutzen (sein werden automatisch auf die 'Kapitalisierung' Modul hinzugef�gt werden)"
+#  text_organization_attributes_settings: "Einstellungen f�r Attribute auf der Registerkarte 'Attribute' ausgew�hlt"
+#  organization_technology: "Technologies"
+#  new_organization_technology: "Neue Technologie"
+#  text_organization_technology: "Technologies in der Organisation verwendet (zur Einheiten der Werke von Technologie zu verwalten)"
+#  organization_subcontractor: "Subunternehmer"
+#  text_organization_subcontractor: "Subunternehmer der Organisation"
+#  new_subcontractor: "neue Subunternehmer"
+#  edit_subcontractor: "Bearbeiten Sie die Unterauftragnehmer \"%{value}\" ..."
+#  text_subcontractor: "Subunternehmer Ihres Unternehmens verwalten"
+#  productivity_ratio: "Produktivit�t Verh�ltnis"
+#
+#  #Pbs_project_elements
+#  ancestry: "Abstammung"
+#  work_element_type: "Arbeitselementtyp"
+#  project_link: "Projekt Link"
+#  add_folder: "Hinzuf�gen eines Ordners"
+#  add_link: "Link hinzuf�gen"
+#  add_component: "Eine Komponente hinzuf�gen"
+#
+#  icon: "Symbol"
+#  text_icon_message: "Sie k�nnen jedes Bild hochladen PNG-Datei kleiner als 10 Kilobyte von Ihrer Fest drive.We wird automatisch die Gr��e gro�e Bilder auf 16x16 Pixel."
+#  edit_icon: "Bearbeiten Sie die \"%{value}\" Symbol..."
+#  new_icon: "F�gen Sie ein Symbol"
+#  choose_icon: "W�hlen/�ndern Symbol "
+#  icons: "Symbole"
+#  actions: "Aktionen"
+#
+#  #pemodules
+#  low: "Standardwert (Low)"
+#  likely: "Standardwert (wahrscheinlich)"
+#  high: "Standardwert (High)"
+#  custom_attribute: "Benutzerdefinierte Attribut"
+#  attributes_settings: "Attribute Einstellungen"
+#  label_compatibility: "Kompatibel PBS Element (f�r die Dateneingabe)"
+#  pe_attribute_name: "Attributname"
+#  attribute_category_name: "Kategoriename"
+#  selected: "ausgew�hlt"
+#  edit_pemodule: "Bearbeiten Sie \"%{value}\" die Modul..."
+#  new_pemodule: "Neues Modul"
+#
+#  #permissions
+#  is_permission_project: "Ist ein Projekt Erlaubnis"
+#  is_permission_master: "Ist ein Master Erlaubnis"
+#  label_associated_object: "Assoziierte Objekt"
+#  edit_permission: "Bearbeiten Sie die \"%{value}\" Erlaubnis..."
+#  new_permission: "neue Berechtigungs"
+#  permissions: "Berechtigungen"
+#
+#  #project_securities
+#  edit_project_security: "Projekt bearbeiten Wertpapiere"
+#  new_project_security: "Neues Projekt Wertpapiere"
+#  full_control: "Volle Kontrolle"
+#  define: "Definieren"
+#  modify: "�ndern"
+#  comment: "Kommentar"
+#  read_only: "Nur lesen"
+#
+#  #project_security_levels
+#  edit_project_security_level: "Bearbeiten Sie die \"%{value}\" Projekt Sicherheitsstufe..."
+#  new_project_security_level: "Neues Projekt Sicherheitsstufe"
+#
+#  #projects
+#  edit_project: "Projekt bearbeiten\"%{value}\" ..."
+#  new_project: "Neues Projekt"
+#  new_project_from: "Neues Projekt aus Vorlage"
+#  wbs_product: "WBS Produkt"
+#  wbs_activity: "WBS Aktivit�t"
+#  available_wbs_activity: "Erh�ltlich WBS-Aktivit�ten aus der Bibliothek, mit ihren zugeordneten Verh�ltnis Tabellen \n (Ausgew�hlte Verh�ltnis Tabelle als Standardverh�ltnis Tabelle verwendet werden)"
+#  button_add: "hinzuf�gen"
+#  label_wbs_activity_ratio: "erh�ltnis Tisch"
+#  estimation_plan: "Sch�tzungsplan"
+#  button_estimation_plan: "Sch�tzung Bearbeiten Plan"
+#  securities: "Wertpapiere"
+#  calendar: "Kalender"
+#  resources: "Ressourcen"
+#  analyse: "analysieren"
+#  state: "Zustand"
+#  hidden_element: "Zeigen Sie versteckte Element"
+#  associate_pbs_element: "Ordnen PBS-Element"
+#  user_securities_resume: "Benutzer Wertpapiere Lebenslauf"
+#  group_securities_resume: "Gruppe Wertpapiere Lebenslauf"
+#  group_name: "Gruppenname"
+#  global_properties: "Globale Eigenschaften"
+#  text_confirm_project_deletion: "Sind Sie sicher, dass Sie dieses Projekt und alle damit verbundenen Daten l�schen wollen ?"
+#  warning_need_check_box_confirmation: "Sie m�ssen sich Projekt L�schen mit Check-Box best�tigen"
+#  label_project_is_model: "Ist eine Projektvorlage"
+#  is_model: "Schablone"
+#
+#  #Record_statuses
+#  edit_record_status: "Bearbeiten Sie die \"%{value}\" Aufnahmestatus..."
+#  new_record_status: "Neue Rekordstand"
+#
+#  #Reference_value
+#  edit_reference_value: "Bearbeiten Sie die \"%{value}\" Referenzwert..."
+#  new_reference_value: "Neuer Referenzwert"
+#
+#  #searches
+#  search_results: "Suchen Ergebnisse"
+#  no_results: "Kein Ergebnis f�r gefunden"
+#
+#  #sessions
+#  button_ask_account: "Fordern Sie ein Konto"
+#  send_request: "einreichen"
+#  login_name_or_email: "Benutzername oder E-Mail"
+#  button_forgotten_password: "Passwort vergessen?"
+#  open_url_id: "Offene URL Id"
+#  ldap_account_or_application_account: "Benutzer-Login-ID oder E-Mail (oder LDAP-Konto-ID)."
+#  not_yet_supported: "Noch nicht unterst�tzt"
+#  ldap_account_password_or_application_account_password: "Kennwort des Benutzers (oder LDAP-Konto-Passwort)"
+#  text_ask_new_account: "Um ein Konto zu beantragen, klicken Sie auf "Anfrage ein Konto", dann folgen Sie den Anweisungen."
+#  text_forgotten_password: "Klicken Sie auf "Passwort vergessen", dann folgen Sie den Anweisungen."
+#  additional_guidance: "Sie k�nnen zus�tzliche Hinweise finden"
+#  here: "hier"
+#  or: "oder"
+#  contact: "Kontakt"
+#  administrators: "die Administratoren."
+#  button_need_help: "Brauchen Sie Hilfe?"
+#  connect: "Anmelden"
+#  connect_me: "eintragen"
+#  remember_me: "mich erinnern"
+#  edit_password: "Aktualisieren Sie Ihr Passwort"
+#  text_forgotten_password_help: "Sie erhalten eine E-Mail mit einem Link, mit dem Sie Ihr Passwort �ndern k�nnen erhalten."
+#  ask_new_account_help: "Sie erhalten eine Best�tigung per E-Mail zu erhalten, aber man muss warten, bis ein Administrator erm�glichen Ihrem Konto.\nWenn Ihr Konto wird vom Administrator aktiviert ist, eine zweite Best�tigungsmail erhalten Sie."
+#  ask_new_account_help2: "Sie erhalten eine Best�tigung per E-Mail mit Ihrem Benutzernamen und Ihrem Passwort"
+#
+#  #translations
+#  choose_locale: "W�hlen Sie einen lokalen"
+#  save_translations: "Sparen �bersetzungen"
+#
+#  #user_mailer
+#  considered_message: "Ihr Kontoerstellung Anfrage wurde voll ber�cksichtigt."
+#  your_identifiants_message: "Ihre Anmeldeinformationen"
+#  not_active_message: "Ihr Konto ist noch nicht aktiv."
+#  cordialy_message: "hochachtungsvoll, "
+#  projestimate_equipe_message: "Die Estimancy Team"
+#  hello: "Hallo"
+#
+#  #users
+#  identity: "Identit�t des Benutzers"
+#  first_name: "Vorname"
+#  last_name: "Nachname"
+#  login_name: "Login-Name"
+#  email: "E-Mail"
+#  initials: "Initialen"
+#  text_user_associated_groups: "Benutzer assoziierten Gruppen (Gruppen der Benutzer Mitglied ist)"
+#  text_user_associated_organizations: "Benutzer-assoziierten Organisationen (Organisationen, denen der Benutzer Mitglied ist)"
+#  text_group_associated_projects: "Assoziierte Projekte (Projekte in der die Gruppe Zugriff hat)"
+#  text_user_associated_projects: "Assoziierte Projekte (Projekte, in denen der Benutzer Zugriff hat)"
+#  settings: "Einstellungen"
+#  authentication: "Benutzer die Authentifizierung"
+#  password: "Passwort"
+#  password_confirmation: "Passwort Best�tigung"
+#  auth_type: "Benutzerauthentifizierung"
+#  informations: "Benutzerinformation"
+#  user_status: "Benutzerstatus"
+#  created_at: "Erstellt am"
+#  updated_at: "Aktualisiert am"
+#  last_login: "Letzter Login"
+#  previous_login: "Vorherige Anmeldung"
+#  time_zone: "Zeitzone"
+#  object_per_page: "Objekte pro Seite"
+#  assistance: "Hilfe"
+#  notifications: "Benachrichtigungen"
+#  display_format: "Anzeigeformat"
+#  decimal: "dezimal"
+#  thousands: "Tausende"
+#  first_day: "Erster Tag der Woche"
+#  first_week: "Erste Woche des Jahres"
+#  export_preferences: "Export-Einstellungen"
+#  execute_estimation: "F�hren Sch�tzprozess"
+#  edit_user: "Benutzer bearbeiten \"%{value}\" ..."
+#  new_user: "Neuer Benutzer..."
+#  users: "Benutzer"
+#  filters: "Filter"
+#
+#  #wbs activities
+#  edit_wbs_activity: "Bearbeiten der \"%{value}\" wbs Aktivit�ten..."
+#  new_wbs_activity: "Neue wbs Aktivit�ten"
+#  import_wbs_activity: "Neue wbs Aktivit�ten von CSV-Datei"
+#  guide_import_wbs_activity: "Erstellen Sie eine neue WBS-Aktivit�ten aus einer Liste von Aktivit�ten in einer CSV-Datei enthalten(<outline_number>;<element_name>;<element_description>)"
+#  guide_create_wbs_activity: "Erstellen Sie eine neue WBS-Aktivit�ten manuell"
+#  sum_of_ratio_values: "Summe der Verh�ltniswerte:"
+#  one_activity_element: "Ein Aktivit�ten-Element"
+#  all_activity_elements: "Alle Aktivit�ten-Elemente"
+#  set_of_activity_elements: "Eine Reihe von Aktivit�ten-Elemente"
+#  new_activities: "Neue Aktivit�ten"
+#  general: "allgemein"
+#  file_csv: "Datei (csv nur)"
+#  file_xls: "Excel File"
+#  separator: "Separator (default:"
+#  encoding: "Encoding"
+#  please_wait_import: "Please wait during import..."
+#  close: "Close"
+#  select_ratio_table: "Select the ratio table to display "
+#  wbs_elements: "Wbs Elemente (Baumansicht)"
+#  ratios: "Verh�ltnisse"
+#  ratios_elements: "Verh�ltnisse Elemente"
+#  change_ratio: "Wechselverh�ltnis"
+#
+#  #wbs activity elements
+#  edit_wbs_activity_element: "Bearbeiten Sie ein wbs Element Aktivit�t"
+#  new_wbs_activity_element: "Neue wbs Element Aktivit�t"
+#  parent: "Elternteil"
+#
+#  #wbs activity ratio element
+#  edit_wbs_activity_ratio_element: "Bearbeiten Sie ein wbs Element Aktivit�tsverh�ltnis"
+#  new_wbs_activity_ratio_element: "Neue wbs Element Aktivit�tsverh�ltnis"
+#  one_reference_value: "Einzel-Referenzwert"
+#  set_of_reference_value: "Ein Satz von Referenzwerten"
+#
+#  # wbs activity ratios
+#  edit_wbs_activity_ratio: "Bearbeiten Sie ein wbs Aktivit�tsverh�ltnis"
+#  new_wbs_activity_ratio: "Neue wbs Aktivit�tsverh�ltnis"
+#
+#  #wbs project elements
+#  edit_wbs_project_element: "Ein Projektelement bearbeiten"
+#  new_wbs_project_element: "Neue wbs Projektelement"
+#  additional_description: "Weitere Beschreibung"
+#  exclude: "ausschlie�en"
+#  author: "Autor"
+#  warning_wbs_not_complete: "\"%{value}\" ist nicht komplett: alle Werte (niedrig, wahrscheinlich und hoch) m�ssen korrekt eingestellt sein."
+#  warning_wbs_not_consistent: "Summe der Kinder Bem�hungen sich von der Anstrengung Knoten sind."
+#  warning_caution: "Vorsicht"
+#
+#  #work element type
+#  edit_work_element_type: "Bearbeiten Sie die \"%{value}\" Arbeitselementtyp..."
+#  new_work_element_type: "Neue Arbeitselementtyp"
+#
+#  #messages
+#  restoring: "Haben Sie die Wiederherstellung diese Platte definiert best�tigen?"
+#  validation: "Haben Sie �nderungen auf dieser Platte best�tigen Validierung?"
+#  global_settings_updated: "Globale Einstellungen wurden aktualisiert."
+#  attributes_settings_updated: "Attribute Einstellungen wurden aktualisiert."
+#  refers_to: "Keine Estimancy Module installiert wurde. Bitte beziehen"
+#  official_documentation: "Offizielle Dokumentation"
+#  to_install_module: "Module zu installieren, um Estimancy."
+#  notice_no_estimation_plan_defined: "Keine Sch�tzung Plan definiert wurde."
+#  select_module: "W�hlen Sie ein Modul aus der Liste. �nderungen werden automatisch gespeichert."
+#  step: "Stufe"
+#
+#  general_csv_separator: ','
+#  general_csv_decimal_separator: '.'
+#  general_csv_encoding: ISO-8859-1
+#
+#  simple_form:
+#    "yes": 'Yes'
+#    "no": 'No'
+#    required:
+#      text: 'required'
+#      mark: '*'
+#    error_notification:
+#      default_message: "Bitte lesen Sie die unten Probleme:"
+#    options:
+#      pemodule:
+#        with_activities:
+#          "no": 'No'
+#          yes_for_input: 'Yes for input'
+#          yes_for_output_with_ratio: 'Yes for output with ratio'
+#          yes_for_output_without_ratio: 'Yes for output without ratio'
+#          yes_for_input_output_with_ratio: 'Yes for input/output with ratio'
+#          yes_for_input_output_without_ratio: 'Yes for input/output without ratio'
+#
+#  #Error, warning, notice messages
+#  warning_wbs_activity_ratio_elt_value_range: "Bitte, geben Sie Wert zwischen ]0 - 100]"
+#  text_master_force_edit: "Wir bieten keinen Workflow, um diese Tabelle zu �ndern, wenn Sie weiterhin werden Sie die Bearbeitung der 'definiert' record Selbst. Bitte best�tigen Sie annehmen, um fortzufahren"
+#  text_checking_new_release: "�berpr�fen auf neue Version"
+#  text_projestimate_open_source: "Estimancy ist Open Source und unter den Bedingungen des ??? ver�ffentlicht"
+#  text_projestimate_open_source_references: "Einige externe Komponente oder Beitr�operation mit Estimancy geb�ndelt Kann unter AGPLv3 anderen kompatiblen Lizenz ver�ffentlicht werden. F�r These, entnehmen Sie bitte den entsprechenden Source-Dateien und/oder Lizenzdateien im Quellcode-Baum und/oder Abh�ngigkeiten zu dem Bericht."
+#  text_latest_update: "Letztes Update"
+#  text_latest_masterData_repository_update: "Letzte Aktualisierung Stammdaten-Repository"
+#  text_download_master_data: "Update herunterzuladen und Stammdaten"
+#  text_please_wait: "Bitte warten Sie. Es k�nnte eine Weile dauern"
+#  edit_project_element: "Bearbeiten Sie die \"%{value}\" Element des PSP-Aktivit�telement..."
+#  warning_administration_setting_cant_be_edited: "Diese Regierung kann keine Festlegung Rekord bearbeitet fr�heren Austausch-haben-wurde noch nicht validiert Zertifikate."
+#  notice_administration_setting_successful_created: "Admin-Einstellung wurde erfolgreich erstellt."
+#  notice_administration_setting_successful_updated: "Admin-Einstellung wurde erfolgreich aktualisiert."
+#  error_administration_setting_failed_update: "Ein Fehler ist aufgetreten, das auf die Aktualisierung."
+#  notice_administration_setting_successful_deleted: "Admin-Einstellung wurde erfolgreich gel�scht."
+#  warning_masterdata_record_cant_delete: "Sie k�nnen Stammdatensatz nicht l�schen"
+#  unselectable: "kann nicht gew�hlt werden"
+#  error_access_denied: "Zugriff verweigert."
+#  error_connection_refused: "Connection refused - Versuchen Sie, neu zu starten SOLR"
+#  warning_attribute_cant_be_edit: "Dieses Attribut kann nicht bearbeitet werden, da die bisherigen �nderungen sind noch nicht best�tigt worden."
+#  warning_auth_method_cant_be_edit: "Diese Authentifizierungsmethode kann nicht bearbeitet werden, da die bisherigen �nderungen sind noch nicht best�tigt worden."
+#  warning_master_record_cant_be_edit: "Stammsatz kann nicht bearbeitet werden, ist es f�r das reibungslose Funktionieren der Anwendung erforderlich"
+#  warning_master_record_cant_be_delete: "Stammsatz kann nicht gel�scht werden, ist es f�r das reibungslose Funktionieren der Anwendung erforderlich"
+#  notice_auth_method_successful_deleted: "Authentifizierungsmethode wurde erfolgreich gel�scht."
+#  notice_auth_method_successful_updated: "Authentifizierungsmethode wurde erfolgreich aktualisiert."
+#  notice_auth_method_successful_created: "Authentifizierungsmethode wurde erfolgreich erstellt."
+#  warning_currency_cant_be_edit: "Diese W�hrung kann nicht bearbeitet werden, vorherige �nderungen noch nicht best�tigt worden."
+#  notice_currency_successful_updated: "Die W�hrung wurde erfolgreich aktualisiert."
+#  notice_currency_successful_deleted: "Die W�hrung wurde erfolgreich gel�scht."
+#  notice_estimation_value_successful_updated: "Sch�tzwert wurde erfolgreich aktualisiert."
+#  warning_event_type_cant_be_edit: "Dieser Ereignistyp kann nicht bearbeitet werden, vorherige �nderungen noch nicht best�tigt worden."
+#  notice_event_type_successful_updated: "Event-Typ wurde erfolgreich aktualisiert."
+#  notice_event_type_successful_deleted: "Event-Typ wurde erfolgreich gel�scht."
+#  notice_event_successful_updated: "Ereignis wurde erfolgreich aktualisiert."
+#  notice_event_successful_created: "Ereignis wurde erfolgreich erstellt."
+#  warning_group_cant_be_edit: "Diese Gruppe kann nicht bearbeitet werden, da die bisherigen �nderungen sind noch nicht best�tigt worden."
+#  notice_group_successful_deleted: "Gruppe wurde erfolgreich gel�scht."
+#  notice_group_successful_updated: "Gruppe wurde erfolgreich aktualisiert."
+#  warning_cant_update_yourself: "Sie k�nnen nicht selbst aktualisieren, wie Sie bereits auf Master-Instanz"
+#  same_schema_version: "Gleiche Schema-Version"
+#  notice_projestimate_data_successful_updated: "Estimancy Daten wurden erfolgreich aktualisiert."
+#  repository_up_to_date: "Ihr Repository ist auf dem neuesten Stand"
+#  notice_masterdata_already_latest: "Sie haben bereits die neueste Masterdata."
+#  warning_db_schema_differ_to_masterdata: "Ihr lokaler DB-Schema abweichen, um den Masterdata ein, pr�fen Sie bitte f�r �nderungen oder run 'rake db: migrate' Befehl"
+#  error_default_data_failed_update: "!!! WARNUNG - Fehler: Standard-Daten nicht geladen werden, bitte untersuchen. Vielleicht laufen B�ndel exec rake sunspot:solr:start RAILS_ENV=your_environment"
+#  error_default_data_exception_update: "!!! WARNUNG - Ausnahme: Standard-Daten nicht geladen, bitte untersuchen... Vielleicht laufen db:erstellen und db:migrate Aufgaben."
+#  warning_labor_category_cant_be_edit: "Diese Arbeits Kategorie kann nicht bearbeitet werden, vorherige �nderungen noch nicht best�tigt worden."
+#  notice_labor_category_successful_created: "Arbeits Kategorie wurde erfolgreich erstellt."
+#  notice_labor_category_successful_updated: "Arbeits Kategorie wurde erfolgreich aktualisiert."
+#  notice_labor_category_successful_deleted: "Arbeits Kategorie wurde erfolgreich gel�scht."
+#  warning_language_cant_be_edit: "Diese Sprache kann nicht bearbeitet werden, vorherige �nderungen noch nicht best�tigt worden"
+#  notice_language_successful_created: "Sprache erfolgreich erstellt wurde."
+#  error_update_retired_language: "Kann nicht zur�ckgezogen Sprache aktualisieren"
+#  notice_language_successful_updated: "Sprache erfolgreich aktualisiert wurde."
+#  error_language_failed_update: "Fehler: Update fehlgeschlagen"
+#  notice_language_successful_deleted: "Sprache wurde erfolgreich gel�scht."
+#  notice_module_project_successful_created: "Modul Projekt wurde erfolgreich erstellt."
+#  notice_module_project_successful_updated: "Modul Projekt wurde erfolgreich aktualisiert."
+#  notice_organization_labor_successful_created: "Organisation Arbeits Kategorie wurde erfolgreich erstellt."
+#  notice_organization_labor_successful_updated: "Organisation Arbeits Kategorie wurde erfolgreich aktualisiert."
+#  notice_organization_labor_successful_deleted: "Organisation Arbeits Kategorie wurde erfolgreich gel�scht."
+#  notice_organization_successful_created: "Organisation wurde erfolgreich erstellt."
+#  notice_organization_successful_updated: "Organisation wurde erfolgreich aktualisiert."
+#  notice_organization_successful_deleted: "Organisation wurde erfolgreich gel�scht."
+#  warning_reset_password_expired: "Reset process expired."
+#  notice_password_successful_reset: "Ihr Passwort wurde erfolgreich zur�ckgesetzt worden. Eine Best�tigungs-E-Mail gesendet wurden."
+#  error_pbs_project_element_failed_update: "Bitte �berpr�fen Sie pbs Projektelemente Wert"
+#  warning_icon_cant_be_edit: "Diese Estimancy Icon kann nicht bearbeitet werden, vorherige �nderungen noch nicht best�tigt worden."
+#  notice_icon_successful_deleted: "Icon wurde erfolgreich gel�scht."
+#  #and: "und"
+#  warning_pemodule_cant_be_edit: "Diese Estimancy Modul k�nnen nicht bearbeitet werden, vorherige �nderungen noch nicht best�tigt worden."
+#  notice_pemodule_successful_updated: "Die �nderungen korrekt gespeichert wurden"
+#  notice_pemodule_successful_deleted: "Module wurde erfolgreich gel�scht."
+#  warning_permission_cant_be_edit: "Diese Erlaubnis kann nicht bearbeitet werden, fr�here Austausch-haben-wurde noch nicht validiert Zertifikate."
+#  notice_permission_successful_created: "Die Erlaubnis wurde erfolgreich erstellt."
+#  notice_function_successful_updated: "Funktion wurde erfolgreich aktualisiert."
+#  notice_permission_successful_deleted: "Die Erlaubnis wurde erfolgreich gel�scht."
+#  notice_permission_successful_saved: "Berechtigungen erfolgreich gespeichert"
+#  notice_permission_successful_cancelled: "Ihr Austausch Entfall"
+#  warning_platform_category_cant_be_edit: "Diese Plattform kann Kategorie fr�heren Austausch haben wurde noch nicht validiert Zertifikate nicht bearbeitet werden."
+#  notice_platform_category_successful_created: "Platform Kategorie wurde erfolgreich erstellt."
+#  notice_platform_category_successful_updated: "Platform Kategorie wurde erfolgreich aktualisiert."
+#  notice_platform_category_successful_deleted: "Platform Kategorie wurde erfolgreich gel�scht."
+#  warning_project_area_cant_be_edit: "Dieser Projektbereich k�nnen nicht bearbeitet werden, fr�here Austausch-haben-wurde noch nicht validiert Zertifikate."
+#  notice_project_area_successful_created: "Projektgebiet wurde erfolgreich erstellt."
+#  notice_project_area_successful_updated: "Projektgebiet wurde erfolgreich aktualisiert."
+#  notice_project_area_successful_deleted: "Projektbereich wurde erfolgreich gel�scht."
+#  warning_project_categories_cant_be_edit: "Dieses Projekt Kategorie kann nicht bearbeitet werden, fr�here Austausch-haben-wurde noch nicht validiert Zertifikate."
+#  notice_project_categories_successful_created: "Projektkategorie wurde erfolgreich erstellt."
+#  notice_project_categories_successful_updated: "Projektkategorie wurde erfolgreich aktualisiert."
+#  notice_project_categories_successful_deleted: "Projektkategorie wurde erfolgreich gel�scht."
+#  notice_project_securities_successful_created: "Das Projekt wurde erfolgreich erstellt Sicherheits."
+#  notice_project_securities_successful_updated: "Projekt wurde erfolgreich aktualisiert Sicherheit."
+#  warning_project_securities_level_cant_be_edit: "Diese Sicherheitsstufe k�nnen nicht bearbeitet werden, fr�here Austausch-haben-wurde noch nicht validiert Zertifikate."
+#  notice_project_securities_level_successful_created: "Projekt Sicherheitsstufe wurde erfolgreich erstellt."
+#  notice_project_securities_level_successful_updated: "Projekt wurde erfolgreich aktualisiert Sicherheitsstufe."
+#  notice_project_securities_level_successful_deleted: "Projekt Sicherheitsstufe wurde erfolgreich gel�scht."
+#  notice_project_successful_created: "Das Projekt wurde erfolgreich erstellt."
+#  error_project_failed_create: "Fehler: Projekterstellung gescheitert,"
+#  project_successful_updated: "Projekt wurde erfolgreich aktualisiert."
+#  notice_project_successful_duplicated: "Projekt wurde erfolgreich dupliziert"
+#  error_project_failed_duplicate: "Vervielf�ltigung fehlgeschlagen: Fehler bei der Projekt Vervielf�ltigung Happened"
+#  confirm_new_branch_project_checkout: "Sie sind auf dem Weg, eine Niederlassung zu erstellen. Trotz der Schwierigkeiten wird die Fusion Ausgabe, k�nnen Sie dies best�tigen?"
+#  notice_project_successful_checkout: "Projekt war erfolgreich Abmeldung"
+#  notice_wbs_activity_successful_added: "WBS-Aktivit�t wurde erfolgreich zu Projekt hinzugef�gt."
+#  warning_record_status_cant_be_edit: "Dieser Status kann nicht bearbeitet werden, fr�here Austausch-haben-wurde noch nicht validiert Zertifikate."
+#  notice_record_status_successful_created: "Rekord Status wurde erfolgreich erstellt."
+#  notice_record_status_successful_updated: "Rekord Status wurde erfolgreich aktualisiert."
+#  notice_reference_value_successful_deleted: "Referenzwert wurde erfolgreich gel�scht."
+#  error_record_status_failed_update: "Fehler: Fehler die Record-Status speichern."
+#  text_welcome: "willkommen"
+#  warning_account_black_listed: "Ihr Konto ist auf der schwarzen Liste"
+#  warning_invalid_username_password: "Ung�ltiger Benutzername oder Passwort"
+#  notice_session_password_reset_instruction: "Passwort Reset Anweisungen haben-gewesen f�hlt."
+#  warning_session_account_not_active: "Ihr Konto ist nicht aktiv"
+#  error_account_ldap_association: "Ihr Konto ist mit dem Unternehmensverzeichnis / LDAP verbunden. Bitte kontaktieren Sie Ihren Systemadministrator, Ihr ids wissen."
+#  warning_session_bad_username: "Es wurden keine Konto mit diesem Benutzernamen oder E-Mail"
+#  application: "Anwendung"
+#  notice_translation_successful_added: "�bersetzung erfolgreich hinzugef�gt."
+#  notice_account_successful_created: "Das Konto wurde erfolgreich erstellt"
+#  notice_account_successful_updated: "Das Konto wurde erfolgreich aktualisiert."
+#  warning_email_or_username_already_exist: "E-Mail oder Benutzername bereits in der Datenbank vorhanden."
+#  warning_invalid_import_from_ldap: "Dieser Benutzer kann nicht importiert werden :"
+#  warning_ldap_attribute_missing:  "Das Attribut \"%{value}\" ist leer."
+#  notice_account_demand_send: "Konto beantragt Sende mit Erfolg."
+#  warning_check_all_fields: "Bitte �berpr�fen Sie alle Felder."
+#  notice_version_successful_created: "Version wurde erfolgreich erstellt."
+#  notice_version_successful_updated: "Version erfolgreich aktualisiert wurde."
+#  notice_wbs_activity_element_import_successful: "Import erfolgreich."
+#  error_wbs_activity_failed_file_integrity: "Bitte �berpr�fen Sie die Integrit�t der Datei. Sie illegale Charakter wie Wagenr�cklauf oder doppelten Anf�hrungszeichen in Ihrer CSV-Dateien."
+#  notice_wbs_activity_successful_created: "WBS-Aktivit�t wurde erfolgreich erstellen."
+#  notice_wbs_activity_successful_deleted: "WBS-Aktivit�t wurde erfolgreich gel�scht."
+#  notice_wbs_activity_successful_duplicated: "WBS-Aktivit�t wurde erfolgreich dupliziert"
+#  error_wbs_activity_failed_duplicate: "Vervielf�ltigung fehlgeschlagen: Fehler geschah am Wbs Activity-Vervielf�ltigung"
+#  notice_wbs_activity_successful_updated: "�nderungen auf PSP-Aktivit�t erfolgreich validiert Zertifikate."
+#  error_wbs_activity_failed_update: "�nderungen Validierung fehlgeschlagen:"
+#  notice_wbs_activity_element_successful_created: "Wbs Aktivit�t Element wurde erfolgreich erstellt."
+#  notice_wbs_activity_element_successful_updated: "Wbs Aktivit�tselement wurde erfolgreich aktualisiert."
+#  warning_sum_ratio_different_100: "Warnung - Kennzahlen erfolgreich gespeichert, ist der Zweck verschiedene Summe von 100%"
+#  notice_ratio_successful_saved: "Kennzahlen erfolgreich gespeichert"
+#  error_wbs_activity_failed_import: "Konnte einige Element, das aus der PSP-Aktivit�t sieht importieren."
+#  warning_import_sum_ratio_different_100: "Warnung - Kennzahlen erfolgreich importiert, ist der Zweck verschiedene Summe von 100%."
+#  notice_ratio_successful_imported: "Kennzahlen erfolgreich importiert."
+#  notice_wbs_activity_ratio_successful_validated: "Wbs-Activity-Verh�ltnis erfolgreich validiert Zertifikate"
+#  notice_wbs_project_element_successful_created: "Wbs Projektelement wurde erfolgreich erstellt."
+#  notice_wbs_project_element_successful_updated: "Wbs Projektelement wurde erfolgreich aktualisiert."
+#  notice_wbs_project_element_successful_deleted: "WBS-Element-Projekt wurde erfolgreich gel�scht."
+#  notice_ratio_successful_changed: "Das Verh�ltnis wurde erfolgreich operation�ndert"
+#  error_wbs_project_element_ratio_failed_update: "Fehler beim �ndern Wbs Aktivit�tsverh�ltnis"
+#  warning_work_element_type_cant_be_edit: "Diese Arbeitsaufgabentypen k�nnen nicht bearbeitet werden, fr�here Austausch-haben-wurde noch nicht validiert Zertifikate."
+#  notice_work_element_type_successful_updated: "Work Type Element wurde erfolgreich aktualisiert."
+#  notice_attribute_module_successful_created: "Attribut-Modul wurde erfolgreich erstellt."
+#  notice_master_data_successful_validated: "�nderungen am Datensatz erfolgreich validiert Zertifikate."
+#  error_master_data_failed_validate: "�nderungen Validierung fehlgeschlagen: %{value}"
+#  error_master_data_failed_restore: "Wiederherstellung fehlgeschlagen."
+#  notice_master_data_successful_restored: "Wiederherstellung hat-erfolgreich validiert Zertifikate."
+#  warning_master_data_unauthorized_action: "unerlaubter Handlung: Sie versuchen, eine nicht-Ruhestand Rekordwiederherstellung! "
+#  notice_project_successful_updated: "Projekt wurde erfolgreich aktualisiert"
+#  notice_project_successful_deleted: "Projekt wurde erfolgreich gel�scht"
+#  error_project_creation_failed: "Ein Fehler ist aufgetreten, das auf die Gr�ndung der Projekt"
+#  notice_project_successful_duplicated: "Projekt erfolgreich dupliziert"
+#  error_project_duplication_failed: "Ein Fehler ist aufgetreten, das auf die Vervielf�ltigung von Projekt"
+#  error_project_checkout_failed: "Ein Fehler ist aufgetreten, das auf die Kasse des Projekts"
+#  notice_module_project_successful_updated: "Modul-Projekt wurde erfolgreich aktualisiert"
+#  notice_module_project_successful_created: "Modul-Projekt wurde erfolgreich erstellt"
+#  notice_attribute_module_successful_created: "Attribut-Modul wurde erfolgreich erstellt."
+#
+#  #mail
+#  mail_salutation: "Sehr geehrter %{value},"
+#  mail_complimentary_close: "ergebenst,\nEstimancy"
+#  mail_footer: "\n-----------------------------------------------\nDiese E-Mail haben gewesen f�hlt sich automatisch �ber den Server Estimancy.\n\n"
+#  mail_subject_lost_password: "[Estimancy] Neues Passwort"
+#  mail_body_lost_password: 'Um Ihr Passwort zu �ndern, klicken Sie auf den folgenden Link (oder kopieren Sie sie in Ihrem Browser): '
+#  mail_body_lost_password_token_delay: 'Achtung, diese Verbindung ist f�r einen Zeitraum von 2 Stunden. Dar�ber hinaus m�ssen Sie den Prozess neu zu starten'
+#  mail_subject_account_activation_request: "[Estimancy] Konto Aktivierungsanforderung"
+#  mail_body_account_activation_request: "Ein neuer Benutzer registriert hat. Das Konto ist anh�ngig Ihre Zustimmung.\n\n"
+#  mail_subject_account_activation: "[Estimancy] Ihr Konto ist aktiviert"
+#  mail_body_account_activation: "Wir freuen uns, die Aktivierung von Ihrem Konto zu best�tigen Estimancy.\n\n"
+#  mail_body_account_information: "Bitte merken Sie sich Ihre Login-Daten:\n<ul><li>Login: <b>%{user}</b></li>\n<li>Password: <b>%{pwd}</b></li></ul>\n\n"
+#  mail_body_account_information_no_pwd: "Ihre Anmeldeinformationen Habenichtse operation�ndert."
+#  mail_subject_account_created: "[Estimancy] Ihr Konto wird erstellt"
+#  mail_body_account_created: "Ihr Konto Einrichtung-Anfrage wurde vollst�ndig ber�cksichtigt.\n\n"
+#  mail_body_account_not_yet_activated: "Ihr Konto ist noch nicht aktiv.\nSobald ein Administrator aktiviert, werden Sie eine zweite Benachrichtigung per E-Mail erhalten.\n\n"
+#  mail_subject_new_password: "[Estimancy] Ihr Passwort wurde operation�ndert"
+#  mail_password_unchanged: "Ihr Passwort ist unver�ndert (wir empfehlen Ihnen, es so aus Ihrem Benutzerprofil �ndern)"
+#  mail_password_from_ldap: "Passwort von Ihrem Unternehmensverzeichnis"
+#  mail_subject_account_suspended: "[Estimancy] Ihr Konto wird ausgesetzt"
+#  mail_body_account_suspended: "Wir m�chten Sie dar�ber informieren, dass Ihr Konto Estimancy (%{value}) hat-ausgesetzt. \ NSie k�nnen darum bitten, sie per E-Mail an den Administrator zu reaktivieren %{adm}\n\n"
+#
+#  text_warn_on_leaving_unsaved: "Die aktuelle Seite enth�lt nicht gespeicherte Text, gehen verloren, wenn Sie diese Seite verlassen."
+#  label_module_with_activities: "Ist das Ger�t mit Aktivit�ten ?"
+#  label_add_a_module_to_project: "F�gen Sie die gew�hlte Einheit"
+#  label_filter_on_pbs_element: "Konzentrieren Sie sich auf einer PBS-Element"
+#  button_build_estimation_path: "Establish estimation paths"
+#  button_configure_module_pbs_element: "Konfigurieren PBS-Elemente"
+#  label_show_hidden_elements: "Versteckte Elemente anzeigen"
+#  label_ratio_value: "Wert-Verh�ltnis"
+#  label_is_completed: "abgeschlossen"
+#  label_is_validated: "ist validiert"
+#  text_overloading_default_ratio_table: "So �berschreiben (f�r diese Komponente) die Ausfallquote Tabelle, w�hlen Sie ein PSP-Aktivit�ten und die damit verbundenen Verh�ltnistabelle"
+#  text_no_icon: "kein Symbol ausgew�hlt"
+#  tooltip_run_estimation: "F�hren Sie die Sch�tzung"
+#  notice_no_estimation_saved: "Keine Ergebnisse sparen l�ngst vergessene in der Projektdatenbank"
+#  error_session_expired: "Ihre Sitzung ist abgelaufen. Melden Sie sich erneut."
+#  label_disabled: "Einsatz"
+#  label_pbs_element_matrix: "Mitarbeiterin Elemente mit PBS-Projekt (\"%{value}\") Module"
+#  label_module_projects_matrix: "Stellen Pfade f�r Projektsch�tzung \"%{value}\""
+#  tooltip_attribute_rules: "Validierungsregeln"
+#  error_invalid_date: "Ung�ltiges Datum Zeit"
+#  no_mandatory: "Keine Pflicht"
+#  label_precision: "Pr�zision"
+#  text_help_list_attribute: "(Liste der Werte ​​ durch Semikolon getrennt)"
+#  text_select_page_size: "W�hlen Sie die Seitengr��e"
+#  text_select_page_number: "W�hlen Sie Seitenzahl"
+#  text_first_page: "erste Seite"
+#  text_last_page: "letzte Seite"
+#  text_next_page: "n�chste Seite"
+#  text_previous_page: "vorherige Seite"
+#  text_result_index: "Ergebnis Index / Zahl der gefilterten Ergebnis (Gesamtzahl der raw)"
+#  label_dashboard: "Armaturenbrett f�r \"%{value}\""
+#  label_estimation_modules: "Sch�tzung Module"
+#  label_input_data: "Dateneingabeformulare"
+#  label_output_data: "Sch�tzungergebnisse"
+#  button_activate_user_account: "Aktivieren Sie Benutzer-Account"
+#  button_find_use: "Finden, wo es verwendet wird, und kennen die Auswirkungen von Wechsel"
+#  button_commit_project: "F�rderung der Projektlebenszyklus in IKT"
+#  button_checkout_project: "Abmeldung Projekt"
+#  button_activate_project: "Aktivieren Sie das Projekt, um es auf dem Armaturenbrett zu sehen"
+#  button_duplicate_project: "Duplizieren Projekt"
+#  button_duplicate_model: "Neues Projekt aus dieser Vorlage"
+#  label_environment: "Umgebung"
+#  notice_attribute_organization_successful_updated: "Organisations Attribut wurde erfolgreich aktualisiert."
+#  display_order: "Auftrag anzeigen"
+#  tablesorter_date_format: "mmddyyyy"
+#  notice_no_organization_use_current_attribute: "Es gibt keine Organisation mit dem \"%{value}\" Attribut"
+#  text_project_name: "Link zu anderen Projekten (Teilprojekte)"
+#  text_project_name_inverse: "Eltern-Projekte (dh Projekte mit einem Link bis zu dem ausgew�hlten)"
+#  text_user_name: "Verbundbenutzer"
+#  text_group_name: "Verbundgruppen"
+#  text_associated_project: "Verbundprojekt"
+#  notice_user_finduse_no_project: "Es gibt kein Projekt auf die zugeh�rigen Benutzer \"%{value}\""
+#  text_finduse_project: "Liste der Objekte mit Projekt verbunden \"%{value}\""
+#  text_finduse_user: "Liste der assoziierten Objekte mit Benutzer \"%{value}\""
+#  text_finduse_pemodule: "Liste der Objekte mit zugeh�rigen Moduls \"%{value}\""
+#  notice_pemodule_finduse_no_project: "Es gibt kein Projekt der Associated Modul \"%{value}\""
+#  notice_project_finduse_no_project: "Es gibt kein Projekt verkn�pft (dh Teilprojekt) an die \"%{value}\" Projekt"
+#  notice_project_finduse_no_parent_project: "Die \"%{value}\" Projekt ist nicht auf-einem anderen Projekt verkn�pft (nie als Teilprojekt verwendet wird))"
+#  notice_project_finduse_no_user: "Es gibt keine Benutzer mit dem \"%{value}\" Projekt Assoziierteproject"
+#  notice_project_finduse_no_group: "Es gibt keine Gruppe der Associated \"%{value}\" Projekt"
+#  notice_no_active_module: "Kein Projekt ausgew�hlt Modul"
+#  title_hide_show_menu: "Men� einblenden / ausblenden"
+#  notice_attribute_category_successful_created: "Attribut-Kategorie wurde erfolgreich erstellt"
+#  notice_attribute_category_successful_updated: "Kategorie Attribut wurde erfolgreich aktualisiert"
+#  error_attribute_category_failed_update: "Ein Fehler ist aufgetreten, das auf die Aktualisierung."
+#  text_create_project_from_template: "Von der Liste unten, klicken Sie auf das Symbol Kopieren der Vorlage, um ein Wunschprojekt basierend auf sie zu schaffen."
+#  notice_pe_attribute_successful_created: "Attribut erfolgreich erstellt."
+#  notice_pe_attribute_successful_updated: "Attribut erfolgreich aktualisiert."
+#  text_index_permissions_guidance: "Listen Sie alle Berechtigungen (global und Projekt)"
+#  notice_end_of_estimation_execution: "Fertig stellen, um Module ausf�hren"
+#  label_project_name: "Projektname"
+#  label_project_version: "Version"
+#  label_permission_access: "Zugriff"
+#  error_group_failed_update: "Ein Fehler ist aufgetreten, das auf die Aktualisierung"
+#  organization_uow_complexity: "Arbeitseinheit Komplexit�ts"
+#  text_organization_uow_complexity: "M�gliche Werte verwendet Komplexit�t innerhalb der Arbeitseinheit"
+#  new_organization_uow_complexity: "Neue Organisation ARbeitseinheit (AE) Komplexit�t"
+#  notice_organization_uow_complexity_successful_updated: "Organisation Arbeitseinheit (AE) Komplexit�t wurde erfolgreich aktualisiert"
+#  notice_organization_uow_complexity_successful_created: "Organisation Arbeitseinheit (AE) Komplexit�t erfolgreich erstellt wurde"
+#  notice_organization_uow_complexity_successful_deleted: "Organisation Arbeitseinheit (AE) Komplexit�t wurde erfolgreich gel�scht"
+#  notice_organization_technology_successful_updated: "Technologie-Organisation wurde erfolgreich aktualisiert"
+#  notice_organization_technology_successful_created: "Technologie-Organisation wurde erfolgreich erstellt"
+#  notice_organization_technology_successful_deleted: "Technologie-Organisation wurde erfolgreich gel�scht"
+#  organization_unit_of_work: "Arbeitseinheit"
+#  text_organization_unit_of_work: "Arbeitseinheit in der Organisation verwendet"
+#  notice_unit_of_work_successful_updated: "Arbeitseinheit wurde erfolgreich aktualisiert"
+#  notice_unit_of_work_successful_created: "Arbeitseinheit wurde erfolgreich erstellt"
+#  notice_unit_of_work_successful_deleted: "Arbeitseinheit wurde erfolgreich gel�scht"
+#  new_unit_of_work: "Neue Arbeitseinheit(AE)"
+#  organization_abacus: "Abacus"
+#  text_organization_abacus: "Abacus der Organisation pro-Technologie"
+#  notice_subcontractor_successfully_created: "Subunternehmer wurde erfolgreich erstellt"
+#  notice_subcontractor_successfully_updated: "Subunternehmer wurde erfolgreich aktualisiert"
+#  notice_subcontractor_successfully_deleted: "Subunternehmer wurde erfolgreich gel�scht"
+#
+#  label_Project: "Projekt"
+#  label_filter_on_projects_version: "Filter f�r Projektversionen"
+#  label_filter_on_project_version_1: "Nur Bl�tter zeigen"
+#  label_filter_on_project_version_2: "Alle anzeigen"
+#  label_filter_on_project_version_3: "Nur Wurzel anzeigen"
+#  label_filter_on_project_version_4: "Nur die j�ngste anzeigen"
+#  label_ProjectArea: "Projektbereich"
+#  label_PlatformCategory: "Platform Kategorie"
+#  label_ProjectCategory: "Projekt Kategorie"
+#  label_AcquisitionCategory: "Acquisition Kategorie"
+#  label_WbsActivity: "Wbs Aktivit�t"
+#  label_Pemodule: "Modul"
+#  label_PeAttribute: "Attribut"
+#  label_WorkElementType: "Arbeitselementtyp"
+#  label_Organization: "Organisation"
+#  label_User: "Benutzer"
+#  label_Group: "Gruppe"
+#  send_feedback: "Senden Feedback"
+#  label_feedback_type: "Feedback Typ"
+#  notice_send_feedback: "Bitte geben Sie ein wenig Informationen �ber das Problem Sie wollen uns erz�hlen w�rde:"
+#  error_send_feedback_empty: "Bitte f�llen Sie alle Felder des Formulars"
+#  notice_send_feedback_success: "Ihre Anfrage wurde pr�fen"
+#  error_send_feedback_failed: "Beim Senden Ihrer Anfrage ist ein Fehler aufgetreten"
+#  error_validation_project: "Die Paare 'name/version "und" Alias/version' muss eindeutig sein"
+#  tooltip_state: "\"Definierte\" Datens�tze werden in schwarz, \"Entwurf\" in orange angezeigt wird, \"Ruhestand\" in rot"
+#  warning_project_state_to_rejected: "wenn Sie weiterhin dieses Projekt Version wird nicht �nderbar (%{value_b}) zu werden und nicht ableitbar."
+#  warning_project_state_to_released: "wenn Sie weiterhin dieses Projekt Version wird nicht modifizierbar geworden (%{value_b})."
+#  warning_project_state_to_checkpoint: "wenn Sie weiterhin dieses Projekt Version wird nicht �nderbar (%{value_b}), aber zusammenklappbaren werden."
+#  warning_project_state_to_inreview: "wenn Sie weiterhin (%{value_b})nur Benutzer mit Schreibzugriff_auf_inreview_Projekt Privileg  k�nnen dieses Projekt zu Version �ndern."
+#  warning_project_state_unusual: "Das ist ungew�hnlich, um vom Zustand %{value_a} zum %{value_b} verpflichten
+#  warning_project_state_unnormal: "Das ist nicht normal, um vom Zustand %{value_a} zum %{value_b} verpflichten."
+#  confirm: "K�nnen Sie best�tigen...?"
+#  error_project_state: "Entschuldigung... diese Transaktion ist nicht m�glich!"
+#  warning_project_cannot_be_deleted: "Projekt mit diesem Zustand kann nicht gel�scht werden"
+#  label_project_history: "Geschichte"
+#  label_activate_project: "Aktivieren"
+#  label_find_use_project: "Verwendung finden"
+#  label_promote_project: "Unterst�tzen"
+#  label_checkout_project: "Abmeldung"
+#  label_duplicate_project: "Duplikat"
+#  label_collapse_project: "Kollabierten Version(en) wird entfernt. M�chten Sie ausgew�hlte Version(en) des Projekts zusammenbrechen?"
+#  button_collapse_project: "Collapse Projektversion"
+#  warning_project_cannot_be_checkout: "Nur Projekt in 'Checkpoint' und 'freigegeben' Status k�nnen Abmeldung sein
+#  warning_project_state_from_checkpoint_release_rejected: "Projekt in '%{state}'kann nicht aus dieser Ansicht operation�ndert werden. Bearbeiten Sie die Projekt globalen Eigenschaften, die Projektstaaten zu f�rdern."
+#  notice_successful_collapse_project_version: "Projekt gew�hlte Version(en) wurden erfolgreich gel�scht"
+#  project_is_not_collapsible: "Projekt '%{project_title_version}' ist nicht zusammenklappbar.\n\n"
+#  collapsible_project_only: "Nur in Projekt 'Checkpoint' Staat k�nnte zusammengelegt werden."
+  warning_no_show_permission_on_project_status: "You do not have the right to show this project to its current status"
+  warning_no_edit_permission_on_project_status: "You do not have the right to edit/modify this project to its current status"
+  warning_no_delete_permission_on_project_status: "You do not have the right to delete this project to its current status"
+#
+#  #new added translations
+#  audit_users_activities: "Benutzer-Aktivit�ten"
+#  audit_element_type: "Elementtyp"
+#  audit_element_id: "Element-ID"
+#  audit_action: "Aktion"
+#  audit_changes: "�nderungen"
+#  audit_user: "Schreiber"
+#
+#  warning_checkout_unauthorized_action: "Nicht autorisierte Aktion: Sie versuchen, Abmeldung Projekt, das Sie nicht haben, die erforderlichen Berechtigungen."
+#  record_not_found_password_reset_token: "Benutzer mit dem generierten Passwort nicht finden konnte zur�ckgesetzt Token. \n\n Bitte �berpr�fen Sie die zuletzt empfangenen E-Mail"
+#  select_at_least_one_project: "Sie m�ssen mindestens ein Projekt zur Aktion ausf�hren w�hlen."
+#  warning_not_allow_to_create_new_branch_of_project: "Sie haben nicht die Berechtigung, neue Zweig dieses Projekt zu erstellen"
+#  project_is_activated: "Projekt '% {project_title}' erfolgreich aktiviert."
+#  defined_language_not_deletable: "Definierte Sprache ist nicht l�schbar"
+#  leave_it_blank_if_no_change: "leer lassen, wenn Sie nicht wollen es �ndern"
+
+  label_balancing_attribute: "Select balancing attribute"
+  text_select_balancing_attribute: "Select balancing attribute"
+  text_balancing_value: "Balancing value"
+  text_please_select_balancing_attribute: "Please select a balancing attribute"
+  measuring_units: "measuring units"
+  label_cancel_my_account: "Cancel my account"
+  label_confirm_my_account: "Confirm my account"
+  mail_confirm_account_through_link_below: "You can confirm your account email through the link below:"
+  mail_if_dont_request_ignore_this_email: "If you didn't request this, please ignore this email."
+  mail_password_wont_change_until_access_above_link: "Your password won't change until you access the link above and create a new one."
+  label_change_your_password: "Change your password"
+  label_change_my_password: "Change my password"
+  label_unlock_my_account: "Unlock my account"
+  label_resend_unlock_instructions: "Resend unlock instructions"
+  text_link_unlock_your_account: "Click the link below to unlock your account:"
+  mail_your_account_has_been_locked: "Your account has been locked due to an excessive number of unsuccessful sign in attempts."
+  current_password: "Current password"
+  new_password: "New password"
+  confirm_new_password: "Confirm your new password"
+  text_need_current_password_to_confirm_change: "we need your current password to confirm your changes"
+  text_forgot_your_password: "Forgot your password?"
+  label_send_me_reset_password_instructions: "Send me reset password instructions"
+  mail_someone_has_requested_link_change_password: "Someone has requested a link to change your password. You can do this through the link below."
+  text_ask_connect_to_estimancy_via_google: "Do you agree to connect to Estimancy using your Google account?"
+  text_sign_in_with: "Sign in with"
+  text_almost_done_provide_password_to_finish: "You are almost Done! For a first connection, please provide a password to finish setting up your account. You can also modify the connexion id if needed."
+  text_measuring_units: "Measuring units"
+  number_hours_per_day: "Number hours per day"
+  number_hours_per_month: "Number hours per month"
+  cost_unit: "Cost unit"
+  cost_per_hour: "Cost per hour"
+  notice_measuring_units_successfully_updated: "Organization measuring units were successfully updated"
+  notice_errors_on_measuring_units_update: "Error when updating organization measuring units"
+  unit_effort_person_month: "Man/Month"
+  unit_effort_person_hour: "Man/Hour"
+  unit_end_date: "Date"
+  unit_delay: "Hours"
+  unit_staffing: "Persons"
+  unit_sloc: "Lines of code(kilo)"
+  unit_sloc: "Lines of code"
+  title_input_data_factors: "%{module_name} : input data factors"
+  effort_person_hour: "Effort man/hours"
+  effort_person_month: "Effort man/months"
+  effort_person_week: "Effort man/weeks"
+  sloc: "sloc"
+  sloc: "SLOC"
+  size: "Size"
+  cost: "Cost"
+  delay: "Delay"
+  end_date: "End Date"
+  staffing: "Staffing"
+  duration: "Duration"
+  complexity: "Complexity"
+  staffing_complexity: "Staffing complexity"
+  effective_technology: "Effective technology"
+  schedule: "Schedule"
+  defects: "Defects"
+  note: "Note"
+  methodology: "Methodology"
+  real_time_constraint: "Real-time Constraint"
+  platform_maturity: "Platform Maturity"
+  list_sandbox: "Sandbox List"
+  date_sandbox: "Sandbox Date"
+  integer_sandbox: "Sandbox Integer"
+  float_sandbox: "Sandbox Float"
+  description_sandbox: "Sandbox Description"
+  iso_code: "ISO code"
+  iso_code_number: "ISO code number"
+  currency_sign: "Sign"
+  conversion_rate: "Conversion rate"
+  select_technology: "select technology"
+  select_uow: "select unit of work"
+  number_precision: "Number precision"
+  profile: "Profile"
+  profiles: "Profiles"
+  new_profile: "New profile"
+  edit_profile: "Edit the \"%{value}\" profile ..."
+  warning_profile_cant_be_edit: "This profile can not be edited, previous changes have not yet been validated."
+  notice_profile_successful_created: "Profile was successfully created."
+  notice_profile_successful_updated: "Profile was successfully updated."
+  error_profile_failed_update: "Error when updating the profile."
+  error_profile_failed_create: "Error when creating the profile."
+  notice_profile_successful_deleted: "Profile was successfully deleted."
+  defined_profile_not_deletable: "Defined profile is not deletable."
+  creator: "Creator"
+  organization_profiles: "Organization profiles"
+  profils_per_activity: "Profils per activity"
+  organization: "Organization"
+  wbs_ratio_per_profile: "Ratio per profile"
+  total_ratio_per_activity: "Sum of ratio values per activity (%)"
+  warning_sum_of_ratio_values_greater_than_100: "Warning : sum of activity's ratio values is greater than 100 !"
+  no_profiles_for_wbs_activity_organization: "There is no selected profile for the current WBS activity"
+  display_results_with_profiles: "Display results with profiles"
+  tooltip_results_with_profiles: "Display the WBS-Activities results by profile"
+  label_output_data_with_activities_profiles: "Estimation results : activities per profile"
+  label_ratio: "a ratio"
+  label_wbs_activity: "a WBS-Activity"
+  probable: "Probable"
+  new_size_unit_type: "New size unit type"
+  type: "Type"
+  new_technology: "New technology"
+  edit_technology: "Edit the \"%{value}\" technology ..."
+  new_pbs_product: "New component"
+  project_default_ratio: "Project's default ratio"
+  no_default_ratio: "No default ratio"
+  button_duplicate_organization: "Duplicate organization"
+  organization_successfully_copied: "Organization was successfully copied"
+  errors_when_copying_organization: "Errors when copying organization"
+  profile_categories: "Profile categories"
+  profile_category: "Profile category"
+  edit_profile_category: "Edit the \"%{value}\" profile category ..."
+  new_profile_category: "New profile category"
+  warning_profile_category_cant_be_edit: "This profile category can not be edited, previous changes have not yet been validated."
+  notice_profile_category_successful_created: "Profile category was successfully created."
+  notice_profile_category_successful_updated: "Profile category was successfully updated."
+  notice_profile_category_successful_deleted: "Profile category was successfully deleted."
+  or_create_new_profile_category: "Create new profile category"
+  select_profile_or_fill_text_fields: "Select a profile or please fill text fields bellow"
+  projects_states: "Estimations states"
+  text_user_associated_projects_states: "Associated estimations's states (states of estimations in which the user has access)"
+  estimations_statuses: "Estimations statuses"
+  manage_estimations_statuses_workflow: "Manage estimations statuses workflow"
+  manage_estimations_statuses_roles : "Manage roles according to the status of the estimate"
+  new_estimation_status: "New estimation status"
+  edit_estimation_status: "Edit the \"%{value}\" estimation status ..."
+  status_number: "Status number"
+  notice_estimation_status_successful_updated: "Estimation status was successfully updated"
+  notice_estimation_status_successful_created: "Estimation status was successfully created"
+  notice_estimation_status_successful_deleted: "Estimation status was successfully deleted"
+  notice_estimation_status_successful_saved: "Estimation status was successfully saved"
+  notice_successful_cancelled: "Your changes were cancelled"
+  text_explain_estimation_status_workflow: "For each status column, you can check the statutes for which the transition is possible to that status"
+  text_explain_estimation_status_group_roles: "For each group of users in a column, you can define access rights depending on the status of the estimate"
+  label_see_project_status: "Show"
+  label_show_project_status: "Consult"
+  label_edit_project_status: "Edit"
+  label_delete_project_status: "Delete"
+  status_color: "Associated color"
+  groups_and_roles: "Groups and roles"
+  text_invalid_status_alias:  "Invalid alias: No empty spaces and no accent"
+  warning_estimation_status_cannot_be_deleted: "The \"%{value}\" status cannot be deleted, it is used by one or more estimations"
+  warning_organization_cannot_be_deleted: "The \"%{value}\" organization cannot be deleted, it is used by one or more estimations"
+  user_need_at_least_one_organization: "Please create your first organization before continue"
+  label_add_status_change_comment: "Status management - Add comment"
+  notice_comment_status_successfully_updated: "Comment on estimation status change is successfully updated"
+  change_estimation_status_from_to: "Status changed from \"%{from_status}\" to \"%{to_status}\" by %{current_user_name}"
+  views_widgets: "Views & Widgets"
+  label_view: "View"
+  label_widget: "Widget"
+  configure_views_widgets: "Configure views and widgets to display estimation results"
+  new_view: "New view"
+  edit_view: "Edit the \"%{value}\" view ..."
+  view_successfully_created: 'View was successfully created.'
+  view_successfully_updated: 'View was successfully updated.'
+  new_widget: "New widget"
+  edit_widget: "Edit the \"%{value}\" widget ..."
+  widget_successfully_created: 'Widget was successfully created.'
+  widget_successfully_updated: 'Widget was successfully updated.'
+  widgets: "Views"
+  widgets: "Widgets"
+  views_widgets_parameters: "Views & Widgets parameters"
+  selected_view: "Selected view"
+  title_hide_results_view: "Hide the \"%{value}\" module results view"
+  title_show_results_view: "Show the \"%{value}\" module results view"
+  delete_widget: "Delete the \"%{value}\" widget ..."
+  delete_view: "Delete the \"%{value}\" view ..."
+  label_add_new_view_widget: "Add new widget"
+  label_widget_type: "Widget type"
+  associated_attribute: "Associated attribute"
+  width: "Width"
+  height: "Height"
+  show_min_max: "Show Min/Max values"
+  show_wbs_activity_ratio: "Show selected Ratio"
+  ratio: "Ratio"
+  widget_size: "Widget size W x H : "
+  label_update_view_widgets_order: "Save view"
+  preview_selected_wbs_activity: "Preview of the selected wbs-activity"
+  phases: "Phases"
+  effort_per_phase: "Effort per phase"
+  cost_per_phase: "Cost per phase"
+  cost_hour: "Cost %{value}/hour"
+  effort_per_phases_and_profiles: "EFFORT PER PHASES AND PROFILES"
+  cost_per_phases_and_profiles: "COST PER PHASES AND PROFILES"
+  show_name: "Show name in widget"
+  no_group_in_organization: "There is no group in the '%{value}' organization"
+  custom_fields: "Custom fields"
+  new_field: "New custom field"
+  inputs: "Inputs"
+  outputs: "Outputs"
+  no_wbs_activity_in_project: "There is wbs-activity in project"
+  used_view: "Display view used : %{value}"
+  online_support: "Online support "
+  live_chat_support: "Live chat support "
+  see_consultants: "See consultants "
+
+  #label for Search results display
+  label_OrganizationProfile: "Profile"
+  label_EstimationStatus: "Estimation statuses"
+  label_UnitOfWork: "Units of work"
+  label_Field: "Custom Fields"
+  label_OrganizationUowComplexity: "Factor complexities"
+  label_ProjectField: "Project field"
+  label_OrganizationTechnology: "Technology"
+  label_Factor: "Factor"
+  label_SizeUnit: "Size unit"
+  label_SizeUnitType: "Size unit type"
+  label_Subcontractor: "Subcontractor"
+  "label_Guw::GuwModel": "Generic unit of work model"
+
+  work_unit_type: "Unit of work type"
+  cotation: "Cotation"
+  technology: "Technology"
+  tracability: "Tracability"
+  results: "Results"
+  retained_result: "Retained"
+  actions: "Actions"
+  no_uo_type: "You havent unit of works types"
+  weight: "Weight"
+
+  help_text: "Help text"
+  notice_cannot_view_project_securities_levels: "You don't have the rights to view the securities levels"
+  notice_cannot_view_organization_fields: "You don't have the rights to view the organization's fields"
+  notice_cannot_view_organization_super_admin_permissions: "You don't have the rights to view the organization's permissions"
+  notice_cannot_view_global_permissions: "You don't have the rights to view the global permissions"
+  notice_cannot_view_master_permissions: "You don't have the rights to view the master permissions"
+  notice_cannot_view_estimations_permissions: "You don't have the rights to view the estimations permissions"
+  notice_cannot_view_wbs_activities: "You don't have the rights to view the WBS Activities"
+  notice_cannot_view_groups: "You don't have the rights to view the groups"
+  notice_cannot_view_organization_profiles: "You don't have the rights to view the organization's profiles"
+  notice_cannot_view_organization_attributes: "You don't have the rights to view the attributes"
+  notice_cannot_view_project_areas: "You don't have the rights to view the project areas"
+  notice_cannot_view_project_categories: "You don't have the rights to view the project categories"
+  notice_cannot_view_platform_categories: "You don't have the rights to view the platform categories"
+  notice_cannot_view_work_element_types: "You don't have the rights to view the work element types"
+  notice_cannot_view_acquisition_categories: "You don't have the rights to view the acquisition categories"
+  notice_cannot_view_organization_technologies: "You don't have the rights to view the technologies"
+  notice_cannot_view_unit_of_works: "You don't have the rights to view the unit of works"
+  notice_cannot_view_size_unit_types: "You don't have the rights to view the size unit types"
+  notice_cannot_view_subcontractors: "You don't have the rights to view the subcontractors"
+  notice_cannot_view_factors_complexities: "You don't have the rights to view the factors complexities"
+  notice_cannot_view_estimation_statuses: "You don't have the rights to view the estimation's statuses"
+  notice_cannot_delete_widgets: "You don't have the rights to delete the widgets"
+  notice_cannot_view_organization_users: "You don't have the rights to view the users"
+  notice_cannot_view_modules_permissions: "You don't have the rights to view the modules permissions"
+  notice_cannot_view_organization_users: "You don't have the rights to view the users"
+  notice_cannot_view_modules_instances: "You don't have the rights to view the modules instances"
+  warning_no_modify_permission_on_project_status: "You don't have the rights to modify the estimation in its actual status"
+
+  is_image_organization: "Is an image organization ?"
+  new_organization_from_image: "Create organization from image"
+  coefficient: "Coefficient"
+  label_organization_name: "Organization name"
+  label_organization_image: "Image organization"
+  label_change_password_required: "change password required"
+  label_login: "Login"
+  label_request_create_organization: "Request to create an organization from image"
+  object_type: "Object type"
+  organization_permissions: "Organization's permissions"
+  estimations_permissions: "Estimations permissions"
+  modules_permissions: "Modules permissions"
+  is_super_admin: "Is a super administrator user ?"
+  text_help_super_admin: "A super administrator user has full rights to the entire application and all organizations"
+  create_organization_confirmation_instructions: "Hello %{firstname} %{lastname} \n
+                                                         Your temporary password is « %{password} », you will be prompted to change it when you first logged in, you will also be asked to complete the organizational setting of « %{organization_name} ». \n
+                                                         Your login name « %{login_name} » for the « %{organization_name} » organization has been created, thank you log in with the following url: %{connexion_url} to continue. \n Good reception"
+  change_estimation_status: "Change estimation's status"
+  comment_history: "Comment history"
+  estimation_models: "Estimation models"
+  notice_cannot_view_estimation_models: "You don't have the rights to view the estimation models"
+  new_estimation_model: "Create new estimation model"
+  estimation_models: "Estimation models"
+  label_model_name: "Model name"
+  text_find_use_estimation_model: "List of estimations created from the \"%{model_name}\" model"
+  notice_no_estimation_created_from_model: "There is no estimation created from the \"%{model_name}\" model"
+  text_confirm_estimation_model_deletion: "Are you SURE you want to delete this Estimation Model and all related data ?"
+  label_model_user_security_resume: "User securities resume of estimation created from this model"
+  label_model_group_security_resume: "Group securities resume of current model"
+  estimation_creator_from_model: "Creator of estimation from this model"
+  text_create_from_model: "Create project from the \"%{model_name}\" template"
+  model_securities: "Permissions on the model"
+  securities_for_generated_project: "Permissions for the generated estimation"
+  update_password_first_connexion: "You must change your password during your first connection"
+  update_email_login_password: "Update email / login / password"
+  text_your_password_message: "Your current password is: \"%{password}\". You must change it the first time you log into the application. "
+  you_have_no_right_to_continue: "You do not have the necessary rights to continue. \n Thank you to contact the administrator of the application."
+  views: "Views"
+  estimation_created_by: "Estimate created by \"%{username}\" "
+  estimation_created_from_model_by: "Estimation created from the \"%{model_name}\" model by \"%{username}\" "
+  estimation_created_from_estimation_by: "Estimation created from the \"%{estimation_name}\" estimation by \"%{username}\" "
+  associated_module: "Associated module"
+  view_config: "view configuration"
+  save_as: "Save as"
+  current_view: "Current view"
+  default_view: "Default view"
+  define_as_default_view: "Define as default view"
+  change_current_view: "Use a referenced view"
+  save_as_another_view: "Reference this view"
+  label_save: "Save"
+  view_name: "View name"
+  view_description: "View description"
+  current_version: "Current version"
+  new_version: "New version"
+  change_estimation_version_from_to: "Version changed from \"%{from_version}\" to \"%{to_version}\" by %{current_user_name}\" "
+  label_available_columns: "Available Columns"
+  label_selected_columns: "Selected Columns"
+  label_all_columns: "All Columns"
+  field_column_names: "Columns"
+  select_columns_list: "Select columns for list"
+  label_date: "Date"
+  label_start_date: "Start date"
+  text_confirm_organization_deletion: "Attention, confirm the deletion of the organization \"%{organization_name}\" and its contents. No recovery will be possible"
+  warning_need_organization_check_box_confirmation: "You need to confirm organization deletion with check-box"
+  organization_copied_by: "copy made by \"%{username}\" "
+  label_definition: "Definition"
+  notice_cannot_view_views_and_widgets: "You don't have the rights to show the widgets's views"
+  notice_cannot_view_selected_columns_list: "You don't have the rights to view projects selected columns list"
+  original_model: "Original model"
+  is_used_view: "View used ?"
+  displayed_data: "Displayed data"
+  is_archive_status: "Archive status or end of workflow"
+  archive_status: "Archive status"
+  only_one_archive_status_possible: "It is not possible to define more than one archive status in the same organization"
+  dont_archive_last_project_versions: "Don't archive last project's versions ?"
+  archive_last_project_versions: "Archive the previous version(s) ?"
+  new_project_versions: "For <strong>new</strong> versions : automatic status change"
+  last_project_versions_will_be_archived: "When creating a new version of an estimate, the older versions of this estimate will be automatically archived if you tick this box"
+  warning_edit_instance_module: "Attention: When you change the module's configuration, all estimates which have been construct with the module are subject to get the change you do in the module, even if the estimates are already done and saved."
+  duplicate_module: "Duplicate module"
+  staffing_duration: "Duration (%{unit})"
+  import_generic_effort_model: "Import the generic effort model (Excel file)"
+  wbs_modules: "WBS modules"
+  effort_modules: "Effort modules"
+  team_modules: "Team modules"
+  expert_judgement_modules: "Expert judgement modules"
+  kb_modules: "Knowledge base modules"
+  team_modules: "Team modules"
+  uo_modules: "UO modules"
+  operation_modules: "Operation Modules"
+  select_wbs_activity_profiles: "Select profiles to be considered in the WBS activity"
+  select_factor_value: "Please select a value for each factor"
+  data_filename: "Data filename : %{filename}"
+  factor_list: "List of factors"
+  factor_values: "Factor values"
+  value_text: "Text"
+  value_number: "Value"
+  there_is_no_factor_values: "There is no factor value"
+  scale_prod_help: "Scale-Prod signification : \nP type factor (Productivity) => coefficient \nS type factor (Scale) => exponent \nC type factor (conversion) => multiplier"
+  export_generic_effort_model: "Export the generic effort model"
+  factor_type: "Factor type"
+  short_name: "Short name"
+  long_name: "Long name"
+  advice_ge: "Caution: Do not modify the cells with bold font, that may cause problem for the file importation in the application.\nFor more advice: http://forge.estimancy.com/projects/pe/wiki/"
+  any_factor: "Any factor"
+  leave_blank_if_use_factor_data: "leave it blank if factor data is used"
+  delete_factors_data: "Delete factors data"
+  error_message_not_found_1: "The page you were looking for doesn't exist (404)."
+  error_message_not_found_2: "You may have mistyped the address or the page may have moved."
+  error_failed_to_delete_factors: "Failed to delete factors and associated values"
+  enabled_theorical_effort_modification: "Authorise theorical effort modification"
+  factors_setting: "Factors setting"
+  import_factors_setting: "Import the factors for configuration"
+  import_instance_model: "Import an instance of the model"
+  enter_size_in: "Input size (%{parameter})"
+  enter_effort_in: "Input effort (%{parameter})"
+  cal_size_for: "Calculated size (%{parameter})"
+  cal_effort_for: "Calculated effort (%{parameter})"
+  label_add_new_widget_comment: "Add new text widget"
+  widget_comment: "Comment"
+  new_widget_comment: "New comment"
+  update_widget_comment: "Update comment"
+  module_input_attribute: "Module input attribute"
+  module_output_attribute: "Module output attribute"
+  select_module_input_attribute: "Select module input attribute"
+  select_module_output_attribute: "Select module output attribute"
+  p_factors_calculation_method: "P (multiplier) factors calculation method"
+  c_factors_calculation_method: "C (Conversion) factors calculation method"
+  s_factors_calculation_method: "S (Scale) factors calculation method"
+  d_factors_calculation_method: "D (Defect) factors calculation method"
+
+  input_size_unit: "Input size unit label"
+  output_size_unit: "Output size unit label"
+  input_effort_unit: "Input effort unit label"
+  output_effort_unit: "Output effort unit label"
+  input_effort_standard_coef_conv: "Input effort standard unit coefficient"
+  output_effort_standard_coef_conv: "Output effort standard unit coefficient"
+  inputs_unit: "Inputs unit : "
+  outputs_unit: "Outputs unit : "
+  input_output_size: "Size I/O : "
+  input_effort: "Input effort : "
+  output_effort: "Output effort : "
+  d_factors_calculation_method: "D (Defect) factors calculation method"
+  project_not_found: "Project not found !"
+  error_resource_not_found: "The resource is not found !"
+  use_base_100: "Use the base 100"
+  use_real_base_percentage: "Use the values ​​of real base percentage"
+  project_area_edition: "Edit project area"
+  project_category_edition: "Edit project category"
+  platform_category_edition: "Edit platform category"
+  acquisition_category_edition: "Edit acquisition category"
+  work_element_type_edition: "Edit work element type"
+  technology_edition: "Edit technology"
+  technologies: "Technologies"
+  estimation_status_edition: "Edit estimation status"
+  organization_profiles_edition: "Edit organization profile"
+  field_edition: "Edit custom field"
+  error_profile_failed_created: "Error: profile creation failed"
+  project_security_level_edition: "Edit security level"
+  profiles_list: "list of profiles"
+  profile_edition: "Edit profile"
+  edit_admin_setting: "Edit admin setting"
+  auth_method_edition: "Edit authentication method"
+  auth_methods_list: "List of authentication methods"
+  maintenance_message: "Maintenance message"
+  actions_history: "History of actions"
+  attributes_list: "Attributes list"
+  pe_attribute_edition: "Edit attribute"
+  modules_list: "Modules list"
+  permissions_list: "Permissions list"
+  permission_edition: "Edit permission"
+  languages_list: "Languages list"
+  language_edition: "Edit language"
+  calculate_save: "Calculate and Save"
+  calculated_value: "Calculated"
+  retained_value: "Retained"
+  calculated_effort: "Calculated effort"
+  initial_calculated_effort: "Initial calculated effort"
+  retained_effort: "Retained effort"
+  calculated_cost: "Calculated cost"
+  retained_cost: "Retained cost"
+  allow_modify_retained_effort: "Allow to modify retained effort"
+  allow_modify_ratio_value: "Allow to modify ratio values"
+  allow_modify_ratio_reference: "Allow to modify ratio references"
+  allow_add_new_phase: "Allow to add new phases"
+  new_mp_ratio_element: "New WBS-Activity element"
+  create_mp_ratio_element: "Add new phase"
+  initial_label_ratio_value: "Initial ratio value"
+  hide_results_global_view: "Hide overview"
+  show_results_global_view: "Show overview"
+  save_modifications: "Save modifications"
+  is_optional: "Is optional"
+  initialize_calculation: "Initialize the calculation"
+  comments: "Comments"
+  new_estimation_model: "New estimation model"
+  create_new_estimation_model: "Create new estimation model"
+  edit_estimation_model: "Edit estimation model \"%{value}\""
+  do_not_show_phases_with_zero_value: "Do not show phases where ratained effort is zero"
+  is_used_in_ratio_calculation: "Is used in Ratio calculation"
+  do_not_show_cost: "Do not show cost"
+  effort_display_unit: "Effort display unit"
+  organization_effort_unit: "Use the %{value} organization effort unit"
+  module_instance_effort_unit: "Use the module instance effort unit"
+  select_associated_attribute: "Select associated attribute"
+  duplicate_ratio: "Duplicate ratio"
+  wbs_activity_profiles: "Profiles to be considered in the WBS activity"
+
+  created_date: "Created date"
+  label_Guw_model: "Generic unit of work module"
+  knowledge_base_module: "Module Base de connaissance"
+  knowledge_base_module: "Knowledge base module"
+  operation_module: "Operation module"
+  team_module: "Team module"
+  Judgment_Expert_module: "Expert judgment module"
+  wbs_activities_module: "WBS Activities module"
+  calculate_button: "Calculate"
+  results_button: "Results"
+  subscription_end_date: "Subscription end date"
+  value_low: "Low value"
+  value_most_likely: "Most likely value"
+  value_high: "High value"
+  value_probable: "Probable value"
+  initial_input_value: "Initial input Effort"
+  retained_input_value: "Retained input Effort"
+  transform_size_and_effort: "Transform Size and Effort attributes"
+  display_size_and_effort_attributes: "Display in I/O Size and Effort attributes"
+  ge_effort: "Effort"
+  ge_size: "Size"
+  associate_inputs_with_outputs: "Associating the input attributes of \"%{current_mp}\" with the output attributes of preceding modules"
+  change_module_project_instance: "Change the module instance"
+  formula: "Formula"
+  wbs_phase_formula: "Calculation formula"
+  label_add_new_kpi_widget: "Add new KPI widget"
+  label_parameters: "Settings"
+
+  new_widget_kpi: "New KPI widget"
+  estimations_counter: "Estimations counter"
+
+  entree1: "Input 1"
+  entree2: "Input 2"
+  entree3: "Input 3"
+  entree4: "Input 4"
+
+  sortie1: "Output 1"
+  sortie2: "Output 2"
+  sortie3: "Output 3"
+  sortie4: "Output 4"
+
+  ge_model_input_size_in: "Taille en entrée"
+  ge_model_output_size_in: "Taille calculée"
+  ge_model_input_effort_in: "Effort en entrée"
+  ge_model_output_effort_in: "Effort calculé"
+
+  ge_standard_coefficient: "Coefficient"
+  ge_model_instance_mode: "Instance mode"
+
+  warning_zero_estimations_counter: "Be careful, the estimates counter on your organization's subscription account is zero.\n Please contact the administrator of your account to renew your subscription."
+  warning_minimum_estimations_counter: "Be careful, you only have %{counter} estimates on the subscription account of your organization"
+  ge_model_instance_mode: "Instance mode"
+  is_modifiable: "Is modifiable"
+  new_input_attribute: "New input attribute"
+  profiles_list: "List of profiles"
+  copy_in_progress: "Copy in progress..."
+
+  is_new_status: "Is the default status of new estimation version "
+  warning_intermediate_project_version_cannot_be_deleted: "Cannot delete an intermediate version."
+  multiple_delete: "Multiple deletion"
+  hide_wbs_header: "Masquer l'entête de la WBS"
+  effort_is_modifiable: "Effort is modifiable"
+  cost_is_modifiable: "Cost is modifiable"
+  phase_short_name: "Phase short name"
+  wbs_calculate_button_is_disabled: "You must add a comment to each modified phase in order to start the calculation"
+  comment_required_if_modifiable: "Comments is required if phase is modifiable"
+  comment_required_on_phase: "Please enter a comment for modified values ​​for each phase"
+  warning_already_exist: "already exists"
+  average_rate_wording: "'Average rate' wording (TJM, THM, ...)"
+  identical_project_field_exists: "An identical favorite field already exists for this project"
+  already_exists: "Already exists"
+  module_instance_name_already_exists: "An instance with the same name already exists"
+  comment_required_if_modifiable: "Comments is required if phase is modifiable"
+  headband_title: "Headband title"
+  number_of_uw_lines: "Number of lines."
+  number_of_uw_modifies_lines: "Number of modified lines"
+  number_of_uw_selected_lines: "Number of selected lines"
+  value_not_taken_in_account: "Value not taken into account"
+
+  #Provider / fournisseur
+  provider: "Provider"
+  providers: "Providers"
+
+  edit_provider: "Edit the \"%{value}\" provider"
+  new_provider: "New provider"
+  provider_edition: "Edit provider"
+  notice_cannot_view_providers: "You don't have the rights to view the providers"
+  request_number: "Request number"
+  notice_provider_successful_created: "Provider was successfully created"
+  notice_provider_successful_updated: "Provider was successfully updated"
+  notice_provider_successful_deleted: "Provider was successfully deleted"
+  prefix_quotation_number: "Prefix quotation number"
+  automatic_quotation_number: "Automatic and incremental quotation number"
+  label_automatic_quotation_number: "Incremental number"
+  use_automatic_quotation_number: "Use automatic estimation name for estimations created from this model"
+  show_tjm: "Show TJM"
+  only_numeric: "Only numeric values ​​are allowed"
+  current_estimation_does_not_exists: "There is no current estimation"
+  show_hide_wbs_header: "Show / Hide WBS header"
+  show_only_ratio: "Show only the ratio selection "
+  hide_all: "Hide WBS header"
+  show_all: "Show WBS header"
+
+  security_audit_management: "Security audit management"
+  security_audit_utilities: "Security audit utilities"
+  common_data_integrity: "Common data integrity"
+  audit_create: "Creation"
+  audit_update: "Update"
+  audit_destroy: "Deletion"
+  audit_delete: "Deletion"
+  audit_User: "User"
+  audit_Group: "Group"
+  audit_GroupsUsers: "Group / Users"
+  audit_PermissionsProjectSecurityLevels: "Permission / Security levels"
+  audit_GroupsPermission: "Group / Permissions"
+  audit_ProjectSecurityLevel: "Security level"
+  audit_OrganizationsUsers: "Organization / Users"
+  audit_EstimationStatusGroupRole: "Statut / Groups / Security levels"
+  audit_ProjectSecurity: "Group / Security levels"
+  audit_ProjectSecurityGroup: "Group / Security levels"
+  audit_ProjectSecurityUser: "User / Security levels"
+  audit_estimation_models_permissions: "Estimation model autorizations"
+  audit_estimations_permissions: "Estimation autorizations"
+  audit_UserGroups: "Group / Users"
+  audit_UserOrganizations: "Organization / Users"
+
+  estimation_status: "Estimation status"
+  audit_OrganizationUser: "User / Organizations"
+  audit_GroupUser: "User / Groups"
+  create_event: "Adding"
+  delete_event: "Removal"
+  audit_PermissionGroup: "Group / Permissions"
+  audit_GroupPermission: "Group / Permissions"
+  audit_PermissionProjectSecurityLevel: "Security level / Permissions"
+  audit_ProjectSecurityProject: "Project / Project securities"
+  export_pdf: "Export to PDF"
+  report_management: "Custom report management"
+  create_new_version_when_status_changed: "Create new version when status changed"
+  change_before: "before changing status"
+  change_after: "after changing status"
+  is_protected_group: "Is a protected group ?"
+  is_ignored: "Ignore the application"
+  ignored_application: "Ignored application"
+
+  please_wait: "Veuillez patienter..."
+  calculation_modules: "Calculation modules"
+  allowed_statuses: "Allowed statuses"
+  associated_status: "Associated Status"
+  validation_text: "Validation text"
+  label_modules: "Modules"
+  default_estimations_sort_params: "Default sort parameters for estimates list"
+  default_estimations_sort_column: "Default sort column"
+  default_estimations_sort_order: "Default sort order"
+  asc_order: "Ascending"
+  desc_order: "Descending"
+  show_module_name: "Show module name"
+
+  text_automatic_created_version: "Version automatically created by the version change automation."
+  text_automatic_changed_status: "Automatic change of status of old versions when versioning"
+  error_generating_auto_estimation_number: "Error when automatically generating the estimate number"
+  from: "from"
+  to: "to"
+  by: "by"
+  text_new_status: "New status"
+  text_project_duplication_of: "This project is a duplication of project"
+  status_change_automation: "The status change automation"
+
+  default: "Default value"
+  color_code: "Color"
+  color_priority: "Color Priority"
+  wbs_for_config: "WBS for configuration"
+  use_real_profiles: "Use real profiles"
+  calculate_mixed_profiles: "Calculate mixed profiles"
+  is_real_profile: "Is real profile"
+  associated_services: "Associated services"
+  used_cost: "Used cost"
+  select_profile_associated_services: "Select the profile associated services"
+  use_dynamic_coefficient: "Use dynamic coefficient"
+  default_display_value: "Default display value"
+  initial_cost_per_hour: "Initial cost"
+  new_project_data_widget: "Add new project data widget"
+  project_attribute_name: "Project attribute name"
+  coefficient_name: "Coefficient name"
+  coefficient_value: "Coefficient value"
+  coefficient_label: "Coefficient label"
+  criticality: "Criticality"
+  past_projects_effort: "Effort of past projects"
+  creation_order: "Creation order"
+  show_results_view: "Show results view"
+  associated_module_projects: "Associated module_projects"
+  is_label_widget: "Label widget?"
+  is_kpi_widget: "KPI widget?"
+  use_organization_effort_unit: "Use organization effort unit"
+  is_project_data_widget: "Project's data widget?"
+  import_estimation_model: "Import estimation model"
+  original_model_version: "Original model version"
+  status_comment: "Comments on status changed"
+  nb_module_projects: "Number of instanciated modules"
+  selected_application: "Selected application"
+  show_coefficient_label: "Show coefficient label"
+  show_coefficient_application_label: "Show application label"
+  additional_description: "Additional description"
+
+  unit_of_work_types: "Unit of Work Types"
+  weight_b: "Ordinate at origin"
+  is_historization_status: "Status to historicize"
+  nb_day_before_historization: "Nb days before historization since estimate creation"
+  is_historized: "Is historized"
+  historization_time: "Historization date"
+  expected_historization_time: "Expected date of historization"
+  notification_emails: "Email for notifications"
+  historized_estimations: "Historized estimations"
+  display_historized: "Display all"
+  hide_historized: "Hide historized"
+  user_deleted_replaced_by_anonymous: "User deleted and replaced by Anonymous"
+  productivity: "Productivity"
+  choose_an_estimation_status: "Please choose a status"
+  show_graph: "View graph"
+
+  label_add_new_project_data_widget: "Project data"
+  label_add_new_productivity_kpi_widget: "Indicators data"
+  organization_kpi_config: "KPI"
+  organization_kpi_name: "KPI name"
+  choose_kpi_config: "Choose KPI config"  #Choisir une configuration de KPI
+  productivity_kpi_config_list: "List of productivity KPI config" #Liste des configurations de KPI de type Productivité
+  min_less_than_max_value: "The minimum value must be less than the maximum value."
+  signalize: "Signalize"
+  lock_project: "Blocking"
+  minimum: "Minimum"
+  maximum: "Maximum"
+  average: "Average"
+  median: "Median"
+  sum: "Sum"
+  graphic: "Serie"
+  serie: "Serie"
+
+  minimum_value: "Min value"
+  maximum_value: "Max value"
+  average_value: "Average value"
+  median_value: "Median value"
+  sum_value: "The sum"
+  output_type: "Output type"
+  include_historized: "Include historized"  #Inclure les historisés
+  selected_date: "Selected date"
+  new_kpi: "New indicator"
+  edit_kpi: "Edit indicator"
+  nb_last_projects: "N last projects to consider"
+  counter: "Counter"
+  indicator_dashboards: "Dashboards"
+  indicators: "Indicators"
+  general_dashboard: "General dashboard"
+  new_dashboard: "New dashboard"
+  edit_dashboard: "Edit dashboard"
+  line_chart: "Line chart"
+  bar_chart: "Bar chart"
+  stacked_bar_chart: "Stacked bar chart"
+  pie_chart: "Pie"
+  first_value: "First value"
+  last_value: "Last value"
+  table_values: "List of values"
+  x_axis_label: "X-Axis label"
+  y_axis_label: "Y-Axis label"
+  activate_indicators_dashboard: "Indicators to activate"
+  on_organization_dashboards: "On organization dashboards"
+  on_project_dashboard: "On project dashboard"
+  is_default_dashboard: "Default dashboard"
+  show_name_description: "Display name and description"
+  indicator_start_date: "Start date"
+  indicator_end_date: "End date"
+  calculation: "Calculation"
+  end_of_series: "Limit of series (if date on the X axis)"
+  project_date_included: "Project date included"
+  project_date_not_included: "Project date not included"
+  x_axis_config: "X-Axis config"
+  y_axis_config: "Y-Axis config"
+  date_detail: "Detail"
+  date_week: "Week"
+  date_month: "Month"
+  date_trimester: "Trimester"
+  date_semester: "Semester"
+  date_year: "Year"
+  choose_indicator: "Choose an indicator"
+  formula_output_type: "Formula output type"
+  localization: "Localization"
+  input_value: "Input value"
+  current_date: "Today's date"
+  enter_date: "Enter a date"
+  history: "History"
+  revised_effort: "Ajusted effort"
+  estimate_history: "Estimate history"
+
+  raw_data_extract: "Extract raw data"
+  raw_data_extract_synthese: "Summary of estimates"
+  raw_data_extract_details: "Details of estimates"
+  raw_data_extract_abaques_services_DE: "Details of estimates - components & services"
+  raw_data_extract_services_ratio: "Details of estimates - cycle services (with ratio)"
+  reports: "Reports"
+  text_summary_estimates: "Summary report of estimates replaces the extraction of raw data: 'Synthese' tab (May 2021)"
+  text_details_estimates_cf: "Estimates details report replaces the extraction of raw data: 'Comp. Abaques & Serv. Dire Exp' tab (May 2021)"
+  text_details_estimates_ratio: "Estimates details report replaces the extraction of raw data: 'Services avec ratio' tab (May 2021)"
+
+  changes_list: "List of changes"
+
+  #SAML INFOS
+  idp_name: "Identity Provider name (Issuer, IdP Entity ID)"
+  idp_login_url: "Login URL (Identity Provider Target URL, SSO Login URL,Redirect URL, or Identity Provider Endpoint)"
+  idp_logout_url: "Logout URL (Identity provider uses to redirect the user to sign out)"
+  idp_change_password_url: "Change Password URL (The URL that the identity provider uses to redirect the user to change password.)"
+  text_idp_change_password_url: "The URL that the identity provider uses to redirect the user to change password."
+  idp_signing_certicate: "Signing certificate (The signer certificate or public key)"
+  idp_signing_certicate_fingerprint: "Signing Certificate Fingerprint"
+  idp_metadata: "Identity Provider Metadata"
+  idp_name_identifier_format: "Name identifier format"
+
+  cost_time_slider: "Duration slider for cost/delay calculation"
+  effort_with_unit: "Effort (m.d)"
+  update_the_module: "Update the module"
+  optimal_trapezium_distribution: "Optimal Trapezium Distribution"
+  ajusted_trapezium_distribution: "Ajusted Trapezium Distribution"
+  optimal_rayleigh_distribution: "Optimal Rayleigh Distribution"
+  ajusted_rayleigh_distribution: "Ajusted Rayleigh Distribution"
+  service_request: "Service request"
+  estimation_by_comparaison: "Estimate by comparison"
+  nb_projects: "Number of projects"
+  validation_button: "Validation"
+  staffing_duration_calculation: "Staffing / Duration calculation"
+  wbs_activity_calculation: "WBS Activity calculation"
+  kb_calculation: "Effort calculation by knowledge base"
+  use_slider: "Use the slider to adjust costs and deadlines."
+  use_slider_comments: "The shorter the deadline, the larger the team, the more expensive the project and vice versa."
+  guw_model_calculation: "Generic unit of work calculation"
+  expert_judgement_calculation: "Expert judgment calculation"
+  operation_module_calculation: "Operations calculation"
+  input_size_with_unit: "Input size"
+  input_effort_with_unit: "Input effort (m.d)"
+  input_effort_without_unit: "Input effort"
+  gap_difference: "Difference"
+  modification_of_the_input_value_allow: "Modify input values"
+  modification_of_the_filters_value_allow: "Modify filter values"
+  all_projects_in_list: "All"
+  treatments: "Treatments"
+  size_xy: "Size (X+Y)"
+  size_label: "Size"
+  effort_label: "Effort"
+  filter: "Filter"
+  past_projects_size: "Size of past projects"
+  idp_assertion_consumer_service_url: "Redirection url to Estimancy after SAML authentication"
+  non_existing_users: "Users don't exist (login not found): %{parameter}"
+  explanation_users_deletion: "Users whose logins are found in the excel fil will be deleted from the organization. Then, if the user doesn't belong to any other organization, he will be permanently deleted."
+  excel_head_exist: "Exist"
+  excel_head_removed_from: "Removed from"
+  excel_head_deleted: "Permanent deletion"

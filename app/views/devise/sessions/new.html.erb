@@ -1,0 +1,168 @@
+<%= render 'layouts/notifications' %>
+
+<div class="login-page vh-100 d-flex flex-column justify-content-between align-items-center">
+  <div class="logo-container">
+    <img class="logo" width="400" src="/assets/Estimancy_Logo_Base-Line_RVB.png" id="exifviewer-img-1" exifid="-752947365" oldsrc="https://arnaud-devui.bitbucket.io/images/logo.png">
+  </div>
+  <section class="login-form text-left">
+    <%= simple_form_for(resource, as: resource_name, url: session_path(resource_name), :method => :post, :class => 'simple_form') do |f| %>
+      <h1><%= I18n.t('connect') %></h1>
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
+          <div class="input-group-prepend">
+            <div class="input-group-text"><i class="material-icons-outlined">account_circle</i></div>
+          </div>
+          <input placeholder="<%= I18n.t('login_name') %>" class="mdl-textfield__input" type="text" id="user_login_name" name="user[login_name]" style="width: 360px;">
+      </div>
+
+      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
+        <div class="input-group-prepend">
+          <div class="input-group-text"><i class="material-icons-outlined">vpn_key</i></div>
+        </div>
+        <input placeholder="<%= I18n.t('password') %>" class="mdl-textfield__input" type="password" id="password" name="user[password]" style="width: 360px;">
+        <span class="mdl-textfield__error"><%= I18n.t('incorrect_password') %></span>
+      </div>
+
+      <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mt-3" for="checkbox-1">
+        <input type="checkbox" id="checkbox-1" class="mdl-checkbox__input">
+        <span class="mdl-checkbox__label"><%= I18n.t('remember_me') %></span>
+      </label>
+
+      <button type="submit" class="btn btn-primary btn-login mt-5 mb-4"><img class="brand-icon" src="/assets/logo_arrows_white_small.svg">
+        <%= I18n.t('connect_me') %>
+      </button>
+
+      <%= link_to "#{I18n.t(:Sign_in_with_SAML)}", "", remote: true, id: "saml_link", class: "login-form-link" %> <br>
+      <%#= link_to "Test #{I18n.t(:Sign_in_with_SAML)}", omniauth_authorize_path(resource_name, :saml), method: :post, class: "login-form-link" %>
+
+      <%#= link_to "#{I18n.t(:Sign_in_with_SAML)}", verify_matching_with_saml_path(resource_name: resource_name), remote: true, id: "saml_link", class: "login-form-link" %>
+      <%#= link_to "#{I18n.t(:Sign_in_with_SAML)}", verify_connect_with_saml_path(resource_name: resource_name), remote: true, id: "saml_link", class: "login-form-link" %>
+      <%#= link_to "#{I18n.t(:Sign_in_with_SAML)}", omniauth_authorize_path(resource_name, :saml), method: :post, class: "login-form-link" %>
+      <%#= link_to "TEST", user_saml_omniauth_authorize_path , class: "login-form-link" %>
+
+      <%- if devise_mapping.recoverable? && controller_name != 'passwords' && controller_name != 'registrations' %>
+        <%= link_to I18n.t('button_forgotten_password'), new_password_path(resource_name), class: "login-form-link" %><br />
+      <% end -%>
+      <%- if devise_mapping.confirmable? && controller_name != 'confirmations' %>
+        <%= link_to I18n.t('devise.confirmations.not_receive_confirmation_instructions'), new_confirmation_path(resource_name), class: "login-form-link" %><br />
+      <% end -%>
+     <%= link_to I18n.t(:call_support), "mailto:support@estimancy.com", class: "login-form-link" %><br />
+    <% end %>
+  </section>
+</div>
+
+<!--<div class="modal hide fade" id="modal_saml_login_name1" tabindex="-1" role="dialog" aria-labelledby="modal_saml_login_name_label" aria-hidden="true" backdrop="static">-->
+<!--  <div class="modal-dialog modal-lg">-->
+<!--    <div class="modal-saml_login_name modal-content" id="modal_saml_login_name_content1">-->
+      <%#= render :partial => "devise/sessions/login_name_for_saml" %>
+<!--    </div>-->
+<!--  </div>-->
+<!--</div>-->
+
+<div class="modal hide fade" id="modal_saml_login_name" tabindex="-1" role="dialog" aria-labelledby="modal_cotation_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-cotation modal-content" id="modal_saml_login_name_content" style="height: auto">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      </div>
+
+      <%= render :partial => "devise/sessions/login_name_for_saml" %>
+    </div>
+  </div>
+</div>
+
+
+<script>
+    // Show-Hide password
+    $(".js-show-hide-password a").on('click', function(event) {
+        event.preventDefault();
+        if($('.js-show-hide-password input').attr("type") == "text"){
+            $('.js-show-hide-password input').attr('type', 'password');
+            $('.js-show-hide-password a i').css( "opacity", "0.5" );
+        }else if($('.js-show-hide-password input').attr("type") == "password"){
+            $('.js-show-hide-password input').attr('type', 'text');
+            $('.js-show-hide-password a i').css( "opacity", "1" );
+        }
+    });
+
+    // Password strength
+    $("input#password").on("focus keyup", function () {
+        var score = 0;
+        var a = $(this).val();
+
+        // password length
+        if (a.length >= 8) {
+            $("#length").removeClass("invalid").addClass("valid");
+            $("#length i").text("check_circle_outline");
+            score++;
+        } else {
+            $("#length").removeClass("valid").addClass("invalid");
+            $("#length i").text("error_outline");
+        }
+
+        // at least 1 digit in password
+        if (a.match(/\d/)) {
+            score++;
+        }
+        // at least 1 capital or lower letter in password
+        if (a.match(/[A-Z]/) || a.match(/[a-z]/)) {
+            score++;
+        }
+        // at least 1 special character in password
+        if (a.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) {
+            score++;
+        }
+
+        // at least 1 digit, 1 letter and 1 special character in password
+        if (a.match(/\d/) && (a.match(/[A-Z]/) || a.match(/[a-z]/)) && a.match(/.[!,@,#,$,%,^,&,*,?,_,~,-,(,)]/)) {
+            $("#pnum").removeClass("invalid").addClass("valid");
+            $("#pnum i").text("check_circle_outline");
+        } else {
+            $("#pnum").removeClass("valid").addClass("invalid");
+            $("#pnum i").text("error_outline");
+        }
+
+        // strength indicator
+        $("#passwordStrength").removeClass().addClass("strength"+score);
+
+        // length indicator
+        $("#pwd-length span").text(a.length);
+
+    });
+
+    // Prevent click inside dropdowns with form
+    $('#advancedSearchDropdown .dropdown-menu, #newRequirementDropdown .dropdown-menu').on({
+        "click":function(e) {
+            e.stopPropagation();
+        }
+    });
+
+    // Recuperation du login pour saml
+    //saml_link
+    // $("input#user_login_name").on("focus keyup", function () {
+    //     var login_name = $(this).val();
+    // });
+
+    $("#saml_link").click(function(){
+        var test_id = $(this).attr('id');
+        var login_name = $("input#user_login_name").val();
+        //alert(login_name);
+
+        if (login_name.length == ''){
+            //alert('Veuillez renseigner votre identifiant de connexion!');
+            $("input#user_login_name").css("border-color", "red");
+            //$("#modal_saml_login_name_content").html("<%#= j(render :partial => "devise/sessions/login_name_for_saml") %>");
+            $('#modal_saml_login_name').modal('show');
+        }
+        else{
+            $.ajax({
+                url: "<%= verify_connect_with_saml_path(resource_name: resource_name) %>",
+                method: "GET",
+                data: {
+                    login_name: login_name,
+                    resource_name: '<%= "#{resource_name}" %>'
+                }
+            });
+        }
+    });
+
+</script>

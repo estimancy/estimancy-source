@@ -1,0 +1,48 @@
+<div id="edition-sidebar">
+  <h4 class="mb-0">Navigation</h4>
+    <ul class="nav flex-column">
+
+      <li class="nav-link group">
+        <h4 class="mb-0 mt-0"><%= I18n.t('general') %></h4>
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link group" href="<%= guw.edit_guw_model_path(@guw_model, organization_id: @organization.id, partial_name: 'tabs_model') %>">
+                <span><%= I18n.t(:properties) %></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link group" href="<%= guw.edit_guw_model_path(@guw_model, organization_id: @organization.id, partial_name: 'tabs_attributs') %>">
+                <span><%= I18n.t(:attributes) %></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link group" href="<%= guw.edit_guw_model_path(@guw_model, organization_id: @organization.id, partial_name: 'tabs_coefficients') %>">
+                <span><%= I18n.t(:coefficients) %></span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link group" href="<%= guw.edit_guw_model_path(@guw_model, organization_id: @organization.id, partial_name: 'tabs_output') %>">
+                <span><%= I18n.t(:outputs) %></span>
+              </a>
+            </li>
+          </ul>
+      </li>
+
+      <li class="nav-link group" >
+        <h4 class="mb-0 mt-0" style="width: max-content;"><%= I18n.t(:unit_of_work_types) %></h4>
+          <ul class="nav flex-column">
+            <% guw_model_guw_types = guw_model.guw_types %>
+            <% guw_model_guw_types.each do |guw_type| %>
+              <li class="nav-item">
+                <a class="nav-link group" href="<%= guw_type_path(guw_type) %>">
+                  <span>
+                    <%= guw_type %>
+                  </span>
+                </a>
+              </li>
+            <% end %>
+          </ul>
+      </li>
+
+    </ul>
+  </div>

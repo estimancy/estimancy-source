@@ -1,0 +1,176 @@
+<section class="card card-content-bloc estimancy-form">
+  <%= form_tag save_sod_path, multipart: true  do %>
+
+    <div class="card-body">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h1>
+            Demande de Service
+          </h1>
+        </div>
+      </div>
+
+      <%= hidden_field_tag :organization_id, @organization.id %>
+
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+              <div class="">
+                <label class="bold_class">Contact</label>
+                <%= text_field_tag "contact", current_user, class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Email</label>
+                <%= email_field_tag "email", current_user.email, class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Téléphone</label>
+                <%= phone_field_tag "phone_number", "", class: "form-control" %>
+
+                <br>
+                <hr>
+                <br>
+
+                <label class="bold_class" ><%= I18n.t(:label_project_name) %></label>
+                <%= phone_field_tag "project_name", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" ><%= I18n.t(:business_need) %></label>
+                <%= phone_field_tag "business_need", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" ><%= I18n.t(:request_number) %></label>
+                <%= phone_field_tag "request_number", "", class: "form-control" %>
+
+                <br>
+                <hr>
+                <br>
+
+                <label class="bold_class" ><%= I18n.t(:project_area) %></label>
+                <%= phone_field_tag "project_area", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" ><%= I18n.t(:acquisition_category) %></label>
+                <%= phone_field_tag "acquisition_category", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" ><%= I18n.t(:platform_category) %></label>
+                <%= phone_field_tag "platform_category", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" ><%= I18n.t(:project_category) %></label>
+                <%= phone_field_tag "project_category", "", class: "form-control" %>
+
+                <br>
+
+                <label class="bold_class" >Description</label>
+                <%= text_area_tag "description", "", class: "form-control", row: "5" %>
+
+                <br>
+
+                <b>Nature de la demande : </b>
+
+                <label class="" >Chiffrage</label>
+                <%= check_box_tag "chiffrage", 'yes', false, class: "" %> &nbsp; &nbsp;
+
+                <label class="" >Contre-Chiffrage</label>
+                <%= check_box_tag "contre_chiffrage", 'yes', false, class: "" %> &nbsp; &nbsp;
+
+                <label class="" >Mesure de vélocité</label>
+                <%= check_box_tag "velocite", 'yes', false, class: "" %>
+
+                <br>
+                <label class="bold_class" >Date de livraison souhaitée</label>
+                <%= date_field_tag "date_livraison", "", class: "form-control" %>
+
+                <br>
+                <label class="bold_class" >Disponibilités</label>
+                <%= date_field_tag "dispo1", nil, class: "form-control" %>
+                <%= time_field_tag "time1", nil, class: "form-control" %>
+                <br>
+                <%= date_field_tag "dispo2", "", class: "form-control" %>
+                <%= time_field_tag "time2", nil, class: "form-control" %>
+                <br>
+                <%= date_field_tag "dispo3", "", class: "form-control" %>
+                <%= time_field_tag "time3", nil, class: "form-control" %>
+
+
+                <hr>
+
+                <b>Listes des exigences</b>
+                <hr>
+
+                <label class="" >Excel</label>
+                <%= check_box_tag "excel", 'yes', false, class: "" %>
+                <%= file_field_tag "devis" %>
+
+                <hr>
+
+                <label class="" >Jira</label>
+                <%= check_box_tag "jira", 'yes', false, class: "" %>&nbsp; &nbsp;
+
+                <label class="" >HP-ALM</label>
+                <%= check_box_tag "hpalm", 'yes', false,  class: "" %>
+                <br>
+                <label class="bold_class" >Liens (Jira ou HP-ALM)</label>
+                <%= text_field_tag "links", "", class: "form-control" %>
+
+                <hr>
+
+                <label class="bold_class" >Documents complémentaires</label><br>
+                <%= file_field_tag "other_documents[]", :multiple => true %><br>
+                <%= file_field_tag "other_documents2[]", :multiple => true %><br>
+                <%= file_field_tag "other_documents3[]", :multiple => true %><br>
+                <%= file_field_tag "other_documents4[]", :multiple => true %><br>
+                <%= file_field_tag "other_documents5[]", :multiple => true %><br>
+
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <br>
+
+      <div class="actions-tabs">
+        <%= submit_tag "Envoyer", :class => 'btn btn-primary' %>
+      </div>
+
+    </div>
+  <% end %>
+</section>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    //$(document).ready(function () {
+    $(document).ready(function() {
+        $(".date-picker").datepicker({
+            language: '<%= set_user_language_for_datepicker %>',
+            autoclose: true,
+            todayHighlight: true,
+            todayBtn: true,
+            dateFormat: "yy-mm-dd hh:mm"
+        });
+
+        //
+        // const checkbox = document.getElementById('excel');
+        // checkbox.addEventListener('change', (event) => {
+        //     if (event.currentTarget.checked) {
+        //         $(".exigence").hide();
+        //         $(".jira").show();
+        //     } else {
+        //         $(".exigence").show();
+        //         $(".jira").hide();
+        //     }
+        // });
+    });
+</script>

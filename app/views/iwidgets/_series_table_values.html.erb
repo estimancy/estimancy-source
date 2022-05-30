@@ -1,0 +1,20 @@
+<div class=""row>
+  <% table_values.each do |key, project_array|  %>
+    <div class="col">
+      <span style="margin-bottom: 20px;">
+        <b><%= key %></b>
+      </span>
+      <br />
+      <% project_array.each do |project_hash| %>
+          <% unless project_hash.blank? %>
+            <% project_selected_date = project_hash[:selected_date]%>
+            <p>
+              <span title="<%= project_hash[:project_label] %>"><%= project_selected_date.blank? ? "" : "#{project_selected_date} : " %></span>
+              <span><%= project_hash[:field_value] %> <%= project_hash[:kpi_unit] %></span>
+            </p>
+          <% end %>
+      <% end %>
+    </div>
+
+  <% end %>
+</div>

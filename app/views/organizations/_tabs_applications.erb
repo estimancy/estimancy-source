@@ -1,0 +1,65 @@
+<% if can? :show_applications, Application %>
+
+    <% if can? :manage, Application %>
+      <%= link_to I18n.t('create_button'), new_organization_application_path(@organization), :class => 'btn btn-primary' %>
+      <%= link_to I18n.t('export'), organization_export_appli_path(@organization), :class => 'btn btn-primary'%>
+
+      <div class="float-right">
+        <%= form_tag organization_import_appli_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <%= file_field_tag :file %>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+        <% end %>
+      </div>
+    <% end %>
+
+    <table id="table_list_applications" class="table table-list mt-2">
+      <thead>
+        <tr>
+          <th><%= I18n.t('name') %></th>
+          <th><%= "Forfait MCO" %></th>
+          <th><%= "Budget Projet/Evo" %></th>
+          <th><%= I18n.t :entry_date %></th>
+          <th><%= I18n.t :release_date %></th> <%# date de sortie %>
+          <th><%= I18n.t('coefficient_value') %></th>
+          <th><%= I18n.t('coefficient_label') %></th>
+          <th class="actions"><%= I18n.t(:actions) %></th>
+        </tr>
+      </thead>
+      <tbody>
+
+      <% @organization.applications.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |app| %>
+          <tr>
+            <td><%= app.name %></td>
+            <td>
+            <span class="pull-right">
+              <% unless app.forfait_mco.blank? %>
+                <%= number_with_delimiter(app.forfait_mco.to_i, delimiter: ",") %> €
+              <% end %>
+            </span>
+            </td>
+            <td></td>
+            <td>
+              <% unless app.start_date.nil? %>
+                  <%= app.start_date.strftime("%d-%m-%Y %H:%M") %>
+              <% end %>
+            </td>
+            <td>
+              <% unless app.end_date.nil? %>
+                  <%= app.end_date.strftime("%d-%m-%Y %H:%M") %>
+              <% end %>
+            </td>
+            <td><%= app.coefficient %></td>
+            <td><%= app.coefficient_label %></td>
+            <td>
+              <% if can? :manage, Application %>
+                  <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_application_path(@organization, app), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), organization_application_path(@organization, app), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_applications) %></div>
+<% end %>

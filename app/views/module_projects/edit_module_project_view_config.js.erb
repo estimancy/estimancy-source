@@ -1,0 +1,49 @@
+//Resize the modal width
+$('.modal').on('show', function () {
+    $(this).css({
+        width:'auto',
+        'min-width':'600px',
+        'max-width':'100%'
+        //height:'auto', //probably not needed
+        //'max-height':'100%'
+    });
+});
+
+$("#notifications").html("");
+$(".modal-body-inner").html("<%= j render(:partial => "module_project_view_configurations") %>");
+
+$("#myModalLabel").css('font-size', 'larger');
+$("#myModalLabel").html('<%= "#{@module_project} : #{I18n.t(:view_config)}" %>');
+
+$("#edit_component").modal({
+    keyboard: false,
+    backdrop: false,
+    backdrop: false
+});
+
+$("#table_module_view_list").hide();
+$("#show_div_for_save_as").hide();
+$("#save_as_view_button").hide(); //$("#save_as_view_button").attr('disabled', true);
+
+$("#show_table_module_view_list").click(function(){
+    $("#table_module_view_list").show();
+    $("#show_div_for_save_as").hide();
+    $("#save_current_view_as").hide(); //hide or not
+    $("#save_view_button").attr('disabled', false);
+    $("#save_as_view_button").hide(); //$("#save_as_view_button").attr('disabled', true);
+    $("#show_table_module_view_list").hide();
+    $("#label_use_referenced_view").show();
+});
+
+$("#save_current_view_as").click(function(){
+    $("#show_div_for_save_as").show();
+    $("#table_module_view_list").hide();
+    $("#show_table_module_view_list").hide();  //hide or not
+    $("#save_as_view_button").attr('disabled', false);
+    $("#save_view_button").hide();  //$("#save_view_button").attr('disabled', true);
+    $("#save_current_view_as").hide();
+    $("#label_reference_current_view").show();
+    $("#save_as_view_button").show();
+})
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");

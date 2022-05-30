@@ -1,0 +1,40 @@
+<div id="dashboard_left_panel" class="col-2 pr-0">
+  <%= render "module_projects/dashboard_left_inner" %>
+</div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+    //$(document).ready(function(){
+    $(document).ready(function() {
+
+        $('#modules-sidebar .nav .nav-link').each(function(){
+            if($(this).hasClass("active")){
+                if($(this).hasClass("calculate_module")) {
+                    $('#module_execution').addClass('show');
+                }
+            }
+        })
+
+        //$('.nav .nav-link').click(function(){
+        $('#modules-sidebar .nav .nav-link').on('click', function() {
+
+            if ($(this).hasClass('calculate_module')) {
+                if ($(this).hasClass('active')){
+                    $(this).addClass('active');
+                }
+                else{
+                    $(this).removeClass('active');
+                    $(this).addClass('no-before-after');
+                }
+            }
+            else{
+                $('#modules-sidebar .nav .nav-link').removeClass('active');
+                $(this).addClass('active');
+            }
+
+            if($(this).hasClass("module_project")){
+                $('.calculate_module').addClass('active');
+            }
+        })
+    });
+</script>

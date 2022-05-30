@@ -1,0 +1,39 @@
+<!--<a href="#FeedbackModal" role="button" class="btn btn-primary" data-toggle="modal">
+  <span></span>
+  <%= I18n.t(:send_feedback) %>
+</a>
+
+<div id="FeedbackModal" style="width: 600px;" class="modal hide fade" tabindex="-1" role="dialog" >
+
+  <div class="modal-header modal-drag">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+    <h3 id="myModalLabel"><%= I18n.t(:send_feedback) %> &nbsp; - &nbsp;<%= I18n.t(:notice_send_feedback) %></h3>
+  </div>
+
+  <div class="modal-body" >
+    <div id="error_send_feedback" class="alert alert-error hide" style="margin-bottom: 15px; ">
+      <%= I18n.t('error_send_feedback_empty') %>
+    </div>
+
+    <%= simple_form_for(:send_feedback, {:url => main_app.send_feedback_path, :method => 'post'}) do |f| %>
+      <div>
+        <%= f.input :user_name, :label => I18n.t('user'), :input_html => {:class => 'input-xxlarge', :value => current_user.nil? ? '' : (current_user.first_name + ' ' + current_user.last_name + ' (' + current_user.email+ ' )') } %>
+        <%= f.input :type, :label => I18n.t('label_feedback_type'), :input_html => {:class => 'input-large'}, :collection => (['Problem', 'Suggestion', 'Other']) %>
+        <%= f.input :description, :label => I18n.t('description'), :as => :text, :input_html => {:class => 'input-xxlarge', :rows => 8} %>
+      </div>
+      <div class="modal-footer-left">
+        <%= f.submit I18n.t('send_request'), :class => 'btn btn-primary' %>
+        <button class="btn" data-dismiss="modal" aria-hidden="true" id="cancel"><%= I18n.t(:cancel) %></button>
+      </div>
+    <% end %>
+  </div>
+
+</div>
+
+<script>
+  <% if allow_feedback? %>
+    $(".btn-primary").show();
+  <% else %>
+    $(".btn-primary").hide();
+  <% end %>
+</script> -->

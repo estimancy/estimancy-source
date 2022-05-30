@@ -1,0 +1,25 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:wbs_activity_elements) %> </a></li>
+  </ul>
+  <div id="tabs-1">
+    <%= simple_form_for(@wbs_project_element) do |f| %>
+        <%= f.error_notification %>
+
+        <div class="form-inputs">
+          <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge'}, :disabled => disabled_if_from_library, :autofocus => (controller.action_name == 'new') %>
+          <%= f.input :parent_id, :label => I18n.t('parent'), :as => :select, :collection => @potential_parents.nil? ? [] : @potential_parents, :selected => @selected_parent.nil? ? '' : @selected_parent.id, :input_html => {:class => 'input-xxlarge'}, :disabled => disabled_if_from_library %>
+          <%= f.input :pe_wbs_project_id, :label => 'Pe-WBS Project', :as => :hidden, :input_html => { :value => @pe_wbs_project_activity.id, :class => 'input-xxlarge' } %>
+          <%= hidden_field_tag 'project_id', @project.id %>
+
+          <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 3}, :disabled => disabled_if_from_library %>
+          <%= f.input :additional_description, :label => I18n.t('additional_description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+          <%= f.input :exclude, :label => I18n.t('exclude') %>
+        </div>
+
+        <div class="actions-tabs">
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,221 @@
+<ul class="nav">
+
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%=I18n.t(:users_env)%>"  data-turbolinks="false">
+      <i class="fa fa-user fa-lg pull-left" style="margin-top: 4px; color: black;"></i>&nbsp;</b>
+    </a>
+    <ul class="dropdown-menu">
+    </ul>
+  </li>
+
+  <li class="dropdown">
+    <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%= I18n.t(:config_and_setting)%>"  data-turbolinks="false">
+      <i class="fa fa-cog fa-lg pull-left"></i></b>
+    </a>
+    <ul class="dropdown-menu">
+      <% if @current_organization %>
+          <li class="dropdown">
+            <a href="<%= main_app.edit_organization_path(@current_organization)%>" data-turbolinks="false">
+              <%= @current_organization %>
+            </a>
+          </li>
+          <li class="dropdown">
+            <a href="<%= main_app.organization_setting_path(@current_organization)%>" data-turbolinks="false">
+              <%= I18n.t(:setting_estimations) %>
+            </a>
+          </li>
+          <% if @current_organization.allow_demand == true %>
+            <li class="dropdown">
+              <a href="<%= main_app.organization_setting_demand_path(@current_organization)%>" data-turbolinks="false">
+                <%= I18n.t(:setting_demands) %>
+              </a>
+            </li>
+          <% end %>
+          <li class="dropdown">
+            <a href="<%= main_app.organization_module_estimation_path(@current_organization)%>" data-turbolinks="false">
+              <%= I18n.t(:projestimate_module) %>
+            </a>
+          </li>
+          <% if @current_organization.activate_indicators_dashboard? %>
+              <li class="dropdown">
+                <a href="<%= main_app.organization_odashboard_path(@current_organization)%>" data-turbolinks="false">
+                  <%= I18n.t(:indicator_dashboards) %>
+                </a>
+              </li>
+          <% end %>
+      <% end %>
+    </ul>
+  </li>
+
+  <!-- Menu audit de securite -->
+  <% if can?(:manage_security_audit, @current_organization) %>
+      <li class="dropdown">
+        <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%= I18n.t(:security_audit_management)%>">
+          <i class="fa fa-lock fa-lg pull-left"></i></b>
+        </a>
+        <ul class="dropdown-menu">
+          <% if @current_organization && can?(:manage_security_audit, @current_organization)%>
+              <li class="dropdown">
+                <a href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>" data-turbolinks="false">
+                  <%= I18n.t(:security_audit_utilities)%>
+                </a>
+              </li>
+
+              <!--<li class="dropdown">-->
+                <!--<a href="<%#= main_app.audit_integrity_common_data_params_path %>">-->
+                  <!--<%#= I18n.t(:common_data_integrity)%>-->
+                <!--</a>-->
+              <!--</li>-->
+
+              <!--<li class="dropdown">-->
+                <!--<a href="<%#= main_app.organization_report_management_path(@current_organization)%>">-->
+                  <!--<%#= I18n.t(:report_management)%>-->
+                <!--</a>-->
+              <!--</li>-->
+          <% end %>
+        </ul>
+      </li>
+  <% end %>
+  <!-- Fin Menu audit de securite -->
+
+
+  <li class="dropdown">
+    <% if current_user.super_admin? %>
+      <a class="dropdown-toggle" data-toggle="dropdown" href="#" title="<%= I18n.t :label_menu_master_admin %>">
+          <!--<i class="icon icon-wrench pull-left"></i></b>-->
+          <i class="fa fa-user-plus fa-lg pull-left"></i>
+        </a>
+        <ul class="dropdown-menu">
+          <li class="dropdown"><a href="" data-turbolinks="false">
+            <%= I18n.t(:organizations) %></a>
+          </li>
+
+          <li class="dropdown"><a href="<%= main_app.users_path %>" data-turbolinks="false"><%= I18n.t(:users) %></a></li>
+
+          <li class="dropdown"><a href="<%= main_app.profiles_path %>" data-turbolinks="false"> <%= I18n.t(:profiles) %> </a></li>
+
+          <li class="dropdown"><a href="<%= main_app.currencies_path %>" data-turbolinks="false">
+            <%= I18n.t(:currencies) %></a>
+          </li>
+
+          <li class="divider"></li>
+
+          <li class="dropdown"><a href="<%= main_app.admin_settings_path %>" data-turbolinks="false">
+            <%= I18n.t(:tech_setting) %></a>
+          </li>
+
+          <li class="dropdown"><a href="<%= main_app.auth_methods_path %>" data-turbolinks="false">
+            <%= I18n.t(:auth_methods) %></a>
+          </li>
+
+          <li class="dropdown"><a href="<%= main_app.maintenances_path %>" data-turbolinks="false">
+            <%= I18n;t(:maintenance_message)%></a>
+          </li>
+
+          <li class="dropdown"><a href="<%= main_app.audits_path %>" data-turbolinks="false"> <%= I18n.t(:Audit)%> </a></li>
+
+          <li class="divider"></li>
+
+          <li class="dropdown"><a href="<%= main_app.pe_attributes_path %>" data-turbolinks="false">
+            <%= I18n.t(:pe_attributes) %></a>
+          </li>
+
+          <li class="dropdown"><a href="<%= main_app.pemodules_path %>" data-turbolinks="false">
+              <%= I18n.t(:projestimate_module) %></a>
+          </li>
+
+          <li class="dropdown"><a href="<%= main_app.permissions_path %>" data-turbolinks="false">
+              <%= I18n.t(:all_permissions) %></a>
+          </li>
+
+          <li class="dropdown"><a href="<%= main_app.languages_path %>" data-turbolinks="false">
+              <%= I18n.t(:languages) %></a>
+          </li>
+        </ul>
+    <% end %>
+  </li>
+</ul>
+
+<ul class="nav pull-right">
+
+  <li class="divider-vertical"></li>
+
+  <li>
+    <a href="<%= main_app.destroy_user_session_path %>#" data-method="delete" rel="nofollow" title="<%= I18n.t 'logout' %>">
+      <i class="fa fa-power-off fa-lg"></i>
+    </a>
+  </li>
+
+  <li class="divider-vertical"></li>
+  <li>
+    <a href="#FeedbackModal"  data-toggle="modal" title="<%= I18n.t(:send_feedback)%>">
+      <i class="fa fa-send"></i>
+    </a>
+  </li>
+
+  <li class="divider-vertical"></li>
+
+  <li>
+    <a href="<%= @url_wiki_admin_setting ||= load_admin_setting('url_wiki') %>" title="<%= I18n.t 'wiki' %>" target="_blank" >
+      <i class="fa fa-book fa-lg" ></i>
+    </a>
+  </li>
+
+  <li class="divider-vertical"></li>
+
+  <li>
+    <a href="#" onclick="javascript:print(); return false;" title="<%= I18n.t'pdf_save' %>">
+      <i class="fa fa-file-pdf-o" ></i>
+    </a>
+  </li>
+
+  <li class="divider-vertical"></li>
+  <li>
+    <a href="/contactsupport" title="<%= I18n.t 'contact_us' %>" target="_blank">
+      <i class="fa fa-phone" ></i>
+    </a>
+  </li>
+
+  <li class="divider-vertical"></li>
+
+  <li>
+    <a href="/about" title="<%= I18n.t 'about' %>" target="_blank">
+      <i class="fa fa-info-circle fa-lg" ></i>
+    </a>
+  </li>
+
+  <li>
+    <%= image_tag '/assets/ajax-loader.gif', :class => 'spiner hide' %>
+  </li>
+
+
+
+</ul>
+
+
+<ul class="nav">
+  <li class="divider-vertical"></li>
+</ul>
+
+<ul class="nav">
+  <ul class="breadcrumb">
+    <% @breacrumbs.each_with_index do |k, i| %>
+        <li>
+          <% if i != @breacrumbs.length - 1 %>
+            <a href="<%= k[1] %>">
+              <%= k[0] %>
+            </a>
+            <span class="divider">/</span>
+          <% else %>
+              <% if k[1] != "" %>
+                <%= link_to(k[0].to_s.html_safe, k[1], :title => "#{I18n.t(:label_add_status_change_comment)}", :remote => true) %>
+              <% else %>
+                <%= k[0].to_s.html_safe %>
+              <% end %>
+        <% end %>
+        </li>
+    <% end %>
+  </ul>
+</ul>
+
+

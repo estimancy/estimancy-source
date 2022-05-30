@@ -1,0 +1,52 @@
+  <%= simple_form_for(@pbs_project_element) do |f| %>
+    <%= f.error_notification %>
+    <%= hidden_field_tag :project_id, @project.id %>
+
+    <%= f.input :ancestry, :label => I18n.t('ancestry'), :as => :select, :collection => @components, :selected => @parent.id unless @parent.nil? %>
+    <%# if @pbs_project_element.link? %>
+      <%# f.input :project_link, :label => I18n.t('project_link'), :input_html => {:class => 'input-xlarge'}, :as => :select, :collection => Project.all.map { |i| [i.title, i.id] } %>
+    <%# else %>
+      <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xlarge'} %>
+      <%= f.input :description, :label => I18n.t('requirements'), :input_html => {:class => 'input-xlarge', rows: "2"} %>
+      <table>
+        <tr>
+          <td><%= f.input :start_date, :as => :string, :label => I18n.t(:start_date), :input_html => {:class => 'date-picker', rows: "2", :value => @pbs_project_element.start_date.nil? ? '' : I18n.l(@pbs_project_element.start_date) } %></td>
+          <td><%= f.input :end_date, as: :string, disabled: true, :label => I18n.t('end_date'), :input_html => {:class => 'input-large', rows: "2"} %></td>
+
+          <script>
+            //$(document).ready(function () {
+            $(document).ready(function() {
+              $(".date-picker").datepicker({
+                language: '<%= set_user_language %>',
+                autoclose: true,
+                todayHighlight: true,
+                todayBtn: true
+              });
+            });
+          </script>
+        </tr>
+      </table>
+    <%# end %>
+
+    <%# unless @pbs_project_element.is_root? %>
+      <table>
+        <tr>
+          <td><%= f.input :work_element_type_id, :label => I18n.t('work_element_type'), :as => :select, :collection => @project.organization.work_element_types, :include_blank => true %></td>
+          <td><%= f.input :organization_technology_id, :label => I18n.t('organization_technology'), :as => :select, :collection => @project.organization.organization_technologies, :include_blank => true %></td>
+        </tr>
+      </table>
+      <%# end %>
+
+    <table cellspacing="2" border="0">
+      <tr>
+        <td><%= f.input :is_completed, :label => I18n.t(:label_is_completed) %></td>
+        <td> &nbsp; &nbsp;</td>
+        <td><%= f.input :is_validated, :label => I18n.t(:label_is_validated) %></td>
+      </tr>
+    </table>
+
+    <div class="modal-footer-left">
+      <%= f.submit I18n.t('save'), :class => 'btn btn-primary' %>
+      <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+    </div>
+  <% end %>

@@ -1,0 +1,11 @@
+$("#tabs-8").html("<%= j render(:partial => "organization_technologies/abacus") %>");
+
+
+$("#technology").change(function() {
+  return $.ajax({
+    url: "/change_abacus",
+    method: "GET",
+    data: "technology=" + $(this).val()
+  });
+});
+

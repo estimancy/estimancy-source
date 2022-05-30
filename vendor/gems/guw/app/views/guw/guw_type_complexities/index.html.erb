@@ -1,0 +1,42 @@
+<h4>
+  <b>
+     <%= I18n.t(:complexity_threshold_of, parameter: @guw_type) %>
+  </b>
+</h4>
+
+<div class="tabs">
+  <ul>
+    <li>
+      <a href="#tabs-1">
+        <%= I18n.t(:complexity).pluralize %>
+      </a>
+    </li>
+  </ul>
+
+  <div id="tabs-1">
+    <table class="table table-bordered">
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:bot_range) %></th>
+        <th><%= I18n.t(:top_range) %></th>
+        <th><%= I18n.t(:weight) %></th>
+        <th><%= I18n.t(:actions) %></th>
+      </tr>
+
+      <% @guw_complexities.each do |guw_cplx| %>
+        <tr>
+          <td class="align-center"><%= link_to guw_cplx.name, edit_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type, guw_cplx) %></td>
+          <td class="align-center"><%= guw_cplx.bottom_range %></td>
+          <td class="align-center"><%= guw_cplx.top_range %></td>
+          <td class="align-center"><%= guw_cplx.weight%></td>
+          <td class="align-center">
+            <%= link_to I18n.t(:edit), guw.edit_guw_complexity_path(guw_cplx) %>
+          </td>
+        </tr>
+      <% end %>
+    </table>
+
+    <%= link_to  I18n.t(:new_complexity_for, parameter: @guw_type), new_guw_model_guw_type_guw_complexity_path(@guw_model, @guw_type), class: "btn btn-primary" %>
+    <%= link_to I18n.t(:back), :back, class: "btn btn-secondary" %>
+  </div>
+</div>

@@ -1,0 +1,76 @@
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.min.js" integrity="sha256-WX1A5tGpPfZZ48PgoZX2vpOojjCXsytpCvgPcRPnFKU=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.default.min.css" integrity="sha256-5sgExNTnkN8NcApKIU73/aqgZmqq/zJp9+9zXf9aSEw=" crossorigin="anonymous" />
+
+<table class="table tablesorter table-list table-sm">
+
+  <thead>
+    <tr>
+      <th><%= I18n.t(:first_name) %></th>
+      <th><%= I18n.t(:last_name) %></th>
+      <th><%= I18n.t(:login_name) %></th>
+      <th><%= I18n.t(:organization) %></th>
+      <th><%= I18n.t(:email) %></th>
+      <!--<th><%#= I18n.t(:last_login) %></th>-->
+      <!--<th class="filter-select"><%#= I18n.t(:authentication) %></th>-->
+      <th><%= I18n;t(:Confirmed_at)%></th>
+      <th><%= I18n.t(:locked_at)%></th>
+      <th><%= I18n.t(:subscription_end_date_for_list)%></th>
+      <th class="action" style="min-width: 100px;"><%= I18n.t(:actions) %></th>
+    </tr>
+  </thead>
+
+  <tbody>
+    <% if @users.empty? %>
+      <p style="text-align:center;"> <%= I18n.t('empty') %></p>
+    <% else %>
+      <% @users.each do |user| %>
+        <tr>
+          <td><%= user.first_name %></td>
+          <td><%= user.last_name %></td>
+          <td><%= user.login_name %></td>
+          <td><%= simple_format(user.organizations.join("\n")) %></td>
+          <td><%= user.email %></td>
+          <!--<td class="center"><%#= I18n.l(user.last_sign_in_at.to_date) unless user.last_sign_in_at.nil? %></td>-->
+          <!--<td><%#= user.auth_method %></td>-->
+
+          <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed') : I18n.l(user.confirmed_at.to_date) %></td>
+          <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : I18n.l(user.locked_at.to_date) %></td>
+          <td class="center"><%= user.subscription_end_date.nil? ? "-" : I18n.l(user.subscription_end_date.to_date) %></td>
+
+          <td style="min-width: 105px;" class="align-center">
+            <% if current_user.super_admin == true %>
+              <% if user.locked_at.nil? %>
+                <%= link_to raw("<i class='material-icons'>lock_open</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Lock" %>
+              <% else %>
+                <%= link_to raw("<i class='material-icons'>lock</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Unlock" %>
+              <% end %>
+              <% if user.confirmed_at.nil? %>
+                <%= link_to raw("<i class='material-icons'>check_circle_outline</i>"), unlock_user_path(user) , :class => 'material-icons', :title => "Confirm" %>
+              <% else %>
+                <%= link_to raw("<i class='material-icons'>check_circle</i>"), unlock_user_path(user) , :class => 'material-icons', :title => I18n.t('unconfirm') %>
+              <% end %>
+                <%= link_to raw("<i class='material-icons'>edit</i>"), edit_user_path(user, :anchor => 'tabs-1') , :class => 'material-icons', :title => I18n.t('edit') %>
+                <%= link_to raw("<i class='material-icons'>delete</i>"), user, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+            <% end %>
+          </td>
+        </tr>
+      <% end %>
+
+      <%= render :partial => 'layouts/footer_table' %>
+
+    <% end %>
+  </tbody>
+</table>
+
+<script>
+    $(function() {
+        $(".tablesorter").tablesorter({
+            theme: 'blue',
+            widgets: ['zebra', 'filter'],
+            widgetOptions: {
+                filter_reset: '.reset'
+            }
+        });
+    });
+</script>

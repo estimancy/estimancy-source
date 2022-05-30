@@ -1,0 +1,404 @@
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+    <%# @productivity_kpi = Kpi.where(organization_id: @current_organization.id, name: "Productivity").first_or_create %>
+
+    <%= simple_form_for([@organization, @kpi]) do |f| %>
+        <%= f.error_notification %>
+        <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+
+        <div class="form-row">
+          <div class="col-6">
+            <div class="select-estimancy">
+              <label for="name" class="label-estimancy"><%= I18n.t 'name' %></label>
+              <%= f.input :name, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-6">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :description, label: false, input_html: {:class => 'mdl-textfield__input form-control', :rows => 5} %>
+              <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+            </div>
+          </div>
+        </div>
+
+        <h4 style="font-size: 20px;"><%= I18n.t('filters')%></h4>
+        <div class="form-row">
+          <div class="col-6">
+            <hr />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3">
+            <div class="select-estimancy">
+              <label for="estimation_model" class="label-estimancy"><%= I18n.t 'estimation_models' %></label>
+              <%= f.association :estimation_model,
+                                :label => false,
+                                :as => :select,
+                                :collection => @organization.projects.where(is_model: true),
+                                :input_html => { :class => 'mdl-textfield__input form-control' } %>
+            </div>
+          </div>
+
+          <div class="col-3" style="margin-top: 4em">
+            <%= f.input :include_historized, as: :boolean, label: false, input_html: {class: 'mdl-checkbox__input' } %>
+            <label class="mdl-textfield__label" for="include_historized" style="padding-left: 4rem; margin-top: -1.7em">
+              <%= I18n.t(:include_historized) %>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3">
+            <label for="nb_last_projects" class="label-estimancy"><%= I18n.t('nb_last_projects') %></label>
+            <%= f.input :nb_last_projects, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+          </div>
+
+          <div class="col-3 select-estimancy">
+            <label for="selected_date" class="label-estimancy"><%= I18n.t 'selected_date' %></label>
+            <%= f.input :selected_date,
+                        :label => false,
+                        :as => :select,
+                        :collection => [[I18n.t(:created_date), "created_at"], [I18n.t(:start_date), "start_date"]],
+                        :input_html => { :class => 'mdl-textfield__input form-control' },
+                        include_blank: false %>
+          </div>
+        </div>
+
+        <!-- ============================= -->
+        <div class="form-row">
+          <div class="col-3 select-estimancy">
+            <label for="selected_date" class="label-estimancy"><%= I18n.t 'indicator_start_date' %></label>
+            <%= f.input :period_start_date,
+                        :label => false,
+                        :as => :select,
+                        :collection => Kpi.period_dates_collection,
+                        :input_html => { :class => 'mdl-textfield__input form-control' },
+                        include_blank: false %>
+          </div>
+
+          <div class="col-1">
+            <label for="nb_last_projects" class="label-estimancy"><%= I18n.t('history') %></label>
+            <%= f.input :period_start_date_history, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+          </div>
+
+          <div class="col-2">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :start_date, as: :string, :label => false,
+                          #:input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.start_date) }
+                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.start_date.nil? ? nil : I18n.l(@kpi.start_date.to_date) } %>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="form-row">
+          <div class="col-3 select-estimancy">
+            <label for="selected_date" class="label-estimancy"><%= I18n.t 'indicator_end_date' %></label>
+            <%= f.input :period_end_date,
+                        :label => false,
+                        :as => :select,
+                        :collection => Kpi.period_dates_collection,
+                        :input_html => { :class => 'mdl-textfield__input form-control' },
+                        include_blank: false %>
+          </div>
+
+          <div class="col-1">
+            <label for="nb_last_projects" class="label-estimancy"><%= I18n.t('history') %></label>
+            <%= f.input :period_end_date_history, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+          </div>
+
+
+          <div class="col-2">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :end_date, as: :string, :label => false,
+                          #:input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@kpi.end_date) }
+                          :input_html => { :class => 'date-picker mdl-textfield__input', :value => @kpi.end_date.nil? ? nil : I18n.l(@kpi.end_date.to_date) } %>
+            </div>
+          </div>
+        </div>
+
+        <!-- ============================= -->
+
+
+        <div class="form-row">
+          <div class="col-3">
+            <div class="select-estimancy">
+              <label for="estimation_statuses" class="label-estimancy"><%= I18n.t 'associated_status' %> : </label>
+
+              <%= hidden_field_tag "kpi[estimation_status_ids][]", nil %>
+              <% @organization.estimation_statuses.each do |es| %>
+                  <div class="col">
+                    <label>
+                      <%= check_box_tag "kpi[estimation_status_ids][]", es.id, @kpi.estimation_status_ids.include?(es.id) %>
+                      <%= es %>
+                    </label>
+                  </div>
+              <% end %>
+              <br/>
+
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3 select-estimancy">
+            <label for="project_versions" class="label-estimancy"><%#= I18n.t 'field' %>Version du projet</label>
+            <%= f.input :project_versions,
+                        :label => false,
+                        :as => :select,
+                        :collection => [["Toutes versions", "all_versions"], ["Dernière version", "last_version"]],
+                        :input_html => { :class => 'mdl-textfield__input form-control' } %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3">
+            <div class="select-estimancy">
+              <label for="application_id" class="label-estimancy"><%= I18n.t 'application' %></label>
+              <%= f.association :application,
+                                :label => false,
+                                :as => :select,
+                                :collection => @organization.applications.active,
+                                :input_html => { :class => 'mdl-textfield__input form-control' } %>
+            </div>
+          </div>
+
+          <div class="col-3">
+            <div class="select-estimancy">
+              <label for="project_area" class="label-estimancy"><%= I18n.t 'project_area' %></label>
+              <%= f.association :project_area,
+                                :label => false,
+                                :as => :select,
+                                :collection => @organization.project_areas,
+                                :input_html => { :class => 'mdl-textfield__input form-control' } %>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3">
+            <div class="select-estimancy">
+              <label for="project_category" class="label-estimancy"><%= I18n.t 'project_category' %></label>
+              <%= f.association :project_category,
+                                :label => false,
+                                :as => :select,
+                                :collection => @organization.project_categories,
+                                :input_html => {:class => 'mdl-textfield__input form-control'} %>
+            </div>
+          </div>
+
+          <div class="col-3">
+            <div class="select-estimancy">
+              <label for="platformCategory" class="label-estimancy"><%= I18n.t 'acquisition_category' %></label>
+              <%= f.association :acquisition_category,
+                                :label => false,
+                                :as => :select,
+                                :collection => @organization.acquisition_categories,
+                                :input_html => {:class => 'mdl-textfield__input form-control'} %>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3">
+            <div class="select-estimancy">
+              <label for="platformCategory" class="label-estimancy"><%= I18n.t 'platform_category' %></label>
+              <%= f.association :platform_category,
+                                :label => false,
+                                :as => :select,
+                                :collection => @organization.platform_categories,
+                                :input_html => {:class => 'mdl-textfield__input form-control'}%>
+            </div>
+          </div>
+
+          <div class="col-3">
+            <div class="select-estimancy">
+              <label for="provider" class="label-estimancy"><%= I18n.t 'provider' %></label>
+              <%= f.association :provider,
+                                :label => false,
+                                :as => :select,
+                                :collection => @organization.providers,
+                                :input_html => {:class => 'mdl-textfield__input form-control'}%>
+            </div>
+          </div>
+        </div>
+
+
+        <h4 style="font-size: 20px;"><%= I18n.t('calculation')%></h4>
+        <div class="form-row">
+          <div class="col-6">
+            <hr />
+          </div>
+        </div>
+
+
+        <div class="form-row">
+          <div class="col-3 select-estimancy">
+            <label for="field_id" class="label-estimancy"><%#= I18n.t 'field' %>Champs sur lequel se fait le calcul</label>
+            <%= f.association :field,
+                              :label => false,
+                              :as => :select,
+                              :collection => @organization.fields.all,  #@kpi.get_estimation_model_fields(@organization)
+                              :input_html => { :class => 'mdl-textfield__input form-control' }, include_blank: false %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3">
+            <label for="kpi_unit" class="label-estimancy"><%= I18n.t 'kpi_unit' %></label>
+            <%= f.input :kpi_unit, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+          </div>
+
+          <div class="col-3">
+            <label for="kpi_coefficient" class="label-estimancy"><%= I18n.t 'coefficient_value' %></label>
+            <%= f.input :kpi_coefficient, :label => false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+          </div>
+        </div>
+
+        <br>
+        <div class="form-row">
+          <div class="col-3 select-estimancy">
+            <label for="output_type" class="label-estimancy"><%= I18n.t 'output_type' %></label>
+            <%= f.input :output_type,
+                        :label => false,
+                        :as => :select,
+                        :collection => [[I18n.t(:minimum), "minimum"], [I18n.t(:maximum), "maximum"], [I18n.t(:average), "average"], [I18n.t(:median), "median"], [I18n.t(:sum), "sum"], [I18n.t(:counter), "counter"], [I18n.t(:serie), "serie"]],
+                        :input_html => { :class => 'mdl-textfield__input form-control' },
+                        include_blank: false %>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-3 select-estimancy">
+            <label for="output_type" class="label-estimancy"><%= I18n.t 'x_axis_config' %></label>
+            <%= f.input :x_axis_config, :label => false,
+                        collection: Kpi.x_axis_config_collection, as: :grouped_select, group_method: :last, :group_label_method => :first,
+                        include_blank: false, input_html:{class: "inline_attr mdl-textfield__input form-control"} %>
+
+          </div>
+
+          <div class="col-3 select-estimancy">
+            <label for="output_type" class="label-estimancy"><%= I18n.t 'y_axis_config' %></label>
+            <%= f.input :y_axis_config,
+                        :label => false,
+                        :as => :select,
+                        :collection => Kpi.y_axis_config_collection,
+                        :input_html => { :class => 'mdl-textfield__input form-control' },
+                        include_blank: false %>
+          </div>
+        </div>
+
+
+
+        <br>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary' %>
+    <% end %>
+  </div>
+  </div>
+</section>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+
+    // Update the Field attribute according to the selected estimation_model
+    //    $("#kpi_output_type").change(function() {
+    //        if ($(this).val() !== "serie"){
+    //            return $.ajax({
+    //                url: "/update_productivity_kpi_field",
+    //                method: "GET",
+    //                data: "estimation_model_id=" + $(this).val()
+    //            });
+    //        }
+    //    });
+
+
+    //=============
+
+    if ($("#kpi_period_start_date").val() == "enter_date"){
+        $('#kpi_start_date').show();
+    }else {
+        $('#kpi_start_date').hide();
+        $('#kpi_start_date').val("");
+    }
+
+    if ($("#kpi_period_end_date").val() == "enter_date"){
+        $('#kpi_end_date').show();
+    }else {
+        $('#kpi_end_date').hide();
+        $('#kpi_end_date').val("");
+    }
+
+
+    $("#kpi_period_start_date").change(function() {
+        if ($(this).val() == "enter_date"){
+            //$('#kpi_start_date').removeAttr('hidden');
+            $('#kpi_start_date').show();
+        }
+        else {
+            $('#kpi_start_date').hide();
+            $('#kpi_start_date').val("");
+        }
+    });
+
+
+    $("#kpi_period_end_date").change(function() {
+        if ($(this).val() == "enter_date"){
+            $('#kpi_end_date').show();
+        }
+        else {
+            $('#kpi_end_date').hide();
+            $('#kpi_end_date').val("");
+        }
+    });
+
+   //=============
+
+
+    if ($("#kpi_output_type").val() == "serie"){
+        $('#kpi_x_axis_config').removeAttr('disabled');
+        $('#kpi_y_axis_config').removeAttr('disabled');
+    }else {
+        $('#kpi_x_axis_config').val("");
+        $('#kpi_y_axis_config').val("");
+
+        $('#kpi_x_axis_config').attr('disabled','disabled');
+        $('#kpi_y_axis_config').attr('disabled','disabled');
+    }
+
+    $("#kpi_output_type").change(function() {
+        if ($(this).val() == "serie"){
+            $('#kpi_x_axis_config').removeAttr('disabled');
+            $('#kpi_y_axis_config').removeAttr('disabled');
+        }
+        else {
+            $('#kpi_x_axis_config').val("");
+            $('#kpi_y_axis_config').val("");
+
+            $('#kpi_x_axis_config').attr('disabled','disabled');
+            $('#kpi_y_axis_config').attr('disabled','disabled');
+        }
+    });
+
+</script>
+
+<script>
+    $(document).ready(function() {
+        $(".date-picker").datepicker({
+            language: '<%= set_user_language_for_datepicker %>',
+            //uiLibrary: 'bootstrap4',
+            //locale: 'fr-fr',
+            orientation: 'auto top',
+            autoclose: true,
+            todayHighlight: true,
+            todayBtn: true,
+            icons: {
+                rightIcon: '<i class="material-icons">event</i>'
+            }
+        });
+    });
+</script>

@@ -1,0 +1,4 @@
+$("#notifications").html("");
+//$("#organization_profile_profile_id").html("<%#=raw j select_tag "organization_profile[profile_id]", options_for_select(@profiles.map{|i| [i.name, i.id] } ), :prompt => I18n.t('helpers.select.prompt')  %>");
+$("#profile_id_for_organization").html("<%=raw j select_tag "profile_id_for_organization", options_for_select(@profiles.map{|i| [i.name, i.id] } ), :prompt => I18n.t('helpers.select.prompt')  %>");
+$("#notifications").html("<%= j(render "layouts/notifications") %>");

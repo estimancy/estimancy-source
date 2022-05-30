@@ -1,0 +1,5 @@
+$("#notifications").html("");
+//$("#show_estimation_graph").html("<%#raw j(render :partial => 'projects/estimate_graph_view') %>");
+$('.spiner').hide();
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");
+

@@ -1,0 +1,66 @@
+//Get the current_component first
+<% @current_component = current_component %>
+
+$("#project_wbs_product_section .tab-pane.active").html("<%=raw j generate_wbs_product(@project.root_component, @project, '', 5, params[:is_project_show_view]) %>");
+
+$(".component_name").html("<%=raw @current_component %>");
+
+$('.component_tree ul li').hover(
+    function () {
+        $(this.children).css('display', 'block');
+    },
+    function () {
+        $('.block_link').hide();
+    }
+);
+
+$('.block_label, div.block_link').hover(
+    function () {
+        $('div.block_label.selected_pbs').css('width', 'inherit');
+    },
+    function () {
+        $('div.block_label.selected_pbs').css('width', '100%');
+    }
+);
+
+$("#pbs_list").val(<%= @current_component.nil? ? '' : @current_component.id %>);
+$("#select_balancing_attribute").val(<%= current_balancing_attribute.nil? ? '' : current_balancing_attribute.id %>);
+
+$(".header_data").html("<h5><%= @current_component %> - <%= current_module_project %></h5>");
+
+<% begin %>
+  <% if current_module_project.pemodule.alias.to_s == Projestimate::Application::BALANCING_MODULE %>
+      $(".header_data h5").append("<%= escape_javascript( select_tag('select_balancing_attribute', options_for_select(current_module_project.pemodule.pe_attributes.map{ |attr| [attr.to_s, attr.id]}, :selected => (current_balancing_attribute.id unless current_balancing_attribute.nil?)), :class => 'balancing_attribute', :prompt => I18n.t(:text_select_balancing_attribute)) ).html_safe %> ");
+  <% end %>
+<% rescue %>
+<% end %>
+
+$('#edit_component').modal('hide');
+
+$(".date-picker").datepicker({
+    language: '<%= set_user_language_for_datepicker %>',
+    autoclose: true,
+    todayHighlight: true,
+    todayBtn: true
+}).on("hide", function(e){
+    $.ajax({
+        url:"check_attribute",
+        type: 'POST',
+        data: "value=" + this.value + "&level=" + this.className.split(/\s/)[1] + "&est_val_id=" + $(this).data("est_val_id") + "&wbs_project_elt_id=" + $(this).data("wbs_project_elt_id")
+    })
+});
+
+$('.button_attribute_tooltip').tooltip({'html' : true });
+
+// If single_attribute_value, data if low = most_likely=high
+manage_single_entry_attribute();
+
+// Refresh input data according to the selected balancing attribute
+update_balancing_module_input();
+
+// Add red border-color to the select_tag
+if($("#select_balancing_attribute").val() == "") {
+    $("#select_balancing_attribute").css("border-color", "red");
+}
+
+//$("#setting_module").html("");

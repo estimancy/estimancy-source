@@ -1,0 +1,546 @@
+<%= form_tag guw.guw_unit_of_works_save_guw_unit_of_works_path do %>
+
+  <% @group_unit_of_works = Guw::GuwUnitOfWorkGroup.where(pbs_project_element_id: current_component.id, module_project_id: current_module_project.id) %>
+
+  <div class="row-fluid">
+    <div class="span12">
+      <% if can? :execute_estimation_plan, @project %>
+        <%= link_to I18n.t(:manage_the_groups), guw.guw_model_guw_unit_of_work_groups_path(@guw_model), class: "btn" %>
+        <a href="#import_guw" role="button" class="btn " title="<%= I18n.t(:import_uo_from_excel)%>" data-toggle="modal">
+          <%= I18n.t(:import) %>
+        </a>
+      <% end %>
+      <%= link_to I18n.t(:export), guw.guw_model_export_path(@guw_model), class: "btn ", method: "post" %>
+      <button type="button" class="btn pull-right" data-toggle="modal" data-target="#stats_modal">
+        Statistiques détaillées
+      </button>
+    </div>
+  </div>
+
+  <div class="row-fluid">
+    <hr>
+    <div class="pull-right">
+      <span class="label label-success">
+      Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %> :
+        <span class="label label-success ajusted_size">
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).flatten.map{|i| i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : 0 }}.flatten.compact.sum.to_f.round(3) %>
+        </span>
+      </span>
+
+      <span class="label label-success">
+        Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:Calculated)%> :
+        <span class="label label-success theorical_size">
+            <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).map{|i| i.size.is_a?(Numeric) ? i.size.to_f : 0 }}.flatten.compact.sum.to_f.round(3) %>
+        </span>
+      </span>
+
+      <span class="label label-info">
+        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw) %> :
+        <span class="label label-info number_of_unit_of_work">
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.map(&:quantity)}.flatten.compact.sum %>
+        </span>
+      </span>
+
+      <span class="label label-info">
+        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw_modifies) %>
+        <span class="label label-info modified_of_unit_of_work">
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(flagged: true).map(&:quantity)}.flatten.compact.sum %>
+        </span>
+      </span>
+
+      <span class="label label-info">
+        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_of_uw_selected) %> :
+        <span class="label label-info selected_of_unit_of_work">
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where(selected: true).map(&:quantity)}.flatten.compact.sum %>
+        </span>
+      </span>
+
+      <span class="label label-info">
+        &nbsp;&nbsp;&nbsp;&nbsp; <%= I18n.t(:number_uo_hs) %>
+        <span class="label label-info off_line_unit_of_work">
+          <%= @group_unit_of_works.map{|i| i.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity)}.flatten.compact.sum %>
+        </span>
+      </span>
+    </div>
+  </div>
+
+  <hr>
+
+  <div class="accordion" id="accordion">
+    <% if @unit_of_work_groups.empty? %>
+      <% if can? :execute_estimation_plan, @project %>
+        <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
+        <% unless @unit_of_work_groups.empty? %>
+          <%= link_to I18n.t(:new_unit_of_work), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <% @unit_of_work_groups.each_with_index do |uowg, j| %>
+      <div class="accordion-heading" style="padding:5px;">
+        <div class="row-fluid">
+          <div class="span3">
+            <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#collapse<%=uowg.id%>" id="accordion<%=uowg.id%>">
+              <span style="font-weight: bold; font-size: 20px;" title="<%= uowg.comments %>">
+                <%= uowg.name %>
+              </span>
+            </a>
+          </div>
+
+          <div class="span9">
+            <div class="pull-right">
+              <% if can?(:execute_estimation_plan, @project) %>
+                <%= link_to '', guw.edit_guw_model_guw_unit_of_work_group_path(@guw_model, uowg), class: "fa fa-pencil pull-right", style: "margin-top:3px;" %>
+              <% end %>
+
+              <span class="label label-success">
+                Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:retained_result) %>  :
+                <span class="<%= uowg.id %>_ajusted">
+                  <%= uowg.guw_unit_of_works.where(selected: true).map{|i| (i.ajusted_size.is_a?(Numeric) ? i.ajusted_size.to_f : 0) }.flatten.sum.to_f.round(3) %>
+                </span>
+              </span>
+              <span class="label label-success">
+                Total <%= @guw_model.retained_size_unit %> <%= I18n.t(:Calculated) %> :
+                <span class="<%= uowg.id %>_theorical">
+                  <%= uowg.guw_unit_of_works.where(selected: true).map{|i| i.size.is_a?(Numeric) ? i.size.to_f : 0 }.sum.to_f.round(3) %>
+                </span>
+              </span>
+              <span class="label label-info">
+                 <%= I18n.t(:number_of_uw) %> :
+                <span class="<%= uowg.id %>_number">
+                  <%= uowg.guw_unit_of_works.map(&:quantity).compact.sum %>
+                </span>
+              </span>
+              <span class="label label-info">
+                <%= I18n.t(:number_of_uw_modifies) %> :
+                <span class="<%= uowg.id %>_flagged">
+                  <%= uowg.guw_unit_of_works.where(flagged: true).map(&:quantity).compact.sum %>
+                </span>
+              </span>
+              <span class="label label-info">
+                <%= I18n.t(:number_of_uw_selected) %> :
+                <span class="<%= uowg.id %>_selected">
+                  <%= uowg.guw_unit_of_works.where(selected: true).map(&:quantity).compact.sum %>
+                </span>
+              </span>
+              <span class="label label-info">
+                Nombre d'U.O. H.S. :
+                <span class="<%= uowg.id %>_off_line">
+                  <%= uowg.guw_unit_of_works.where("off_line = ? OR off_line_uo = ?", true, true).map(&:quantity).compact.sum %>
+                </span>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="collapse<%= uowg.id %>" class="accordion-body collapse in">
+
+        <div class="accordion-inner">
+          <table class="table table-striped">
+            <tr>
+              <th class=""></th>
+              <th class="">
+                <% if can?(:execute_estimation_plan, @project) %>
+                  <%= link_to '', '#!', onclick: "toggle_group(#{uowg.id});", class: "fa fa-check-square-o" %>
+                <% end %>
+              </th>
+              <th class="">#</th>
+              <th class="text_left"><%= I18n.t :name %></th>
+              <th class=""><%= I18n.t :type %></th>
+              <% unless @guw_model.coefficient_label.blank? %>
+                <th class=""><%= @guw_model.coefficient_label.to_s %></th>
+              <% end %>
+              <% unless @guw_model.weightings_label.blank? %>
+                <th class=""><%= @guw_model.weightings_label.to_s %></th>
+              <% end %>
+              <% unless @guw_model.factors_label.blank? %>
+                <th class=""><%= @guw_model.factors_label.to_s %></th>
+              <% end %>
+
+              <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
+                <th class=""><%= I18n.t :quantity %></th>
+              <% end %>
+
+              <th class=""><%= I18n.t :complexity %></th>
+
+              <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                <th>
+                  <%= I18n.t :criteria %>
+                </th>
+              <% end %>
+              <th class=""><%= I18n.t :results %></th>
+              <th class=""><%= I18n.t :retained_result %></th>
+              <th class=""><%= I18n.t :actions %></th>
+            </tr>
+
+           <% uowg.guw_unit_of_works.order("display_order ASC").each_with_index do |guow, i| %>
+              <tr>
+
+                <td style="border-left: 6px solid <%= (guow.flagged == true) ? 'red' : 'green' %>"></td>
+
+                <td>
+                  <%= check_box_tag "selected[]", guow.id, guow.selected, class: "selected checkbox_#{uowg.id}", selected: guow.id,disabled: !can?(:execute_estimation_plan, @project) %>
+                  <%= hidden_field_tag "", uowg.id, class: "#{guow.id}_group" %>
+                  <%= hidden_field_tag "", guow.id, class: "#{guow.id}" %>
+                </td>
+
+                <td>
+                  <span class="badge badge-default">
+                    <%= j %><%= guow.display_order %>
+                  </span>
+                </td>
+
+                <td class="text_field_text_overflow">
+                  <span class="pull-left">
+                    <%= link_to (guow.name.nil? || guow.name.blank?) ? '-' : guow.name, guw.guw_unit_of_work_load_comments_path(guow), title: guow.name, method: "post", remote: true %>
+                  </span>
+                </td>
+
+                <td class="span2">
+                  <%= select_tag "guw_type[#{guow.id}]", options_for_select( @guw_model.guw_types.map{|i| [i.name, i.id]},
+                                                                             selected: guow.guw_type_id),
+                                 class: "guw_type input-xsmall",
+                                 guw: guow.id,
+                                 required: true,
+                                 readonly: !can?(:execute_estimation_plan, @project) %>
+                </td>
+
+                <% unless @guw_model.coefficient_label.blank? %>
+                  <td class="span2">
+                    <span class="work_unit_<%= guow.id %>" >
+                      <% disabled_work_units = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value == nil }.map{|i| i.guw_work_unit }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+
+                      <% if disabled_work_units.map(&:id).include?(guow.guw_work_unit_id) %>
+                        <% disabled_work_units = disabled_work_units %>
+                        <% results = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_work_unit }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% else %>
+                        <% disabled_work_units = [] %>
+                        <% results = @guw_model.guw_work_units.map{|i| i.guw_complexity_work_units.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_work_unit }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% end %>
+
+                      <% unless results.empty? %>
+                        <%= select_tag "guw_work_unit[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
+                                                                                       selected: guow.guw_work_unit_id,
+                                                                                       disabled: disabled_work_units.map(&:id)),
+                                       class: "guw_work_unit input-xsmall",
+                                       guw: guow.id,
+                                       required: true,
+                                       readonly: !can?(:execute_estimation_plan, @project) %>
+                      <% end %>
+                    </span>
+                  </td>
+                <% end %>
+
+                <% unless @guw_model.weightings_label.blank? %>
+                  <td class="span2">
+                    <span class="weighting_<%= guow.id %>" >
+                      
+                      <% disabled_weightings = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value == nil }.map{|i| i.guw_weighting }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+
+                      <% if disabled_weightings.map(&:id).include?(guow.guw_weighting_id) %>
+                        <% disabled_weightings = disabled_weightings %>
+                        <% results = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_weighting }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% else %>
+                        <% disabled_weightings = [] %>
+                        <% results = @guw_model.guw_weightings.map{|i| i.guw_complexity_weightings.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_weighting }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% end %>
+                      
+                      <% unless results.empty? %>
+                        <%= select_tag "guw_weighting[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
+                                                                                       selected: guow.guw_weighting_id,
+                                                                                       disabled: disabled_weightings.map(&:id)),
+                                       class: "guw_weighting input-xsmall",
+                                       guw: guow.id,
+                                       required: true,
+                                       readonly: !can?(:execute_estimation_plan, @project) %>
+                      <% end %>
+                    </span>
+                  </td>
+                <% end %>
+
+                <% unless @guw_model.factors_label.blank? %>
+                  <td class="span2">
+                    <span class="factor_<%= guow.id %>" >
+
+                      <% disabled_factors = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value == nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+
+                      <% if disabled_factors.map(&:id).include?(guow.guw_factor_id) %>
+                        <% disabled_factors = disabled_factors %>
+                        <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% else %>
+                        <% disabled_factors = [] %>
+                        <% results = @guw_model.guw_factors.map{|i| i.guw_complexity_factors.where(guw_type_id: guow.guw_type_id).select{|ct| ct.value != nil }.map{|i| i.guw_factor }.uniq }.flatten.compact.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i } %>
+                      <% end %>
+
+                      <% unless results.empty? %>
+                        <%= select_tag "guw_factor[#{guow.id}]", options_for_select(results.map{|i| [i.name, i.id]},
+                                                                                    selected: guow.guw_factor_id,
+                                                                                    disabled: disabled_factors.map(&:id)),
+                                       class: "guw_factor input-xsmall",
+                                       guw: guow.id,
+                                       required: true,
+                                       readonly: !can?(:execute_estimation_plan, @project) %>
+                      <% end %>
+                    </span>
+                  </td>
+                <% end %>
+
+                <% if @guw_model.guw_types.map{|i| i.allow_quantity }.flatten.include?(true) %>
+                  <td class="span2 quantity_label_<%= guow.id %>">
+                    <% unless guow.guw_type.nil? %>
+                      <% if guow.guw_type.allow_quantity == true %>
+                        <%= number_field_tag "quantity[#{guow.id}]", guow.quantity.nil? ? 1 : guow.quantity, class: "input-mini" %>
+                      <% end %>
+                    <% end %>
+                  </td>
+                <% end %>
+
+                <td>
+                  <span class="cotation_label_<%= guow.id %>">
+                    <% begin %>
+                      <% if guow.off_line == true %>
+                        <% @default_complexity = guow.guw_type.guw_complexities.where(default_value: true).first %>
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil), guw: guow.id, class: " guw_complexity", prompt: "HSAT", readonly: !guow.guw_type.allow_complexity %>
+                      <% elsif guow.off_line_uo == true %>
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: nil), guw: guow.id, class: " guw_complexity", prompt: "HSUO", readonly: !guow.guw_type.allow_complexity %>
+                      <% elsif guow.guw_complexity.nil? %>
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{ |i| [i.name, i.id] },
+                                                                                       selected: guow.guw_type.guw_complexities.where(default_value: true).first.nil? ? nil : guow.guw_type.guw_complexities.where(default_value: true).first.id),
+                                       guw: guow.id,
+                                       class: " guw_complexity",
+                                       include_blank: true,
+                                       readonly: !guow.guw_type.allow_complexity %>
+                      <% else %>
+                        <%= select_tag "guw_complexity_#{guow.id}", options_for_select(guow.guw_type.guw_complexities.order("display_order ASC").map{|i| [i.name, i.id] }, selected: guow.guw_complexity_id), guw: guow.id, class: " guw_complexity", include_blank: true, readonly: !guow.guw_type.allow_complexity %>
+                      <% end %>
+                    <% rescue %>
+                    <% end %>
+                  </span>
+                </td>
+
+                <% if @guw_model.guw_types.map{|i| i.allow_criteria }.flatten.include?(true) %>
+                  <td>
+                    <% unless guow.guw_type.nil? %>
+                      <% if guow.guw_type.allow_criteria == true %>
+                        <span class="text-center criteria_label_<%= guow.id %>">
+                          <% counting = guow.guw_unit_of_work_attributes.where(guw_type_id: guow.guw_type_id).map(&:most_likely).compact %>
+                          <% if counting.empty? %>
+                            <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : '') }" %>
+                          <% else %>
+                            <%= link_to "", guw.guw_unit_of_work_load_cotations_path(guow), method: "post", remote: true, class: "fa fa-gears #{guow.missing_value == true ? 'red' : (guow.guw_complexity_id !=  guow.guw_original_complexity_id ? 'blue' : 'green')}" %>
+                          <% end %>
+                        </span>
+                      <% end %>
+                    <% end %>
+                  </td>
+                <% end %>
+
+                <td>
+                  <span class=" size_label_<%= guow.id %>">
+                    <% begin %>
+                      <%= number_field_tag "size[#{guow.id}]", guow.size.nil? ? '' : guow.size.to_f.round(3), class: "input-mini size-#{uowg.id}", disabled: true %>
+                    <% rescue %>
+                      <%= number_field_tag "size[#{guow.id}]", guow.size.nil? ? '' : guow.size.first, class: "input-mini size-#{uowg.id}", disabled: true %>
+                    <% end %>
+                  </span>
+                </td>
+
+                <td>
+                  <% unless guow.guw_type.nil? %>
+                    <span class=" ajusted_size_<%= guow.id %>">
+                      <% begin %>
+                        <%= number_field_tag "ajusted_size[#{guow.id}]", guow.ajusted_size.nil? ? '' : guow.ajusted_size.to_f.round(3), step: 0.001, class: "input-mini retained-#{uowg.id} guw_number_field_tag", readonly: !((guow.guw_type.allow_retained == true) && can?(:execute_estimation_plan, @project)) %>
+                      <% rescue %>
+                        <%= number_field_tag "ajusted_size[#{guow.id}]", guow.ajusted_size.nil? ? '' : guow.ajusted_size.is_a?(Numeric), step: 0.001, class: "input-mini retained-#{uowg.id} guw_number_field_tag", readonly: !((guow.guw_type.allow_retained == true) && can?(:execute_estimation_plan, @project)) %>
+                      <% end %>
+                    </span>
+                  <% end %>
+                </td>
+
+                <!--<td>-->
+                  <!--<%# unless guow.guw_type.nil? %>-->
+                    <!--<span class=" effort<%# guow.id %>">-->
+                      <!--<%# number_field_tag "effort[#{guow.id}]", guow.effort.nil? ? '' : guow.effort.round(3), step: 0.001, class: "input-mini retained-#{uowg.id} guw_number_field_tag", readonly: !((guow.guw_type.allow_retained == true) && can?(:execute_estimation_plan, @project)) %>-->
+                    <!--</span>-->
+                  <!--<%# end %>-->
+                <!--</td>-->
+
+                <!--<td>-->
+                  <!--<%# unless guow.guw_type.nil? %>-->
+                    <!--<span class=" cost<%# guow.id %>">-->
+                      <!--<%# number_field_tag "cost[#{guow.id}]", guow.cost.nil? ? '' : guow.cost.round(3), step: 0.001, class: "input-mini retained-#{uowg.id} guw_number_field_tag", readonly: !((guow.guw_type.allow_retained == true) && can?(:execute_estimation_plan, @project)) %>-->
+                    <!--</span>-->
+                  <!--<%# end %>-->
+                <!--</td>-->
+
+                <td>
+                  <% if can? :execute_estimation_plan, @project %>
+                    <%= link_to "", guw.guw_unit_of_work_duplicate_path(guow), class: "fa fa-copy", method: "post", title: I18n.t(:duplicate) %>
+                    <%= link_to "", guw.guw_unit_of_work_up_path(guow), class: "fa fa-arrow-up", title: I18n.t(:up) %>
+                    <%= link_to "", guw.guw_unit_of_work_down_path(guow), class: "fa fa-arrow-down", title: I18n.t(:down) %>
+                    <%= link_to "", guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg, position: guow.display_order), class: "fa fa-plus", title: I18n.t(:add) %>
+                    <%= link_to "", guw.edit_guw_model_guw_unit_of_work_path(@guw_model, guow, g: uowg), class: "fa fa-pencil", title: I18n.t(:edit) %>
+                    <%= link_to "", guw.guw_unit_of_work_path(guow), method: "delete", data: {confirm: I18n.t('are_you_sure')}, class: "fa fa-trash", title: I18n.t(:delete) %>
+                  <% end %>
+                </td>
+              </tr>
+            <% end %>
+          </table>
+          <% if can? :execute_estimation_plan, @project %>
+            <%= link_to I18n.t('add_new_unit_of_work_group'), guw.new_guw_unit_of_work_group_path, class: "btn pull-left button_margin_right" %>
+            <% unless @unit_of_work_groups.empty? %>
+              <%= link_to I18n.t('new_unit_of_work'), guw.new_guw_model_guw_unit_of_work_path(@guw_model, g: uowg), class: "btn pull-left button_margin_right" %>
+            <% end %>
+            <button type="submit" class="btn btn-primary pull-right"><%= I18n.t(:calculate) %></button>
+            <%= link_to "RAZ", "#!", class: "btn btn-inverse reset_retained button_margin_right pull-right", onclick: "raz(#{uowg.id})" %>
+          <% end %>
+        </div>
+      </div>
+
+      <br>
+    <% end %>
+  </div>
+<% end %>
+
+
+<div id="import_guw" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <%= form_tag guw.old_import_guw_path, :method => 'post', :multipart => true, :class => 'simple_form' do %>
+    <div class="modal-header modal-drag">
+      <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+      <h3 id="myModalLabel"> <%= I18n.t(:import_data_from_uw) %></h3>
+    </div>
+    <div class="modal-body">
+      <!--<p>description de se que fait l'action peut etre ?</p>-->
+      <%= file_field_tag :file %>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
+      <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+    </div>
+    <div class="loading span11 hide">
+      <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %></h4>
+    </div>
+  <% end %>
+</div>
+
+<script>
+  function raz(group){
+    $('.retained-' + group).val('');
+    return false; // prevent default click action from happening!
+    e.preventDefault();
+  }
+
+  function toggle_group(group_id){
+    var number_of_checked = 0;
+    var number_of_line = 0;
+
+    $(".checkbox_" + group_id).each(function() {
+      if (this.checked)
+        number_of_checked = number_of_checked + 1;
+      number_of_line = number_of_line + 1
+    });
+    if (number_of_checked < number_of_line){
+      $(".checkbox_" + group_id).attr("checked", true);
+    }
+    else if (number_of_checked == number_of_line){
+      $(".checkbox_" + group_id).attr("checked", false);
+    }
+  }
+
+  //$(document).ready(function () {
+  $(document).ready(function() {
+
+    $('.selected').change(function(){
+      $.ajax({
+        url: "<%= guw.change_selected_state_path %>",
+        data: "guw_unit_of_work_id=" + this.value + "&guw_unit_of_work_group_id=" + $("." + this.value + "_group").val()
+      });
+    });
+
+    $('select.guw_factor').on('click', function(){
+      $(this).find('option:disabled').remove();
+    });
+
+    $('select.guw_weighting').on('click', function(){
+      $(this).find('option:disabled').remove();
+    });
+
+    $('select.guw_work_unit').on('click', function(){
+      $(this).find('option:disabled').remove();
+    });
+
+    $('.guw_type').change(function(){
+      $.ajax({
+        url: "<%= guw.change_cotation_path %>",
+        data: "guw_type_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
+      });
+    });
+
+    $('.guw_work_unit').change(function(){
+      $.ajax({
+        url: "<%= guw.change_work_unit_path %>",
+        data: "guw_work_unit_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
+      });
+    });
+//    $('.guw_complexity').change(function(){
+//      $.ajax({
+//        url: "<%# guw.change_complexity_path %>",
+//        data: "guw_complexity_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
+//      });
+//    });
+//
+//    $('.guw_technology').change(function(){
+//      $.ajax({
+//        url: "<%#= guw.change_technology_path %>",
+//        data: "guw_technology_id=" + this.value + "&guw_unit_of_work_id=" + $(this).attr("guw")
+//      });
+//    });
+  });
+</script>
+
+<div class="modal fade" id="modal_cotation" tabindex="-1" role="dialog" aria-labelledby="modal_cotation_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-cotation" id="modal_cotation_content">
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_comments" tabindex="-1" role="dialog" aria-labelledby="modal_comments_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_comments_content">
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_trackings" tabindex="-1" role="dialog" aria-labelledby="modal_trackings_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_trackings_content">
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modal_name" tabindex="-1" role="dialog" aria-labelledby="modal_name_label" aria-hidden="true" backdrop="static">
+  <div class="modal-dialog">
+    <div class="modal-content" id="modal_name_content">
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" tabindex="-1" role="dialog" id="stats_modal" aria-labelledby="myModalLabel" style="height: 400px;">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header modal-drag">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Statistiques détaillés</h4>
+      </div>
+      <div class="modal-body" style="max-height: 250px;">
+        <%= render partial: "guw/guw_unit_of_works/details" %>
+      </div>
+      <div class="modal-footer modal-drag">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Fermer</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+

@@ -1,0 +1,31 @@
+<% organization_id = @organization.id %>
+<% @unit_of_work_groups = Guw::GuwUnitOfWorkGroup.where(organization_id: organization_id,
+                                                        guw_model_id: @guw_model.id,
+                                                        project_id: @project.id,
+                                                        module_project_id: @module_project.id,
+                                                        pbs_project_element_id: @component.id)
+%>
+
+$("#guw_block").html("<%= j(render(partial: "guw/guw_unit_of_works/settings_new")) %>");
+
+//Mettre à jour l'url sans recharger la page
+if (history.pushState) {
+  var newurl = window.location.protocol + "//" + window.location.host + window.location.pathname;
+  window.history.pushState({path:newurl},'',newurl);
+}
+
+var my_array = [];
+$(document).on('ready turbolinks:load', function() {
+  $("table#guw input").keyup(function(e) {
+    var new_line = $(this).closest("tr").data("guw-id");
+    my_array.push(new_line);
+    $("#modified_guw_line_ids").val(my_array);
+  });
+
+  $("table#guw select").on("change", function(e) {
+    var new_line = $(this).closest("tr").data("guw-id");
+    my_array.push(new_line);
+    $("#modified_guw_line_ids").val(my_array);
+  });
+});
+

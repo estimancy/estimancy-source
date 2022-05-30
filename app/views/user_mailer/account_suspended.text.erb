@@ -1,0 +1,10 @@
+Hello <%= @user.name %>,
+
+We would like to inform you that your Estimancy account (<%= @user.login_name %>}) has been suspended.
+
+You can ask to reactivate it by sending an email to the administrator <%= AdminSetting.find_by_key('notifications_email').value %>
+
+Sincerly,
+
+-----------------------------------------------
+This email have been sent automatically through the Estimancy server.

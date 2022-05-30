@@ -1,0 +1,18 @@
+<%= simple_format(I18n.t(:mail_salutation, :value => @user.name)) %>
+
+<%= simple_format(I18n.t(:mail_body_account_created)) %>
+<% if @user.auth_method && @user.auth_method.name == 'Application'
+     simple_format(I18n.t(:mail_body_account_information, :user => @user.login_name, :pwd => @user.password))
+   else
+     simple_format(I18n.t(:mail_body_account_information, :user => @user.login_name, :pwd => I18n.t(:mail_password_from_ldap)))
+   end
+%>
+<%# if !@user.active?
+ #simple_format(I18n.t(:mail_body_account_not_yet_activated))
+end
+%>
+
+<%= simple_format(I18n.t(:mail_complimentary_close)) %>
+
+<%= simple_format(I18n.t(:mail_footer)) %>
+<a href='<%= "#{SETTINGS['HOST_URL']}" %>'>Estimancy</a>

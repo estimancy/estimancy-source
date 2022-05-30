@@ -1,0 +1,510 @@
+<!--Load the Google charts API  -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+</script>
+
+
+<section class="card card-content-bloc estimancy-form">
+
+<div class="mb-5">
+  <div class="effort-bloc">
+    <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+      <li class="nav-item">
+        <a class="nav-link show active"  data-toggle="pill" id="pills-global_properties-tab" href="#pills-global_properties" role="tab" aria-selected="true"><%= I18n.t(:global_properties) %></a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link"  data-toggle="pill" id="pills-technical_informations-tab" href="#pills-technical_informations" role="tab" aria-selected="false"><%= I18n.t(:technical_informations) %></a>
+      </li>
+
+      <% unless @organization.new_record? %>
+
+          <% if @organization.name.downcase.include?("distribution transporteur") || @organization.name.downcase.include?("boreale") %>
+              <li class="nav-item">
+                <a class="nav-link"  data-toggle="pill" id="pills-dt-tab" href="#pills-dt" role="tab" aria-selected="false">
+                  MaJ des prix (<%= @organization.name  %>)
+                </a>
+              </li>
+          <% end %>
+
+          <li class="nav-item">
+          <a class="nav-link"  data-toggle="pill" id="pills-kpi-tab" href="#pills-kpi" role="tab" aria-selected="false">
+            Restitution
+          </a>
+        </li>
+      <% end %>
+
+    </ul>
+
+    <%= simple_form_for(@organization) do |f| %>
+
+        <div class="tab-content" id="pills-tabContent">
+
+          <!-- Global Properties -->
+          <div class="tab-pane fade show active" id="pills-global_properties" role="tabpanel" aria-labelledby="pills-global_properties-tab">
+            <div class="card-body">
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h1>
+                    <%= I18n.t(:label_definition) %>
+                  </h1>
+                </div>
+              </div>
+
+              <div style="color: red; text-align: center"> <%= f.error_notification %> </div>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  <div class="form-row">
+
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                        <label class="mdl-textfield__label" for="name" required><%= I18n.t(:name) %></label>
+                      </div>
+                    </div>
+
+                    <div class="col-3">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :is_image_organization, as: :boolean, label: false, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__input'} %>
+                        <label class="mdl-textfield__label" for="is_image_organization" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:is_image_organization) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :headband_title, label: false, :input_html => { :class => 'mdl-textfield__input' } %>
+                        <label class="mdl-textfield__label" for="headband_title"><%= I18n.t(:headband_title) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
+                        <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :support_contact, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="support_contact"><%= I18n.t(:contactsupport) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  <br><br>
+                  <h1>
+                    <%= "SMAL INFO" %><%#= I18n.t 'saml_info' %>
+                  </h1>
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_name, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_name"><%= I18n.t(:idp_name) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_assertion_consumer_service_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_assertion_consumer_service_url"><%= I18n.t(:idp_assertion_consumer_service_url) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_login_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_login_url"><%= I18n.t(:idp_login_url) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_logout_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_logout_url"><%= I18n.t(:idp_logout_url) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_name_identifier_format, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_name_identifier_format"><%= I18n.t(:idp_name_identifier_format) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_change_password_url, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 5} %>
+                        <label class="mdl-textfield__label" for="idp_change_password_url"><%= I18n.t(:idp_change_password_url) %></label>
+                        <br>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_signing_certicate, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
+                        <label class="mdl-textfield__label" for="idp_signing_certicate"><%= I18n.t(:idp_signing_certicate) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_signing_certicate_fingerprint, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
+                        <label class="mdl-textfield__label" for="idp_signing_certicate_fingerprint"><%= I18n.t(:idp_signing_certicate_fingerprint) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :idp_metadata, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 7 } %>
+                        <label class="mdl-textfield__label" for="idp_metadata"><%= I18n.t(:idp_metadata) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-12">
+                      <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
+                          <% if action_name == 'edit' %>
+                              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                          <% end %>
+                          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% end %>
+                      <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Informations techniques -->
+          <div class="tab-pane fade" id="pills-technical_informations" role="tabpanel" aria-labelledby="pills-technical_informations-tab">
+            <div class="card-body">
+              <div class="edition-bloc-left">
+                <div class="edition-bloc-title">
+                  <h1>
+                    <%= I18n.t(:estimations_counter) %>
+                  </h1>
+                </div>
+              </div>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :automatic_quotation_number, :label => false, :input_html => {:class => 'mdl-textfield__input'} %>
+                        <label class="mdl-textfield__label" for="automatic_quotation_number"><%= I18n.t(:automatic_quotation_number) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :estimations_counter, :label => false, :input_html => {:class => 'mdl-textfield__input'}, readonly: !current_user.super_admin %>
+                        <label class="mdl-textfield__label" for="estimations_counter"><%= I18n.t(:estimations_counter) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :estimations_counter_history, :label => false, :input_html => {:class => 'mdl-textfield__input', :rows => 5}, readonly: !current_user.super_admin %>
+                        <label class="mdl-textfield__label" for="need"><%= I18n.t(:actions_history) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :number_hours_per_month, :label => false, :required => true, :input_html => {:class => 'mdl-textfield__input'} %>
+                        <label class="mdl-textfield__label" for="number_hours_per_month"><%= I18n.t(:number_hours_per_month) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :currency_id, :as => :select, collection: Currency.all.map{|i| ["#{i.name} (#{i.sign})", i.id]}, :label => false, :required => true, :input_html => {:class => 'mdl-textfield__input'} %>
+                        <label class="mdl-textfield__label" for="currency_id"><%= I18n.t(:currency) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :cost_per_hour, :label => false, :required => true, :input_html => {:class => 'mdl-textfield__input'} %>
+                        <label class="mdl-textfield__label" for="cost_per_hour"><%= I18n.t(:cost_per_hour) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="edition-bloc-left">
+                    <div class="edition-bloc-title">
+                      <h1>
+                        <%= I18n.t(:select_size_module) %>
+                      </h1>
+                    </div>
+                  </div>
+
+                  <div style="display: flex;">
+                    <table class="table table-list">
+                      <thead>
+                          <tr>
+                            <th><%= I18n.t(:threshold_min_value)%></th>
+                            <th><%= I18n.t(:threshold_max_value)%></th>
+                            <th><%= I18n.t(:convertion_coef_stand)%></th>
+                            <th><%= I18n.t(:effort_unit)%></th>
+                          </tr>
+                      </thead>
+
+                      <tbody>
+                          <tr>
+                            <td class="center"><%= text_field_tag "", 0, disabled: true %></td>
+                            <td class="center"><%= text_field_tag "organization[limit1]", @organization.limit1.nil? ? 100000 : @organization.limit1 %></td>
+                            <td class="center"><%= text_field_tag "organization[limit1_coef]", @organization.limit1_coef %></td>
+                            <td class="center"><%= text_field_tag "organization[limit1_unit]", @organization.limit1_unit %></td>
+                          </tr>
+
+                          <tr>
+                            <td class="center"><%= text_field_tag "", @organization.limit1.nil? ? 100000 : @organization.limit1, disabled: true %></td>
+                            <td class="center"><%= text_field_tag "organization[limit2]", @organization.limit2 %></td>
+                            <td class="center"><%= text_field_tag "organization[limit2_coef]", @organization.limit2_coef %></td>
+                            <td class="center"><%= text_field_tag "organization[limit2_unit]", @organization.limit2_unit %></td>
+                          </tr>
+                          <tr>
+                            <td class="center"><%= text_field_tag "", @organization.limit2.nil? ? 100000 : @organization.limit2, disabled: true %></td>
+                            <td class="center"><%= text_field_tag "organization[limit3]", @organization.limit3 %></td>
+                            <td class="center"><%= text_field_tag "organization[limit3_coef]", @organization.limit3_coef %></td>
+                            <td class="center"><%= text_field_tag "organization[limit3_unit]", @organization.limit3_unit %></td>
+                          </tr>
+                          <tr>
+                            <td class="center"><%= text_field_tag "", @organization.limit3.nil? ? 100000 : @organization.limit3, disabled: true %></td>
+                            <td class="center"><%= text_field_tag "organization[limit4]", @organization.limit4 %></td>
+                            <td class="center"><%= text_field_tag "organization[limit4_coef]", @organization.limit4_coef %></td>
+                            <td class="center"><%= text_field_tag "organization[limit4_unit]", @organization.limit4_unit %></td>
+                          </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-12">
+                      <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
+                          <% if action_name == 'edit' %>
+                              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                          <% end %>
+                          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                      <% end %>
+                      <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <% unless @organization.new_record? %>
+            <!-- Mise à jour des Prix -->
+            <div class="tab-pane fade" id="pills-dt" role="tabpanel" aria-labelledby="pills-dt-tab">
+              <div class="card-body">
+
+                <div class="edition-bloc-left">
+                  <div class="edition-bloc-title">
+                    <h4>
+                      <%= "Prise en compte de la contribution espagnole dans les profils :" %>
+                    </h4>
+                  </div>
+                </div>
+
+                <div class="edition-bloc-content">
+                  <div class="edition-bloc-form">
+
+                    <% if @current_user.super_admin? %>
+                        <div class="well component_tree" style="background-color: transparent">
+                          <%= form_tag calculate_mixed_profiles_path :class => 'simple_form' do %>
+                              <%= hidden_field_tag :organization_id, @organization.id %>
+                              <%#= hidden_field_tag :wbs_activity_id, wbs_for_config.id %>
+                              R :  <%= text_field_tag :r_value, "0.25" %>
+                              TM : <%= text_field_tag :tm_value %>
+
+                              <%= submit_tag I18n.t('calculate'), name: 'calculate_mixed_profiles', :class => 'btn btn-primary' %>
+                          <% end %>
+                        </div>
+                    <% end %>
+
+
+            <h5>
+              <% project = Project.where(organization_id: @organization.id, title: "EBE001 (Calcul Mix Profil)").first %>
+              <% unless project.nil? %>
+                <strong>#2</strong> <%= link_to "Calculer les TJM Dire d'Expert, MCO & Services Abaques", dashboard_path(project), target: "_blank" %>
+              <% end %>
+            </h5>
+
+            <h5>
+              <strong>#3</strong>
+              <%= link_to "Mettre à jour des TJM Dire d'Expert, MCO & Services Abaques", maj_mix_profil_path(organization_id: @organization.id) %>
+            </h5>
+
+            <h5>
+              <% project = Project.where(organization_id: @organization.id, title: "EBE0001 TJM Petites Evol.").first %>
+              <% unless project.nil? %>
+                <strong>#4</strong> <%= link_to "Calculer les TJM Petites Evolutions", dashboard_path(project), target: "_blank" %>
+              <% end %>
+            </h5>
+
+            <h5>
+              <strong>#5</strong>
+              <%= link_to "Mettre à jour les TJM Petites Evolutions", maj_pe_path(organization_id: @organization.id) %>
+            </h5>
+
+                    <h5>
+                      <strong>#6</strong>
+                      <%= link_to "Mettre à jour la valeur du taux au niveau du paramétrage de l'organisation (platform_category)", organization_setting_path(@organization, anchor: "tabs-platform-categories"), target: "_blank" %>
+                    </h5>
+
+                    <h5>
+                      <strong>#7</strong>
+                      <%= "Mettre à jour les modèles pour sélectionner le bon taux dans le champ TM (Taux moyen de délocalisation)" %>
+                    </h5>
+
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Restitution -->
+            <div class="tab-pane fade" id="pills-kpi" role="tabpanel" aria-labelledby="pills-kpi-tab">
+              <div class="card-body">
+
+                <div class="edition-bloc-left">
+                  <div class="edition-bloc-title">
+                    <h4>
+                      <%= I18n.t(:choose_reports_to_show) %>
+                    </h4>
+                  </div>
+                </div>
+
+                <div class="edition-bloc-content">
+                  <div class="edition-bloc-form">
+                    <% unless @reports_list.nil? %>
+                      <% @reports_list.each do |report| %>
+                          <div class="form-row">
+                            <div class="col-5">
+                              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                                <%= check_box_tag "show_reports[#{report}]", @organization.show_reports[report], @organization_show_reports_keys.include?(report) %>
+                                <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
+                                <%= I18n.t("#{report}") %>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        <% end %>
+                    <% end %>
+                  </div>
+                </div>
+
+                <div class="edition-bloc-left">
+                  <div class="edition-bloc-title">
+                    <h4>
+                      <%= I18n.t(:choose_kpis_to_show) %>
+                    </h4>
+                  </div>
+                </div>
+
+                <div class="edition-bloc-content">
+                  <div class="edition-bloc-form">
+                    <div class="form-row">
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%#= f.input :activate_indicators_dashboard, as: :radio_buttons, label: false, collection: [[I18n.t(:yes), true] ,[I18n.t(:no), false]] %>
+                          <%= f.input :activate_project_dashboard_indicators, as: :boolean, label: false %>
+                          <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
+                            <%= I18n.t(:on_project_dashboard) %>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="edition-bloc-content">
+                  <div class="edition-bloc-form">
+                    <div class="form-row">
+                      <div class="col-5">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%#= f.input :activate_indicators_dashboard, as: :radio_buttons, label: false, collection: [[I18n.t(:yes), true] ,[I18n.t(:no), false]] %>
+                          <%= f.input :activate_indicators_dashboard, as: :boolean, label: false %>
+                          <label class="mdl-textfield__label" for='#{report}' style="margin-left:1.5rem; margin-top:-0.75rem;">
+                            <%= I18n.t(:on_organization_dashboards) %>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+                <%#= f.input :activate_project_dashboard_indicators, as: :boolean, label: false %>
+            </div>
+
+            <div class="form-row">
+                <div class="col-12">
+                  <% if (action_name.in?(%w(edit update)) && can?(:edit_organizations, Organization)) || can?(:create_organizations, Organization) %>
+                      <% if action_name == 'edit' %>
+                          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                      <% end %>
+                      <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                  <% end %>
+                  <%= link_to I18n.t('back'), all_organizations_path, :class => 'btn btn-secondary' %>
+                </div>
+            </div>
+
+          <% end %>
+
+        </div>
+      </div>
+    <% end %>
+
+  </div>
+</div>
+</section>
+
+<script>
+    //$('.radio label').addClass('mdl-textfield__label');
+</script>

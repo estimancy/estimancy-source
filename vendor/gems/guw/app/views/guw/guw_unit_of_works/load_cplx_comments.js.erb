@@ -1,0 +1,16 @@
+$("#cplx_comments").html("<%= j(render 'guw/guw_unit_of_works/cplx_comments_modal', {
+  guw_unit_of_work: @guw_unit_of_work,
+  value: @value})
+%>")
+
+$("#cplx_comments").modal({
+  keyboard: false,
+  backdrop: false
+});
+
+$("#cplx_comments").on("shown.bs.modal", function () {
+  $("#guw_form").unbind('submit');
+  $(".submit_comments").prop("disabled", true);
+});
+
+$(".submit_comments").prop("disabled", true);

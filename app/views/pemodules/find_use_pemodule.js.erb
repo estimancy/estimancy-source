@@ -1,0 +1,12 @@
+$("#notifications").html("");
+
+$(".modal-body-inner").html("<%=raw j render :partial => 'pemodules/find_use_pemodule', :object => @relations %>");
+
+$("#myModalLabel").html("<%= I18n.t(:text_finduse_pemodule, :value => @pemodule_title) %>");
+
+$("#edit_component").modal({
+    keyboard: false,
+    backdrop: false
+});
+
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");

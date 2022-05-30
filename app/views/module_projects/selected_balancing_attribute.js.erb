@@ -1,0 +1,12 @@
+$(".input_data").html("<%=raw j(display_input) %>");
+
+$(".attribute_balancing_input").html("<%=raw j(render(partial: 'projects/select_balancing_module_attributes')) %>");
+
+$(".output_data").html("<%=raw j(sanitize(display_results, :tags => %w(table tr th td span title h4 strong), :attributes => %w(id class style title colspan rowspan))) %>");
+
+$(".component_name").html("<%=raw @current_component %>");
+
+$("#output_data_view_widgets_results").html("<%=raw j(render(partial: 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x])) %>");
+
+// Refresh input data according to the selected balancing attribute
+update_balancing_module_input();

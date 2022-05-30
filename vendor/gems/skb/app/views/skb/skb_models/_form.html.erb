@@ -1,0 +1,276 @@
+<section class="card card-content-bloc estimancy-form">
+
+  <div class="mb-5">
+    <div class="effort-bloc">
+      <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a class="nav-link show active" data-toggle="pill" id="tabs-1_tab" href="#tabs-1" role="tab" aria-selected="true"><%= I18n.t(:knowledge_base) %></a>
+        </li>
+        <% if action_name.in?(["edit", "update"]) %>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="pill" id="tabs-2_tab" href="#tabs-2" role="tab" aria-selected="false"><%= I18n.t(:data) %></a>
+          </li>
+        <% end %>
+      </ul>
+
+      <div class="tab-content" id="pills-tabContent">
+        <div class="tab-pane fade show active" id="tabs-1" role="tabpanel" aria-labelledby="tabs-1">
+        <div class="card-body">
+
+          <% if controller.action_name == "new" %>
+            <div class="pull-right">
+              <%= form_tag skb.import_skb_model_path, :multipart => true, method: "post", :class => 'simple_form' do %>
+                <label style="color: #808080">
+                  <%= I18n.t(:import_generic_effort_model) %>
+                </label>
+                <br>
+                <%= hidden_field_tag :organization_id, @organization.id %>
+                <%= file_field_tag :file %>
+                <%= hidden_field_tag :skb_model_id, nil %>
+                <%= submit_tag I18n.t(:import_instance_model), :class => 'btn btn-primary' %>
+              <% end %>
+            </div>
+          <% end %>
+
+          <%= simple_form_for(@skb_model) do |f| %>
+              <%= f.error_notification %>
+
+              <%= hidden_field_tag :organization_id, @current_organization.id %>
+              <div class="edition-bloc-content">
+              <div class="edition-bloc-form">
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                      <label class="mdl-textfield__label" for="name" required><%= I18n.t(:name) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input', :rows => 3 } %>
+                      <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :label_x, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="label_x" required><%= I18n.t(:horizontal_axis_label) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :label_y, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="label_y" required><%= I18n.t(:Y_axis_label) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :three_points_estimation, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="three_points_estimation" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:three_points_estimation) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :enabled_input, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="enabled_input" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:modification_of_the_input_value_allow) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-6">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :enable_filters, as: :boolean, :label => false, :input_html => {:class => 'mdl-checkbox__inputs'}  %>
+                      <label class="mdl-textfield__label" for="enable_filters" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:modification_of_the_filters_value_allow) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :date_min, label: false do %>
+                        <% if @skb_model.date_min.nil? %>
+                          <%= text_field_tag "skb_model[date_min]", "", :class => 'form-control date-picker' %>
+                        <% else %>
+                          <%= text_field_tag "skb_model[date_min]", I18n.l(@skb_model.date_min), class: "form-control date-picker" %>
+                        <% end %>
+                      <% end %>
+                      <label class="mdl-textfield__label" for="skb_model_date_min" style="margin-top: -30px;"><%= I18n.t(:start_date) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :date_max, label:false do %>
+                        <% if @skb_model.date_max.nil? %>
+                          <%= text_field_tag "skb_model[date_max]", "", class: "form-control date-picker" %>
+                        <% else %>
+                          <%= text_field_tag "skb_model[date_max]", I18n.l(@skb_model.date_max), class: "form-control date-picker" %>
+                        <% end %>
+                      <% end %>
+                      <label class="mdl-textfield__label" for="skb_model_date_min" style="margin-top: -30px;"><%= I18n.t(:end_date) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :n_max, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="n_max"><%= I18n.t(:N_last_projects) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-row">
+                  <div class="col-5">
+                    <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                      <%= f.input :size_unit, label: false, :input_html => { :class => 'mdl-textfield__input'} %>
+                      <label class="mdl-textfield__label" for="size_unit"><%= I18n.t(:size_unit) %></label>
+                    </div>
+                  </div>
+                </div>
+
+                <% unless @skb_model.skb_datas.empty? %>
+                  <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
+
+                    <div class="input boolean optional sskb_model_selected_attributes<%= k %>">
+                      <label class="boolean optional control-label checkbox" for="selected_attributes<%= k %>">
+                        <input class="boolean optional" id="skb_model_selected_attributes<%= k %>" name="selected_attributes[<%= k %>]" type="checkbox" <%= @skb_model.selected_attributes.include?(k.to_s) ? 'checked=checked' : '' %>">
+                        <%= k %>
+                      </label>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+              <div class="actions-tabs">
+                    <% if can? :manage_modules_instances, ModuleProject %>
+                      <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+                    <% end %>
+                    <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, anchor: "taille"), class: "btn btn-secondary" %>
+                  </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <% if action_name.in?(["edit", "update"]) %>
+        <div class="tab-pane fade" id="tabs-2" role="tabpanel" aria-labelledby="tabs-2">
+          <div class="card-body">
+            <%= form_tag skb.skb_model_import_path(@skb_model.id), :multipart => true, method: "post", :class => 'simple_form' do %>
+              <div class="form-inputs">
+                <label><%= I18n.t(:import) %> </label>
+                <%= file_field_tag :file %>
+                <%= hidden_field_tag :skb_model_id, @skb_model.id %>
+                <%= hidden_field_tag :organization_id, @organization.id %>
+              </div>
+              <%= submit_tag I18n.t(:import), :class => 'btn btn-primary' %>
+              <%= link_to I18n.t(:export), skb.skb_model_data_export_path(@skb_model), :class => 'btn btn-primary' %>
+            <% end %>
+          </div>
+          <br>
+
+          <div class="span8" style="padding-right: 2rem;">
+            <%= form_tag skb.skb_model_save_filters_path(@skb_model) do %>
+              <% unless @skb_model.skb_datas.empty? %>
+                <table class="table table-bordered tablesorterPager">
+                  <thead>
+                  <tr>
+                    <th><%= I18n.t(:name) %></th>
+                    <th style="width: 30rem;"><%= I18n.t(:description) %></th>
+                    <th>Date</th>
+                    <th><%= "#{I18n.t(:size_label)} X" %><%#= I18n.t(:data) %>
+                      <%= @skb_model.label_x.blank? ? "" : "(#{@skb_model.label_x})" %>
+                    </th>
+                    <th><%= "#{I18n.t(:size_label)} Y" %><%#= I18n.t(:treatments) %>
+                      <%= @skb_model.label_y.blank? ? "" : "(#{@skb_model.label_y})" %>
+                    </th>
+                    <th><%= I18n.t(:size_xy) %></th>
+                    <% @skb_model.skb_datas.first.custom_attributes.keys.each do |k| %>
+                      <th>
+                        <%= k %>
+                      </th>
+                    <% end %>
+                  </tr>
+                  </thead>
+                  <tr>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <th></th>
+                    <% arr = ["a", "b", "c", "d"] %>
+                    <% @skb_model.skb_datas.first.custom_attributes.keys.each_with_index do |j, i| %>
+                      <th>
+                        <%= select_tag "filter_#{arr[i]}",
+                                       options_for_select([I18n.t(:project_area), I18n.t(:applications), I18n.t(:acquisition_category), I18n.t(:project_category), I18n.t(:platform_category), I18n.t(:providers)], @skb_model.send("filter_#{arr[i]}")),
+                                       style: "margin-top: -3px;",
+                                       class: "span12" %>
+                      </th>
+                    <% end %>
+                  </tr>
+                  <tbody>
+                  <% @skb_model.skb_datas.each do |skb_data| %>
+                    <tr>
+                      <td><%= skb_data.name %></td>
+                      <td><%= skb_data.description %></td>
+                      <td><%= skb_data.project_date %></td>
+                      <td><%= skb_data.data %></td>
+                      <td><%= skb_data.processing %></td>
+                      <td><%= skb_data.data.to_f + skb_data.processing.to_f %></td>
+                      <% skb_data.custom_attributes.values.each do |v| %>
+                        <td>
+                          <%= v %>
+                        </td>
+                      <% end %>
+                    </tr>
+                  <% end %>
+                  </tbody>
+                  <%= render :partial => 'layouts/footer_table' %>
+                </table>
+              <% end %>
+              <%= submit_tag "Sauvegarder les filtres", class: "btn btn-primary" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+      <script type="text/javascript">
+          $(document).ready(function () {
+              $(".date-picker").datepicker({
+                  language: '<%= set_user_language_for_datepicker %>',
+                  autoclose: true,
+                  todayHighlight: true,
+                  todayBtn: true,
+                  icons: {
+                      rightIcon: '<i class="material-icons">event</i>'
+                  }
+              });
+          });
+      </script>
+
+      </div>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,4 @@
+
+$("#settings_content").html('<%= j(render(:partial => "organizations/#{@partial_name}", object: [@organization])) %>');
+$("#item_title").html('<%= "#{@item_title}" %>');
+$("#notifications").html("");

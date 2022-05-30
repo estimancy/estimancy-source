@@ -1,0 +1,55 @@
+<%= simple_form_for @project, :url => checkout_path(params[:project_id]), method: "POST" do |f| %>
+    <%= f.error_notification %>
+
+    <%= hidden_field_tag(:organization_id, params[:organization_id]) %>
+    <%= hidden_field_tag(:project_id, params[:project_id]) %>
+
+    <% if @project.has_children?  %>
+        <div style="color: red"><%= I18n.t(:confirm_new_branch_project_checkout) %></div> <br>
+    <% end %>
+
+    <div id="notifications"></div>
+
+    <div>
+      <div class="row">
+        <div class="col-8"><%= f.input :title, :label => "#{I18n.t 'label_project_name'}", :input_html => {:class => 'form-control'}, disabled: true %></div>
+        <div class="col-4"><%= f.input :version_number, label: I18n.t(:current_version), :input_html => {:class => 'form-control'}, disabled: true  %></div>
+      </div>
+
+      <div>
+        <label><%= I18n.t(:new_version) %></label>
+        <p><%= text_field_tag "new_version", "", :class => 'form-control' %></p>
+      </div>
+
+      <% if @archive_status && can?(:can_archive_version, @project) %>
+        <label for="archive_last_project_version" class="checkbox">
+          <%= raw(I18n.t(:archive_last_project_versions)) %> <%= @archive_status %>
+          <input id="archive_last_project_version" name="archive_last_project_version" type="checkbox" value="yes" checked />
+         <i class="fa fa-info-circle" title="<%= I18n.t(:last_project_versions_will_be_archived) %>"></i>
+        </label>
+      <% end %>
+
+      <% if @new_status && can?(:can_draft_version, @project) %>
+         <label for="new_project_version" class="checkbox">
+           <%= raw(I18n.t(:new_project_versions)) %> <%= @new_status %>
+           <input id="new_project_version" name="new_project_version" type="checkbox" value="yes" checked />
+           <i class="fa fa-info-circle" title="<%= I18n.t(:last_project_versions_will_be_new) %>"></i>
+         </label>
+      <% end %>
+    </div>
+
+    <div>
+
+      <label style="margin-top: 10px"><b><%= I18n.t('description') %></b></label>
+      <%= text_area_tag "description", @project.description, rows: 5, cols: 150, class: "form-control" %>
+    </div>
+
+    <br>
+    <div class="actions-tabs">
+      <% if can? :create_project_from_template, Project %>
+        <%= f.submit I18n.t('save'), :id =>'checkout_project', :class => "btn btn-primary" %>
+        <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+      <% end %>
+    </div>
+    </div>
+<% end %>

@@ -1,0 +1,55 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Method:</b>
+  <%= @staffing_custom_datum.method %>
+</p>
+
+<p>
+  <b>Staffing constraint:</b>
+  <%= @staffing_custom_datum.staffing_constraint %>
+</p>
+
+<p>
+  <b><%= I18n.t(:Period_unit)%>:</b>
+  <%= @staffing_custom_datum.period_unit %>
+</p>
+
+<p>
+  <b><%= I18n.t(:Max_staffing)%>:</b>
+  <%= @staffing_custom_datum.max_staffing %>
+</p>
+
+<p>
+  <b><%= I18n.t(:Max_duration)%>:</b>
+  <%= @staffing_custom_datum.max_duration %>
+</p>
+
+<p>
+  <b><%= I18n.t(:Staffing_coordinates)%>:</b>
+  <%= @staffing_custom_datum.staffing_coordinates %>
+</p>
+
+<p>
+  <b>Coef a:</b>
+  <%= @staffing_custom_datum.coef_a %>
+</p>
+
+<p>
+  <b>Coef b:</b>
+  <%= @staffing_custom_datum.coef_b %>
+</p>
+
+<p>
+  <b>Coef a prime:</b>
+  <%= @staffing_custom_datum.coef_a_prime %>
+</p>
+
+<p>
+  <b>Coef b prime:</b>
+  <%= @staffing_custom_datum.coef_b_prime %>
+</p>
+
+
+<%= link_to I18n.t(:edit), edit_staffing_custom_datum_path(@staffing_custom_datum) %> |
+<%= link_to I18n.t(:back), staffing_custom_data_path %>

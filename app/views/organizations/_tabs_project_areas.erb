@@ -1,0 +1,47 @@
+<!--<div id="tabs-project-areas" class="edition-page-group py-4"><span><%#= I18n.t('project_areas') %></span></div>-->
+<% if can? :show_project_areas, ProjectArea %>
+
+    <% if can? :manage, ProjectArea %>
+        <%= link_to I18n.t('create_button'), new_organization_project_area_path(@organization), :class => 'btn btn-primary' %>
+        <%= link_to I18n.t('export'), organization_export_project_areas_path(@organization), :class => 'btn btn-primary'%>
+        <div class="float-right">
+          <%= form_tag organization_import_project_areas_path(@organization), :multipart => true, :class => 'simple_form' do %>
+            <%= file_field_tag :file %>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+          <% end %>
+        </div>
+    <% end %>
+    <hr>
+
+    <table id="table_list_2" class="table table-list">
+      <thead>
+      <tr>
+        <th><%= I18n.t('name') %></th>
+        <th><%= I18n.t('description') %></th>
+        <th><%= I18n.t('coefficient_value') %></th>
+        <th><%= I18n.t('coefficient_label') %></th>
+        <th class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @organization.project_areas.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |pa| %>
+          <tr>
+            <td><%= pa.name %></td>
+            <td><%= pa.description %></td>
+            <td><%= pa.coefficient %></td>
+            <td><%= pa.coefficient_label %></td>
+            <td class="center">
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_project_area_path(@organization, pa), :class => 'icon-pencil', :title => I18n.t('edit') %>
+              <% if can? :manage, ProjectArea %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), organization_project_area_path(@organization, pa), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+
+      </tbody>
+    </table>
+<% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_project_areas) %></div>
+<% end %>

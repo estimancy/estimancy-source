@@ -1,0 +1,29 @@
+<script type="text/javascript">
+
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+
+        var r_data = <%= r_data.to_json.html_safe %>;
+        var data = google.visualization.arrayToDataTable(r_data);
+        var options = <%= series_options.to_json.html_safe %>;
+
+//        var options = {
+//            legend: {position: "right", alignment: "start", orientation: "vertical"},
+//            chartArea:{left:20,top:0, width:'100%',height:'100%'}
+//            isStacked: true,
+//            series: {
+//                0: {
+//                    targetAxisIndex: 1
+//                }
+//            }
+//        };
+
+        var chart = new google.charts.Bar(document.getElementById('<%= "bar_chart_div_#{iwidget.id}" %>'));
+        chart.draw(data, google.charts.Bar.convertOptions(options));
+    }
+    drawChart();
+
+</script>
+<div id='<%= "bar_chart_div_#{iwidget.id}" %>' style="width: 90rem; height: 300px;"></div>

@@ -1,0 +1,161 @@
+<section class="card card-content-bloc estimancy-form">
+    <%= simple_form_for(@views_widget, is_project_data_widget: true, :remote => true) do |f| %>
+        <%= f.error_notification %>
+
+        <div class="card-body">
+          <%= f.input :view_id, as: :hidden, :input_html => { value: @view_id } %>
+          <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+          <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+          <%= hidden_field_tag 'current_module_project_id', @module_project.id %>
+          <%= f.input :is_project_data_widget, as: :hidden, :input_html => { value: true } %>
+          <%= f.input :widget_type, as: :hidden, input_html: { value: "text" } %>
+
+          <div class="edition-bloc-content">
+            <div class="edition-bloc-form">
+              <div class="form-row">
+
+
+                <div class="col-8">
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                    <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                  </div>
+                </div>
+
+                <!--<div class="col-8">-->
+                  <!--<div class="mdl-textfield mdl-js-textfield mdl-textfield&#45;&#45;floating-label">-->
+                    <!--<%#= f.input :show_name, as: :boolean, :label => false, :input_html => { :class => 'mdl-checkbox__inputs'}  %>-->
+                    <!--<label class="mdl-textfield__label" for="show_name" style="padding-left: 20px; margin-top: 22px;"><%#= I18n.t(:show_name) %></label>-->
+                  <!--</div>-->
+                <!--</div>-->
+
+                <div class="col-8">
+                  <% if @project.organization.name.downcase.include?("distribution transporteur") %>
+                      <% platform_category_name = "TM" %>
+                  <% else %>
+                      <% platform_category_name = I18n.t(:platform_category) %>
+                  <% end %>
+                  <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <%= f.input :project_attribute_name, as: :select, label: false,
+                                :collection => [ [I18n.t(:application), 'application_id'],
+                                                 [I18n.t(:project_areas), 'project_area_id'],
+                                                 [I18n.t(:project_category), 'project_category_id'],
+                                                 ["#{platform_category_name}", 'platform_category_id'],
+                                                 [I18n.t(:acquisition_category), 'acquisition_category_id'],
+                                                 [I18n.t(:provider), 'provider_id'],
+                                                 ["Description 1", 'description'],
+                                                 ["Description 2", 'description_2'],
+                                                 ["Description 3", 'description_3']],
+                                input_html: { class: "mdl-textfield__input form-control", include_blank: false } %>
+                    <label class="mdl-textfield__label" for="project_attribute_name"><%= I18n.t(:project_attribute_name) %></label>
+                  </div>
+                </div>
+
+                <div class="col-6">
+                  <% if @views_widget.new_record? %>
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :color, label: false, input_html: { value: "blanchedalmond",  :class => 'mdl-textfield__input form-control'} %>
+                        <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
+                      </div>
+                  <% else %>
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :color, label: false, input_html: { :class => 'mdl-textfield__input form-control'} %>
+                        <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
+                      </div>
+                  <% end %>
+
+                  <!--<div class="mdl-textfield mdl-js-textfield mdl-textfield&#45;&#45;floating-label">-->
+                    <!--<%#= f.input :icon_class, as: :select, label: false, input_html: { :class => 'mdl-textfield__input form-control'}, collection: Projestimate::Application::ICON_CLASSES.sort() %>-->
+                    <!--<label class="mdl-textfield__label" for="icon_class"><%#= I18n.t(:icon) %></label>-->
+                  <!--</div>-->
+                  <!--<div id="view_icon_class_image" class="span1"></div>-->
+                </div>
+              </div>
+            </div>
+
+            <div class="actions-tabs">
+              <% if can?(:alter_estimation_plan, @project)%>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <% end %>
+              <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+            </div>
+          </div>
+        </div>
+    <% end %>
+</section>
+
+<script>
+
+    $("#views_widget_color").spectrum({
+        showPaletteOnly: true,
+        showPalette:true,
+        hideAfterPaletteSelect:true,
+        showInitial: true,
+        preferredFormat: "hex",
+        replacerClassName: 'mycolorpicker',
+        //color: 'blanchedalmond',
+        <% if @views_widget.new_record? %>
+        color: 'blanchedalmond',
+        <% end %>
+
+        palette: [
+            ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
+            ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
+            ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
+            ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
+        ]
+    });
+    $('.sp-preview').css('width', '21rem');
+
+    // Update the view_widget show_min_max attribute according to the selected widget_type
+    var delete_min_max_on_widget_type = [ "line_chart", "bar_chart", "area_chart", "pie_chart", "timeline", "stacked_bar_chart", "histogram_effort_per_phase", "pie_chart_effort_per_phase", "histogram_cost_per_phase",
+        "pie_chart_cost_per_phase", "stacked_bar_chart_effort_per_phases_profiles",  "stacked_bar_chart_cost_per_phases_profiles"]
+
+    var widget_type = $("#views_widget_widget_type").val();
+    if (widget_type == "text"){
+        $('#views_widget_show_min_max').removeAttr('disabled');
+    }
+    else {
+        $('#views_widget_show_min_max').attr('checked', false);
+        $('#views_widget_show_min_max').attr('disabled','disabled');
+        $("#views_widget_widget_type").value = 0;
+    }
+
+
+    // Update the view_widget attribute according to the selected module
+    $("#views_widget_module_project_id").change(function() {
+        if ($(this).val() !== ""){
+            return $.ajax({
+                url: "/update_widget_module_project_data",
+                method: "GET",
+                data: "module_project_id=" + $(this).val()
+            });
+        }
+    });
+
+    $("#views_widget_widget_type").change(function() {
+        var widget_type = $(this).val();
+        if (widget_type == "text"){
+            $('#views_widget_show_min_max').removeAttr('disabled');
+        }
+        else {
+            $('#views_widget_show_min_max').attr('checked', false);
+            $('#views_widget_show_min_max').attr('disabled','disabled');
+            $("#views_widget_widget_type").value = 0;
+        }
+    });
+
+
+    //manage the label widget
+    $("#views_widget_is_label_widget").change(function(){
+        if($(this).is(':checked')){
+            //alert(1);
+            //$("#new_views_widget").closest("tr").find(":input.inline_attr").attr("disabled", 'disabled');
+            $("form#new_views_widget select.inline_attr, input:checkbox.inline_attr ").attr("disabled", 'disabled');
+        } else{
+            //alert(0);
+            $("form#new_views_widget select.inline_attr, input:checkbox.inline_attr ").removeAttr('disabled');
+        }
+    });
+
+</script>

@@ -1,0 +1,87 @@
+<h3>
+  <%# "#{OperationModel}::#{@operation_model.operation_type.humanize}" %>
+</h3>
+
+<%= form_tag operation.operation_model_save_efforts_path(@operation_model), method: "POST" do %>
+  <div class="row-fluid">
+    <div class="span12">
+
+      <% effort = PeAttribute.find_by_alias("effort") %>
+      <% module_project =  current_module_project %>
+      <% organization_id =  module_project.organization_id %>
+
+      <% current_ev =  EstimationValue.where(:organization_id => organization_id,
+                                             :module_project_id => module_project.id,
+                                             :pe_attribute_id => effort.id,
+                                             :in_out => "input").first %>
+      <% res = 0 %>
+      <% @elements = Hash.new %>
+
+      <table class="table table-list">
+        <tr>
+          <th>
+            <%= I18n.t(:label_Pemodule) %>
+          </th>
+          <% ["Most Likely"].each do |level| %>
+            <th>
+               <%= "Effort (#{level})" %>
+            </th>
+          <% end %>
+        </tr>
+        <% current_module_project.previous.each do |mp| %>
+          <% unless mp.pemodule.alias == Projestimate::Application::INITIALIZATION %>
+            <tr>
+              <td><%= mp %></td>
+              <% ["most_likely"].each do |level| %>
+
+                <% if current_ev && !current_ev.estimation_value_id.nil?
+                     ev = EstimationValue.find(current_ev.estimation_value_id) %>
+                <% else %>
+                  <% ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => mp.id, :pe_attribute_id => effort.id, :in_out => "output").first %>
+                <% end %>
+
+                <td>
+                  <% begin %>
+                    <% res = ev.nil? ? 0 : ev.string_data_most_likely[current_component.id].to_f %>
+                  <% rescue %>
+                    <% res = ev[mp.wbs_activity.root_element.id][:value].to_f %>
+                  <% end %>
+
+                  <%= res.round(user_number_precision) %>
+                </td>
+              <% end %>
+            </tr>
+
+            <% @elements[mp.id] = res %>
+          <% end %>
+        <% end %>
+        <tr>
+          <td>
+            <b>
+              <%= I18n.t(:total_effort , parameter: @operation_model.effort_unit)%>
+            </b>
+          </td>
+          <td>
+            <% if @operation_model.operation_type == "addition" %>
+              <% res = @elements.values.sum.round(2) %>
+            <% elsif @operation_model.operation_type == "moyenne" %>
+              <% res = @elements.values.sum / @elements.values.size %>
+            <% end %>
+            <% ["most_likely"].each do |level| %>
+              <% unless (!@operation_model.enabled_input || cannot?(:alter_estimation_plan, @project)) %>
+                <%= hidden_field_tag "effort_#{level}", res, class: "input-small" %>
+                <%= text_field_tag "effort_#{level}", convert_with_precision(res, user_number_precision), class: "input-small" %>
+              <% else %>
+                <%= text_field_tag "effort_#{level}", res, class: "input-small" %>
+              <% end %>
+            <% end %>
+          </td>
+        </tr>
+      </table>
+
+      <% if can? :execute_estimation_plan, @project %>
+        <button type="submit" class="btn btn-primary btn-sm pull-right"><%= I18n.t(:save) %></button>
+      <% end %>
+    </div>
+  </div>
+<% end %>

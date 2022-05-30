@@ -1,0 +1,19 @@
+$("#notifications").html("");
+$(".modal-body-inner").html("<%= j render(:partial => "pbs_project_elements/edit") %>");
+
+$("#myModalLabel").html("Edit <%= @pbs_project_element.name %>");
+
+$("#edit_component").modal({
+  keyboard: false,
+  backdrop: false
+});
+
+$("#pbs_project_element_wbs_activity_id").change(function(){
+    $.ajax({
+        url:"/refresh_pbs_activity_ratios",
+        method: 'GET',
+        data: "wbs_activity_id=" + $('#pbs_project_element_wbs_activity_id').val()
+    })
+});
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");

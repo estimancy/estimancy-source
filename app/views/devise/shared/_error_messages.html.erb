@@ -1,0 +1,16 @@
+<% if flash.count > 0 %>
+
+  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">
+    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>
+
+    <% flash.each do |name, msg| %>
+      <%= content_tag :div, msg, :id => "flash_#{name}" if msg.is_a?(String) %>
+      <%#= msg %>
+      <!--  <div class="alert alert-warning alert-dismissible in text-center notifications_fixed_top" role="alert">-->
+      <!--    &nbsp;<button type="button" class="close" data-dismiss="alert">x</button>-->
+      <%#= msg %>
+      <!--  </div>-->
+    <% end %>
+  </div>
+
+<% end %>

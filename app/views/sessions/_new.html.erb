@@ -1,0 +1,41 @@
+<div class="login_page">
+    <%= form_tag sessions_path, :class => 'simple_form span4' do %>
+
+         <%= hidden_field_tag "return_to_url", request.query_parameters["return_to"] %>
+
+        <div class="login_input">
+          <div class="input-prepend">
+            <span class="add-on"><img src="/assets/man.png" /></span>
+            <%= text_field_tag :username, cookies[:login], :class => 'login_username', :placeholder => I18n.t('login_name_or_email') %>
+          </div>
+
+          <div class="input-prepend">
+            <span class="add-on"><img src="/assets/keez.png" /></span>
+            <%= password_field_tag :password, '', :class => 'login_pw', :placeholder => I18n.t('password') %>
+          </div>
+
+          <label class="checkbox">
+            <%= check_box_tag :remember_me, 1, params[:remember_me] %>
+            <%= I18n.t(:remember_me ) %>
+          </label>
+
+          <%= submit_tag I18n.t('connect'), :class => 'btn btn-danger' %>
+
+        </div>
+
+        <%= render "layouts/notifications" %>
+
+
+        <div class="pull_right">
+
+          <div class="login_connexion">
+          </div>
+
+          <%= link_to I18n.t('button_need_help'), '/help_login', :remote => true %> <br/>
+          <%= link_to I18n.t('button_forgotten_password'), '/forgotten_password', :remote => true %> <br/>
+          <%= link_to I18n.t('button_ask_account'), '/ask_new_account', :remote => true %>
+        </div>
+
+        <br/>
+    <% end %>
+</div>

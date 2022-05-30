@@ -1,0 +1,71 @@
+$("#notifications").html("");
+
+<% if params[:is_label_widget] == "true" %>
+  $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/comment_form") %>");
+  $("#myModalLabel").css('font-size', 'larger');
+  $("#myModalLabel").html('<%= I18n.t(:new_widget_comment) %>');
+<% elsif params[:is_kpi_widget] == "true" %>
+  $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/kpi_form") %>");
+  $("#myModalLabel").css('font-size', 'larger');
+  $("#myModalLabel").html('<%= I18n.t(:new_widget_kpi) %>');
+<% elsif params[:is_project_data_widget] == "true" %>
+    $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/project_data_widget_form") %>");
+    $("#myModalLabel").css('font-size', 'larger');
+    $("#myModalLabel").html('<%= I18n.t(:new_project_data_widget) %>');
+<% elsif params[:is_organization_kpi_widget] == "true" %>
+    $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/productivity_kpi_form") %>");
+    $("#myModalLabel").css('font-size', 'larger');
+    $("#myModalLabel").html('<%= I18n.t(:new_organization_kpi_data_widget) %>');
+<% else %>
+  $(".modal-body-inner").html("<%= j render(:partial => "views_widgets/form") %>");
+  $("#myModalLabel").css('font-size', 'larger');
+  $("#myModalLabel").html('<%= I18n.t(:new_widget) %>');
+<% end %>
+
+
+$(".modal .modal-body").css("height", "auto");
+
+
+$("#edit_component").modal({
+  keyboard: false,
+  backdrop: false,
+  backdrop: false
+});
+
+
+$("#views_widget_icon_class").change(function(){
+    if ($(this).val() !== ""){
+        $("#view_icon_class_image").removeClass();
+        $("#view_icon_class_image").addClass( $(this).val());
+        $("#view_icon_class_image").addClass( "icon-large blue" );
+    }
+    else{
+        $("#view_icon_class_image").removeClass();
+    }
+    return false;
+});
+
+$("#views_widget_module_project_id").change(function() {
+    if ($(this).val() !== ""){
+        return $.ajax({
+            url: "/update_widget_module_project_data",
+            method: "GET",
+            data: "module_project_id=" + $(this).val()
+        });
+    }
+});
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");
+
+//$('input, textarea, select').each(function () {
+//    if($(this).attr('type') != "submit")
+//        $(this).addClass('custom_margin');
+//})
+
+$("form#new_views_widget").each(function(){
+    $(this).find(':input').each(function () {
+        //if($(this).attr('type') != "submit")
+            $(this).addClass('custom_margin');
+        })
+});
+

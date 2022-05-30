@@ -1,0 +1,45 @@
+
+<!--<div id="tabs-providers" class="edition-page-group py-4"><span><%#= I18n.t('providers') %></span></div>-->
+<% if can? :show_providers, Provider %>
+
+    <% if can? :manage, Provider %>
+      <%= link_to I18n.t('create_button'), new_organization_provider_path(@organization), :class => 'btn btn-primary' %>
+      <%= link_to I18n.t('export'), organization_export_providers_path(@organization), :class => 'btn btn-primary'%>
+      <div class="float-right">
+        <%= form_tag organization_import_providers_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <%= file_field_tag :file %>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+        <% end %>
+      </div>
+      <hr>
+    <% end %>
+
+    <table id="table_list_2" class="table table-list">
+      <thead>
+      <tr>
+        <th><%= I18n.t('name') %></th>
+        <th><%= I18n.t('coefficient_value') %></th>
+        <th><%= I18n.t('coefficient_label') %></th>
+        <th class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @organization.providers.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |pr| %>
+          <tr>
+            <td><%= pr.name %></td>
+            <td><%= pr.coefficient %></td>
+            <td><%= pr.coefficient_label %></td>
+            <td class="center">
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_provider_path(@organization, pr), :class => 'material-icons', :title => I18n.t('edit') %>
+              <% if can? :manage, Provider %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), organization_provider_path(@organization, pr), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_providers) %></div>
+<% end %>

@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+  <head>
+
+    <title><%= @page_title ? @page_title : controller.action_name %></title>
+
+    <%= stylesheet_link_tag 'application', media: 'screen', 'data-turbolinks-eval' => 'false' %>
+
+    <%= csrf_meta_tag %>
+    <%#= javascript_include_tag 'application', 'chartkick', 'projestimate_script', '', '', 'data-turbolinks-track': 'reload' %>
+
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css">
+
+  </head>
+
+  <body style="background-color: #F8F9FA; zoom: 1;">
+    <%= render 'layouts/notifications' %>
+    <%= render 'layouts/modal' %>
+
+    <header class="header">
+      <nav class="navbar navbar-expand-lg navbar-light">
+        <a class="navbar-brand" href="<%= main_app.all_organizations_path %>">
+          <div class="home-button">
+            <img class="logo" src=/assets/logo_arrows_white_small.png>
+            <div class="home-button-text"><%= I18n.t("home_estimancy") %></div>
+          </div>
+        </a>
+        <div class="container">
+          <% unless controller.action_name == "all_organizations" %>
+            <div class="project-block">
+              <div class="dropdown">
+                <a class="project-title-selected-without-caret" href="<%= main_app.organization_estimations_path(@current_organization) %>">
+                  <%= @current_organization %>
+                </a>
+                <a class="dropdown-toggle project-title-selected" href="#" id="projectDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                </a>
+                <div class="dropdown-menu project-list" aria-labelledby="projectDropdown">
+                  <% @organizations.each do |organization| %>
+                    <a class="dropdown-item project-item <%= (@current_organization.id == organization.id) ? 'active' : '' %>" href="<%= main_app.organization_estimations_path(organization) %>">
+                      <div class="project-title"><%= organization.name %></div>
+                      <div class="project-subtitle"><%= organization.headband_title %></div>
+                    </a>
+                  <% end %>
+                </div>
+              </div>
+              <div class="project-subtitle-selected">
+                <%= raw(@current_organization.nil? ? nil : @current_organization.headband_title) %>
+              </div>
+            <% end %>
+          </div>
+
+          <%# unless controller.action_name == "all_organizations" %>
+
+            <%#= form_tag main_app.advanced_search_path, method: "GET", class: "form-inline my-2 my-lg-0" , id: "adv_search_form" do %>
+
+              <%#= hidden_field_tag :item_title, params[:item_title] %>
+
+<!--              <div class="input-group global-search-bar">-->
+<!--                <div class="input-group-prepend global-search-bar-prepend" >-->
+<!--                  <span class="input-group-text" id="search-icon" >-->
+<!--                    <i class="material-icons">search</i>-->
+<!--                  </span>-->
+<!--                </div>-->
+
+<!--                <input value="<%#= params[:advanced_search] %>"-->
+<!--                       id="adv_search"-->
+<!--                       type="text"-->
+<!--                       name="advanced_search"-->
+<!--                       placeholder="<%#= params[:item_title].blank? ? I18n.t('estimation_name, version_number, author...') : I18n.t(params[:item_title]) %>"-->
+<!--                       class="form-control global-search-bar-input"-->
+<!--                       aria-label="search" aria-describedby="search-icon">-->
+
+<!--                <div class="input-group-append global-search-bar-append" id="adv_search_submit">-->
+<!--                  <a class="input-group-text unclickable" href="#" style="text-decoration: none;">-->
+                    <%#= I18n.t :advanced_research_estimates %>
+<!--                  </a>-->
+<!--                </div>-->
+
+<!--              </div>-->
+            <%# end %>
+          <%# end %>
+
+        </div>
+
+        <ul class="navbar-nav mr-auto">
+          <li class="nav-item">
+            <div class="dropdown">
+              <a class="nav-link dropdown-toggle account-icon" href="#" id="accountDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<%= I18n.t :menu_super_administrateur %>">
+                <i class="material-icons">account_circle</i>
+                <span style="vertical-align: middle;">
+                  <%= current_user %>
+                </span>
+              </a>
+              <div class="dropdown-menu dropdown-menu-right account-list" aria-labelledby="accountDropdown">
+                <h6 class="dropdown-header"><%= I18n.t :user_account_settings %></h6> <%# Paramètres du compte utilisateur %>
+                <a class="dropdown-item account-item" href="<%= main_app.edit_organization_user_path(@current_organization, current_user) %>"><%= current_user %></a>
+                <a class="dropdown-item account-item" href="<%= main_app.organization_authorization_path(@current_organization) %>"><%= I18n.t(:permission) %></a>
+                <a class="dropdown-item account-item" href="<%= main_app.organization_users_path(@current_organization) %>"><%= I18n.t(:users) %></a>
+                <a class="dropdown-item account-item" href="<%= main_app.organization_report_path(@current_organization) %>" title="<%= I18n.t(:report) %>"><%= I18n.t(:report) %></a>
+
+                <% if @current_organization.activate_indicators_dashboard? %>
+                    <a class="dropdown-item account-item" href="<%= main_app.organization_global_kpis_path(@current_organization) %>" title="<%= I18n.t(:indicator_dashboards) %>"><%= I18n.t(:indicator_dashboards) %></a>
+                <% end %>
+
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header">Configuration</h6>
+                <a class="dropdown-item account-item" href="<%= main_app.edit_organization_path(@current_organization)%>" title="<%= I18n.t(:report) %>"><%= @current_organization %></a>
+                <a class="dropdown-item account-item" href="<%= main_app.organization_setting_path(@current_organization)%>"><%= I18n.t(:setting_estimations) %></a>
+<!--                <a class="dropdown-item account-item" href="<%#= main_app.organization_setting_demand_path(@current_organization)%>"><%#= I18n.t(:setting_demands) %></a>-->
+                <a class="dropdown-item account-item" href="<%= main_app.organization_module_estimation_path(@current_organization)%>"><%= I18n.t(:projestimate_module) %></a>
+                <div class="dropdown-divider"></div>
+                <h6 class="dropdown-header"><%= I18n.t :help %></h6> <%# Aide %>
+                <a class="dropdown-item account-item" href="<%= load_admin_setting('url_wiki') %>">Wiki</a>
+                <a class="dropdown-item account-item" href="/contactsupport">A propos</a>
+              </div>
+            </div>
+          </li>
+
+          <% if current_user.super_admin == true %>
+            <li class="nav-item">
+              <div class="dropdown">
+                <a class="nav-link dropdown-toggle account-icon" href="#" id="adminDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="<%= I18n.t :menu_super_administrateur %>">
+                  <i class="material-icons">group_add</i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right account-list" aria-labelledby="adminDropdown">
+                  <h6 class="dropdown-header"><%= I18n.t :settings_super_admin %></h6>
+<!--                  <a class="dropdown-item account-item" href="<%#= sidekiq_web_path %>" target="_blank">-->
+                  <a class="dropdown-item account-item" href="/estimancy_jobs" target="_blank">
+                    <%= "Utilitaire Sidekiq" %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.organization_security_audit_utilities_view_path(@current_organization)%>">
+                    <%= I18n.t(:security_audit_utilities) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.all_organizations_path %>">
+                    <%= I18n.t(:organizations) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.users_path %>">
+                    <%= I18n.t(:users) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.profiles_path %>">
+                    <%= I18n.t(:profiles) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.currencies_path %>">
+                    <%= I18n.t(:currencies) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.admin_settings_path %>">
+                    <%= I18n.t(:tech_setting) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.auth_methods_path %>">
+                    <%= I18n.t(:auth_methods) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.maintenances_path %>">
+                    <%= I18n;t(:maintenance_message)%>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.audits_path %>">
+                    <%= I18n.t(:Audit) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.pe_attributes_path %>">
+                    <%= I18n.t(:pe_attributes) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.pemodules_path %>">
+                    <%= I18n.t(:projestimate_module) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.permissions_path %>">
+                    <%= I18n.t(:all_permissions) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="<%= main_app.languages_path %>">
+                    <%= I18n.t(:languages) %>
+                  </a>
+                  <a class="dropdown-item account-item" href="#">
+                    <% if defined?(current_user)  %>
+                      <%= render 'layouts/send_feedback', :handlers => [:erb], :formats => [:html] %>
+                    <% end %>
+                  </a>
+                </div>
+              </div>
+            </li>
+          <% end %>
+
+          <li class="nav-item">
+            <a class="nav-link" href="<%= main_app.destroy_user_session_path %>#" data-method="delete" rel="nofollow" title="<%= I18n.t 'logout' %>">
+              <i class="material-icons">
+                logout
+              </i>
+            </a>
+          </li>
+        </ul>
+      </nav>
+
+      <div id="FeedbackModal" style="width: 600px;" class="modal hide fade" tabindex="-1" role="dialog" >
+        <div class="modal-header modal-drag">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
+          <h3 id="myModalLabel"><%= I18n.t(:send_feedback) %> &nbsp; - &nbsp;<%= I18n.t(:notice_send_feedback) %></h3>
+        </div>
+
+        <div class="modal-body" >
+          <div id="error_send_feedback" class="alert alert-error hide" style="margin-bottom: 15px; ">
+            <%= I18n.t('error_send_feedback_empty') %>
+          </div>
+
+          <%= simple_form_for(:send_feedback, {:url => main_app.send_feedback_path, :method => 'post'}) do |f| %>
+            <div>
+              <%= f.input :user_name, :label => I18n.t('user'), :input_html => {:class => 'input-xxlarge', :value => current_user.nil? ? '' : (current_user.first_name + ' ' + current_user.last_name + ' (' + current_user.email+ ' )') } %>
+              <%= f.input :type, :label => I18n.t('label_feedback_type'), :input_html => {:class => 'input-large'}, :collection => (['Problem', 'Suggestion', 'Other']) %>
+              <%= f.input :description, :label => I18n.t('description'), :as => :text, :input_html => {:class => 'input-xxlarge', :rows => 8} %>
+            </div>
+            <div class="modal-footer-left">
+              <%= f.submit I18n.t('send_request'), :class => 'btn btn-primary' %>
+              <button class="btn" data-dismiss="modal" aria-hidden="true" id="cancel"><%= I18n.t(:cancel) %></button>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </header>
+
+    <% unless @current_organization.nil? %>
+      <% module_project = current_module_project %>
+
+      <% if (controller_name == "projects" && controller.action_name.in?(["edit", "new", "update", "create"])) %>
+        <% @imp = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first %>
+
+        <div class="page-header page-edition-header row">
+          <!--<div class="container text-center" style="justify-content: flex-start;">-->
+            <div class="col-2 pr-0">
+              <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 8.7rem;">
+                <i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a>
+            </div>
+            <div class="col-10">
+              <h2>
+                <%= @project.to_s %>
+                <small style="color: <%= @project.status_background_color %>">
+                  <b>
+                    <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
+                  </b>
+                </small>
+              </h2>
+
+              <% unless @project.description.blank? %>
+                  <small>
+                    <%= @project.description.to_s.truncate(200) %>
+                  </small>
+              <% end %>
+
+            </div>
+          <!--</div>-->
+        </div>
+
+      <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard"])) %>
+        <% @imp = ModuleProject.where(pemodule_id: @initialization_module.id, project_id: @project.id).first %>
+
+        <div class="page-header page-edition-header row">
+          <!--<div class="container text-center" style="justify-content: flex-start;">-->
+            <div class="col-2 pr-0"><a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 8.7rem; top: 0em;"><i class="material-icons">arrow_back</i><%= I18n.t :return %> <br><%= I18n.t :to_the_list %></a></div>
+            <div class="col-8">
+              <h2>
+                <%= @project.to_s %>
+                <small style="color: <%= @project.status_background_color %>">
+                  <b>
+                    <%= link_to @project.estimation_status.to_s, main_app.add_comment_on_status_change_path(project_id: @project.id), remote: true %>
+                  </b>
+                </small>
+              </h2>
+
+              <% unless @project.description.blank? %>
+                <small>
+                  <%= @project.description.to_s.truncate(200) %>
+                </small>
+              <% end %>
+
+              <div class="page-header-buttons">
+                <% if controller.action_name == "dashboard" %>
+                    <!-- Nothing to do -->
+                <% else %>
+                    <a class="estimancy" href="<%= projects_from_path(organization_id: @organization) %>">
+                      <button type="button" class="btn btn-secondary">
+                        <%= I18n.t :model %>
+                      </button>
+                    </a>
+                    <%# unless @project.nil? || @project.new_record? %>
+                        <!--<a class="estimancy" href="<%#= dashboard_path(@project) %>">-->
+                          <!--<button type="button" href="<%#= projects_from_path %>" class="btn btn-secondary">-->
+                            <!--<%#= I18n.t :results %>-->
+                          <!--</button>-->
+                        <!--</a>-->
+                    <%# end %>
+                <% end %>
+              </div>
+            </div>
+            <% if module_project.id != @initialization_module_project.id %>
+                <div class="col-2" style="white-space: nowrap; top: 2em; right: 1.2em;">
+                  <small class="tools float-right">
+                    <% if module_project.show_results_view %>
+                      <%= link_to I18n.t(:hide_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_hide_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+                    <% else %>
+                      <%= link_to I18n.t(:show_module_results), main_app.show_module_project_results_view_path(module_project_id: module_project.id), id: "show_results_view", :title => I18n.t(:title_show_results_view, :value => "#{module_project.pemodule.title}"), remote: true %>
+                    <% end %>
+                  </small>
+                </div>
+            <% end %>
+        </div>
+
+      <!--</div>-->
+
+      <% elsif controller.action_name == "projects_from" %>
+
+        <div class="page-header page-edition-header">
+          <div class="container text-center">
+            <a href="<%= organization_estimations_path(@current_organization.id) %>" class="back-button no-underline" style="left: 1rem;"><i class="material-icons">arrow_back</i><%= I18n.t(:back) %><br> <%=I18n.t(:alaliste) %></a>
+            <div style="margin-left: 20rem; margin-bottom: 40px;"></div>
+          </div>
+        </div>
+
+      <% elsif (controller_name == "projects" && controller.action_name.in?(["dashboard", "index"])) || controller.action_name.in?(["estimations"]) || controller_name.in?(["demands"]) %>
+<!--        <ul class="nav nav-pills global-nav">-->
+<!--          <li class="nav-item">-->
+<!--            <a class="nav-link <%#= (controller_name == "demands") ? nil : "active" %>" href="<%#= main_app.organization_estimations_path(@current_organization) %>">Estimations</a>-->
+<!--          </li>-->
+          <%# if @current_organization.allow_demand %>
+<!--              <li class="nav-item">-->
+<!--                <a class="nav-link <%#= (controller_name == "demands") ? "active" : nil %>" href="<%#= main_app.organization_demands_path(@current_organization) %>"><%#= I18n.t :demands %></a>-->
+<!--              </li>-->
+          <%# end %>
+<!--        </ul>-->
+      <% end %>
+    <% end %>
+
+    <% if controller.action_name == "dashboard" || (controller_name == "projects" && controller.action_name == "edit") %>
+      <div class="page-edition-content row justify-content-start">
+        <%= render 'module_projects/new_estimation_plan_min' %>
+        <%= yield %>
+        <% unless current_module_project.pemodule.alias == "initialization" %>
+          <% if current_module_project.show_results_view && controller.action_name == "dashboard" %>
+            <div class="col-2 pl-4" id="dashboard_right_panel">
+              <%= render 'module_projects/dashboard_right_panel' %>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+
+    <% else %>
+      <% if current_user.allow_full_screen_dashboard %>
+        <div class="container-fluid">
+          <%= yield %>
+          <%= content_for :render_async %>
+        </div>
+      <% else %>
+        <div class="container">
+          <%= yield %>
+          <%= content_for :render_async %>
+        </div>
+      <% end %>
+    <% end %>
+
+    <br>
+
+    <%= render 'cookies_eu/consent_banner' %>
+
+    <%= javascript_include_tag 'application' %>
+    <script defer="" src="https://code.getmdl.io/1.3.0/material.min.js"></script>
+
+  </body>
+</html>

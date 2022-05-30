@@ -1,0 +1,135 @@
+<!--For blockUI-->
+<!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>-->
+
+<div class="mb-5">
+  <div class="estimation-list">
+    <div class="estimation-list-filter">
+      <span style="padding-top: 0.4%;"><%= @projects.count %> <%= I18n.t(:elements) %></span>
+      <span>
+        <% unless params[:historized].present? %>
+          <a href="?historized=1" style="color: white;">
+            <button type="button" class="btn btn-primary">
+                <%= I18n.t(:display_historized) %>
+            </button>
+          </a>
+        <% else %>
+          <a href="<%= url_for(:only_path => false) %>" style="color: white; font-weight: 400;">
+            <button type="button" class="btn btn-primary">
+                <%= I18n.t(:hide_historized) %></a>
+            </button>
+        <% end %>
+      </span>
+    </div>
+
+    <%# selected_inline_columns = $selected_inline_columns  #update_selected_inline_columns(Project) %>
+    <% selected_inline_columns = update_selected_inline_columns(Project) %>
+    <%#= form_tag projects_list_search_path, remote: true do %>
+    <%= form_tag organization_estimations_path(@current_organization), id: 'search_on_estimation_list', remote: true do %>
+      <%= hidden_field_tag :is_search_action, true %>
+
+      <%= submit_tag "Rechercher", class: "hide" %>
+      <table class="estimation-table main-estimation-table">
+        <thead>
+          <tr style="background-color: #FFFFFF">
+            <% selected_inline_columns.each do |column| %>
+              <%= column_header(column) %>
+            <% end %>
+            <th></th>
+          </tr>
+          <tr>
+            <% selected_inline_columns.each do |column| %>
+              <td style="padding: 5px;">
+                <%= text_field_tag column.name, session[:search_hash].nil? ? '' : session[:search_hash][column.name],
+                                   class: "form-control form-control-sm", disabled: column.field_id %>
+              </td>
+            <% end %>
+            <td></td>
+          </tr>
+        </thead>
+
+        <tbody>
+          <%# @projects.includes(:application, :project_area, :acquisition_category, :estimation_status, :creator).each_with_index do |project, index| %>
+          <% @projects.each_with_index do |project, index| %>
+            <%# if (project.private != true && current_user.id == project.creator_id) || current_user.super_admin == true %>
+              <tr data-project_id="<%= project.id %>">
+
+                <% selected_inline_columns.each do |column| %>
+                  <%= column_content(@pfs, column, project, @fields_coefficients, @historized) %>
+                <% end %>
+
+                <%# @project_module_projects = project.module_projects %>
+                <td class="estimation-table-overview-cell">
+                  <div class="tools">
+                    <a href="<%= edit_project_path(project) %>"><i class="material-icons">edit</i></a>
+                    <div class="dropdown">
+                      <button class="dropdown-toggle" type="button" id="dropdownToolsButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                        <i class="material-icons">more_vert</i>
+                      </button>
+                      <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownToolsButton">
+                        <% if can? :copy_project, project %>
+                          <a class="dropdown-item" href="<%= main_app.duplicate_path(project, organization_id: @current_organization, action_name: "duplication") %>"><i class="material-icons">file_copy</i><%= I18n.t(:duplicate_estimation) %></a>
+                        <% end %>
+                        <% if can?(:commit_project, project) %>
+                          <a class="dropdown-item load_modal" href="<%= set_checkout_version_path(:project_id => project.id) %>" data-remote="true" data-toggle="modal" method="GET"><i class="material-icons">call_split</i><%= I18n.t(:create_new_version) %></a>
+                        <% end %>
+                        <div class="dropdown-divider"></div>
+                        <% if (can? :delete_project, project) || (can? :manage, project) %>
+                          <% if can_delete_estimation?(project) %>
+                            <a class="dropdown-item" href="<%= confirm_deletion_path(project_id: project.id) %>"><i class="material-icons">delete</i><%= I18n.t(:delete) %></a>
+                          <% end %>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="card estimation-overview" id="<%= project.id %>_overview"></div>
+                </td>
+              </tr>
+            <%# end %>
+          <% end %>
+        </tbody>
+
+        <tfoot>
+          <tr>
+            <% sort_column = sort_column.blank? ? params[:sort_column] : sort_column %>
+            <% sort_order = sort_order.blank? ? params[:sort_order] : sort_order %>
+            <% is_last_page = is_last_page.blank? ? params[:is_last_page] : is_last_page %>
+            <% if is_last_page != "true" %>
+              <% is_last_page = @is_last_page rescue false %>
+            <% end %>
+
+            <td colspan="100" style="text-align: center;">
+              <% if @min == 0 %>
+                <%= link_to "<<", "#", class: "btn btn-primary" %>
+                <%= link_to(I18n.t(:previous), "#", class: "btn btn-primary") %>
+              <% else %>
+                <%# if params[:sort_action] == "true"  || params[:action] == "sort" %>
+                  <%#= link_to "<<", sort_path(f: sort_column, s: sort_order, historized: @historized, min: 0, max: @object_per_page, previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
+                  <%#= link_to I18n.t(:previous), sort_path(f: sort_column, s: sort_order, historized: @historized, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), previous_next_action: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
+                <%# else %>
+                  <%#= link_to "<<", organization_estimations_path(@current_organization.id, historized: @historized, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+                  <%#= link_to I18n.t(:previous), organization_estimations_path(@current_organization.id, historized: @historized, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+                <%# end %>
+
+                  <%= link_to "<<", organization_estimations_path(@current_organization.id, historized: @historized, sort_column: @sort_column, sort_order: @sort_order, min: 0, max: @object_per_page, get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+                  <%= link_to I18n.t(:previous), organization_estimations_path(@current_organization.id, historized: @historized, sort_column: @sort_column, sort_order: @sort_order, min: (@min.to_i - @object_per_page.to_i), max: (@max.to_i - @object_per_page.to_i), get_projects_sorted_list: true), class: "btn btn-primary btn-sm" %>
+            <% end %>
+
+              <%# if params[:sort_action] == "true" || params[:action] == "sort" %>
+                <%#= link_to I18n.t(:next), sort_path(f: sort_column, s: sort_order, historized: @historized, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), previous_next_action: true, is_last_page: is_last_page, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
+                <%#= link_to ">>", sort_path(f: sort_column, s: sort_order, historized: @historized, min: @last_page_min, max: @last_page_max, previous_next_action: true, is_last_page: true, filter_version: @filter_version), remote: true, class: "btn btn-primary btn-sm" %>
+              <%# else %>
+                <%#= link_to I18n.t(:next), organization_estimations_path(@current_organization.id, historized: @historized, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-primary btn-sm" %>
+                <%#= link_to ">>", organization_estimations_path(@current_organization.id, historized: @historized, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-primary btn-sm" %>
+              <%# end %>
+
+              <%= link_to I18n.t(:next), organization_estimations_path(@current_organization.id, historized: @historized, sort_column: @sort_column, sort_order: @sort_order, min: (@min.to_i + @object_per_page.to_i), max: (@max.to_i + @object_per_page.to_i), get_projects_sorted_list: true, is_last_page: is_last_page), class: "btn btn-primary btn-sm" %>
+              <%= link_to ">>", organization_estimations_path(@current_organization.id, historized: @historized, sort_column: @sort_column, sort_order: @sort_order, min: @last_page_min, max: @last_page_max, get_projects_sorted_list: true, is_last_page: true), class: "btn btn-primary btn-sm" %>
+
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    <% end %>
+  </div>
+</div>

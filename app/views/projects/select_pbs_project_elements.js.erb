@@ -1,0 +1,12 @@
+$(".module_box").html("<%=raw j(render :partial => 'module_projects/estimation_plan_with_go') %>");
+
+$("#select_pbs_project_elements").on('click', function() {
+    $.ajax({
+        url: "/select_pbs_project_elements",
+        method: "get",
+        data: {
+            pbs_project_element_id: $(this).val(),
+            project_id: $("#project_id").val()
+        }
+    });
+});

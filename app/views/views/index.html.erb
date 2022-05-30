@@ -1,0 +1,27 @@
+<h1><% I18n.t(:Listing_views) %></h1>
+
+<table>
+  <tr>
+    <th><%= I18n.t(:name) %></th>
+    <th><%= I18n.t(:organizations) %></th>
+    <th><%= I18n.t(:Description) %></th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @views.each do |view| %>
+  <tr>
+    <td><%= view.name %></td>
+    <td><%= view.organization_id %></td>
+    <td><%= view.description %></td>
+    <td><%= link_to I18n.t(:Show), view %></td>
+    <td><%= link_to I18n.t(:edit), edit_view_path(view) %></td>
+    <td><%= link_to I18n.t(:Destroy), view, method: :delete, data: { confirm: I18n.t(:are_you_sure) } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to I18n.t(:new_view), new_view_path %>

@@ -1,0 +1,55 @@
+<%= render :partial => "demand_types/tabs_demand_type" %>
+<section class="card card-content-bloc estimancy-form">
+  <div class="card-body">
+    <% unless @demand_type.new_record?  %>
+      <div id="tabs-5">
+        <div class="edition-page-group py-4">
+          <span>Workflow des statuts</span>
+        </div>
+
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+            <div class="form-row">
+              <div class="col-5">
+                <%= form_tag '/set_demand_status_workflow', :method => 'POST', :class => 'simple_form' do %>
+
+                  <%= hidden_field_tag "organization_id", @organization.id %>
+                  <%= hidden_field_tag "demand_type_id", @demand_type.id %>
+                  <table class="table table-list">
+                    <tr>
+                      <th><%= I18n.t(:demands_statuses) %></th>
+                      <% @demand_statuses.each do |status| %>
+                        <th><%= status.name %></th>
+                      <% end %>
+                    </tr>
+
+                    <% @demand_statuses.order("status_number ASC").each do |demand_status| %>
+                      <tr>
+                        <td><%= demand_status.name %></td>
+                        <% @demand_statuses.order("status_number ASC").each do |status| %>
+                          <% if demand_status == status %>
+                            <td class="center">
+                              <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, true, :disabled => true ) %>
+                            </td>
+                          <% else %>
+                            <td class="center">
+                              <%= check_box_tag("status_workflow[#{status.id}][]", demand_status.id, (status.demand_to_transition_statuses.map(&:id).include? demand_status.id)) %>
+                            </td>
+                          <% end %>
+                        <% end %>
+                      </tr>
+                    <% end %>
+                  </table>
+                  </div>
+                  </div>
+
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('cancel'),  :class => 'btn btn-secondary btn-estimancy' %>
+                <% end %>
+
+                </div>
+        </div>
+      </div>
+<% end %>
+  </div>
+</section>

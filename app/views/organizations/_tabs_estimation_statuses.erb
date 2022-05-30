@@ -1,0 +1,12 @@
+<!--<div id="tabs-estimations-statuses" class="edition-page-group py-4"><span><%#= I18n.t('estimations_statuses') %></span></div>-->
+<div style="min-height: 50px;">
+  <% if can? :show_estimation_statuses, EstimationStatus %>
+      <% if can? :manage, EstimationStatus %>
+          <%= link_to I18n.t('create_button'), new_estimation_status_path(:organization_id => @organization.id), :class => 'btn btn-primary' %>
+      <% end %>
+      <hr>
+      <%= render "estimation_statuses/statuses_management", object: [@organization, @organization_group] %>
+  <% else %>
+      <div class="red_color"><%= I18n.t(:notice_cannot_view_estimation_statuses) %></div>
+  <% end %>
+</div>

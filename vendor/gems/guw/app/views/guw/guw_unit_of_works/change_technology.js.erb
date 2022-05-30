@@ -1,0 +1,2 @@
+$(".cotation_label_<%= @guw_unit_of_work.id %>").html("<%= j(select_tag "guw_complexity_#{@guw_unit_of_work.id}", options_for_select(@guw_unit_of_work.guw_type.guw_complexities.map{|i| [i.name, i.id] }, selected: nil), class: "input-small", prompt: "", disabled: !@guw_unit_of_work.guw_type.allow_complexity) %>")
+$(".effort_label<%= @guw_unit_of_work.id %>").html("<%= @guw_unit_of_work.effort.nil? ? '-' : @guw_unit_of_work.effort.round(3) %>")

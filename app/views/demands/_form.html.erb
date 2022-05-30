@@ -1,0 +1,217 @@
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
+
+      <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+
+        <li class="nav-item">
+          <a href="#demand" id="demand-tab" class="nav-link show active" data-toggle="pill" role="tab" aria-selected="true">
+            <%= I18n.t(:demands) %>
+          </a>
+        </li>
+
+        <% unless controller.action_name == "new" %>
+          <% if @demand.demand_type  %>
+            <% if @demand.demand_type.name == "PROJET" || @demand.demand_type.name == "EVO" %>
+              <li class="nav-item">
+                <a href="#services" id="services-tab" class="nav-link show" data-toggle="pill" role="tab" aria-selected="true">
+                  <%= I18n.t(:services) %>
+                </a>
+              </li>
+
+              <li class="nav-item">
+                <a href="#devis" id="devis-tab" class="nav-link show"  data-toggle="pill" role="tab" aria-selected="true">
+                  <%= "Devis" %>
+                </a>
+              </li>
+              <% else %>
+                <li> - </li>
+              <% end %>
+            <% end %>
+          <% end %>
+
+      </ul>
+
+      <%= simple_form_for([@organization, @demand]) do |f| %>
+        <div class="tab-content" id="pills-tabContent">
+
+          <div id="demand" class="tab-pane fade show active" role="tabpanel" aria-labelledby="tabs-global">
+              <div class="card-body">
+                <div class="row-fluid">
+                  <div class="span6">
+
+                  <%= f.error_notification %>
+
+                  <%= f.input :organization_id, as: :hidden, input_html: { :value => @organization.id } %>
+
+                    <div class="form-row">
+                      <div class="col-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :name, label: false,
+                                      input_html: { :class => 'mdl-textfield__input form-control',
+                                      :autofocus => (controller.action_name == 'new')}; %>
+                          <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="col-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :business_need, label: false,
+                                      input_html: { :class => 'mdl-textfield__input form-control'} %>
+                          <label class="mdl-textfield__label" for="business_need"><%= I18n.t(:business_need) %></label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="col-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :demand_type_id, label: false,
+                                      as: :select,
+                                      collection: @organization.demand_types,
+                                      input_html: { :class => 'mdl-textfield__input form-control',
+                                                    disabled: (controller.action_name == "edit")} %>
+                          <label class="mdl-textfield__label" for="demand_type_id"><%= "Type de demande" %></label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="col-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :severity_id, label: false,
+                                      as: :select,
+                                      collection: @organization.severities,
+                                      input_html: { :class => 'mdl-textfield__input form-control'} %>
+                          <label class="mdl-textfield__label" for="severity_id"><%= "Sévérité" %></label>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="col-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <%= f.input :criticality_id, label: false,
+                                      as: :select,
+                                      collection: @organization.criticalities,
+                                      input_html: { :class => 'mdl-textfield__input form-control'} %>
+                          <label class="mdl-textfield__label" for="criticality_id"><%= "Criticité" %></label>
+                        </div>
+                      </div>
+                    </div>
+
+                  <% unless @demand.demand_status.nil? %>
+                    <% if @demand.demand_status.name == "En instruction" || @demand.demand_status.name == "En qualification" %>
+                      <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications,
+                                  input_html: { class: 'input-xxlarge' } %>
+                      <% else %>
+                            <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications,
+                                        input_html: { class: 'input-xxlarge', disabled: true } %>
+                      <% end %>
+                    <%= f.input :application_id, as: :select, label: "Application associée", collection: @organization.applications, input_html: { class: 'input-xxlarge' } %>
+                  <% end %>
+
+                  <% if controller.action_name == "edit" %>
+                    <% if @demand.demand_status.nil? %>
+
+                      <div class="form-row">
+                        <div class="col-6">
+                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                            <%= f.input :demand_status_id,
+                                        as: :select,
+                                        label: false,
+                                        collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
+                                        selected: (@demand.demand_type.nil? ? nil : @demand.demand_type.demand_status_id),
+                                        input_html: { :class => 'mdl-textfield__input form-control' } %>
+                            <label class="mdl-textfield__label" for="demand_status_id"><%= "Statut de la demande" %></label>
+                          </div>
+                        </div>
+                      </div>
+
+                    <% else %>
+                      <% if (!("Accepté".in?@demand.projects.map(&:estimation_status).map(&:name)) && (@demand.demand_status.name == "En chiffrage")) %>
+
+                        <div class="form-row">
+                          <div class="col-6">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :demand_status_id,
+                                          as: :select,
+                                          label: "Statut de la demande",
+                                          collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
+                                          readonly: true,
+                                          input_html: { :class => 'mdl-textfield__input form-control' } %>
+                              <label class="mdl-textfield__label" for="demand_status_id"><%= "Statut de la demande" %></label>
+                            </div>
+                          </div>
+                        </div>
+
+                      <% else %>
+
+                        <div class="form-row">
+                          <div class="col-6">
+                            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                              <%= f.input :demand_status_id,
+                                          as: :select,
+                                          label: "Statut de la demande",
+                                          collection: @demand.get_demand_statuses(@organization, @demand.demand_type),
+                                          input_html: { :class => 'mdl-textfield__input form-control'  } %>
+                              <label class="mdl-textfield__label" for="demand_status_id"><%= "Statut de la demande" %></label>
+                            </div>
+                          </div>
+                        </div>
+
+                      <% end %>
+                    <% end %>
+                  <% end %>
+
+                  <div class="span6">
+                    <%= f.input :attachment, as: :file, input_html: { class: 'input-xxlarge' }  %>
+                    <%= File.absolute_path("#{@demand.attachment.to_s}") %>
+                    <%#= File.ftype("#{@demand.attachment.to_s}") %>
+                    <% if @demand.attachment.to_s.blank? || controller.action_name == "new" %>
+                      <p>Il n'y a aucun document attaché à cette demande.</p>
+                    <% else %>
+                      Pièces jointes à la demande <br>
+
+                      <%= link_to File.basename(@demand.attachment.to_s), @demand.attachment.to_s, target: "_blank" %> -
+                      <%= link_to '', delete_path(demand_id: @demand.id), method: :post, :class => 'fa fa-trash', :title => I18n.t('delete') %>
+                    <% end %>
+                  </div>
+
+                  <br/>
+
+                  <div class="actions-tabs">
+                    <% if action_name == 'new' || action_name=="create" %>
+                      <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                    <% elsif action_name == 'edit' || action_name=="update" %>
+                      <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                      <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                    <% end %>
+                    <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary' %>
+                  </div>
+
+                    <%# un card-body contient plusieurs span-6 %>
+                  </div>
+
+                  <%# span-6 ligne 111 %>
+
+
+                </div>
+
+              </div>
+
+          </div>
+        </div>
+
+
+
+        </div>
+
+
+      <% end %>
+    </div>
+  </div>
+</section>

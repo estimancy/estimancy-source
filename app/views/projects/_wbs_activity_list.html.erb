@@ -1,0 +1,8 @@
+<%= form_tag '/add_wbs_activity_to_project', :method => :post, :class => 'simple_form', :id => 'form_select_and_add_wbs_activity', :remote => true, :'data-update-target' => 'wbs_project_elements_section' do %>
+    <p style="margin: 10px; ">
+      <label><%= I18n.t(:wbs_activities)%> </label>
+      <%= select_tag 'wbs_activity_element', options_for_select(@wbs_activity_elements.map{|i| [i.name, i.id] } ), :prompt => I18n.t('helpers.select.prompt') %>
+      <%= hidden_field_tag :project_id,  @project.id  %>
+      <%= submit_tag 'ADD', :class => 'btn btn-primary' %>
+    </p>
+<% end %>

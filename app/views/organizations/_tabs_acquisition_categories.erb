@@ -1,0 +1,45 @@
+<!--<div id="tabs-acquisition-categories" class="edition-page-group py-4"><span><%#= I18n.t('acquisition_categories') %></span></div>-->
+<% if can? :show_acquisition_categories, AcquisitionCategory %>
+    <% if can? :manage, AcquisitionCategory %>
+      <%= link_to I18n.t('create_button'), new_organization_acquisition_category_path(@organization), :class => 'btn btn-primary' %>
+      <%= link_to I18n.t('export'), organization_export_acquisition_categories_path(@organization, :MYonglet => "WorkElementType"), :class => 'btn btn-primary' %>
+      <div class="float-right">
+        <%= form_tag organization_import_acquisition_categories_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <%= file_field_tag :file %>
+          <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+        <% end %>
+      </div>
+      <hr>
+    <% end %>
+
+    <table class="table table-list">
+      <thead>
+      <tr>
+        <th><%= I18n.t('name') %></th>
+        <th><%= I18n.t('description') %></th>
+        <th><%= I18n.t('coefficient_value') %></th>
+        <th><%= I18n.t('coefficient_label') %></th>
+        <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @organization.acquisition_categories.where("name LIKE ?", "%#{params[:advanced_search]}%").each do |i| %>
+          <tr>
+            <td><%= i.name %></td>
+            <td><%= i.description %></td>
+            <td><%= i.coefficient %></td>
+            <td><%= i.coefficient_label %></td>
+            <td class="center">
+              <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_acquisition_category_path(@organization, i), :class => 'material-icons', :title => I18n.t('edit') %>
+              <% if can? :manage, AcquisitionCategory %>
+                  <%= link_to raw("<i class='material-icons'>delete</i>"), organization_acquisition_category_path(@organization, i), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+              <% end %>
+            </td>
+          </tr>
+      <% end %>
+      </tbody>
+    </table>
+<% else %>
+    <div class="red_color"><%= I18n.t(:notice_cannot_view_acquisition_categories) %></div>
+<% end %>

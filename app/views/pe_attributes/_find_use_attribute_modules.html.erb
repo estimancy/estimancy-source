@@ -1,0 +1,47 @@
+<% if @attribute_modules.nil? || @attribute_modules.empty? %>
+    <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_no_module_use_current_attribute, :value => @pe_attribute.name)}" %></div>
+    <br/>
+<% else %>
+    <table border="0" width="100%" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <tr>
+        <th><%= I18n.t(:text_module_name) %></th>
+        <th><%= I18n.t(:text_attribute_specification_in_current_module) %></th>
+      </tr>
+      <% @attribute_modules.each do |attr_module| %>
+          <tr>
+            <td>
+              <span class='attribute_tooltip' title="<%= attr_module.pemodule.description %>"><%= raw link_to("#{attr_module.pemodule.title}", edit_pemodule_path(attr_module.pemodule)) %> </span>
+            </td>
+            <td>
+              <span><%= I18n.t(:mandatory) %>
+                : <%= attr_module.is_mandatory? ? I18n.t("simple_form.yes") : I18n.t("simple_form.no") %></span>
+              <span style="margin-left: 50px;;"><%= I18n.t(:text_use_as) %> : <%= I18n.t(attr_module.in_out) %></span>
+            </td>
+          </tr>
+      <% end %>
+    </table>
+<% end %>
+
+<% if @attribute_organizations.empty? %>
+    <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_no_organization_use_current_attribute, :value => @pe_attribute.name)}" %></div>
+    <br/>
+<% else %>
+    <table border="0" width="100%" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <tr>
+        <th><%= I18n.t(:text_organization_name) %></th>
+        <th><%= I18n.t(:text_attribute_specification_in_current_organization) %></th>
+      </tr>
+      <% @attribute_organizations.each do |attr_organization| %>
+          <tr>
+            <td>
+              <span class='attribute_tooltip' title="<%= attr_organization.organization.description %>"><%= raw link_to("#{attr_organization.organization.name}", edit_organization_path(attr_organization.organization)) %> </span>
+            </td>
+            <td>
+              <span><%= I18n.t(:mandatory) %>
+                : <%= attr_organization.is_mandatory? ? I18n.t("simple_form.yes") : I18n.t("simple_form.no") %></span>
+            </td>
+          </tr>
+      <% end %>
+    </table>
+<% end %>
+

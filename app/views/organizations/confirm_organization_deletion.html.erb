@@ -1,0 +1,18 @@
+<%= form_tag url_for( {:action => 'destroy', :controller => 'organizations', :id => @organization.id}), {:method => 'delete', :class=>'simple_form'} do %>
+    <h3><%= "#{@organization.name}" %></h3>
+    <div class="confirm_deletion">
+
+      <%= I18n.t(:text_confirm_organization_deletion, organization_name: @organization.name) %>
+
+      <br /><br />
+      <div class="actions-tabs">
+        <span style="margin-right: 10px;"> <%= check_box_tag "yes_confirmation", 'selected' %>  <%= I18n.t('simple_form.yes') %></span>
+        <%= submit_tag I18n.t('delete'), :class => 'btn btn-primary', :id => 'yes_delete_project' %>
+        <%= submit_tag I18n.t('cancel'), :class => 'btn btn-secondary', :id => 'cancel_project_deletion' %>
+      </div>
+    </div>
+<% end %>
+
+<div id="display_animation_ajax_loader" style="display: none">
+  <p><%= I18n.t(:wait_for_complete_organization_delete) %></p>
+</div>

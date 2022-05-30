@@ -1,0 +1,72 @@
+<div class="row pb-5">
+  <div class="col-10">
+
+    <% if @item_title.blank? %>
+        <div id="tabs-group" class="edition-page-group py-4"><span id="item_title"><%= I18n.t('groups') %></span></div>
+    <% else %>
+        <div id='<%= "tabs-#{@item_title}" %>' class="edition-page-group py-4"><span id="item_title"><%= @item_title %></span></div>
+    <% end %>
+
+
+      <div class="mb-5">
+        <div class="effort-bloc">
+          <div id="settings_content" class="card-body">
+            <% if @partial_name.blank? %>
+              <%= render :partial => "tabs_authorization_groups" %>
+            <% else %>
+              <%= render :partial => "organizations/#{@partial_name}" %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+
+  </div>
+
+  <div class="col-2">
+    <div id="edition-sidebar">
+      <h4 class="mb-0">Navigation</h4>
+      <ul class="nav flex-column">
+        <li class="nav-item">
+          <!--<a class="nav-link group" href="#tabs-group"><span><%#= I18n.t(:groups) %></span></a>-->
+          <a class="nav-link group" href="<%= organization_authorization_path(@organization, partial_name: 'tabs_authorization_groups', item_title: I18n.t('groups'), anchor: 'tabs-group') %>"><span><%= I18n.t("groups") %></span></a>
+        </li>
+        <li class="nav-item">
+          <!--<a class="nav-link group" href="#"><span><%#= I18n.t("security_level") %></span></a>-->
+          <a class="nav-link group" href="<%= organization_authorization_path(@organization, partial_name: 'tabs_authorization_security_levels', item_title: I18n.t('security_level'), anchor: 'tabs-project-security-levels') %>"><span><%= I18n.t("security_level") %></span></a>
+        </li>
+        <li class="nav-item">
+          <!--<a class="nav-link group" href="#tabs-organization-permissions"><span><%#= I18n.t("organization_permissions") %></span></a>-->
+          <a class="nav-link group" href="<%= organization_authorization_path(@organization, partial_name: 'tabs_authorization_organization_permissions', item_title: I18n.t('organization_permissions'), anchor: 'tabs-organization-permissions') %>"><span><%= I18n.t("organization_permissions") %></span></a>
+        </li>
+        <li class="nav-item">
+          <!--<a class="nav-link group" href="#tabs-global-permissions"><span><%#= I18n.t("global_permissions") %></span></a>-->
+          <a class="nav-link group" href="<%= organization_authorization_path(@organization, partial_name: 'tabs_authorization_global_permissions', item_title: I18n.t('global_permissions'), anchor: 'tabs-global-permissions') %>"><span><%= I18n.t("global_permissions") %></span></a>
+        </li>
+        <li class="nav-item">
+          <!--<a class="nav-link group" href="#tabs-modules-permissions"><span><%#= I18n.t("modules_permissions") %></span></a>-->
+          <a class="nav-link group" href="<%= organization_authorization_path(@organization, partial_name: 'tabs_authorization_module_permissions', item_title: I18n.t('modules_permissions'), anchor: 'tabs-modules-permissions') %>"><span><%= I18n.t("modules_permissions") %></span></a>
+        </li>
+        <li class="nav-item">
+          <!--<a class="nav-link group" href="#tabs-estimations-permissions"><span><%#= I18n.t("estimations_permissions") %></span></a>-->
+          <a class="nav-link group" href="<%= organization_authorization_path(@organization, partial_name: 'tabs_authorization_estimation_permissions', item_title: I18n.t('estimations_permissions'), anchor: 'tabs-estimations-permissions') %>"><span><%= I18n.t("estimations_permissions") %></span></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+  //$(document).ready(function() {
+  $(document).ready(function() {
+    $(document).on('scroll', function(){
+        if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+            $("#edition-sidebar").css({position: "fixed", top: -5});
+        }
+        if ($(document).scrollTop() < 200){
+            $("#edition-sidebar").css({position: "static", top: 0});
+        }
+    });
+  });
+</script>

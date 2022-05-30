@@ -1,0 +1,1 @@
+$("#project_security_user_id").replaceWith("<%= j select_tag('project_security[user_id]', options_for_select(@users), :id => 'project_security_user_id', :prompt => I18n.t('helpers.select.prompt')) %>");

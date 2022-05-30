@@ -1,0 +1,307 @@
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart']});
+</script>
+
+<div class="col-12" data-spy="scroll" data-target="#properties-sidebar" style="margin-top: 20px; overflow: visible;">
+
+  <div class="row">
+
+    <div class="col-10">
+      <% if indicator_dashboard.show_name_description? %>
+          <p>
+            <strong><%= indicator_dashboard.name %></strong>
+          </p>
+
+          <p>
+            <%= indicator_dashboard.description %>
+          </p>
+      <% end %>
+    </div>
+
+    <div class="col-2 tools float-right">
+      <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id) %>" title="<%= I18n.t :add_box %>"><i class="material-icons">show_chart</i></a>
+      <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id, is_label_widget: true) %>" title="<%= I18n.t :text_fields %>"><i class="material-icons">text_fields</i></a>
+      <a data-remote="true" href="<%= new_iwidget_path(indicator_dashboard_id: indicator_dashboard.id, is_calculation_widget: true) %>" title="<%= I18n.t :new_widget_kpi %>"><i class="material-icons">exposure</i></a>
+    </div>
+  </div>
+
+
+  <div class="mb-4">
+    <div class="widgets-list">
+
+      <% @widgets = {} %>
+      <% @label_widget_ids = [] %>
+
+      <!-- Les Vignettes de type Tableau -->
+      <% vw_value_types = ["minimum", "maximum", "median", "average", "sum", "counter"] %>
+
+      <!-- Les Vignettes graphiques -->
+      <% vw_graph_types = ["line_chart", "bar_chart", "area_chart", "pie_chart", "stacked_bar_chart"] %>
+
+      <% indicator_dashboard_iwidgets = indicator_dashboard.iwidgets #.order('position_x', 'position_y').all %>
+
+      <% indicator_dashboard_iwidgets.each do |iwidget| %>
+          
+          <% iwidget_data = "123" #get_iwidget_value(iwidget) %>
+          <% @widgets[iwidget.name] = [iwidget, iwidget_data] %>
+
+          <% if iwidget.is_label_widget? %>
+              <% @widgets[iwidget.name] = [iwidget, iwidget.comment] %>
+              <% @label_widget_ids << iwidget.id %>
+
+          <% elsif iwidget.is_calculation_widget? %>
+              <% iwidget_data = get_calculation_iwidget_value(iwidget, @organization) %>
+              <% @widgets[iwidget.name] = [iwidget, iwidget_data] %>
+
+          <% else %>
+              <% iwidget_data = get_iwidget_value(iwidget, @organization) %>
+              <% value_to_show =  iwidget_data[:value_to_show] %>
+
+              <%# begin %>
+                <%# if iwidget.kpi.output_type == "graphic" %>
+                    <%# value_to_show = render(:partial => "organizations/g_productivity_indicators", :locals => {kpi_config: iwidget.kpi, :r_data => value_to_show_tmp }) %>
+                <%# else %>
+                    <%# value_to_show = "#{value_to_show_tmp} #{iwidget.kpi.kpi_unit}" rescue nil %>
+                <%# end %>
+              <%# rescue %>
+                <%# value_to_show = "-" %>
+              <%# end %>
+
+              <% @widgets[iwidget.name] = [iwidget, value_to_show] %>
+          <% end %>
+          
+      <% end %>
+
+      <div class="widget-list-content">
+        <div class="widget-group">
+          <div class="grid-stack">
+
+            <!-- TEXT WIDGETS -->
+            <% @widgets.keys.each_with_index do |k, index| %>
+                <% iwidget = @widgets[k].first %>
+                <%# value = @widgets[k].last %>
+                <% all_values = @widgets[k].last %>
+
+                <%# unless value.is_a?(Hash) %>
+                <% if iwidget.is_label_widget? %>
+                    <div class="grid-stack-item label_widget" data-view_widget_id="<%= iwidget.id %>" data-gs-x="<%= iwidget.position_x %>" data-gs-y="<%= iwidget.position_y %>" data-gs-width="<%= iwidget.width.to_i %>" data-gs-height="1">
+                      <!--<div class="grid-stack-item-content">-->
+                      <!--<div class=" row" style="padding-top: 4.5rem;">-->
+                      <div class=" row" style="padding-top: 2.5rem;">
+                        <div class="col-10 widget-group-label">
+                              <span class="label_widget_title" style="--widget-text-color: <%= iwidget.color %>">
+                                <%= all_values.nil? ? '-' : all_values %>
+                                <%#= value.nil? ? '-' : simple_format(value.to_s) %>
+                              </span>
+                        </div>
+
+                        <div class="col-2 label_widget_icon">
+                          <div class="card-indicator-text">
+                            <div class="dragme">
+                              <i class='material-icons grip' style="float:right; margin-right: -1.5rem">drag_indicator</i>
+                              <%#= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(iwidget_id: iwidget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => iwidget.name) %>
+                              <a href="<%= main_app.edit_views_widget_path(iwidget, indicator_dashboard_id: indicator_dashboard.id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons float-right">edit</i></a>
+                              <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.iwidget_path(iwidget), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <!--</div>-->
+                    </div>
+                <% else %>
+                    <div class="grid-stack-item" data-iwidget_id="<%= iwidget.id %>" data-gs-x="<%= iwidget.position_x %>" data-gs-y="<%= iwidget.position_y %>" data-gs-width="<%= iwidget.width.to_i %>" data-gs-height="<%= iwidget.height.to_i %>">
+                      <div class="grid-stack-item-content">
+
+                        <% borne_min = iwidget.min_value
+                           borne_max = iwidget.max_value
+                           blink_class = ""
+                           blink_value_class = ""
+
+                           unless borne_min.nil? || borne_max.nil?
+                             if value.to_f < borne_min || value.to_f > borne_max
+                               if iwidget.signalize
+                                 blink_class = "blink red"
+                                 blink_value_class = "blink_value"
+                               else
+                                 blink_class = ""
+                                 blink_value_class = ""
+                               end
+                             else
+                               blink_class = ""
+                               blink_value_class = ""
+                             end
+
+                           end %>
+
+                        <div class="card card-widget <%= blink_class %> card-indicator card-indicator-with-module" style="padding-right: 5px; --widget-color: <%= iwidget.color %>;">
+                          <div class="card-body">
+                            <div class="card-indicator-text">
+                              <div class="dragme">
+                                <i class='material-icons grip' style="float: right;  margin-right: -1.5rem">drag_indicator</i>
+                                <%= link_to raw("<i class='material-icons'>edit</i>"), main_app.edit_iwidget_path(iwidget, indicator_dashboard_id: indicator_dashboard.id), class: 'material-icons float-right', title: I18n.t(:edit_widget, :value => iwidget.name), remote: true %>
+                                <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.iwidget_path(iwidget), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                              </div>
+
+                              <%= k %>
+                            </div>
+                            <span style="font-size: small"><%= iwidget.description %></span>
+
+                            <% all_values.each do |value| %>
+                                <div class="card-indicator-label">
+                                  <span class="<%= blink_value_class %>" style="margin-top: 0.9rem"><%= value.nil? ? '-' : value %></span>
+                                </div>
+                            <% end %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                <% end %>
+            <% end %>
+
+
+            <!-- Les Vignettes de type Tableau -->
+            <%# project_graph_iwidgets = indicator_dashboard.iwidgets.where(output_type: [vw_graph_types]) %>
+            <% project_graph_iwidgets = [] %>
+
+            <% project_graph_iwidgets.each_with_index do |iwidget, index| %>
+                <div class="grid-stack-item table_graph" data-iwidget_id="<%= iwidget.id %>" data-gs-x="<%= iwidget.position_x %>" data-gs-y="<%= iwidget.position_y %>" data-gs-width="<%= iwidget.width.to_i %>" data-gs-height="<%= iwidget.height.to_i %>">
+                  <div class="grid-stack-item-content">
+                    <div class="card card-widget card-indicator card-indicator-with-module" style="--widget-color: <%= iwidget.color %>;">
+                      <div class="card-body">
+
+                        <div class="card-indicator-text">
+                          <div class="dragme">
+                            <i class='material-icons grip' style="float:right; margin-right: -1.5rem">drag_indicator</i>
+                            <%#= link_to raw("<i class='material-icons'>get_app</i>"), main_app.export_vignette_path(iwidget_id: iwidget.id, module_project_id: current_module_project.id), class: 'material-icons float-right', title: I18n.t(:export_vignette, :value => iwidget.name) %>
+                            <a href="<%= main_app.edit_views_widget_path(iwidget, indicator_dashboard_id: indicator_dashboard.id) %>" data-remote="true" title="<%= I18n.t :edit %>"><i class="material-icons float-right">edit</i></a>
+                            <%= link_to raw("<i class='material-icons'>delete</i>"), main_app.iwidget_path(iwidget), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons float-right', :title => I18n.t('delete') %>
+                          </div>
+
+                          <%= iwidget.name %>
+                        </div>
+
+                        <div class="effort-table" style="margin-top: 0.9rem">
+                          <%# iwidget_data = get_iwidget_data(iwidget.id) %>
+                          <%#= iwidget_data[:value_to_show] %>
+                          <%= "Graphique" %>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            <% end %>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <!-- Les Vignettes graphiques -->
+  <%# project_graph_iwidgets = @project.views_widgets.where(widget_type: vw_graph_types) %>
+
+  <!-- Fin Les graphiques -->
+
+</div>
+
+<link rel="stylesheet" href="/assets/gridstack.css" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+
+    //$('.card.card-widget').addClass('blink');
+
+    //$('.card-body').css('padding', '1.1rem 1.3rem 1.1rem 0 !important');
+    var label_widget_ids = <%= @label_widget_ids.to_json.html_safe %>;
+
+    function _getItems() {
+        var items = [];
+
+        $('.grid-stack-item.ui-draggable').each(function () {
+            var $this = $(this);
+            items.push({
+                x_position: $this.attr('data-gs-x'),
+                y_position: $this.attr('data-gs-y'),
+                item_width: $this.attr('data-gs-width'),
+                item_height: $this.attr('data-gs-height'),
+                iwidget_id: $this.data('iwidget_id')
+            });
+        });
+
+        return items;
+    }
+
+    $(function () {
+        var options = {
+            width: 12,
+            cellHeight: 60, //100,
+            verticalMargin: 0,
+            draggable: {
+                handle: '.grip'
+            },
+
+            resizable: {
+                handles: 'se'
+            }
+        };
+
+        $('.grid-stack').gridstack(options);
+
+        $('.grid-stack').on('dragstop', function (event, ui) {
+            var element = $(event.target);
+            var node = element.data('_gridstack_node');
+            var items = _getItems();
+
+            $.ajax({
+                url: "/update_iwidget_positions",
+                method: "get",
+                data: {
+                    x_position: node['x'],
+                    y_position: node['y'],
+                    item_width: node['width'],
+                    item_height: node['height'],
+                    iwidget_id: element.data('iwidget_id'),
+                    iwidget_items: items
+                }
+            });
+        });
+
+        $('.grid-stack').on('resizestop', function(event, ui) {
+            var element = $(event.target);
+            var node = element.data('_gridstack_node');
+            var node_height = node['height']; //node.height;
+            var items = _getItems();
+
+            //console.log(node);
+
+            $.ajax({
+                url: "/update_iwidget_positions",
+                method: "get",
+                data: {
+                    x_position: node['x'],
+                    y_position: node['y'],
+                    item_width: node['width'],
+                    item_height: node['height'],
+                    iwidget_id: element.data('iwidget_id'),
+                    iwidget_items: items
+                }
+            });
+        });
+    });
+
+
+    function define_margin(element){
+        if(node['y'] == 0 || (jQuery.inArray(element.data('iwidget_id'), label_widget_ids) !== -1)){
+            element.css('margin-top', '0');
+        }else{
+            element.css('margin-top', '-30px');
+        }
+    }
+
+    //    $('.grid-stack').on('change', function (e, items) {
+    //        console.log(items);
+    //    });
+
+</script>

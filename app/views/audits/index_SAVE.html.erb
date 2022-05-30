@@ -1,0 +1,78 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:actions_history) %></a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Utilisateur</th>
+          <th>Avant</th>
+          <th>Après</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @versions.each do |version| %>
+          <tr>
+            <td class="span2">
+              <%= version.item_type %>
+            </td>
+            <td class="span2">
+              <% u = User.find_by_id(version.whodunnit) %>
+              <% unless u.nil? %>
+                <%= u.name %>
+              <% else %>
+                N/A
+              <% end %>
+            </td>
+            <td class="span2">
+              <% unless version.event == "destroy" %>
+                <% unless version.object_changes.nil? %>
+                  <% YAML.load(version.object_changes).each do |k,v| %>
+                    <%= k %> : <%= v.first %>
+                    <br>
+                  <% end %>
+                <% else %>
+                  -
+                <% end %>
+              <% else %>
+                <% YAML.load(version.object).each do |k,v| %>
+                  <%= k %> : <%= v %>
+                  <br>
+                <% end %>
+              <% end %>
+            </td>
+            <td class="span3">
+             <% unless version.object_changes.nil? %>
+                <% YAML.load(version.object_changes).each do |k,v| %>
+                    <%= k %> : <%= v.last %>
+                    <br>
+                <% end %>
+              <% else %>
+                -
+              <% end %>
+            </td>
+            <td class="span2">
+              <%=
+                 case version.event
+                   when "update"
+                     "Mise à jour"
+                   when "create"
+                     "Creation"
+                   when "destroy"
+                     "Suppression"
+                 end
+              %>
+            </td>
+          </tr>
+        <% end %>
+        <%= render :partial => 'layouts/footer_table' %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+

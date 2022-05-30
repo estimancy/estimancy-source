@@ -1,0 +1,232 @@
+<section class="estimation-modules-edition">
+
+  <div class="edition-page-module d-flex justify-content-between">
+    <div class="row page_module_title">
+      <div class="col">
+        <p class="page_module_type"><%= I18n.t(:expert_judgement_calculation) %> : </p>
+        <span class="no_uppercase"><%= @module_project %></span>
+      </div>
+    </div>
+
+    <div class="edition-bloc-tools">
+      <% if can? :execute_estimation_plan, @project %>
+        <%= submit_tag I18n.t(:calculate_button), class: "btn btn-secondary pull-right" %>
+      <% end %>
+    </div>
+  </div>
+
+  <%= form_tag expert_judgement.instance_save_efforts_path(@expert_judgement_instance) do %>
+    <div class="card card-widget">
+      <div class="card-body">
+        <div class="edition-bloc-content pb-4">
+
+          <table class="table table-sm requirements-table estimation-table">
+            <tr>
+              <th class="text_left">Type de valeurs</th>
+              <th class="text_left">Description</th>
+              <th class="text_left">Valeurs proposées</th>
+              <th class="text_left">Valeurs retenues</th>
+              <th class="text_left">Commentaires</th>
+              <th class="text_left">Traçabilité</th>
+            </tr>
+            <tr>
+              <th></th>
+              <th></th>
+              <th class="text_left">
+                <% if @expert_judgement_instance.three_points_estimation? %>
+                  Bas /
+                <% end %>
+                  Probable
+                <% if @expert_judgement_instance.three_points_estimation? %>
+                  / Haut
+                <% end %>
+              </th>
+              <th class="text_left">
+                <% if @expert_judgement_instance.three_points_estimation? %>
+                  Bas /
+                <% end %>
+                Probable
+                <% if @expert_judgement_instance.three_points_estimation? %>
+                  / Haut
+                <% end %></th>
+              <th></th>
+              <th></th>
+            </tr>
+
+            <% module_project = current_module_project %>
+            <% organization_id = module_project.organization_id %>
+            <% current_pbs = current_component %>
+
+            <% @expert_judgement_attributes.each do |eja| %>
+
+              <% ie = ExpertJudgement::InstanceEstimate.where(expert_judgement_instance_id: @expert_judgement_instance.id,
+                                                               pe_attribute_id: eja.id,
+                                                               pbs_project_element_id: current_pbs.id,
+                                                               module_project_id: module_project.id).first_or_create %>
+              <%
+                attr_unit_coefficient = 1
+                pe_attribute = PeAttribute.find(eja.id)
+                if pe_attribute
+                  if pe_attribute.alias == "effort"
+                    attr_unit_coefficient = @expert_judgement_instance.effort_unit_coefficient
+                  elsif eja.alias == "cost"
+                    attr_unit_coefficient = @expert_judgement_instance.cost_unit_coefficient
+                  end
+                end
+
+                attr_unit_coefficient = attr_unit_coefficient.nil? ? 1 : attr_unit_coefficient.to_f
+              %>
+
+              <% current_ev =  EstimationValue.where(organization_id: organization_id,
+                                                     :module_project_id => module_project.id,
+                                                     :pe_attribute_id => eja.id,
+                                                     :in_out => "input").first %>
+
+              <% if current_ev && !current_ev.estimation_value_id.nil? %>
+                <% ev = EstimationValue.find(current_ev.estimation_value_id) %>
+              <% else %>
+                <% ev = EstimationValue.where(organization_id: organization_id,
+                                              :module_project_id => module_project.previous.first,
+                                              :pe_attribute_id => eja.id,  :in_out => "output").first %>
+                <% if ev.nil? %>
+                    <% ev =  current_ev %>
+                <% end %>
+              <% end %>
+
+              <tr>
+                <td>
+                  <span class="pull-left">
+                    <%= eja.name %>
+                  </span>
+                </td>
+
+                <td>
+                  <span class="pull-left">
+                    <%= link_to ie.description.blank? ? '------' : ie.description, "#", title: ie.description, :"data-toggle" => "modal", :"data-target" => "#description#{ie.id}", :"data-backdrop" => "static"  %>
+                  </span>
+                </td>
+                <div class="modal fade" id="description<%= ie.id %>" tabindex="-1" role="dialog" aria-labelledby="description_label<%= ie.id %>" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header modal-drag">
+                        <h4 class="modal-title" id="description_label<%= ie.id %>">
+                          <b>
+                            <%= eja.name %>
+                          </b>
+                        </h4>
+                      </div>
+                      <div class="modal-body">
+                        <%= text_area_tag "description[#{eja.id}]", ie.description, class: "attribute_note_area" %>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+                        <% if can? :execute_estimation_plan, @project %>
+                            <button type="submit" class="btn btn-primary"><%= I18n.t(:save) %></button>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <td>
+                  <span class="pull-left">
+
+                    <% if @expert_judgement_instance.three_points_estimation? %>
+                      <%= text_field_tag "values[#{eja.id}][low][input]", ie.convert_effort_to_show("low", eja, ev, current_pbs, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+                      <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
+                    <% end %>
+
+                    <%= text_field_tag "values[#{eja.id}][most_likely][input]", ie.convert_effort_to_show("most_likely", eja, ev, current_pbs, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+                    <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
+
+                    <% if @expert_judgement_instance.three_points_estimation? %>
+                      <%= text_field_tag "values[#{eja.id}][high][input]", ie.convert_effort_to_show("high", eja, ev, current_pbs, module_project), class: "input-small", readonly: cannot?(:alter_estimation_plan, @project) %>
+                      <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
+                    <% end %>
+
+                  </span>
+                </td>
+                <td>
+                  <span class="pull-left">
+
+                    <% if @expert_judgement_instance.three_points_estimation? %>
+                      <%= text_field_tag "values[#{eja.id}][low][output]", ie.low_output.to_f / attr_unit_coefficient, class: "input-small" %>
+                      <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
+                    <% end %>
+
+                    <%= text_field_tag "values[#{eja.id}][most_likely][output]", ie.most_likely_output.to_f / attr_unit_coefficient, class: "input-small" %>
+                    <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
+
+                    <% if @expert_judgement_instance.three_points_estimation? %>
+                      <%= text_field_tag "values[#{eja.id}][high][output]", ie.high_output.to_f / attr_unit_coefficient, class: "input-small" %>
+                      <%= @expert_judgement_instance.send("#{eja.alias}_unit") %>
+                    <% end %>
+
+                  </span>
+                </td>
+
+                <td>
+                  <span class="pull-left">
+                    <%= link_to ie.comments.blank? ? '------' : ie.comments.truncate(50), "#", title: ie.comments, :"data-toggle" => "modal", :"data-target" => "#comments#{ie.id}", :"data-backdrop" => "static"  %>
+                  </span>
+                </td>
+                <div class="modal fade" id="comments<%= ie.id %>" tabindex="-1" role="dialog" aria-labelledby="comments_label<%= ie.id %>" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header modal-drag">
+                        <h4 class="modal-title" id="comments_label<%= ie.id %>">
+                          <b>
+                            <%= eja.name %>
+                          </b>
+                        </h4>
+                      </div>
+                      <div class="modal-body">
+                        <%= text_area_tag "comments[#{eja.id}]", ie.comments, class: "attribute_note_area" %>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+                        <% if can? :execute_estimation_plan, @project %>
+                            <button type="submit" class="btn btn-primary"><%= I18n.t(:save) %></button>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <td>
+                  <span class="pull-left">
+                    <%= link_to ie.tracking.blank? ? '------' : ie.tracking.truncate(50), "#", title: ie.tracking, :"data-toggle" => "modal", :"data-target" => "#tracking#{ie.id}", :"data-backdrop" => "static"  %>
+                  </span>
+                </td>
+                <div class="modal fade" id="tracking<%= ie.id %>" tabindex="-1" role="dialog" aria-labelledby="tracking_label<%= ie.id %>" aria-hidden="true">
+                  <div class="modal-dialog">
+                    <div class="modal-content">
+                      <div class="modal-header modal-drag">
+                        <h4 class="modal-title" id="tracking_label<%= ie.id %>">
+                          <b>
+                            <%= eja.name %>
+                          </b>
+                        </h4>
+                      </div>
+                      <div class="modal-body">
+                        <%= text_area_tag "tracking[#{eja.id}]", ie.tracking, class: "attribute_note_area" %>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+                        <% if can? :execute_estimation_plan, @project %>
+                            <button type="submit" class="btn btn-primary"><%= I18n.t(:save) %></button>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </tr>
+            <% end %>
+          </table>
+
+        </div>
+      </div>
+    </div>
+  <% end %>
+</section>

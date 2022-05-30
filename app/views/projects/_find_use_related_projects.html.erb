@@ -1,0 +1,71 @@
+<% if @related_projects.nil? || @related_projects.empty? %>
+  <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_project_finduse_no_project, :value => @project)}" %> </div><br>
+
+<% else %>
+  <table border="0" width="100%" class="table tablesorterPager table-striped table-bordered table-condensed">
+    <tr>
+      <th><%= I18n.t(:text_project_name) %></th>
+    </tr>
+    <% @related_projects.each do |project| %>
+      <tr>
+        <td>
+          <span class='attribute_tooltip' title="<%= project.description %>"><%= raw link_to("#{project}", edit_pemodule_path(project)) %> </span>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<% if @related_projects_inverse.nil? || @related_projects_inverse.empty? %>
+  <div class="alert alert-info" colspan="2">
+    <%=raw "#{h I18n.t(:notice_project_finduse_no_parent_project, :value => @project)}" %>
+  </div>
+  <br>
+<% else %>
+  <table border="0" width="100%" class="table tablesorterPager table-striped table-bordered table-condensed">
+    <tr>
+      <th><%= I18n.t(:text_project_name_inverse) %></th>
+    </tr>
+    <% @related_projects_inverse.each do |project| %>
+      <tr>
+        <td>
+          <span class='attribute_tooltip' title="<%= project.description %>"><%= raw link_to("#{h(project)}", edit_pemodule_path(project)) %> </span>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<% if @related_users.empty? %>
+  <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_project_finduse_no_user, :value => @project)}" %></div>  <br>
+<% else %>
+  <table border="0" width="100%" class="table tablesorterPager table-striped table-bordered table-condensed">
+    <tr>
+      <th><%= I18n.t(:text_user_name) %></th>
+    </tr>
+    <% @related_users.each do |user| %>
+      <tr>
+        <td>
+          <span class='attribute_tooltip' title="<%= user %>"><%= raw link_to("#{h(user)}", edit_user_path(user)) %> </span>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>
+
+<% if @related_groups.empty? %>
+  <div class="alert alert-info" colspan="2"><%=raw "#{h I18n.t(:notice_project_finduse_no_group, :value => @project)}" %></div> <br>
+<% else %>
+  <table border="0" width="100%" class="table tablesorterPager table-striped table-bordered table-condensed">
+    <tr>
+      <th><%= I18n.t(:text_group_name) %></th>
+    </tr>
+    <% @related_groups.each do |group| %>
+      <tr>
+        <td>
+          <span class='attribute_tooltip' title="<%= group %>"><%= raw link_to("#{h(group)}", edit_user_path(group)) %> </span>
+        </td>
+      </tr>
+    <% end %>
+  </table>
+<% end %>

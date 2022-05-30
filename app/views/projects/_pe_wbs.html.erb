@@ -1,0 +1,61 @@
+<div class="component_tree" id="project_wbs_product_section">
+
+  <div class="overflow">
+    <% unless @project.nil? || @project.pe_wbs_projects.products_wbs.first.nil? %>
+      <%#
+         if @project.pe_wbs_projects.products_wbs.last.pbs_project_elements.last.nil?
+
+           #New default Pe-Wbs-Project
+           pe_wbs_project_product = PeWbsProject.create(:project_id => @project.id,
+                                                        :name => "#{@project.title}",
+                                                        :wbs_type => 'Product')
+           pe_wbs_project_product.save
+
+           ##New root Pbs-Project-Element
+           if @project.application.nil?
+             @product_name = @project.application_name
+           else
+             @product_name = @project.application.name
+           end
+
+           organization_technology =  @current_organization.organization_technologies.first_or_create(name: "Java",
+                                                                                                      alias: "Java",
+                                                                                                      organization_id: @current_organization.id,
+                                                                                                      productivity_ratio: 1,
+                                                                                                      state: "draft")
+
+           pbs_project_element = PbsProjectElement.where( :name => "#{@product_name.blank? ? @project_title : @product_name}",
+                                                          :is_root => true,
+                                                          :position => 0,
+                                                          :work_element_type_id => nil,
+                                                          :pe_wbs_project_id => pe_wbs_project_product.id,
+                                                          :organization_technology_id => organization_technology.id).first_or_create(:start_date => Time.now)
+           pbs_project_element.save
+           pe_wbs_project_product.save
+         end
+      %>
+
+      <% pbs = @project.pe_wbs_projects.products_wbs.last.pbs_project_elements.last %>
+
+      <% if pbs.nil? %>
+        -
+      <% else %>
+        <%= raw(generate_wbs_product(pbs.root, @project, '', 5)) %>
+      <% end %>
+
+    <% end %>
+  </div>
+
+  <script>
+    $(document).ready(function() {
+      $(function () {
+        $('#pbs_wbs a:first').tab('show');
+      })
+      $('#pbs_wbs a').click(function (e) {
+        e.preventDefault();
+        $(this).tab('show');
+      })
+    });
+  </script>
+
+</div>

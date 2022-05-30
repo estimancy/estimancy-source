@@ -1,0 +1,2 @@
+module IndicatorDashboardsHelper
+end

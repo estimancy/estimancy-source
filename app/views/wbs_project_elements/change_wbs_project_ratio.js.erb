@@ -1,0 +1,18 @@
+$("#notifications").html("");
+
+$(".modal-body-inner").html("<%= j render(:partial => "wbs_project_elements/edit_wbs_project_element_ratio") %>");
+
+$("#myModalLabel").html("Change <%= @wbs_project_element.name %> default Wbs-Activity-Ratio");
+
+$("#edit_component").modal({
+    keyboard: false,
+    backdrop: false
+});
+
+$('.change_ratio').click(function(){
+    //$("#myModalLabel").modal({show: true});
+    window.close();
+});
+//$('#myModalLabel').modal('hide');
+
+$("#notifications").html("<%= j(render "layouts/notifications") %>");

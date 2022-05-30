@@ -1,0 +1,18 @@
+$("#coefficient_comments").html("<%= j(render 'guw/guw_unit_of_works/coefficient_comments_modal', {
+  guw_unit_of_work: @guw_unit_of_work,
+  guw_coefficient: @guw_coefficient,
+  guw_coefficient_element: @guw_coefficient_element,
+  value: @value})
+%>")
+
+$("#coefficient_comments").modal({
+  keyboard: false,
+  backdrop: false
+});
+
+$("#coefficient_comments").on("shown.bs.modal", function () {
+  $("#guw_form").unbind('submit');
+  $(".guw_submit").prop("disabled", false);
+});
+
+$(".guw_submit").prop("disabled", false);

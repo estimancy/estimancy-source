@@ -1,0 +1,24 @@
+
+<%= form_tag(set_rights_path, :method => 'post', :class => 'simple_form') do %>
+
+  <% if can? :show_modules_permissions, Permission %>
+
+    <%= render partial: "auth_modules_permissions" %>
+
+    <div class="hidden">
+      <%= render partial: "auth_organization_permissions" %>
+      <%= render partial: "auth_global_permissions" %>
+    </div>
+
+    <br>
+    <% if can? :manage_modules_permissions, Permission %>
+      <%= submit_tag I18n.t('apply'), name: "modules_permissions", :class => 'btn btn-primary btn-estimancy' %>
+      <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary'%>
+    <% end %>
+
+  <% else %>
+    <div class="red_color">
+      <%= I18n.t(:notice_cannot_view_modules_permissions) %>
+    </div>
+  <% end %>
+<% end %>

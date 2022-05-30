@@ -1,0 +1,124 @@
+//Get the current_component first
+<% @current_component = current_component %>
+
+<% if controller_name == "users" or controller_name == "pbs_project_elements" %>
+  $("#project_wbs_product_section .tab-pane.active").html("<%=raw j generate_wbs_product(@project.root_component, @project, '', 5, @is_project_view) %>");
+<% else %>
+  $("#project_wbs_product_section").html("<%=raw j generate_wbs_product(@project.root_component, @project, '', 5, @is_project_view) %>");
+<% end %>
+
+$(".input_data").html("<%=raw j(display_input) %>");
+
+$(".output_data").html("<%=raw j(sanitize(display_results, :tags => %w(table tr th td span title h4 strong), :attributes => %w(id class style title colspan rowspan))) %>");
+
+$(".component_name").html("<%=raw @current_component %>");
+
+$("#buttons").html("<%=raw j(render('users/buttons')) %>");
+
+$("#output_data_view_widgets_results").html("<%=raw j(render(partial: 'views_widgets/dashboard_views_widgets_results', object: [@module_positions, @module_positions_x])) %>");
+
+$('.component_tree ul li, .widget-content ul li').hover(
+    function () {
+      $(this.children).css('display', 'inline');
+    },
+    function () {
+     $('.block_link').hide();
+    }
+);
+
+$('.block_label, div.block_link').hover(
+    function () {
+        $('div.block_label.selected_pbs').css('width', 'inherit');
+    },
+    function () {
+        $('div.block_label.selected_pbs').css('width', '100%');
+    }
+);
+
+$('.spiner').hide();
+
+$("#pbs_list").val(<%= @current_component.nil? ? '' : @current_component.id %>);
+
+$(".header_data").html("<h5><%= @current_component %> - <%= current_module_project %></h5>");
+
+<% if current_module_project.pemodule.alias.to_s == Projestimate::Application::BALANCING_MODULE %>
+    $(".header_data h5").append("<%= escape_javascript( select_tag('select_balancing_attribute', options_for_select(current_module_project.pemodule.pe_attributes.map{ |attr| [attr.to_s, attr.id]}, :selected => (current_balancing_attribute.id unless current_balancing_attribute.nil?)), :class => 'balancing_attribute', :prompt => I18n.t(:text_select_balancing_attribute)) ).html_safe %> ");
+<% end %>
+
+// For the Effort-Breakdown moduel: show the effort per activity
+<% if current_module_project.pemodule.alias == Projestimate::Application::EFFORT_BREAKDOWN %>
+    $(".effort_breakdown_activities_profiles").html("<%= raw j(render('users/effort_per_activity')) %>");
+<% else %>
+    $('#display_results_by_profile').hide();
+<% end %>
+
+<% if  current_module_project.pemodule.alias == "balancing_module" %>
+    $("#balancing_module_attributes").html("<%=raw j(render(partial: 'projects/select_balancing_module_attributes')) %>");
+    //$("#select_balancing_attribute").val(<%#= current_balancing_attribute.nil? ? '' : current_balancing_attribute.id %>);
+<% end %>
+
+//Allow to copy value from one field to another
+$('.copyLib').css( 'cursor', 'pointer' );
+$(".copyLib").click(function(){
+    var effort_input_id = "_low"+$(this).data("effort_input_id");
+    var first_value = $("#"+effort_input_id).val();
+
+    var low_level =         "_low"+$(this).data("effort_input_id");
+    var most_likely_level = "_most_likely"+$(this).data("effort_input_id");
+    var high_level =        "_high"+$(this).data("effort_input_id");
+
+    document.getElementById(low_level).value = first_value;
+    document.getElementById(most_likely_level).value = first_value;
+    document.getElementById(high_level).value = first_value;
+    return false;
+});
+
+//Regenerate the estimation graph according to the current selected component
+//$.ajax({
+//    url: "/show_estimation_graph",
+//    method: "get"
+//});
+
+
+$('.input-small').bind("blur",(
+    function(){
+        $.ajax({
+            url:"check_attribute",
+            type: 'POST',
+            data: "value=" + this.value + "&level=" + this.className.split(/\s/)[1] + "&est_val_id=" + $(this).data("est_val_id") + "&wbs_project_elt_id=" + $(this).data("wbs_project_elt_id")
+        })
+    }
+));
+
+$(".date-picker").datepicker({
+    language: '<%= set_user_language_for_datepicker %>',
+    autoclose: true,
+    todayHighlight: true,
+    todayBtn: true
+}).on("hide", function(e){
+            $.ajax({
+                url:"check_attribute",
+                type: 'POST',
+                data: "value=" + this.value + "&level=" + this.className.split(/\s/)[1] + "&est_val_id=" + $(this).data("est_val_id") + "&wbs_project_elt_id=" + $(this).data("wbs_project_elt_id")
+            })
+        });
+
+$('.button_attribute_tooltip').tooltip({'html' : true });
+
+// If single_attribute_value, data if low = most_likely=high
+manage_single_entry_attribute();
+
+// Refresh input data according to the selected balancing attribute
+update_balancing_module_input();
+
+// Add red border-color to the select_tag
+if($("#select_balancing_attribute").val() == "") {
+    $("#select_balancing_attribute").css("border-color", "red");
+}
+
+//$("#setting_module").html("");
+
+
+
+
+

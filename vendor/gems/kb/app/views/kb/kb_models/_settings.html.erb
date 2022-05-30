@@ -1,0 +1,757 @@
+<section class="estimation-modules-edition">
+  <%= form_tag kb.kb_model_save_efforts_path(@kb_model), method: "post" do %>
+
+    <% module_project = current_module_project %>
+    <% organization_id = @current_organization.id %>
+
+    <!-- SIZE -->
+    <%
+      module_project =  current_module_project
+      size_attr = module_project.pemodule.pe_attributes.where(alias: "retained_size").first #PeAttribute.find_by_alias("retained_size")
+
+      begin
+        size_current_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => module_project.id, :pe_attribute_id => size_attr.id, :in_out => "input").first
+
+      rescue
+        size_current_ev = nil
+      end
+
+      unless size_current_ev.nil?
+        ev_size_value = size_current_ev.string_data_probable[current_component.id]
+
+        begin
+          if ev_size_value.blank? || !@kb_model.enabled_input
+
+            if !size_current_ev.estimation_value_id.nil?
+              size_previous_ev = EstimationValue.find(size_current_ev.estimation_value_id)
+            else
+              size_possible_module_projects = module_project.possible_previous_mp_for_attribute(size_attr)
+
+              mpsize = module_project.previous.select{|i| i.pemodule.alias == "guw"}.first
+              begin
+                size_previous_ev = EstimationValue.where(:pe_attribute_id => size_attr.id,
+                                                         :module_project_id => mpsize.id, :in_out => "output").first
+              rescue
+                begin
+                  mpsize = module_project.previous.select{|i| i.pemodule.alias == "ge"}.first
+                  size_previous_ev = EstimationValue.where(:organization_id => organization_id, :module_project_id => mpsize.id,
+                                                           :pe_attribute_id => size_attr.id, :in_out => "output").first
+
+                rescue
+                  size_previous_ev = nil
+                end
+              end
+            end
+          end
+        end
+      end
+
+      #@size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id, @kb_model)
+
+      effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first
+
+      begin
+        effort_current_ev = EstimationValue.where(:organization_id => organization_id,
+                                                  :module_project_id => module_project.id,
+                                                  :pe_attribute_id => effort_attr.id,
+                                                  :in_out => "input").first
+      rescue
+        effort_current_ev = nil
+      end
+
+      effort_possible_module_projects = module_project.possible_previous_mp_for_attribute(effort_attr)
+
+      if module_project.previous.size > 1
+
+        if effort_current_ev && !effort_current_ev.estimation_value_id.nil?
+          ev = EstimationValue.find(effort_current_ev.estimation_value_id)
+        else
+          begin
+            ev = EstimationValue.where(:organization_id => organization_id,
+                                       module_project_id: module_project.previous.last.id,
+                                       pe_attribute_id: effort_attr.id,
+                                       in_out: "output").first
+          rescue
+            ev = nil
+          end
+        end
+
+        if ev
+          begin
+            if ev.module_project.pemodule.alias == "effort_breakdown"
+              @previous_effort = ev.send("string_data_probable")[current_component.id][module_project.previous.last.wbs_activity.root_element.id][:value].to_f
+            else
+              @previous_effort = ev.send("string_data_probable")[current_component.id].to_f
+            end
+          rescue
+            @previous_effort = 0
+          end
+        end
+      end
+    %>
+
+
+    <!-- EFFORT -->
+    <% effort_attr = module_project.pemodule.pe_attributes.where(alias: "effort").first #PeAttribute.find_by_alias("effort") %>
+    <% begin
+         input_effort_ev = EstimationValue.where(:organization_id => organization_id,
+                                                        :module_project_id => module_project.id,
+                                                        :pe_attribute_id => effort_attr.id,
+                                                        :in_out => "input").first
+       rescue
+         input_effort_ev = nil
+       end
+    %>
+
+    <% begin
+         output_effort_current_ev = EstimationValue.where(:organization_id => organization_id,
+                                                          :module_project_id => module_project.id,
+                                                          :pe_attribute_id => effort_attr.id,
+                                                          :in_out => "output").first
+       rescue
+         output_effort_current_ev = nil
+       end
+    %>
+
+    <% @filters =  @kb_input.filters %>
+
+
+    <div class="edition-page-module pt-3 d-flex justify-content-between">
+      <div class="row page_module_title">
+        <div class="col">
+          <p class="page_module_type"><%= I18n.t(:kb_calculation) %> : </p>
+          <span class="no_uppercase"><%= @kb_model %></span>
+        </div>
+      </div>
+
+      <div class="row float-right">
+        <div class="col-12">
+          <% if can? :execute_estimation_plan, @project %>
+            <button type="submit" class="btn btn-secondary button_margin_right">
+              <%= I18n.t(:calculate_button) %>
+            </button>
+          <% end %>
+          <%= link_to I18n.t(:export), kb.kb_model_dot_export_path(@kb_model), :class => "btn btn-secondary button_margin_right pull-left", :method => "post" %>
+        </div>
+      </div>
+    </div>
+
+    <!-- debut entree -->
+    <div class="card card-widget">
+      <div class="card-body">
+
+        <div class="edition-bloc-content pb-4">
+
+          <div class="edition-bloc-title" style="padding-bottom: initial;">
+            <h5 class="page_module_subtitle">
+              <%= I18n.t(:inputs) %>
+            </h5>
+          </div>
+          <hr>
+
+<!--          <div class="form-row">-->
+<!--            <div class="col-2 timecost-indicator">-->
+<!--              <div class="indicator-title"><%#= I18n.t :input_size_with_unit %>:</div>-->
+              <%#= text_field_tag "", "#{effort.to_f.round(2)} ", disabled: true, id: "name", class: "form-control form-control-sm" %>
+<!--            </div>-->
+
+            <!--            <div class="col-3" >-->
+            <!--              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label pt-3 is-upgraded" data-upgraded=",MaterialTextfield">-->
+            <!--                <input class="mdl-textfield__input" type="text" id="name" value="<%#= effort.to_f.round(2) %> <%#= @staffing_model.effort_unit %>" disabled>-->
+            <!--                <small><%#= I18n.t(:effort_with_unit) %></small>-->
+            <!--              </div>-->
+            <%#= text_field_tag "", "#{effort.to_f.round(2)} ", disabled: true, id: "name", class: "form-control form-control-sm" %>
+            <!--            </div>-->
+
+<!--          </div>-->
+
+
+          <!-- debut Size -->
+          <% if @kb_model.three_points_estimation %>
+            <% array = ["low", "most_likely", "high"] %>
+          <% else %>
+            <% array = ["most_likely"] %>
+          <% end %>
+
+          <div class="form-row">
+            <div class="col">
+              <div class="timecost-indicator">
+                <div class="indicator-title"><%= I18n.t :input_size_with_unit %>:</div>
+              </div>
+              <% array.each do |level| %>
+
+                <% @size = Kb::KbModel::display_size(size_previous_ev, size_current_ev, level, current_component.id, @kb_model) %>
+
+                <div class="col-4 ">
+                  <strong class="timecost-indicator">
+                    <%= level.humanize %>
+                  </strong>
+
+                  <% unless @kb_model.enabled_input %>
+                    <%= hidden_field_tag "size", @size %>
+                    <%= text_field_tag "", convert_with_precision(@size, user_number_precision, true),
+                                       class: "string required form-control-sm",
+                                       disabled: true  %>
+                  <% else %>
+                    <%= number_field_tag "size", convert_with_precision(@size, user_number_precision, true), class: "string required form-control", step: "any" %>
+                  <% end %>
+                </div>
+              <% end %>
+            </div>
+
+
+            <div class="col">
+              <% if module_project.previous.size > 1 %>
+                <% unless input_effort_ev.nil? %>
+                  <% unless input_effort_ev.estimation_value_id.nil? %>
+                    <% if @previous_effort %>
+                      <div class="timecost-indicator">
+                        <div class="indicator-title"><%= I18n.t :input_effort_without_unit %>:</div>
+                      </div>
+
+                      <% previous_effort_to_show = (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f) %>
+                      <%#= hidden_field_tag "previous_effort", @previous_effort %>
+                      <% array.each do |level| %>
+                        <div class="col-4 ">
+                          <strong class="timecost-indicator">
+                            <%= level.humanize %> (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)
+                          </strong>
+
+                          <% unless @kb_model.enabled_input %>
+                            <span id="previous_effort_label">
+                              <%= text_field_tag "", convert_with_precision(previous_effort_to_show, user_number_precision, true),
+                                                 class: "string required form-control-sm previous_effort",
+                                                 disabled: true %>
+                              <%#= hidden_field_tag "previous_effort", @previous_effort %>
+                              <%= hidden_field_tag "previous_effort", previous_effort_to_show %>
+                            </span>
+                          <% else %>
+                            <%= number_field_tag "previous_effort", @previous_effort.nil? ? '' : convert_with_precision(previous_effort_to_show, user_number_precision, true),
+                                                 class: "string required form-control", step: "any" %>
+                          <% end %>
+                        </div>
+                      <% end %>
+                    <% end %>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+          <!-- end Size -->
+        </div>
+      </div>
+    </div>
+    <!-- debut -->
+
+    <div class="card card-widget">
+      <div class="card-body">
+
+        <div class="edition-bloc-content pb-4">
+          <div class="row">
+            <div class="col-10">
+              <h5>
+                <strong>
+                  <%= I18n.t(:outputs) %> :
+                </strong>
+              </h5>
+            </div>
+          </div>
+          <hr><br>
+
+          <div class="row">
+            <div class="col">
+              <p>
+                <strong>
+                  <%= I18n.t(:equation) %> :
+                </strong>
+                <span id="formula" class="project_numbers">
+                  <%= @kb_input.formula %>
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col">
+              <p>
+                <strong>
+                  <%= I18n.t(:project_number) %>
+                </strong>
+                <span class="project_numbers">
+                  <%= @kb_input.values.size %>
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <% if @kb_model.date_min %>
+            <div class="row-fluid">
+              <div class="col-12">
+                <p>
+                  <strong>
+                    Date Min:
+                    <span class="project_numbers">
+                      <%= @kb_model.date_min.strftime("%d %b %Y") %>
+                    </span>
+                  </strong>
+                </p>
+              </div>
+            </div>
+          <% end %>
+
+          <% if @kb_model.date_max %>
+            <div class="row-fluid">
+              <div class="col-12">
+                <p>
+                  <strong>
+                    Date Max:
+                    <span class="project_numbers">
+                      <%= @kb_model.date_max.strftime("%d %b %Y") %>
+                    </span>
+                  </strong>
+                </p>
+              </div>
+            </div>
+          <% end %>
+
+          <%# if @kb_model.enable_filters %>
+            <div class="row-fluid">
+              <div class="col-12">
+                <% unless @kb_model.kb_datas.empty? %>
+
+                  <% unless @kb_model.selected_attributes.blank? %>
+                    <p style="margin-bottom: inherit;">
+                      <strong>
+                        <%= I18n.t(:filters) %> :
+                      </strong>
+                    </p>
+                  <% end %>
+
+                  <p>
+                    <% arr = ["a", "b", "c", "d"] %>
+                    <% @kb_datas_custom_attributes = @kb_model.kb_datas.map(&:custom_attributes) %>
+                    <% @kb_datas_custom_attributes.first.keys.each_with_index do |key, i| %>
+                      <% if key.to_s.in?(@kb_model.selected_attributes) %>
+                        <% begin %>
+                          <% filter = @kb_model.send("filter_#{arr[i]}") %>
+                        <% rescue %>
+                          <% filter = "-" %>
+                        <% end %>
+
+                        <div class="input string required project_title">
+                          <label class="string required control-label">
+                            <strong>
+                              <%= filter %>
+                            </strong>
+                          </label>
+                          <% if @filters.blank? || @filters[key].blank? %>
+                            <% project_filter_value =  convert_project_category(@project, filter) %>
+                          <% else %>
+                            <% project_filter_value =  @filters[key] %>
+                          <% end %>
+
+                          <%= select_tag "filters[#{key}]",
+                                         options_for_select(@kb_datas_custom_attributes.map{|ca| ca[key] unless ca[key].blank? }.unshift(project_filter_value).uniq.compact,
+                                                            selected: project_filter_value),
+                                         class: "string required form-control filters",
+                                         #prompt: I18n.t(:Indifferent),
+                                         prompt: I18n.t(:all_projects_in_list),
+                                         disabled: !@kb_model.enable_filters %>
+
+                          <% if !@kb_model.enable_filters %>
+                            <input type="hidden" name="filters[<%= key %>]" value="<%= @filters.nil? ? project_filter_value : @filters[key] %>" />
+                          <% end %>
+                        </div>
+                        <br>
+
+                      <% end %>
+                    <% end %>
+                  </p>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Effort de sortie -->
+            <br>
+            <p>
+              <strong>
+                <%= I18n.t(:calculated_effort) %> :
+              </strong>
+            </p>
+              <%#= (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2) %>  <%#= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+              <%#= hidden_field_tag "previous_effort", @previous_effort %>
+
+            <% array.each do |level| %>
+
+                <% if output_effort_current_ev.nil?
+                     @effort = 0
+                   else
+                     @effort = output_effort_current_ev.send("string_data_#{level}")[current_component.id].to_f / (@kb_model.standard_unit_coefficient.nil? ? 1 : @kb_model.standard_unit_coefficient)
+                   end
+                %>
+
+                <p>
+                  <strong class="timecost-indicator" style="margin-left: 2rem;">
+                    <%= level.humanize %> (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>) :
+                  </strong>
+                  <span class="page_module_type"><%= convert_with_precision(@effort, user_number_precision, true) %></span>
+                </p>
+
+                <%# unless @kb_model.enabled_input %>
+<!--                      <span id="effort_label">-->
+                        <%#= hidden_field_tag "effort", @effort %>
+                        <%#= text_field_tag "", convert_with_precision(@effort, user_number_precision, true), class: "string required form-control-sm effort", disabled: true %>
+<!--                      </span>-->
+                <%# else %>
+                  <%#= number_field_tag "effort", @effort.nil? ? '' : convert_with_precision(@effort, user_number_precision, true), class: "string required form-control", step: "any" %>
+                <%# end %>
+            <% end %>
+
+            <% if module_project.previous.size > 1 %>
+                <!-- debut Effort Benchmark -->
+                <% unless input_effort_ev.nil? %>
+                  <% unless input_effort_ev.estimation_value_id.nil? %>
+                    <br>
+                    <!--  <hr>-->
+                    <p style="margin-top: 2rem;">
+                      <strong>Benchmark </strong> (<%= I18n.t(:calculated_effort) %> vs <%= I18n.t(:input_effort_without_unit) %>)
+                      <strong>:</strong>
+                    </p>
+
+                    <p>
+                      <strong style="margin-left: 2rem;">
+                        <%= I18n.t(:gap_difference) %> :
+                      </strong>
+
+                      <!--  Affichage de l'écart en  -->
+                      <%#= (@effort - (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)).round(2) %> <%#= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+                      <% ecart_pe_attribute = module_project.pemodule.pe_attributes.where(alias: "percent").first %>
+                      <% begin
+                           ecart_ev = EstimationValue.where(organization_id: organization_id, module_project_id: module_project.id, pe_attribute_id: ecart_pe_attribute.id, in_out: "output").first
+                           ecart_percent = ecart_ev.send("string_data_probable")[current_component.id]
+
+                           if ecart_percent.nan?
+                             ecart_percent = nil
+                           end
+                         rescue
+                           ecart_percent = nil
+                         end
+                      %>
+
+                      <span>
+                        <%= convert_with_precision((@effort-previous_effort_to_show), user_number_precision, true) %> <%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>
+                      </span><br>
+                      <span style="margin-left: 82px;">
+                        <% if ecart_percent.nil? %>
+                          <%= " - " %>
+                        <% else %>
+                          <%= ecart_percent.to_f.round(2) %> <%= '%' %>
+                        <% end %>
+                      </span>
+                    </p>
+
+                  <% end %>
+                <% end %>
+          <% end %>
+
+        <!-- end Effort Benchmark -->
+        <%# end %>
+
+        </div>
+        <div class="col-9">
+          <div id="scatter_chart" style="min-width: 310px; height: 400px; margin: 0 auto;"></div>
+          <!-- <hr>-->
+        </div>
+      </div>
+
+      <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+      <script src="https://code.highcharts.com/highcharts.js"></script>
+      <script src="https://code.highcharts.com/highcharts-more.js"></script>
+      <script src="https://code.highcharts.com/modules/exporting.js"></script>
+      <script src="https://code.highcharts.com/modules/export-data.js"></script>
+      <script>
+          <% scatter_chart_series_data = [] %>
+          <% @kb_input.values.each{|i| scatter_chart_series_data << { x: i[0], y: i[1].round(2), name: i[2], description: i[3].to_s } } %>
+
+          <%
+            r_chart_data = {
+
+              chart: { zoomType: 'xy'},
+              title: { text: @kb_model.name },
+              xAxis: {
+                  title: { enabled: true, text: I18n.t(:size) },
+                  min: 0
+               },
+              yAxis: {
+                  title: {
+                      text: "Effort (#{@kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit})"
+                  },
+                  min: 0
+              },
+
+              series:
+              [
+                {
+                    name: I18n.t("distribution_taille_effort"),
+                    marker: {
+                        radius: 3
+                    },
+                    type: 'scatter',
+                    color: 'rgba(223, 83, 83, 1)',
+                    tooltip: {
+                        pointFormat: "UF : {point.x} <br> Effort : {point.y}  #{@kb_model.effort_unit} <br> #{I18n.t(:description)} : {point.description}"
+                    },
+                    #data: @kb_input.values
+                    data:  scatter_chart_series_data.to_json.html_safe
+                },
+
+                {
+                  name: I18n.t("regression_lineaire"),
+                  marker: {
+                      radius: 0
+                  },
+                  type: 'line',
+                  color: 'rgba(200, 200, 200, 1)',
+                  data:  @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort
+
+                },
+
+                {
+                  name: I18n.t("regression_lineaire_plus_80"),
+                  marker: {
+                      radius: 0
+                  },
+                  type: 'line',
+                  color: 'rgba(83, 223, 83, 1)',
+                  data:  @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort
+                },
+
+                {
+                  name: I18n.t("regression_lineaire_moins_80"),
+                  marker: {
+                      radius: 0
+                  },
+                  type: 'line',
+                  color: 'rgba(83, 223, 255, 1)',
+                  data:  @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort
+                },
+
+                {
+                  name: I18n.t(:input_effort_without_unit),
+                  marker: {
+                      radius: 5
+                  },
+                  type: 'scatter',
+                  color: 'rgba(0, 0, 0, 1)',
+                  data: [
+                          [
+                            @previous_effort.nil? ? 0 : @size,
+                            @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
+                          ]
+                  ]
+                },
+
+                {
+                  name: I18n.t(:calculated_effort),
+                  marker: {
+                      radius: 5
+                  },
+                  type: 'scatter',
+                  color: 'rgba(0, 0, 0, 1)',
+                  data: [[@size, @effort.to_f.round(2)]]
+                }
+              ]
+          }
+          %>
+          //chart = $('#scatter_chart').highcharts(<%#= chart_data %>);
+
+          <%# if module_project.previous.size > 1 && !input_effort_ev.nil? && input_effort_ev.estimation_value_id.nil? %>
+          <% if module_project.previous.size > 1 && effort_current_ev && !effort_current_ev.estimation_value_id.nil? %>
+
+            chart = $('#scatter_chart').highcharts({
+                chart: {
+                    zoomType: 'xy'
+                },
+                title: {
+                    text: "<%= @kb_model.name %>"
+                },
+                xAxis: {
+                    title: {
+                        enabled: true,
+                        text: '<%= I18n.t(:size_label) %>',
+                    },
+                    min: 0
+                },
+                yAxis: {
+                    title: {
+                        //text: 'Effort (<%#= @kb_model.effort_unit %>)'
+                        text: 'Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)'
+                    },
+                    min: 0
+                },
+                series: [{
+                    name: '<%= I18n.t("distribution_taille_effort") %>',
+                    marker: {
+                        radius: 3
+                    },
+                    type: 'scatter',
+                    color: 'rgba(223, 83, 83, 1)',
+                    tooltip: {
+                        pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %> <br> <strong>{point.name}<strong /> <br> {point.description}'
+                    },
+                    //data: <%#= @kb_input.values %>
+                    data: <%= scatter_chart_series_data.to_json.html_safe  %>
+                },{
+                    name: '<%= I18n.t("regression_lineaire") %>',
+                    marker: {
+                        radius: 0
+                    },
+                    type: 'line',
+                    color: 'rgba(200, 200, 200, 1)',
+                    data: <%= @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort %>
+
+                },{
+                    name: '<%= I18n.t("regression_lineaire_plus_80") %>',
+                    marker: {
+                        radius: 0
+                    },
+                    type: 'line',
+                    color: 'rgba(83, 223, 83, 1)',
+                    data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort %>
+                },{
+                    name: '<%= I18n.t("regression_lineaire_moins_80") %>',
+                    marker: {
+                        radius: 0
+                    },
+                    type: 'line',
+                    color: 'rgba(83, 223, 255, 1)',
+                    data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
+                },{
+                    name: '<%= I18n.t :input_effort_without_unit %>', //'Effort précédent',
+                    marker: {
+                        radius: 5,
+                        symbol: 'triangle-down'
+                    },
+                    tooltip: {
+                        headerFormat: '{series.scatter.marker.symbol} <b>{series.name}</b><br>',
+                        pointFormat: 'X : {point.x} <br> Y : {point.y} <%= @kb_model.effort_unit %>'
+                    },
+                    type: 'scatter',
+                    color: 'rgba(0, 0, 0, 1)',
+                    data: <%= [
+                                [
+                                  @previous_effort.nil? ? 0 : @size.round(2),
+                                  @previous_effort.nil? ? 0 : (@previous_effort.to_f / @kb_model.standard_unit_coefficient.to_f).round(2)
+                                ]
+                          ] %>
+                },{
+                    name: '<%= I18n.t(:calculated_effort) %><%#= I18n.t("effort_retained") %>',
+                    marker: {
+                        radius: 5,
+                        symbol: 'circle'
+                    },
+                    tooltip: {
+                        headerFormat: '{series.scatter.marker.symbol} <b>{series.name}</b><br>',
+                        pointFormat: 'X : {point.x} <br> Y : {point.y} <%= @kb_model.effort_unit %>'
+                    },
+                    type: 'scatter',
+                    color: 'rgba(0, 0, 0, 1)',
+                    data: <%= [[@size.round(2), @effort.to_f.round(2)]] %>
+                }]
+            });
+
+          <% else %>
+
+            chart = $('#scatter_chart').highcharts({
+              chart: {
+                  zoomType: 'xy'
+              },
+              title: {
+                  text: "<%= @kb_model.name %>"
+              },
+              xAxis: {
+                  title: {
+                      enabled: true,
+                      text: '<%= I18n.t(:size_label) %>',
+                  },
+                  min: 0
+              },
+              yAxis: {
+                  title: {
+                      //text: 'Effort (<%#= @kb_model.effort_unit %>)'
+                      text: 'Effort (<%= @kb_model.effort_unit.blank? ? 'h.h' : @kb_model.effort_unit %>)'
+                  },
+                  min: 0
+              },
+              series: [{
+                  name: '<%= I18n.t("distribution_taille_effort") %>',
+                  marker: {
+                      radius: 3
+                  },
+                  type: 'scatter',
+                  color: 'rgba(223, 83, 83, 1)',
+                  tooltip: {
+                      pointFormat: 'UF : {point.x} <br> Effort : {point.y} <%= @kb_model.effort_unit %> <br> <strong>{point.name}<strong /> <br> {point.description}'
+                  },
+                  //data: <%#= @kb_input.values %>
+                  data: <%= scatter_chart_series_data.to_json.html_safe  %>
+              },{
+                  name: '<%= I18n.t("regression_lineaire") %>',
+                  marker: {
+                      radius: 0
+                  },
+                  type: 'line',
+                  color: 'rgba(200, 200, 200, 1)',
+                  data: <%= @kb_input.regression.map{|i, j| [i.round(2), j.round(2)] }.sort %>
+
+              },{
+                  name: '<%= I18n.t("regression_lineaire_plus_80") %>',
+                  marker: {
+                      radius: 0
+                  },
+                  type: 'line',
+                  color: 'rgba(83, 223, 83, 1)',
+                  data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j * 1.8).round(2)] }.sort %>
+              },{
+                  name: '<%= I18n.t("regression_lineaire_moins_80") %>',
+                  marker: {
+                      radius: 0
+                  },
+                  type: 'line',
+                  color: 'rgba(83, 223, 255, 1)',
+                  data: <%= @kb_input.regression.map{|i, j| [i.round(2), (j / 1.8).round(2)] }.sort %>
+              },
+
+              {
+                  name: '<%= I18n.t(:calculated_effort) %><%#= I18n.t("effort_retained") %>',
+                  marker: {
+                      radius: 5,
+                      symbol: 'circle'
+                  },
+                  tooltip: {
+                      headerFormat: '{series.scatter.marker.symbol} <b>{series.name}</b><br>',
+                      pointFormat: 'X : {point.x} <br> Y : {point.y} <%= @kb_model.effort_unit %>'
+                  },
+                  type: 'scatter',
+                  color: 'rgba(0, 0, 0, 1)',
+                  data: <%= [[@size.round(2), @effort.to_f.round(2)]] %>
+              }]
+          });
+          <% end %>
+
+
+
+          //$(document).ready(function () {
+          $(document).ready(function() {
+              $(".date-picker").datepicker({
+                  language: '<%= set_user_language_for_datepicker %>',
+                  autoclose: true,
+                  todayHighlight: true,
+                  todayBtn: true
+              });
+          });
+
+      </script>
+    </div>
+  <% end %>
+</section>

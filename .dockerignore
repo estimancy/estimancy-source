@@ -1,0 +1,8 @@
+.git/
+.saas-cache/
+data_identification/
+docker-compose/
+Dockerfile
+log/
+README.md
+tmp/

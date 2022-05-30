@@ -1,0 +1,143 @@
+<script>
+    $(document).ready(function () {
+
+        var can_promote = "<%= local_assigns[:can] %>"
+
+        function send_notice(message) {
+            if (message == "ok") {
+                return true;
+            }
+            else {
+                if (can_promote == "admin_project_state") {
+                    return confirm(message + " <%= I18n.t(:confirm) %>");
+                }
+                else {
+                    alert(message + " <%= I18n.t(:error_project_state) %>");
+                    return false;
+                }
+            }
+        }
+
+        $(".submit_project").click(function () {
+            old_value = "<%= @project.state %>"
+            new_value = $("#project_state").val();
+            r = ""
+
+            if (old_value != new_value) {
+                switch (old_value) {
+                    case "preliminary":
+                        switch (new_value) {
+                            case "in_progress":
+                                return send_notice("ok");
+                                break;
+                            case "in_review":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_inreview, :value_b => 'IN REVIEW').html_safe %>");
+                                break;
+                            case "checkpoint":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_checkpoint, :value_b => 'CHECKPOINT').html_safe %>");
+                                break;
+                            case "released":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_released, :value_b => 'RELEASED').html_safe %>");
+                                break;
+                            case "rejected":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_rejected, :value_b => 'REJECTED').html_safe %>");
+                                break;
+                        }
+                        break;
+                    case "in_progress":
+                        switch (new_value) {
+                            case "preliminary":
+                                return send_notice("ok");
+                                break;
+                            case "in_review":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_inreview, :value_b => 'IN REVIEW').html_safe %>");
+                                break;
+                            case "checkpoint":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_checkpoint, :value_b => 'CHECKPOINT').html_safe %>");
+                                break;
+                            case "released":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_released, :value_b => 'RELEASED').html_safe %>");
+                                break;
+                            case "rejected":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_rejected, :value_b => 'REJECTED').html_safe %>");
+                                break;
+                        }
+                    case "in_review":
+                        switch (new_value) {
+                            case "preliminary":
+                                send_notice("ok");
+                                break;
+                            case "in_progress":
+                                send_notice("ok");
+                                break;
+                            case "checkpoint":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_checkpoint, :value_b => 'CHECKPOINT').html_safe %>");
+                                break;
+                            case "released":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_released, :value_b => 'RELEASED').html_safe %>");
+                                break;
+                            case "rejected":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_rejected, :value_b => 'REJECTED').html_safe %>");
+                                break;
+                        }
+                    case "checkpoint":
+                        switch (new_value) {
+                            case "preliminary":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unnormal, :value_a =>'CHECKPOINT', :value_b => 'PRELIMINARY').html_safe %>");
+                                break;
+                            case "in_progress":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unnormal, :value_a =>'CHECKPOINT', :value_b => 'IN PROGRESS').html_safe %>");
+                                break;
+                            case "in_review":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unnormal, :value_a =>'CHECKPOINT', :value_b => 'IN REVIEW').html_safe %>");
+                                break;
+                            case "released":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_released, :value_b => 'RELEASED').html_safe %>");
+                                break;
+                            case "rejected":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_rejected, :value_b => 'REJECTED').html_safe %>");
+                                break;
+                        }
+                    case "released":
+                        switch (new_value) {
+                            case "preliminary":
+                                return send_notice("<%= j I18n.t('warning_project_state_unnormal', :value_a =>'RELEASED', :value_b => 'PRELIMINARY').html_safe %>");
+                                break;
+                            case "in_progress":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unnormal, :value_a =>'RELEASED', :value_b => 'IN PROGRESS').html_safe %>");
+                                break;
+                            case "in_review":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unnormal, :value_a =>'RELEASED', :value_b => 'IN REVIEW').html_safe %>");
+                                break;
+                            case "checkpoint":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unusual, :value_a =>'RELEASED', :value_b => 'CHECKPOINT').html_safe %>");
+                                break;
+                            case "rejected":
+                                return send_notice("<%= j I18n.t(:warning_project_state_to_rejected, :value_b => 'REJECTED').html_safe %>");
+                                break;
+                        }
+                    case "rejected":
+                        switch (new_value) {
+                            case "preliminary":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unnormal, :value_a =>'REJECTED', :value_b => 'PRELIMINARY').html_safe %>");
+                                break;
+                            case "in_progress":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unnormal, :value_a =>'REJECTED', :value_b => 'IN PROGRESS').html_safe %>");
+                                break;
+                            case "in_review":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unnormal, :value_a =>'REJECTED', :value_b => 'IN REVIEW').html_safe %>");
+                                break;
+                            case "checkpoint":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unusual, :value_a =>'REJECTED', :value_b => 'CHECKPOINT').html_safe %>");
+                                break;
+                            case "released":
+                                return send_notice("<%= j I18n.t(:warning_project_state_unusual, :value_a =>'REJECTED', :value_b => 'RELEASED').html_safe %>");
+                                break;
+                        }
+                }
+            }
+
+        });
+    })
+    ;
+</script>

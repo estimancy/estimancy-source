@@ -1,0 +1,39 @@
+
+$("#tabs-4").replaceWith("<%=raw escape_javascript(render('module_projects/estimation_plan_with_go')) %>");
+
+
+<% @module_projects.each_with_index do |pmod| %>
+  $(document).ready(function() {
+    jsPlumb.ready(function() {
+      <% pmod.associated_module_projects.each do |amp| %>
+        <% if pmod.associated_module_projects.map(&:id).include?(amp.id) %>
+
+            jsPlumb.setRenderMode(jsPlumb.SVG);
+            jsPlumb.importDefaults({
+                Connector:"Straight",
+                PaintStyle:{ lineWidth:3, strokeStyle:"#ffa500", "dashstyle":"2 4"  },
+                Endpoint:[ "Rectangle", { radius:1 } ],
+                EndpointStyle:{ fillStyle:"#ffa500" },
+                Anchor:"AutoDefault"
+              });
+
+            var e0 = jsPlumb.addEndpoint($(".<%= amp.pemodule.alias %>"));
+            var e1 = jsPlumb.addEndpoint($(".<%= pmod.pemodule.alias %>"));
+
+            e0.setEnabled(false);
+            e1.setEnabled(false);
+
+            jsPlumb.connect({
+              source:e0,
+              target:e1,
+              endpoint:"Rectangle",
+              connector:[ "Straight" ]
+            });
+        <% end %>
+      <% end %>
+    });
+    e0 = null;
+    e1 = null;
+  });
+<% end %>
+

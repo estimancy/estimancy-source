@@ -1,0 +1,6 @@
+var type_value = "<%= @type_value %>";
+if(type_value=="input"){
+$("#attr_entree").append("<%= j render(:partial => 'input_attributes') %>");
+}else{
+$("#attr_sortie").append("<%= j render(:partial => 'output_attributes') %>");
+}

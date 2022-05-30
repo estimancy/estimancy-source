@@ -1,0 +1,29 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:label_widget) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+
+    <%= simple_form_for(@widget) do |f| %>
+      <%= f.error_notification %>
+
+      <div class="form-inputs">
+        <table>
+          <tr><td><%= f.input :name, label: I18n.t(:name) %></td></tr>
+          <tr><td><%= f.association :pe_attribute, collection: PeAttribute.all, label: I18n.t(:pe_attribute_name) %></td></tr>
+          <tr>
+            <td><%= f.input :icon_class, as: :select, collection: Projestimate::Application::ICON_CLASSES , label: I18n.t(:icon), input_html: {class: 'button'} %></td>
+            <td><div id="icon_class_image"></div></td>
+          </tr>
+          <tr><td><%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color'} %></td></tr>
+        </table>
+      </div>
+
+      <div class="actions-tabs">
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <%= link_to I18n.t('back'), :back, :class => 'btn btn-secondary' %>
+      </div>
+    <% end %>
+  </div>
+</div>

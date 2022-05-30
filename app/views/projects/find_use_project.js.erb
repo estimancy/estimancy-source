@@ -1,0 +1,14 @@
+$("#notifications").html("");
+
+//$(".show_modules_using_attribute").html("<%#=raw j render :partial => 'find_use_attribute_modules', :object => @attribute_modules %>");
+$(".modal-body-inner").html("<%=raw j render :partial => 'projects/find_use_related_projects', :object => @related_projects %>");
+
+$("#myModalLabel").html("<%= I18n.t(:text_finduse_project, :value => @project.title) %>");
+
+$("#edit_component").modal({
+    keyboard: false,
+    backdrop: false
+});
+
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");
+

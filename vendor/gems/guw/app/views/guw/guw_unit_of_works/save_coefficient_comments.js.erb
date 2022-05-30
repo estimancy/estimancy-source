@@ -1,0 +1,18 @@
+if($('#coefficient_comments').hasClass('show')){
+    $("#coefficient_comments").modal('toggle');
+}
+
+
+<% new_comments = @ceuw.nil? ? @guw_unit_of_work.guw_type&.description : (@ceuw.comments.blank? ? @guw_unit_of_work.guw_type&.description : @ceuw.comments) %>;
+$('.coeff_<%= "#{@guw_unit_of_work.id}_#{@guw_coefficient.id}_#{@guw_coefficient_element.id}" %>').prop('title', "<%= new_comments %>");
+
+<% begin %>
+  <% if @guw_coefficient_element.value.to_f != @ceuw.percent.to_f %>
+    <% color = @guw_coefficient_element.color_code %>
+    $('.coeff_<%= "#{@guw_unit_of_work.id}_#{@guw_coefficient.id}_#{@guw_coefficient_element.id}" %>').css('background-color','<%= "##{color}" %>');
+  <% else %>
+    $('.coeff_<%= "#{@guw_unit_of_work.id}_#{@guw_coefficient.id}_#{@guw_coefficient_element.id}" %>').css('background-color', '');
+  <% end %>
+
+<% rescue %>
+<% end %>

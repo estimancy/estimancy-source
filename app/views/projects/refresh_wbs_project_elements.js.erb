@@ -1,0 +1,5 @@
+$("#notifications").html("");
+//$("#wbs_project_elements_section").html("<%#=raw j generate_wbs_project_elt_tree(@pe_wbs_project_activity.wbs_project_elements.last.root, "", @show_hidden) unless @pe_wbs_project_activity.wbs_project_elements.last.nil? %>");
+$("#wbs_project_elements_section").html("<%= escape_javascript(render :partial => 'generate_wbs_project_elt_tree', :object => [:pe_wbs_project_activity => @pe_wbs_project_activity, :show_hidden => @show_hidden, :is_project_show_view => params[:is_project_show_view] ]) %>");
+
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");

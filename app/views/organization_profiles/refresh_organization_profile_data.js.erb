@@ -1,0 +1,5 @@
+$("#notifications").html("");
+$("#organization_profile_name").val("<%=raw j @profile_name  %>");
+$("#organization_profile_description").val("<%=raw j @profile_description %>");
+$("#organization_profile_cost_per_hour").val("<%= @profile_cost_per_hour %>");
+$("#notifications").html("<%= j(render "layouts/notifications") %>");

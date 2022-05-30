@@ -1,0 +1,45 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:groups) %></a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <table border="0" width="100%">
+      <tr>
+        <td style="text-align:right;">
+          <%= link_to I18n.t('new_group'), new_group_path, :class => 'btn btn-primary' %>
+        </td>
+      </tr>
+    </table>
+
+    <table id="table_list_1" class="table tablesorterPager table-striped table-bordered table-condensed">
+      <thead>
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:description) %></th>
+        <th><%= I18n.t(:organization) %></th>
+        <th><%= I18n.t(:actions) %></th>
+      </tr>
+      </thead>
+
+      <tbody>
+      <% @groups.each do |group| %>
+          <tr>
+            <td><%= group.name %></td>
+            <td><%= group.description %></td>
+            <td><%= group.organization %></td>
+            <td class="center">
+              <% if can?(:manage, Group) %>
+                <%= link_to '', edit_group_path(group, :anchor => 'tabs-1'), :class => 'icon-pencil', :title => I18n.t('edit') %>
+                <%= link_to '', group, data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :style => 'color:red', :title => I18n.t('delete') %>
+              <% end %>
+            </td>
+        </td>
+          </tr>
+      <% end %>
+      <%= render :partial => 'layouts/footer_table' %>
+      </tbody>
+    </table>
+
+  </div>
+</div>

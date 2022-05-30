@@ -1,0 +1,28 @@
+<script type="text/javascript">
+
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+
+    google.charts.setOnLoadCallback(drawChart);
+    function drawChart() {
+
+        var r_data = <%= r_data.to_json.html_safe %>;
+        var data = google.visualization.arrayToDataTable(r_data);
+        var options = <%= series_options.to_json.html_safe %>;
+
+//        var options = {
+//            legend: {position: "none"},
+//            isStacked: true,
+//            series: {
+//                0: {
+//                    targetAxisIndex: 1
+//                }
+//            }
+//        };
+
+        var chart = new google.visualization.ComboChart(document.getElementById('<%= "combo_chart_div_#{iwidget.id}" %>'));
+        chart.draw(data, options);
+    }
+    drawChart();
+
+</script>
+<div id='<%= "combo_chart_div_#{iwidget.id}" %>' style="width: 950px; height: 300px;"></div>

@@ -1,0 +1,78 @@
+<!--Load the Google charts API  -->
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script type="text/javascript">
+    google.charts.load('current', {packages: ['corechart', 'bar']});
+</script>
+
+<% if @current_organization.activate_indicators_dashboard? %>
+    <div class="row">
+      <div class="col-10">
+
+        <% if @item_title == "indicator_dashboards" %>
+            <div id="tabs-dashboard" class="edition-page-group py-4"><span id="item_title"><%=  I18n.t(@item_title) %></span></div>
+        <% else %>
+            <div id="tabs-dashboard" class="edition-page-group py-4"><span id="item_title"><%= @is_a_dashboard=="true" ?  @item_title : @item_title %></span></div>
+        <% end %>
+
+        <section class="card card-content-bloc estimancy-form">
+          <div class="mb-5">
+            <div class="effort-bloc">
+              <div class="tab-pane" id="pills-printing_extraction" role="tabpanel" aria-labelledby="pills-printing_extraction-tab">
+                <div id="kpi" class="card-body">
+
+                  <% if @current_organization.activate_indicators_dashboard? %>
+                      <% if @item_title == "indicator_dashboards" %>
+                          <%= render :partial => "organizations/#{@partial_name}" %>
+                      <% else %>
+                          <% @indicator_dashboard = IndicatorDashboard.where(organization_id: @organization.id, name: @item_title).first %>
+                          <% if @indicator_dashboard %>
+                            <%= render :partial => "indicator_dashboards/show", locals: {indicator_dashboard: @indicator_dashboard} %>
+                          <% else %>
+                            <h4><%= I18n.t('please_return_check_kpi_type')%></h4>
+                          <% end %>
+                      <% end %>
+
+                  <% else %>
+                      <h4><%= I18n.t('please_return_check_kpi_type')%></h4>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div class="col-2">
+        <a href="<%= organization_global_kpis_path(@organization,
+                                                  partial_name: "tabs_kpi_indicator_dashboards",
+                                                  item_title: "indicator_dashboards",
+                                                  anchor: "tabs-dashboards") %>">
+          <h4 class="mb-0"><%= I18n.t(:indicator_dashboards) %></h4>
+        </a>
+
+        <div id="edition-sidebar">
+          <ul class="nav flex-column">
+            <!-- Les dashboards -->
+            <% @organization.indicator_dashboards.each do |dashboard| %>
+                <% dashboard_name = dashboard.name %>
+                <li class="nav-item">
+                  <a class="nav-link group" href="<%= organization_global_kpis_path(@organization,
+                                                                                    is_a_dashboard: true,
+                                                                                    partial_name: "tabs_dashboard_" + dashboard_name ,
+                                                                                    item_title: dashboard_name,
+                                                                                    anchor: "tabs-#{dashboard_name}") %>">
+                    <span><%= dashboard_name %></span>
+                  </a>
+                </li>
+            <% end %>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+<% else %>
+    <h4>
+      <%= I18n.t('error_access_denied')%> <br>
+      <%= I18n.t('please_return_check_kpi_type')%>
+    </h4>
+<% end %>

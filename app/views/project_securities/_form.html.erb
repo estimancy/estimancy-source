@@ -1,0 +1,36 @@
+<script>
+  $(document).ready(function() {
+    $('#project_security_project_id').change(function(){
+      $.ajax({url: '/select_users',
+        data: 'project_selected=' + this.value
+      })
+    });
+  });
+</script>
+
+<div class="span12">
+
+  <%= simple_form_for(@project_security) do |f| %>
+    <%= f.input :project_id, :as => :select , :collection => @projects %>
+
+    <%= f.input :user_id, :as => :select , :collection => @users %>
+
+    <div >
+      <label for="theme"><%= I18n.t(:project_permissions)%></label>
+      <br/><%= f.radio_button 'project_security_level', '4', :name => 'project_security_level' %> <%= I18n.t(:full_control)%>
+      <br/><%= f.radio_button 'project_security_level', '3', :name => 'project_security_level' %> <%= I18n.t(:define)%>
+      <br/><%= f.radio_button 'project_security_level', '2', :name => 'project_security_level' %> <%= I18n.t(:modify)%>
+      <br/><%= f.radio_button 'project_security_level', '1', :name => 'project_security_level' %> <%= I18n.t(:comment)%>
+      <br/><%= f.radio_button 'project_security_level', '0', :name => 'project_security_level' %> <%= I18n.t(:read_only)%>
+    </div>
+    <div class="actions-tabs">
+      <% if action_name.in?(%w(new create)) %>
+        <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+      <% elsif action_name == 'edit' || action_name=='update' %>
+        <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+      <% end %>
+    </div>
+  <% end %>
+</div>

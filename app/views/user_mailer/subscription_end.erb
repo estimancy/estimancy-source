@@ -1,0 +1,9 @@
+<%= simple_format(I18n.t(:mail_salutation, :value => @user_name)) %>
+
+<%= I18n.t(:mail_body_subscription_end).html_safe %>
+
+<%= simple_format(I18n.t(:mail_complimentary_close)) %>
+
+<p><%= simple_format(I18n.t(:mail_footer)) %> le <%= Time.now %></p>
+
+<a href='http://estimancy.com/page/subscription'>Estimancy</a>

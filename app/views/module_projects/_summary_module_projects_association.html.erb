@@ -1,0 +1,67 @@
+<div class="tabs">
+
+  <ul>
+    <li><a href="#tabs-1">Edit module project path</a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= form_tag url_for({:action=> 'associate_modules_projects', :controller=> 'module_projects', :project_id => @project.id}),{:method => 'POST', :class=>'simple_form'} do %>
+
+      <% @alphabetical= %w(A B C D E F G H I J K L M N O P Q R S T U V W X Y Z) %>
+
+      <table id="table_list_2"  class="table table-list">
+        <tr>
+          <th>Module projects</th>
+          <% @module_projects.each do |mp| %>
+            <th>
+              <%= mp %>
+            </th>
+          <% end %>
+        </tr>
+
+        <% @module_projects.each_with_index do |i, l| %>
+          <tr>
+            <td>
+              <%= hidden_field_tag "module_projects[#{i.id}][]" %>
+              <strong>
+                <%= i %>
+              </strong>
+
+            </td>
+
+            <% @module_projects.each_with_index do |j, k| %>
+              <td class="align-center">
+                <%# if k<l && i.position_y!=j.position_y.to_i %>
+                <%# if k<l %>
+                  <%# if i.pemodule.alias == Projestimate::Application::BALANCING_MODULE %>
+                    <%# if !(i.pemodule.pe_attributes & j.pemodule.pe_attributes).empty? %>
+                      <%= check_box_tag("module_projects[#{i.id}][]", j.id, (i.associated_module_projects.map(&:id).include?(j.id)) )%>
+                    <%# else %>
+
+                    <%# end %>
+                  <%# else %>
+                    <%# check_box_tag("module_projects[#{i.id}][]", j.id, (i.associated_module_projects.map(&:id).include?(j.id)) )%>
+                  <%# end %>
+                <%# else %>
+
+                <%# end %>
+              </td>
+            <% end %>
+          </tr>
+        <% end %>
+      </table>
+
+      <% if can? :alter_estimation_plan, @project %>
+        <%= submit_tag I18n.t('apply'), :class => 'btn' %>
+      <% end %>
+      <%= link_to I18n.t('back'), edit_project_path(@project, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan'), :class => 'btn btn-secondary' %>
+
+    <% end %>
+
+
+    <h4>Prévisualisation</h4>
+    <hr>
+    <%= render 'module_projects/widget_estimation_plan', :locals => {:project => @project} %>
+
+  </div>
+ </div>

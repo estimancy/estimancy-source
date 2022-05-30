@@ -1,0 +1,3 @@
+<% unless @project.nil? || @pe_wbs_project_activity.nil? %>
+    <%=raw generate_wbs_project_elt_tree(@pe_wbs_project_activity.wbs_project_elements.elements_root.first, '', @show_hidden, false) %>
+<% end %>

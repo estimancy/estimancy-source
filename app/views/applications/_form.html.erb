@@ -1,0 +1,117 @@
+<section class="card card-content-bloc estimancy-form">
+    <%= simple_form_for([@organization, @application]) do |f| %>
+      <%= f.error_notification %>
+
+    <div class="card-body">
+      <div class="edition-bloc-left">
+        <div class="edition-bloc-title">
+          <h1>
+            <%= Application %>
+          </h1>
+        </div>
+      </div>
+
+    <%= f.input :organization_id, :as => :hidden, :input_html => { :value => @organization.id } %>
+
+      <div class="edition-bloc-content">
+        <div class="edition-bloc-form">
+          <div class="form-row">
+            <div class="col-5">
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :name, label: false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :forfait_mco, label: false, :input_html => {:class => 'mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+                <label class="mdl-textfield__label" for="forfait_mco"><%= I18n.t(:forfait_mco) %></label>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%#= f.input :start_date,  label: false, :input_html => {:class => 'date-picker mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+<!--            <label class="mdl-textfield__label" for="start_date"><%#= I18n.t('start_date') %></label>-->
+                <%= f.input :start_date, :as => :string, label: I18n.t(:begin_date),
+                            :input_html => {:class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%#= f.input :end_date,  label: false, :input_html => {:class => 'date-picker mdl-textfield__input', :autofocus => (controller.action_name == 'new')} %>
+<!--            <label class="mdl-textfield__label" for="end_date"><%#= I18n.t('end_date') %></label>-->
+                <%= f.input :end_date, :as => :string, label: I18n.t(:close_date),
+                            :input_html => {:class => 'date-picker form-control', :value => I18n.l(Time.now.to_date) } %>
+              </div>
+
+              <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                <%= f.input :month_number, label: false, :input_html => {:class => 'mdl-textfield__input'} %>
+                <label class="mdl-textfield__label" for="month_number"><%= I18n.t('month_number') %></label>
+              </div>
+
+            </div>
+          </div>
+
+          <!--<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>-->
+          <script>
+              //$(document).ready(function () {
+              $(document).ready(function() {
+                  $(".date-picker").datepicker({
+                      language: '<%= set_user_language_for_datepicker %>',
+                      autoclose: true,
+                      todayHighlight: true,
+                      todayBtn: true,
+                      icons: {
+                          rightIcon: '<i class="material-icons">event</i>'
+                      }
+                  });
+              });
+          </script>
+        </div>
+        <div class="form-row">
+          <div class="col-5">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :is_ignored, as: :boolean, label: false, id:"application[is_ignored]", :input_html => {:class => 'mdl-checkbox__inputs'}   %>
+              <label class="mdl-textfield__label" for="is_ignored" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t('is_ignored') %></label>
+            </div>
+          </div>
+        </div>
+<!--        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect mt-3" for="application[is_ignored]">-->
+<!--          <input type="checkbox" name="application[is_ignored]" id="application_is_ignored]" class="mdl-checkbox__input" as="boolean" >-->
+<!--          <label class="mdl-checkbox__label" for="is_ignored"><%#= I18n.t('is_ignored') %></label>-->
+<!--        </label>-->
+
+        <%#= f.input :criticality, :label => I18n.t('criticality'), :input_html => { :class => 'input-xlarge'} %>
+        <div class="form-row">
+          <div class="col-5">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :coefficient, label: false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+              <label class="mdl-textfield__label" for="coefficient"><%= I18n.t('coefficient_value') %></label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="col-5">
+            <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+              <%= f.input :coefficient_label, label: false, :input_html => {:class => 'mdl-textfield__input form-control'} %>
+              <label class="mdl-textfield__label" for="coefficient_label"><%= I18n.t('coefficient_label') %></label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <br>
+
+      <div class="actions-tabs">
+        <% if action_name.in?(%w(new create)) %>
+          <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+        <% elsif action_name == 'edit' || action_name=='update' %>
+          <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+          <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+        <% end %>
+        <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-applications', partial_name: 'tabs_applications'), :class => 'btn btn-secondary' %>
+      </div>
+
+    </div>
+  <% end %>
+</section>

@@ -1,0 +1,199 @@
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/js/jquery.tablesorter.min.js" integrity="sha256-WX1A5tGpPfZZ48PgoZX2vpOojjCXsytpCvgPcRPnFKU=" crossorigin="anonymous"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jquery.tablesorter/2.31.2/css/theme.default.min.css" integrity="sha256-5sgExNTnkN8NcApKIU73/aqgZmqq/zJp9+9zXf9aSEw=" crossorigin="anonymous" />
+
+<section class="card card-content-bloc estimancy-form">
+    <% if can? :show_organization_users, User %>
+      <div class="mb-5">
+        <div class="effort-bloc">
+          <div class="card-body">
+
+            <div class="edition-bloc-left">
+              <div class="edition-bloc-title row" style="flex: 1">
+
+                <div class="col-6">
+                  <h1>
+                    <%= I18n.t(:user_list) %>
+                  </h1>
+                </div>
+
+                <div class="col-6">
+                  <div class="float-left">
+                    <% if can? :manage, User, :organization_id => @organization.id %>
+                      <a href="#delete_users" role="button" class="btn btn-danger btn-estimancy" title="Delete users from excel" data-toggle="modal">
+                        <%= I18n.t(:multiple_delete) %>
+                      </a>
+                    <% end %>
+                  </div>
+
+                  <div class="float-right">
+                    <% if can? :manage, User, :organization_id => @organization.id %>
+                      <%= link_to I18n.t('create_button'), new_organization_user_path(@organization), :class => 'btn btn-primary btn-estimancy' %>
+                      <a href="#import_users" role="button" class="btn btn-primary btn-estimancy" title="Import users from excel" data-toggle="modal">
+                        <%= I18n.t(:import) %>
+                      </a>
+                      <%#= link_to raw("<i class='material-icons'>save_alt</i>"), "#!", "data-toggle": "modal", "data-target": "#import_users", class: "float-right", title: I18n.t(:import) %>
+                    <% end %>
+                    <%= link_to I18n.t(:export), organization_export_user_path(@organization), :class => 'btn btn-primary btn-estimancy', method: "post" %>
+                  </div>
+
+                </div>
+              </div>
+            </div>
+
+
+
+            <div id="organization_users" style="width:100%; overflow:auto; white-space:nowrap;">
+              <table class="table tablesorter table-list table-sm table-users" style="width:100%; display: block; overflow: auto;">
+                <thead>
+                  <tr>
+                    <th><%= I18n.t(:last_name) %></th>
+                    <th><%= I18n.t(:first_name) %></th>
+                    <th><%= I18n.t(:login_name) %></th>
+                    <th><%= I18n.t(:email) %></th>
+                    <th><%= I18n.t(:Confirmed_at) %></th>
+                    <th><%= I18n.t(:groups) %></th>
+
+                    <% if current_user.super_admin? %>
+                      <!--<th><%#= I18n.t(:Confirmed_at) %></th>-->
+                      <th><%= I18n.t(:is_super_admin) %></th>  
+                    <% end %>
+                    <th><%= I18n.t(:locked_at)%></th>
+                    <th><%= I18n.t(:subscription_end_date_for_list)%></th>
+                    <th class="action" colspan="2"><%= I18n.t(:actions) %></th>
+                  </tr>
+                </thead>
+
+                <% if current_user.super_admin == true %>
+                    <% @organization_users = @organization.users %>
+                <% else %>
+                    <% @organization_users = @organization.users.where('login_name <> ?', 'owner') %>
+                <% end %>
+                <tbody>
+                <% @organization_users.order('last_name', 'first_name').each do |user| %>
+                  <tr>
+                    <% if user.super_admin? %>
+                      <td><strong><%= user.last_name %></strong></td>
+                      <td><strong><%= user.first_name %></strong></td>
+                    <% else %>
+                      <td><%= user.last_name %></td>
+                      <td><%= user.first_name %></td>
+                    <% end %>
+
+                    <td><%= user.login_name %></td>
+                    <td><%= user.email %></td>
+                    <td class="center"><%= user.confirmed_at.nil? ? I18n.t('not_confirmed')  : I18n.l(user.confirmed_at.to_date) %></td>
+                    <td><%= user.groups.where(organization_id: @organization.id).join('; ') %></td>
+
+                    <% if current_user.super_admin? %>
+                        <td class="center"><%= check_box_tag "is_super_admin", user.super_admin, user.super_admin, disabled: true %></td>
+                    <% end %>
+                    <td class="center"><%= user.locked_at.nil? ? I18n.t(:unlocked) : I18n.l(user.locked_at.to_date) %></td>
+                    <td class="center"><%= user.subscription_end_date.nil? ? "-" : I18n.l(user.subscription_end_date.to_date) %></td></td>
+
+
+                    <td class="align-center">
+                      <% if can? :manage, User, :organization_id => @organization.id %>
+                        <% if user.locked_at.nil? %>
+                          <%= link_to(raw("<i class='material-icons'>lock_open</i>"), unlock_user_path(user), :title => I18n.t('lock')) %>
+                        <% else %>
+                          <%= link_to(raw("<i class='material-icons'>lock</i>"), unlock_user_path(user), :class => 'icon-lock', :title => I18n.t('unlock')) %>
+                        <% end %>
+
+                        <% if user.confirmed_at.nil? %>
+                          <%= link_to(raw("<i class='material-icons'>check_circle_outline</i>"), confirm_user_path(user), :class => 'icon-remove-sign', :title => I18n.t('confirm')) %>
+                        <% else %>
+                          <%= link_to(raw("<i class='material-icons'>check_circle</i>"), confirm_user_path(user), :class => 'icon icon-check', :title => I18n.t('unconfirm')) %>
+                        <% end %>
+                      <% end %>
+                      <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_user_path(@organization, user), class: "icon icon-pencil", :title => I18n.t('edit') %>
+                      <% if can? :manage, User, :organization_id => @organization.id %>
+                        <%#= link_to '', organization_user_path(user, organization_id: @organization.id), confirm: I18n.t('are_you_sure'), method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                        <%= link_to raw("<i class='material-icons'>delete</i>"), destroy_user_from_organization_path(user_id: user.id, organization_id: @organization.id), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'icon-trash', :title => I18n.t('delete') %>
+                      <% end %>
+                    </td>
+                  </tr>
+                <% end %>
+
+                <%= render :partial => 'layouts/footer_table' %>
+
+                </tbody>
+              </table>
+            </div>
+
+            <% else %>
+              <div class="red_color">
+                <%= I18n.t(:notice_cannot_view_organization_users) %>
+              </div>
+
+
+            </div>
+          </div>
+        </div>
+      <% end %>
+</section>
+
+<% if can?(:manage, User, :organization_id => @organization.id) %>
+  <div class="modal hide fade" tabindex="-1" role="dialog" id="import_users" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <%= form_tag organization_import_user_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <div class="modal-header modal-drag">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel"> <%= I18n.t(:Import_user_from_excel) %></h3>
+          </div>
+          <div class="modal-body">
+            <%= file_field_tag :file %>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
+            <%= submit_tag I18n.t(:import), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+          </div>
+          <div class="loading span11 hide">
+            <h4><%= I18n.t(:please_wait_import) %><%= image_tag 'ajax-loader.gif' %> </h4>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<% if current_user.super_admin? %>
+  <div class="modal hide fade" tabindex="-1" role="dialog" id="delete_users" aria-labelledby="myModalLabel">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+
+        <%= form_tag organization_delete_multiple_users_from_organization_path(@organization), :multipart => true, :class => 'simple_form' do %>
+          <div class="modal-header modal-drag">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="myModalLabel"> <%= I18n.t(:multiple_delete) %><%#= I18n.t(:detach_multiple_users_from_excel) %></h3>
+            <label><%= I18n.t(:explanation_users_deletion) %></label>
+          </div>
+          <div class="modal-body">
+            <%= file_field_tag :file %>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true">Close</button>
+            <%= submit_tag I18n.t(:delete), :class => 'btn btn-primary', :onclick => "$('.loading').show();" %>
+          </div>
+          <div class="loading span11 hide">
+            <h4><%= I18n.t(:please_wait_deletion) %><%= image_tag 'ajax-loader.gif' %> </h4>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<script>
+    $(function() {
+        $(".tablesorter").tablesorter({
+            theme: 'blue',
+            widgets: ['zebra', 'filter'],
+            widgetOptions: {
+                filter_reset: '.reset'
+            }
+        });
+    });
+</script>

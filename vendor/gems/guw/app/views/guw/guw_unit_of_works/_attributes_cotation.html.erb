@@ -1,0 +1,284 @@
+<%= form_tag guw.save_uo_with_multiple_outputs_path, method: "post", remote: true, class: "uo_form" do %>
+
+  <% organization_id = @project.organization_id %>
+  <% guw_model_id = @guw_model.id %>
+  <% project_id = @project.id %>
+  <% guw_type = @guw_type.nil? ? guow.guw_type : @guw_type %>
+  <%= hidden_field_tag "guw_unit_of_work_id", guow.id %>
+  <%= hidden_field_tag "hidden_ajusted_size[#{guow.id}]", "" %>
+  <%= hidden_field_tag "hidden_quantity[#{guow.id}]", guow.quantity %>
+  <%= hidden_field_tag "hidden_technology[#{guow.id}]", guow.organization_technology %>
+
+  <%# used_coefficient_elements = Guw::GuwUsedCoefficientElement.where(organization_id: organization_id, guw_model_id: guw_model_id)
+                                                              .map{|i| i.guw_complexity_coefficient_elements
+                                                                        .where(organization_id: organization_id, guw_model_id: guw_model_id, guw_type_id: guw_type.id)
+                                                                        .select{|ct| ct.value != nil }
+                                                                        .map{|i| i.guw_coefficient_element }.uniq }.flatten.compact#.sort! { |a, b|  a.display_order.to_i <=> b.display_order.to_i }
+
+    @all_guw_coefficient_elements = Guw::GuwUsedCoefficientElement.where(id: used_coefficient_elements.map(&:id))
+    @guw_coefficient_ids = @all_guw_coefficient_elements.map(&:guw_coefficient_id).uniq
+    @guw_coefficients = @guw_model.guw_coefficients.where(organization_id: organization_id, id: @guw_coefficient_ids) %>
+
+  <% @all_guw_coefficient_element_unit_of_works = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                                                            guw_model_id: @guw_model_id,
+                                                                                            project_id: project_id,
+                                                                                            module_project_id: guow.module_project_id,
+                                                                                            guw_unit_of_work_id: guow.id) %>
+  <% @guw_model.guw_coefficients.each do |guw_coefficient| %>
+  <%# @guw_coefficients.each do |guw_coefficient| %>
+
+    <% ceuw = Guw::GuwCoefficientElementUnitOfWork.where(organization_id: organization_id,
+                                                         guw_model_id: guw_model_id,
+                                                         guw_coefficient_id: guw_coefficient.id,
+                                                         project_id: project_id,
+                                                         module_project_id: guow.module_project_id, #current_module_project.id,
+                                                         guw_unit_of_work_id: guow.id).first %>
+
+    <%# ceuw = @all_guw_coefficient_element_unit_of_works.where(guw_coefficient_id: guw_coefficient.id).first %>
+
+    <% if guw_coefficient.coefficient_type == "Liste" %>
+      <%= hidden_field_tag "hidden_coefficient_element[#{guow.id}][#{guw_coefficient.id}]", guw_coefficient.id %>
+    <% elsif guw_coefficient.coefficient_type == "Pourcentage" %>
+      <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.id %>
+    <% elsif guw_coefficient.coefficient_type == "Coefficient" %>
+      <%= hidden_field_tag "hidden_coefficient_percent[#{guow.id}][#{guw_coefficient.id}]", ceuw.nil? ? nil : ceuw.id %>
+    <% else %>
+      <%= hidden_field_tag "hidden_coefficient_element[#{guow.id}][#{guw_coefficient.id}]", guw_coefficient.id %>
+    <% end %>
+
+  <% end %>
+
+  <div class="modal-header modal-drag">
+    <h4 class="modal-title" id="myModalLabel<%= guow.id %>">
+      <b>
+        <%= guw_type %>
+      </b> - <%= I18n.t(:attribute_of, parameter: guow) %> </h4>
+  </div>
+
+  <div class="modal-body" style="height: inherit;">
+    <table class="table table-condensed table-striped" id="cotation">
+      <tr>
+        <th>
+          <%= I18n.t :label_PeAttribute %>
+        </th>
+        <% if @guw_model.three_points_estimation == true %>
+          <th>L</th>
+        <% end %>
+        <% if @guw_model.three_points_estimation == true %>
+          <th>M</th>
+        <% else %>
+          <th>Valeur</th>
+          <th>Commentaire</th>
+        <% end %>
+        <% if @guw_model.three_points_estimation == true %>
+          <th>H</th>
+        <% end %>
+        <th></th>
+      </tr>
+
+      <%# guow.guw_unit_of_work_attributes.where(organization_id: organization_id %>
+      <% @all_guw_unit_of_work_attributes.where(organization_id: organization_id,
+                                                project_id: @project.id,
+                                                module_project_id: current_module_project.id,
+                                                guw_model_id: @guw_model.id,
+                                                guw_type_id: guw_type.id).includes(:guw_attribute).order('guw_guw_attributes.name asc').each_with_index do |uowa, j| %>
+
+        <% gat = Guw::GuwAttributeType.where(organization_id: organization_id, guw_model_id: @guw_model.id,
+                                             guw_attribute_id: uowa.guw_attribute_id, guw_type_id: guw_type.id).first_or_create %>
+          <tr>
+            <% unless guw_type.nil? %>
+              <% sum_range = uowa.guw_attribute.guw_attribute_complexities.where(organization_id: organization_id, guw_model_id: @guw_model.id, guw_type_id: guw_type.id).map{|i| [i.bottom_range, i.top_range]}.flatten.compact %>
+            <% end %>
+            <% unless sum_range.nil? || sum_range.blank? || sum_range == 0 %>
+              <td class="span3">
+                <%= link_to "#{uowa.guw_attribute.name} #{gat.nil? ? nil : "(#{gat.default_value.to_i})"}", "#", title: uowa.guw_attribute.description, class: "attribute_tooltip pull-left", :"default_value_#{guow.id}][#{uowa.id}" => gat.default_value.to_i  %>
+              </td>
+
+                <td class="">
+                  <% if guw_type.mandatory_comments == true %>
+                    <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "form-control ml_#{uowa.id}", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
+                  <% else %>
+                    <%= text_field_tag "most_likely[#{guow.id}][#{uowa.id}]", uowa.most_likely.nil? ? (gat.nil? ? nil : gat.default_value.to_i) : uowa.most_likely.to_i, class: "form-control", default_value: gat.default_value.to_i, readonly: !can?(:execute_estimation_plan, @project) %>
+                  <% end %>
+                </td>
+
+                <td>
+                  <% if uowa.comments.blank? %>
+                    <%= link_to '...', "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}" %>
+                  <% else %>
+                    <%= link_to raw(uowa.comments.to_s.truncate(30)), "#!", class: "comments pull-left", id: "preview_comment_#{guow.id}_#{uowa.id}", title: raw((uowa.comments.to_s.html_safe)) %>
+                  <% end %>
+                </td>
+
+                <td>
+                  <div class="modal fade modal_comments hide" tabindex="-1" role="dialog" id="modal_comments_<%= guow.id %>_<%= uowa.id %>" aria-labelledby="myModalLabel">
+                    <div class="modal-dialog" role="document">
+                      <div class="modal-content">
+                        <div class="modal-header modal-drag">
+                          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                          <h4 class="modal-title">
+                            <%= I18n.t(:comments) %>
+                          </h4>
+                        </div>
+
+                        <div class="modal-body" style="height: inherit;">
+                          <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-upgraded" data-upgraded=",MaterialTextfield">
+                            <div class="input text optional user_description">
+                              <%= text_area_tag "comments[#{guow.id}][#{uowa.id}]", (uowa.comments.blank? ? nil: raw(uowa.comments)), label: false, class: "rich_comment_area_#{uowa.id} attribute_note_area text optional mdl-textfield__input form-control", rows: "10", readonly: !can?(:execute_estimation_plan, @project), placeholder: "" %>
+                            </div>
+                          </div>
+
+                          <div class="modal-footer">
+                            <%= link_to "OK", "#!", id: "validate_comments_#{uowa.id}", :class => 'btn btn-primary validate_comments', disabled: true %>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </td>
+
+                <script>
+                    var content = "";
+
+                    $("#preview_comment_" + <%= guow.id %> + "_" + <%= uowa.id %>).on('click', function(e) {
+
+                        $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
+                            keyboard: false,
+                            backdrop: false
+                        });
+
+                        $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+
+                        $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
+                            if (!$.trim($(this).val())) {
+    //                    if ($(this).val().length === 0) {
+                                if(valu == dv) {
+                                    $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+                                } else {
+                                    $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
+                                }
+                            } else {
+                                $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+                            }
+                        });
+
+                        $("#validate_comments_<%= uowa.id %>").on('click', function(e){
+
+                            valu = $(".ml_" + <%= uowa.id %>).val();
+                            dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
+                            if ($('.rich_comment_area_<%= uowa.id %>').val().length == 0) {
+                                if(valu == dv) {
+                                    close_comment(<%= uowa.id %>);
+                                } else {
+                                    e.preventDefault();
+                                }
+                            } else {
+                                close_comment(<%= uowa.id %>);
+                            }
+                        });
+                    });
+
+                    function close_comment(uowa_id){
+                        $('.modal_comments').modal('hide');
+
+                        comment_extract = $('#comments_' + <%= guow.id %> + '_' + uowa_id).val().substring(0, 30);
+                        if (comment_extract.length === 0) {
+                            comment_extract = "...";
+                        }
+
+                        $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).html(comment_extract);
+                        $('#preview_comment_' + <%= guow.id %> + "_" + uowa_id).prop('title', comment_extract);
+
+                        $(".submit_cotation").removeAttr("disabled");
+                    };
+
+                    $('.rich_comment_area_<%= uowa.id %>').keyup(function(e) {
+                        if (!$.trim($(this).val())) {
+    //                    if ($(this).val().length === 0) {
+                            if(valu == dv) {
+                                $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+                            } else {
+                                $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
+                            }
+                        } else {
+                            $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+                        }
+                    });
+
+
+                    $("#validate_comments_<%= uowa.id %>").on('click', function (e) {
+
+                        valu = $(".ml_" + <%= uowa.id %>).val();
+                        dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
+                        if ($('.rich_comment_area_<%= uowa.id %>').val().length == 0) {
+                            if(valu == dv) {
+                                close_comment(<%= uowa.id %>);
+                            } else {
+                                e.preventDefault();
+                            }
+                        } else {
+                            close_comment(<%= uowa.id %>);
+                        }
+                    });
+
+                    $(".ml_" + <%= uowa.id %>).on('change', function(k) {
+
+                        valu = $(".ml_" + <%= uowa.id %>).val();
+                        dv = $(".ml_" + <%= uowa.id %>).attr("default_value");
+
+                        if(valu == dv) {
+                            $("#validate_comments_<%= uowa.id %>").removeAttr("disabled");
+                        } else {
+                            $("#validate_comments_<%= uowa.id %>").attr("disabled", "disabled");
+                        }
+
+                        var val = $('#most_likely_' + <%= guow.id %> + "_" + <%= uowa.id %>).val();
+                        if (val.length == 0) {
+                            $(".submit_cotation").prop("disabled", true);
+                        } else {
+                            $(".submit_cotation").prop("disabled", false);
+                        }
+
+                        if(valu == dv) {
+                            $(".submit_cotation").prop("disabled", false);
+                        } else {
+                            $(".submit_cotation").prop("disabled", true);
+                            $("#modal_comments_" + <%= guow.id %> + "_" + <%= uowa.id %>).modal({
+                                keyboard: false,
+                                backdrop: false
+                            });
+                        }
+                    });
+
+                  </script>
+
+                <% if @guw_model.three_points_estimation == true %>
+                  <td>
+                    <%= text_field_tag "high[#{guow.id}][#{uowa.id}]", uowa.high, class: "form-control", readonly: !can?(:execute_estimation_plan, @project) %>
+                  </td>
+                <% end %>
+
+          <% end %>
+        </tr>
+      <% end %>
+    </table>
+  </div>
+
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" >
+      <%= I18n.t(:close_without_calculate) %>
+    </button>
+    <% if can? :execute_estimation_plan, @project %>
+      <button type="submit" id="submit_cotation", class="btn btn-primary submit_cotation" data-disable-with="<%= I18n.t :please_wait %> <i class='fa fa-spinner fa-spin'></i>"><%= I18n.t(:calculate) %></button>
+    <% end %>
+  </div>
+
+<% end %>
+
+<script>
+    $(document).ready(function() {
+        $('.attribute_tooltip').tooltip({'html' : true });
+    });
+</script>

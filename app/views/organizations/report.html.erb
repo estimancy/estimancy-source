@@ -1,0 +1,114 @@
+<div class="row">
+    <div class="col-9">
+        <section class="card card-content-bloc estimancy-form">
+          <div class="mb-5">
+            <div class="effort-bloc">
+              <div id="settings_content" class="card-body">
+
+                <% if @organization_show_reports_keys.blank? %>
+                  <h4><%= I18n.t('please_return_check_report_type')%></h4>
+                <% else %>
+                  <% if @partial_name.blank? %>
+                    <%= render :partial => "organizations/tabs_report_raw_data_extract" %>
+                  <% else %>
+                    <%= render :partial => "organizations/#{@partial_name}" %>
+                  <% end %>
+                <% end %>
+
+              </div>
+            </div>
+          </div>
+        </section>
+  </div>
+
+  <div class="col-3">
+    <h4 class="mb-0"><%= I18n.t(:reports) %></h4>
+      <div id="edition-sidebar">
+        <ul class="nav flex-column">
+
+          <div id="edition-sidebar">
+            <ul class="nav flex-column">
+              <% @reports_list.each do |report| %>
+                <% if @organization_show_reports_keys.include?(report) %>
+
+                  <% if report.to_s == "raw_data_extract" %>
+
+                    <li class="nav-item">
+                        <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                     partial_name: "tabs_report_" + report,
+                                                                                     item_title: "raw_data_extract_synthese",
+                                                                                     anchor: "tabs-") %>">
+                          <span><%= I18n.t("raw_data_extract_synthese") %></span>
+                        </a>
+                    </li>
+
+                    <!-- Details accessible que pour les super-admin -->
+                    <%# if current_user.super_admin? %>
+
+                      <li class="nav-item">
+                        <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                     partial_name: "tabs_report_raw_data_extract_details_cf",
+                                                                                     item_title: "raw_data_extract_abaques_services_DE",
+                                                                                     anchor: "tabs-") %>">
+                          <span><%= I18n.t("raw_data_extract_abaques_services_DE") %></span>
+                        </a>
+                      </li>
+
+                      <li class="nav-item">
+                        <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                     partial_name: "tabs_report_raw_data_extract_details_ratio",
+                                                                                     item_title: "raw_data_extract_services_ratio",
+                                                                                     anchor: "tabs-") %>">
+                          <span><%= I18n.t("raw_data_extract_services_ratio") %></span>
+                        </a>
+                      </li>
+                    <%# end %>
+
+                  <% else %>
+
+                      <li class="nav-item">
+                        <a class="nav-link group" href="<%= organization_report_path(@organization,
+                                                                                     partial_name: "tabs_report_" + report,
+                                                                                     item_title: report,
+                                                                                     anchor: "tabs-") %>">
+                          <span><%= I18n.t(report) %></span>
+                        </a>
+                      </li>
+                  <% end %>
+                <% end %>
+              <% end %>
+            </ul>
+          </div>
+
+        </ul>
+      </div>
+  </div>
+
+</div>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+  //$(document).ready(function () {
+  $(document).ready(function() {
+    $(".date-picker").datepicker({
+      language: '<%= set_user_language_for_datepicker %>',
+      autoclose: true,
+      todayHighlight: true,
+      todayBtn: true
+    });
+  });
+</script>
+
+<script>
+    //$(document).ready(function() {
+    $(document).ready(function() {
+        $(document).on('scroll', function(){
+            if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+                $("#edition-sidebar").css({position: "fixed", top: -5});
+            }
+            if ($(document).scrollTop() < 200){
+                $("#edition-sidebar").css({position: "static", top: 0});
+            }
+        });
+    });
+</script>

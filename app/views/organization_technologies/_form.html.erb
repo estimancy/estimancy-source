@@ -1,0 +1,34 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:organization_technology) %> </a></li>
+  </ul>
+
+  <div id="tabs-1">
+    <%= simple_form_for(@organization_technology) do |f| %>
+        <%= f.input :organization_id, :as => :hidden, :input_html => {:class => 'input-xxlarge', :value => @organization.id || params[:organization_id]} %>
+        <%= f.input :name, :label => I18n.t('name'), :input_html => {:class => 'input-xxlarge', :autofocus => (controller.action_name == 'new')} %>
+        <%= f.input :alias, :label => I18n.t('alias'), :input_html => {:class => 'input-xxlarge'} %>
+        <%= f.input :description, :label => I18n.t('description'), :input_html => {:class => 'input-xxlarge', :rows => 5} %>
+        <table>
+          <tr>
+            <td><%= f.input :productivity_ratio, :label => I18n.t('productivity_ratio'), :input_html => {:value => (controller.action_name == 'new' ? 1 : @organization_technology.productivity_ratio), :class => 'input-mini'} %></td>
+            <td>&nbsp;&nbsp;&nbsp;</td>
+            <td><%= f.input :state, :label => I18n.t('state'), :as => :select, :collection => OrganizationTechnology.aasm.states_for_select, :input_html => {:class => 'input-large'} %></td>
+          </tr>
+        </table>
+        <div class="actions-tabs">
+          <% if can? :manage, OrganizationTechnology %>
+            <% if action_name == 'new' || action_name=='create' %>
+              <%= submit_tag I18n.t('save_and_create'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <% elsif action_name == 'edit' || action_name=='update' %>
+              <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+              <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+            <% end %>
+          <% end %>
+          <%= link_to I18n.t('back'), organization_setting_path(@organization, :anchor => 'tabs-technology'), :class => 'btn btn-secondary' %>
+        </div>
+
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,53 @@
+
+<script type="text/javascript">
+
+//    $(".modal").css("width", "auto");
+//    $(".modal .modal-body").css("height", "auto");
+//    $(".modal .modal-body").css("width", "auto");
+//    $(".modal .modal-body").css("max-height", "600px");
+//    $(".modal .modal-body").css("max-height", "1000px");
+
+    google.charts.load('current', {packages:['wordtree']});
+    google.charts.setOnLoadCallback(drawWordTrees);
+
+    function drawWordTrees() {
+        var data_model = <%= @word_trees_data_model.to_json.html_safe %>;
+
+        var data1 = google.visualization.arrayToDataTable(
+                [ ['Phrases'],
+                    ['cats are better than dogs'],
+                    ['cats eat kibble'],
+                    ['cats are better than hamsters'],
+                    ['cats are awesome'],
+                    ['cats are people too'],
+                    ['cats eat mice'],
+                    ['cats meowing'],
+                    ['cats in the cradle'],
+                    ['cats eat mice'],
+                    ['cats in the cradle lyrics'],
+                    ['cats eat kibble'],
+                    ['cats for adoption'],
+                    ['cats are family'],
+                    ['cats eat mice'],
+                    ['cats are better than kittens'],
+                    ['cats are evil'],
+                    ['cats are weird'],
+                    ['cats eat mice'],
+                ]
+        );
+
+        var data = google.visualization.arrayToDataTable(data_model);
+
+        var options = {
+            wordtree: {
+                format: 'implicit',
+                word: 'Data'
+            }
+        };
+
+        var chart = new google.visualization.WordTree(document.getElementById('wordtree_basic'));
+        chart.draw(data, options);
+    }
+</script>
+
+<div id="wordtree_basic" style="width: 1000px; height: 600px;"></div>

@@ -1,0 +1,82 @@
+<%= simple_form_for @project, :url => update_comments_status_change_path(params[:id]), :method => 'post' do |f| %>
+
+  <% if @project.private == false || current_user.super_admin == true || can?(:manage, @project) %>
+    <%= hidden_field_tag :project_id, params[:project_id] %>
+
+    <% if can_alter_estimation?(@project) && can?(:alter_project_status_comment, @project) %>
+      <%#= f.input :status_comment, :as => :text, label: I18n.t(:comment), :input_html => { :value => @text_comments.to_s, :class => 'attribute_note_area'} %>
+      <%= f.input :new_status_comment, :as => :text, label: I18n.t(:comment), :input_html => { :class => 'form-control', :rows => 5 } %>
+    <% end %>
+
+    <% if can_alter_estimation?(@project) && can?(:alter_estimation_status, @project) %>
+      <%= f.input :estimation_status_id, required: false,
+                  label: I18n.t(:change_estimation_status),
+                  as: :select,
+                  collection: @project.project_estimation_statuses(@organization),
+                  input_html: { :class => 'form-control', disabled: (@project.is_locked) },
+                  include_blank: false %>
+
+
+      <% if @project.is_locked == true %>
+        <% @project.module_projects.each do |module_project| %>
+          <% module_project.views_widgets.each do |view_widget| %>
+            <% if view_widget.min_value != nil || view_widget.max_value != nil %>
+              <p>
+                <%= view_widget.validation_text %>
+              </p>
+            <% end %>
+          <% end %>
+        <% end %>
+      <% end %>
+    <% end %>
+
+    <br>
+
+    <div>
+      <% if can_alter_estimation?(@project) && (can?(:alter_estimation_status, @project) || can?(:alter_project_status_comment, @project)) %>
+        <%= f.submit I18n.t('save'), :class => 'btn btn-primary', :id => 'add_comment_on_status_change' %>
+        <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:cancel) %></button>
+      <% end %>
+    </div>
+  <% end %>
+
+  <hr>
+
+  <p class="lead">
+    <%= I18n.t(:comment_history) %>
+  </p>
+
+  <span>
+     <%= simple_format(@text_comments.to_s) %>
+  </span>
+
+  <!--<span>-->
+    <!--<%# unless @project.nil? %>-->
+      <!--<%# @project_id = @project.id %>-->
+      <!--<%# StatusHistory.where(project_id: @project.id).each do |history| %>-->
+      <%#= history.change_date.strftime("%d/%m/%Y à %H:%M") %> :
+        <!--<%#= history.action %>-->
+        <!--<%# if "à partir".in?(history.action) %>-->
+        <!--<%# @model_id = @project.original_model_id %>-->
+          <!--<%# @model = Project.find(@model_id) %>-->
+          <!--"<%#= @model %>"-->
+          <!--<%#= history.comments %> par <%#= history.user %>-->
+      <!--<%# elsif "Changement de statut".in?(history.action)%>-->
+          <!--de-->
+          <!--"<%#= history.origin %>"-->
+          <!--à-->
+          <!--"<%#= history.target %>"-->
+          <!--<%#= history.comments %> par <%#= history.user %>-->
+      <!--<%# elsif "Version changée".in?(history.action)%>-->
+        <!--de-->
+        <!--"<%#= history.old_version_number %>"-->
+        <!--à-->
+          <!--<%#= history.new_version_number %>-->
+          <!--<%#= history.comments %> par <%#= history.user %>-->
+      <!--<%# end %>-->
+        <!--<br>-->
+      <!--<%# end %>-->
+    <!--<%# end %>-->
+  <!--</span>-->
+
+<% end %>

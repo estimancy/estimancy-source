@@ -1,0 +1,53 @@
+<div class="tabs">
+  <ul>
+    <li><a href="#tabs-1"><%= I18n.t(:about) %></a></li>
+  </ul>
+
+  <div id="tabs-1">
+
+    <h2>Estimancy</h2>
+
+    <p>Copyright © 2014 <%= link_to 'Estimancy', 'http://estimancy.com', target:"_blank" %></p>
+
+    <p>
+      <%= I18n.t('text_projestimate_open_source') %> <%= link_to 'GNU AGPL-v3', 'http://www.gnu.org/licenses/agpl-3.0.html', target:"_blank" %>
+    </p>
+
+    <p>
+      <%= I18n.t('text_projestimate_open_source_references') %> <%= link_to '(Estimancy dependencies)', 'dependencies.html', target:"_blank" %>
+    </p>
+
+    <hr class="bs-docs-separator">
+    <dl class="dl-horizontal">
+
+      <dt>Estimancy</dt>
+      <dd><span class="label label-info"><%=`git rev-parse --abbrev-ref HEAD`%>rev. <%= update_date_timestamp %></span>
+
+      <dt>Dernier commit : </dt>
+      <dd><%= `git log --oneline --reverse --pretty="format:%s" | tail -n 1` %>
+
+      <dt><%= I18n.t(:last_update) %></dt>
+      <dd><span class="label label-info"><%= update_date %></span>
+      </dd>
+
+      <dt>Ruby</dt>
+      <dd><span class="label label-info"><%= ruby_version %> </span></dd>
+      <dt>Rails</dt>
+      <dd><span class="label label-info"> <%= rails_version %> </span></dd>
+      <dt>Environnement</dt>
+      <dd><span class="label label-info"> <%= environment %> </span></dd>
+      <dt>SGBD</dt>
+      <dd><span class="label label-info"> <%= database_adapter %> </span></dd>
+      <dt>Domaine</dt>
+      <dd><span class="label label-info"> <%= root_url %> </span></dd>
+      <dt>Navigateur</dt>
+      <dd><span class="label label-info"> <%= browser %> <%= version_browser %> (<%= platform %>)</span></dd>
+      <dt>OS</dt>
+      <dd><span class="label label-info"> <%= os %></span></dd>
+    </dl>
+
+    <h2>Changelog</h2>
+    <%= link_to I18n.t(:wiki_changelog), "http://forge.estimancy.com/projects/pe/wiki/Changelog", target: "_blank" %>
+
+  </div>
+</div>

@@ -1,0 +1,45 @@
+<%= simple_form_for(@module_project) do |f| %>
+    <% if @module_project.errors.any? %>
+        <div id="error_explanation" xmlns="http://www.w3.org/1999/html" xmlns="http://www.w3.org/1999/html">
+          <h2><%= pluralize(@module_project.errors.count, 'error') %> prohibited this module_project from being saved:</h2>
+          <ul>
+            <% @module_project.errors.full_messages.each do |msg| %>
+                <li><%= msg %></li>
+            <% end %>
+          </ul>
+        </div>
+    <% end %>
+
+    <%= f.input :color, label: I18n.t(:status_color), input_html: {class: 'color pull-left'} %>
+    <span><%= link_to I18n.t(:new_view), new_view_path(organization_id: @project.organization_id), class: 'btn btn-primary pull-right' %></span>
+
+    <table id="table_list_2"  class="table table-list">
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:description) %></th>
+        <th><%= I18n.t(:widgets) %></th>
+        <th><%= I18n.t(:selected_view) %></th>
+        <th><%= I18n.t(:actions) %></th>
+      </tr>
+      <% @module_project.project.organization.views.each do |view| %>
+          <tr class="">
+            <td><%= view.name %></td>
+            <td><%= view.description %></td>
+            <td>
+              <% view.views_widgets.each do |widget| %>
+                  <%= check_box_tag "view_widget_#{widget.id}", widget.id, true, disabled: true %>
+                  <%= widget.name %>
+              <% end %>
+            </td>
+            <td class="center"><%= f.radio_button :view_id, view.id, :checked => @module_project.view == view %></td>
+            <td class="align-center">
+              <%= link_to "", edit_view_path(view, organization_id: view.organization_id), :class => 'icon-pencil', :title => I18n.t('edit') %>
+              <%= link_to "", view_path(view, module_project_id: @module_project.id), method: :delete, data: { confirm: I18n.t(:are_you_sure) }, class: "icon-trash" %>
+            </td>
+          </tr>
+      <% end %>
+    </table>
+    <%= f.submit I18n.t('save'), :class => 'btn btn-primary ' %>
+    <%= f.submit I18n.t('apply'), :class => 'btn btn-primary'%>
+    <%= link_to I18n.t(:back), edit_project_path(@module_project.project_id, tabs_name: 'tabs_estimation_plan', anchor: 'tabs-estimation-plan'), class: 'btn btn-secondary' %>
+<% end %>

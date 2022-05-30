@@ -1,0 +1,17 @@
+$("#modal_cotation_content").html("<%= j(render 'guw/guw_unit_of_works/cotations_modal', { :guow => @guw_unit_of_work })%>")
+$("#modal_cotation").modal({backdrop: false});
+
+var my_value = $("#ajusted_size_<%= @guw_unit_of_work.id %>").val()
+$("#hidden_ajusted_size_<%= @guw_unit_of_work.id %>").val(my_value)
+
+var my_quantity = $("#quantity_<%= @guw_unit_of_work.id %>").val()
+$("#hidden_quantity_<%= @guw_unit_of_work.id %>").val(my_quantity)
+
+<% @guw_model.guw_coefficients.each do |guw_coefficient| %>
+  var i = $("#guw_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val();
+  var j = $("#guw_coefficient_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val();
+
+  $("#hidden_coefficient_percent_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(i);
+  $("#hidden_coefficient_element_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val(j);
+  $("#hidden_complexity_coeff_ajusted_<%= @guw_unit_of_work.id %>_<%= guw_coefficient.id %>").val("<%= guw_coefficient.id %>");
+<% end %>

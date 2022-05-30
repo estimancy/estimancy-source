@@ -1,0 +1,13 @@
+$("#notifications").html("");
+
+//$(".show_modules_using_attribute").html("<%#=raw j render :partial => 'find_use_attribute_modules', :object => @attribute_modules %>");
+$(".modal-body-inner").html("<%=raw j render :partial => 'users/find_use_user', :object => @relations %>");
+
+$("#myModalLabel").html("<%= I18n.t(:text_finduse_user, :value => @user.name) %>");
+
+$("#edit_component").modal({
+  keyboard: false,
+  backdrop: false
+});
+
+$("#notifications").html("<%= j(render 'layouts/notifications') %>");

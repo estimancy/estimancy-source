@@ -1,0 +1,17 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  ge_model_id: 1
+  ge_factor_id: 1
+  factor_alias: MyString
+  factor_name: MyString
+  value_text: MyString
+  value_number: 1.5
+
+two:
+  ge_model_id: 1
+  ge_factor_id: 1
+  factor_alias: MyString
+  factor_name: MyString
+  value_text: MyString
+  value_number: 1.5

@@ -1,0 +1,8 @@
+<ul>
+  <% elements.each do |e, children| %>
+    <li>
+      <%= link_to_unless_current e.name, e %>
+      <%= render 'pe_wbs_project_tree', elements: children if children.present? %>
+    </li>
+  <% end %>
+</ul>

@@ -1,0 +1,35 @@
+
+<table class="table table-list">
+  <thead>
+      <tr>
+        <th><%= I18n.t(:name) %></th>
+        <th><%= I18n.t(:description) %></th>
+        <th><%= I18n.t(:associated_module) %></th>
+        <th><%= I18n.t(:default_view) %></th>
+        <th><%= I18n.t(:displayed_data) %></th>
+        <th><%= I18n.t(:created_at) %></th>
+        <th class="action"><%= I18n.t(:actions) %></th>
+      </tr>
+  </thead>
+  <tbody>
+    <% @organization.views.order('pemodule_id').reject{ |v| v.views_widgets.all.length == 0}.each do |view| %>
+      <tr>
+        <td><%= view.name %></td>
+        <td><%= view.description %></td>
+        <td><%= view.pemodule %></td>
+        <td class="center"><%= view.is_default_view ? I18n.t('simple_form.yes') : I18n.t('simple_form.no') %></td>
+        <td>
+          <% view.views_widgets.each do |widget| %>
+            <%= widget.name %> <br>
+          <% end %>
+        </td>
+        <td><%= I18n.l( view.created_at) %></td>
+        <td class="align-center">
+          <%= link_to raw("<i class='material-icons'>edit</i>"), edit_organization_view_path(view, organization_id: view.organization_id), :class => 'material-icons', :title => I18n.t('edit') %>
+          <%= link_to raw("<i class='material-icons'>delete</i>"), organization_view_path(@organization, view), data: {confirm: I18n.t('are_you_sure')}, method: :delete, :class => 'material-icons', :title => I18n.t('delete') %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+
+</table>

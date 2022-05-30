@@ -1,0 +1,472 @@
+<!-- TODO : liste déroulante applications, create_date-->
+
+<section class="card card-content-bloc estimancy-form">
+
+  <div class="mb-5">
+    <div class="effort-bloc">
+
+      <ul class="nav nav-pills tabs" id="pills-tab" role="tablist">
+        <li class="nav-item">
+          <a href="#tabs-1" class="nav-link show active"  data-toggle="pill" id="tabs-1_tab" href="#tabs-1" role="tab" aria-selected="true">
+            <%= t(:estimation) %>
+          </a>
+        </li>
+
+      </ul>
+
+      <div class="tab-content" id="pills-tabContent">
+
+        <div class="tab-pane fade show active" id="tabs-1" role="tabpanel" aria-labelledby="tabs-1">
+          <div class="card-body" style="margin-left:40px">
+
+            <%= simple_form_for(@project) do |f| %>
+
+              <%= hidden_field_tag :project_id, @project.id %>
+              <%= hidden_field_tag :organization_id, @organization.id %>
+              <% can_alter_model = can?(:manage_estimation_models, Project) %>
+
+              <div class="edition-bloc-content">
+                <div class="edition-bloc-form">
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :title,
+                                    :label => false,
+                                    :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model),
+                                    :input_html => { :class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new') } %>
+                        <label class="mdl-textfield__label" for="title"><%= I18n.t(:name) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :version_number, :input_html => { :class => 'mdl-textfield__input form-control' }, :disabled => true, label: false %>
+                        <label class="mdl-textfield__label" for="version">Version</label>
+                        <span class="mdl-textfield__error">Input is not a number!</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <% unless @project.is_model == true %>
+                          <%= f.input :estimation_status_id,
+                                      label: false,
+                                      as: :select,
+                                      collection: (current_user.super_admin ? @organization.estimation_statuses : @project.project_estimation_statuses(@organization)),
+                                      disabled: !((can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || can_alter_model) || @project.private,
+                                      input_html: { :class => 'mdl-textfield__input form-control' },
+                                      include_blank: false %>
+                          <% else %>
+                            <%= f.input :estimation_status_id,
+                                      label: false,
+                                      as: :select,
+                                      collection: @current_organization.estimation_statuses,
+                                      disabled: !((can_alter_estimation?(@project) && can?(:alter_estimation_status, @project)) || can_alter_model) || @project.private,
+                                      input_html: { :class => 'mdl-textfield__input form-control' },
+                                      include_blank: false %>
+                        <% end %>
+                        <label for="estimation_status_id" class="mdl-textfield__label"><%= I18n.t 'estimation_status' %></label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :business_need, :label => false, :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                        <label class="mdl-textfield__label"><%= I18n.t('business_need') %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :request_number, :label => false, :disabled => !(can?(:alter_request_number, @project) || can_alter_model), :input_html => { :class => 'mdl-textfield__input' } %>
+                        <label class="mdl-textfield__label"><%= I18n.t('request_number') %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :start_date, as: :string, :label => false,
+                                    :input_html => { :class => 'date-picker form-control', :value => @project.start_date.nil? ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@project.start_date) },
+                                    #:value => @project.start_date.nil? ? I18n.l(Time.parse(Time.now.strftime(I18n.t('date.formats.default')))) : start_date.strftime(I18n.t('date.formats.default')),
+                                    :disabled => !(can?(:alter_request_number, @project) || can_alter_model) %>
+                        <label class="mdl-textfield__label" style="margin-top: -30px;"><%= I18n.t('start_date') %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!--<div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%#= f.input :created_at, as: :string, :label => false,
+                                    :input_html => { :class => 'date-picker form-control', :value => I18n.l(@project.created_at) },
+                                    :disabled => true %>
+                        <label class="mdl-textfield__label" style="margin-top: -30px;"><%#= I18n.t('created_date') %></label>
+                      </div>
+                    </div>
+                  </div>-->
+
+                  <% if @project.is_model == true %>
+                    <div class="form-row">
+                      <div class="col-6">
+                        <!-- <div class="select-estimancy"> -->
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <% apps = @project.applications %>
+
+                          <% if @current_organization.applications.empty? and apps.empty? %>
+                            <%= f.input :application_name,
+                                        :label => false,
+                                        :disabled => !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) ,
+                                        :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                          <% else %>
+                            <%= f.association :applications,
+                                              as: :select,
+                                              collection: @current_organization.applications.active,
+                                              :label => false,
+                                              :input_html => { :class => 'mdl-textfield__input form-control' },
+                                              include_blank: true,
+                                              :disabled => !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) %>
+                          <% end %>
+                          <label class="mdl-textfield__label" style="margin-top: -30px;"><%= I18n.t('label_product_name') %></label>
+                        </div>
+                      </div>
+                    </div>
+                  <% else %>
+                    <% begin %>
+                      <% apps = Project.find(@project.original_model_id).applications.active.all %>
+                    <% rescue %>
+                      <% apps = [] %>
+                    <% end %>
+                  <% end %>
+
+                  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+                  <script>
+                      $(document).ready(function() {
+                          $(document).on('scroll', function(){
+                              if ($('#edition-sidebar')[0].offsetTop < $(document).scrollTop()){
+                                  $("#edition-sidebar").css({position: "fixed", top: -5});
+                              }
+                              if ($(document).scrollTop() < 200){
+                                  $("#edition-sidebar").css({position: "static", top: 0});
+                              }
+                          });
+
+                          $(".date-picker").datepicker({
+                              language: '<%= set_user_language_for_datepicker %>',
+                              //uiLibrary: 'bootstrap4',
+                              //locale: 'fr-fr',
+                              orientation: 'auto top',
+                              autoclose: true,
+                              todayHighlight: true,
+                              todayBtn: true,
+                              icons: {
+                                  rightIcon: '<i class="material-icons">event</i>'
+                              }
+                          });
+                      });
+                  </script>
+
+                  <% unless @project.is_model %>
+                    <div class="form-row">
+                      <div class="col-6">
+                        <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                          <% if @current_organization.applications.empty? and apps.empty? %>
+                            <%= f.input :application_name,
+                                        input_html: { :class => 'mdl-textfield__input form-control' },
+                                        label: false,
+                                        readonly: !((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) %>
+                            <label class="mdl-textfield__label" ><%= I18n.t(:label_product_name) %></label>
+
+                          <% else %>
+                            <% if (!((can_alter_estimation?(@project) && can?(:alter_product_name, @project)) || can_alter_model) || @project.private) %>
+                              <%= f.input :application_name,
+                                          input_html: { :class => 'mdl-textfield__input form-control', value: @project.application },
+                                          label: false,
+                                          disabled: true %>
+                              <label class="mdl-textfield__label" ><%= I18n.t(:application) %></label>
+
+                            <% else %>
+                              <% @current_organization_apps = @current_organization.applications.active.all %>
+                              <% ignored_apps = @current_organization.applications.ignored.map(&:id) %>
+
+                              <% if @project.application_id != nil && @project.application_id.in?(ignored_apps)%>
+                                <% project_application =  Application.find(@project.application_id) %>
+                                <% @current_organization_apps << project_application %>
+                                <% unless apps.empty? %>
+                                  <% apps << project_application %>
+                                <% end %>
+                              <% end %>
+                              <%= f.input :application_id,
+                                          as: :select,
+                                          collection: apps.empty? ? @current_organization_apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]} : apps.sort { |x, y| x.name <=> y.name }.map{|i| [i.name, i.id]},
+                                          label: false,
+                                          input_html: {:class => 'mdl-textfield__input form-control'},
+                                          selected: @project.application_id %>
+                              <label class="mdl-textfield__label"><%= I18n.t(:label_product_name) %></label>
+                            <% end %>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
+                  <% end %>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <% owner_key = AdminSetting.find_by_key("Estimation Owner") %>
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :creator_id,
+                                    as: :select,
+                                    collection: @organization.users.where(locked_at: nil).reject{|i| i.initials == (owner_key.nil? ? '' : owner_key.value) }.map{ |i| [i.name, i.id] },
+                                    label: false,
+                                    selected: @project.creator_id.nil? ? current_user.id : @project.creator_id,
+                                    input_html: { selected: current_user.id, :class => 'mdl-textfield__input form-control', disabled: !(can?(:alter_creator, @project) || can_alter_model) } %>
+                        <label class="mdl-textfield__label"><%= I18n.t(:creator) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <% if @project.new_record? %>
+                    <%= f.input :is_model, :as => :hidden, input_html: { value: @is_model } %>
+                  <% end %>
+
+
+                  <% if @project.is_model || @is_model %>
+                    <div class="form-row">
+                      <div class="col-12">
+                        <%= f.input :use_automatic_quotation_number, as: :boolean, :label => raw("&nbsp; #{I18n.t 'use_automatic_quotation_number'}"), :input_html => {:class => 'mdl-checkbox__inputs'}, :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model) %>
+                      </div>
+                    </div>
+
+                    <div class="form-row">
+                      <div class="col-12">
+                        <%= f.input :allow_export_pdf, as: :boolean, :label => raw("&nbsp; #{I18n.t("allow_export_pdf")}"), :input_html => {:class => 'mdl-checkbox__inputs'}, :disabled => !(can?(:alter_estimation_name, @project) || can_alter_model) %>
+                      </div>
+                    </div>
+
+                  <% end %>
+
+                  <%= f.input :demand_id, as: :hidden, :input_html => { :value => params[:demand_id] } %>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label is-dirty">
+                        <a href="#" class="" id="template">
+                          <% if !@project.original_model_id.nil? %>
+                            <% if can_show_estimation?(@project.original_model) %>
+                              <% unless @project.original_model.nil? %>
+                                <%= link_to(@project.original_model, dashboard_path(@project.original_model)) %>
+                              <% end %>
+                            <% else %>
+                              <%= @project.original_model %>
+                            <% end %>
+                          <% else %>
+                            -
+                          <% end %>
+                        </a>
+                        <label for="template" class="mdl-textfield__label active"><%= I18n.t("original_model") %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-8">
+                      <%= f.input :private, disabled: !(can?(:alter_private_estimation_setup, @project) || can_alter_model), label: raw("&nbsp; #{I18n.t("private")}"), class: "mdl-textfield__input custom-control-input" %>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-8">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <textarea class="mdl-textfield__input" type="text" rows="3" id="description" name="project[description]"><%= @project.description %></textarea>
+                        <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-8">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <textarea class="mdl-textfield__input" type="text" rows="3" id="description_2" name="project[description_2]"><%= @project.description_2 %></textarea>
+                        <label class="mdl-textfield__label" for="description_2"><%= I18n.t(:description_2) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-8">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <textarea class="mdl-textfield__input" type="text" rows="3" id="description_3" name="project[description_3]"><%= @project.description_3 %></textarea>
+                        <label class="mdl-textfield__label" for="description_3"><%= I18n.t(:description_3) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="select-estimancy">
+                        <label for="project_area" class="label-estimancy"><%= I18n.t 'project_area' %></label>
+                        <%= f.association :project_area,
+                                          :label => false,
+                                          :as => :select,
+                                          :collection => @project_areas,
+                                          :input_html => { :class => 'mdl-textfield__input form-control' },
+                                          :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_areas, @project)) || can_alter_model) %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="select-estimancy">
+                        <label for="acquisition_category" class="label-estimancy"><%= I18n.t 'acquisition_category' %></label>
+                        <%= f.association :acquisition_category,
+                                          :label => false,
+                                          :as => :select,
+                                          :collection => @acquisition_categories,
+                                          :input_html => {:class => 'mdl-textfield__input form-control'},
+                                          :disabled => !((can_alter_estimation?(@project) && can?(:alter_acquisition_categories, @project)) || can_alter_model) %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="select-estimancy">
+                        <label for="platformCategory" class="label-estimancy"><%= I18n.t 'platform_category' %></label>
+                        <%= f.association :platform_category,
+                                          :label => false,
+                                          :as => :select,
+                                          :collection => @platform_categories,
+                                          :input_html => {:class => 'mdl-textfield__input form-control'},
+                                          :disabled => !((can_alter_estimation?(@project) && can?(:alter_platform_categories, @project)) || can_alter_model) %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="select-estimancy">
+                        <label for="project_category" class="label-estimancy"><%= I18n.t 'project_category' %></label>
+                        <%= f.association :project_category,
+                                          :label => false,
+                                          :as => :select,
+                                          :collection => @project_categories,
+                                          :input_html => {:class => 'mdl-textfield__input form-control'},
+                                          :disabled => !((can_alter_estimation?(@project) && can?(:alter_project_categories, @project)) || can_alter_model) %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="select-estimancy">
+                        <label for="provider" class="label-estimancy"><%= I18n.t 'provider' %></label>
+                        <%= f.association :provider,
+                                          :label => false,
+                                          :as => :select,
+                                          :collection => @providers,
+                                          :input_html => {:class => 'mdl-textfield__input form-control'},
+                                          :disabled => !((can_alter_estimation?(@project) && can?(:alter_providers, @project))  || can_alter_model) %>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <%= f.input :is_historized, disabled: !(@current_user.super_admin?), label: raw("&nbsp; #{I18n.t("is_historized")}"), class: "mdl-textfield__input custom-control-input" %>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <% creation_date =  @project.created_at %>
+                        <% if @project.new_record? %>
+                          <%= f.input :created_at, as: :string, :label => false,
+                                      :input_html => { :class => 'date-picker mdl-textfield__input', :value => nil, title: nil },
+                                      :disabled => true %>
+                        <% else %>
+                          <%= f.input :created_at, as: :string, :label => false,
+                                      :input_html => { :class => 'date-picker mdl-textfield__input', :value => I18n.l(creation_date.to_date), title: I18n.l(creation_date) },
+                                      :disabled => true %>
+                        <% end %>
+                        <label class="mdl-textfield__label"><%= I18n.t('created_at') %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-6">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%#= f.input :historization_time, as: :string, :label => false,
+                                :input_html => { :class => 'date-picker mdl-textfield__input', :value => @project.historization_time.nil? ? nil : I18n.l(@project.historization_time) },
+                                :disabled => !@current_user.super_admin?
+                        %>
+
+                        <% if @project.is_historized == true %>
+                          <%= f.input :historization_time, as: :string, :label => false,
+                                      :input_html => { :class => 'date-picker mdl-textfield__input', :value => @project.historization_time.nil? ? nil : I18n.l(@project.historization_time) },
+                                      :disabled => true %>
+                          <label class="mdl-textfield__label" ><%= I18n.t('historization_time') %></label>
+
+                        <% else %>
+                          <% expected_historization_time = nil %>
+                          <% if @project.estimation_status && (@project.estimation_status.is_historization_status == true) %>
+                            <% expected_historization_time = I18n.l(@project.created_at + @project.estimation_status.nb_day_before_historization.to_f.days) %>
+                          <% end %>
+
+                          <%= f.input :historization_time, as: :string, :label => false,
+                                      :input_html => { :class => 'date-picker mdl-textfield__input', :value =>  expected_historization_time },
+                                      :disabled => true
+                          %>
+                          <label class="mdl-textfield__label" ><%= I18n.t('expected_historization_time') %></label>
+                        <% end %>
+
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <% if action_name.in?(['edit', 'update', 'duplicate']) %>
+                <% if (@project.is_model && can?(:manage_estimation_models, Project)) || (!@project.is_model && can_modify_estimation?(@project)) ||
+                    ( can?(:alter_project_areas, @project) || can?(:alter_acquisition_categories, @project) || can?(:alter_platform_categories, @project) ||
+                        can?(:alter_project_categories, @project) || can?(:alter_providers, @project) || can?(:alter_request_number, @project)
+                    )
+                %>
+                  <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+              <% end %>
+
+              <% elsif action_name.in?(['new', 'create']) %>
+                <% if (@is_model.in?(["true", true]) && can?(:manage_estimation_models, Project)) || (!@is_model.in?(["true", true]) && can?(:create_project_from_scratch, Project)) %>
+                  <%= submit_tag I18n.t('apply'), :class => 'btn btn-primary' %>
+                <% end %>
+              <% end %>
+
+              <% if @project.is_model %>
+                <%= link_to I18n.t('back'), projects_from_path(organization_id: @organization.id), :class => 'btn btn-secondary' %>
+              <% else %>
+                <%= link_to I18n.t('back'), organization_estimations_path(@organization), :class => 'btn btn-secondary' %>
+              <% end %>
+
+            <% end %>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+</section>

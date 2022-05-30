@@ -1,0 +1,85 @@
+<h4>
+  Demande de service A-M-E
+</h4>
+
+<p>
+  Contact : <%= @elements[:contact] %>
+</p>
+
+<p>
+  Email : <%= @elements[:email] %>
+</p>
+
+<p>
+  Numéro de téléphone : <%= @elements[:phone_number] %>
+</p>
+
+<p>
+  <%= I18n.t(:label_project_name) %> <%= @elements[:project_name] %>
+</p>
+
+<p>
+  <%= I18n.t(:business_need) %> <%= @elements[:business_need] %>
+</p>
+
+<p>
+  <%= I18n.t(:request_number) %> <%= @elements[:request_number] %>
+</p>
+
+<p>
+  <%= I18n.t(:project_area) %> <%= @elements[:project_area] %>
+</p>
+
+<p>
+  <%= I18n.t(:acquisition_category) %> <%= @elements[:acquisition_category] %>
+</p>
+
+<p>
+  <%= I18n.t(:platform_category) %> <%= @elements[:platform_category] %>
+</p>
+
+<p>
+  <%= I18n.t(:project_category) %> <%= @elements[:project_category] %>
+</p>
+
+<p>
+  Description <%= @elements[:description] %>
+</p>
+
+<p>
+  Nature de la demande
+  <br>
+  <%= @elements[:chiffrage] == "yes" ? "Chiffrage \n" : "" %>
+  <%= @elements[:contre_chiffrage] == "yes" ? "Contre-chiffrage \n" : "" %>
+  <%= @elements[:velocite] == "yes" ? "Vélocité \n" : "" %>
+</p>
+
+<p>
+  Date de livraison souhaitée : <%= @elements[:date_livraison] %>
+</p>
+
+<p>
+  Disponibilité :
+  <% if @elements[:dispo1].nil? && @elements[:dispo2].nil? && @elements[:dispo3].nil? %>
+    Aucune disponibilité indiquée
+  <% else %>
+    <br>
+    <%= @elements[:dispo1] %> <%= @elements[:time1] %>
+    <br>
+    <%= @elements[:dispo2] %> <%= @elements[:time2] %>
+    <br>
+    <%= @elements[:dispo3] %> <%= @elements[:time3] %>
+  <% end %>
+</p>
+
+<p>
+  Liste des exigences
+  <br>
+  <%= @elements[:excel] == "yes" ? "Excel \n" : "" %>
+  <%= @elements[:jira] == "yes" ? "JIRA \n" : "" %>
+  <%= @elements[:hpalm] == "yes" ? "HP-ALM \n" : "" %>
+</p>
+
+<p>
+  Liens : <%= @elements[:links] %>
+</p>

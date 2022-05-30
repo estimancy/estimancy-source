@@ -1,0 +1,66 @@
+<%= form_tag guw.save_comments_path, method: "post" do %>
+  <div class="modal-header modal-drag">
+    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+    <h4 class="modal-title" id="comments_label<%= guow.id %>">
+      <b>
+        <%= guow.guw_type %>
+      </b> - Details </h4>
+  </div>
+  <div class="modal-body">
+
+    <label>
+      <b>
+        <%= I18n.t(:name) %>
+      </b>
+    </label>
+    <%= text_area_tag "name[#{guow.id}]", guow.name, class: "attribute_note_area form-control", readonly: !can?(:execute_estimation_plan, @project) %>
+
+    <label>
+      <b>
+        <%= I18n.t(:description) %>
+      </b>
+    </label>
+    <%= text_area_tag "comments[#{guow.id}]", guow.comments, class: "attribute_note_area form-control", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
+
+    <label>
+      <b>
+        <%= I18n.t(:tracability) %>
+      </b>
+    </label>
+    <%= text_area_tag "trackings[#{guow.id}]", guow.tracking, class: "attribute_note_area form-control", rows: 4, readonly: !can?(:execute_estimation_plan, @project) %>
+
+    <label>
+      <b>
+        <%= I18n.t(:group) %>
+      </b>
+    </label>
+    <%= select_tag :guw_unit_of_work_group_id,
+                   options_for_select(current_module_project.guw_unit_of_work_groups.map{|i| [i.name, i.id]}.to_a.sort,
+                                      selected: guow.guw_unit_of_work_group_id),
+                   class: "form-control" %>
+
+    <br>
+    <br>
+
+    <% if guow.guw_model.allow_ml == true %>
+      <label>
+        <b>
+          Source URL
+        </b>
+      </label>
+      <% if guow.url %>
+        <%= link_to guow.url, guow.url, target: "_blank" %>
+      <% else %>
+        -
+      <% end %>
+    <% end %>
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-secondary" data-dismiss="modal" ><%= I18n.t(:close) %></button>
+    <% if can? :execute_estimation_plan, @project %>
+      <button type="submit" class="btn btn-primary" data-disable-with="<%= I18n.t :please_wait %>">
+        <%= I18n.t(:save) %>
+      </button>
+    <% end %>
+  </div>
+<% end %>

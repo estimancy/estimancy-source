@@ -1,0 +1,84 @@
+<%= form_tag({ :controller => 'organizations', :action => 'set_available_inline_columns', :project_id => @project }, :method => :get, :id => 'query_form') do %>
+    <table id="query-columns">
+      <tr>
+        <!--<td><%#= I18n.t(:field_column_names) %></td>-->
+        <td style="padding-left:0">
+          <%= label_tag "available_columns", I18n.t(:label_available_columns) %>
+          <br />
+          <%= select_tag 'available_columns',
+                         options_for_select(query_available_inline_columns_options(Project)),
+                         :multiple => true, :size => 10, :style => "width:160px",
+                         :ondblclick => "moveOptions(this.form.available_columns, this.form.selected_columns);" %>
+        </td>
+        <td class="buttons" style="padding: 10px;">
+          <p><input type="button" value="&#8594;" onclick="moveOptions(this.form.available_columns, this.form.selected_columns);" /></p>
+             <input type="button" value="&#8592;" onclick="moveOptions(this.form.selected_columns, this.form.available_columns);" />
+        </td>
+        <td>
+          <%= label_tag "selected_columns", I18n.t(:label_selected_columns) %>
+          <br />
+          <%= select_tag "tag_name",
+                         options_for_select(query_selected_inline_columns_options(Project)),
+                         :id => 'selected_columns', :multiple => true, :size => 10, :style => "width:160px",
+                         :ondblclick => "moveOptions(this.form.selected_columns, this.form.available_columns);" %>
+        </td>
+        <td class="buttons" style="padding: 10px;">
+          <!--<p><input type="button" value="&#8648;" onclick="moveOptionTop(this.form.selected_columns);" /></p>-->
+          <p><input type="button" value="&#8593;" onclick="moveOptionUp(this.form.selected_columns);" /></p>
+          <p><input type="button" value="&#8595;" onclick="moveOptionDown(this.form.selected_columns);" /></p>
+          <!--<p><input type="button" value="&#8650;" onclick="moveOptionBottom(this.form.selected_columns);" /></p>-->
+        </td>
+      </tr>
+    </table>
+
+    <br>
+    <br>
+    <h4><%= I18n.t(:default_estimations_sort_params) %></h4>
+    <div>
+      <label><%= I18n.t(:default_estimations_sort_column) %></label>
+      <%= select_tag 'default_estimations_sort_column', options_for_select(query_selected_inline_columns_options(Project),
+                                                       selected: @current_organization.default_estimations_sort_column), prompt: "" %>
+    </div>
+
+    <div>
+      <label><%= I18n.t(:default_estimations_sort_order) %></label>
+      <%= select_tag 'default_estimations_sort_order', options_for_select([[I18n.t(:asc_order), "asc"], [I18n.t(:desc_order), "desc"]],
+                                                       selected: @current_organization.default_estimations_sort_order), prompt: "" %>
+    </div>
+
+    <br>
+    <% if can? :manage_projects_selected_columns, Organization %>
+        <span><%= submit_tag I18n.t(:label_save), class: "btn btn-primary" %></span>
+    <% end %>
+
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script>
+        //$(document).ready(function() {
+        $(document).ready(function() {
+            $('#query-columns').closest('form').submit(function(){
+                $('#selected_columns option').prop('selected', true);
+
+                //get the selected value in Array
+                var selected_columns = new Array();
+
+                $('#selected_columns option').each(function(){
+                    selected_columns.push(this.value);
+                });
+
+                //update the data in database
+                $.ajax({
+                    url:"/update_available_inline_columns",
+                    method: 'GET',
+                    data: {
+                        query_classname: "Project",
+                        selected_inline_columns: selected_columns,
+                        default_estimations_sort_column: $('#default_estimations_sort_column').val(),
+                        default_estimations_sort_order: $('#default_estimations_sort_order').val()
+                    }
+                })
+            });
+        });
+    </script>
+
+
+<% end %>

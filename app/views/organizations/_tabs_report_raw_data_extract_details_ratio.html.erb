@@ -1,0 +1,27 @@
+<div id="tabs-filtered_excel_report">
+  <span>
+    <h2>
+      <%= I18n.t("#{@item_title}") %>
+    </h2>
+  </span>
+</div>
+
+  <br>
+  <p>
+    <%= I18n.t(:text_details_estimates_ratio) %><br>
+  </p>
+
+<br>
+<div class="card-body">
+  <%= form_tag raw_data_extraction_path(organization_id: @organization.id, item_title: @item_title) do %>
+
+    <%= render partial: "tabs_report_raw_data_filter" %>
+
+    <div class="row-fluid">
+      <div class="col-12">
+        <%= submit_tag I18n.t(:Generate_Report), class: "btn btn-primary btn-estimancy" %>
+      </div>
+    </div>
+  <% end %>
+
+</div>

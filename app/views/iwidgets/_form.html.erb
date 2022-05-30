@@ -1,0 +1,262 @@
+
+<section class="card card-content-bloc estimancy-form">
+
+  <%= simple_form_for(@iwidget, :remote => true) do |f| %>
+      <%= f.error_notification %>
+
+      <div class="card-body">
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+
+            <%= f.input :indicator_dashboard_id, as: :hidden, :input_html => { value: @indicator_dashboard_id } %>
+            <%= f.input :position_x, as: :hidden, :input_html => { value: @position_x } %>
+            <%= f.input :position_y, as: :hidden, :input_html => { value: @position_y } %>
+            <% output_type_collection = Iwidget.output_types #[[I18n.t(:first_value), "first_value"], [I18n.t(:last_value), "last_value"], [I18n.t(:table_values), "table_values"], [I18n.t(:line_chart), "line_chart"], [I18n.t(:bar_chart), "bar_chart"], [I18n.t(:stacked_bar_chart), "stacked_bar_chart"], [I18n.t(:pie_chart), "pie_chart"]] %>
+
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :name, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                  <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-12">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <textarea class="mdl-textfield__input" type="text" rows="3" id="description" name="iwidget[description]"><%= @iwidget.description %></textarea>
+                  <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                </div>
+              </div>
+            </div>
+
+            <!-- SERIES-->
+
+            <!-- SERIE A -->
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.association :serie_a_kpi, label: false, collection: @current_organization.kpis, prompt: I18n.t(:choose_indicator), include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <label class="mdl-textfield__label" for="module_project"><%= "Serie A" %></label>
+                </div>
+              </div>
+
+              <div class="col-6 select-estimancy">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="output_type"><%= "Serie A : #{I18n.t('output_type')}"  %></label>
+                    <%= f.input :serie_a_output_type,
+                                :label => false,
+                                :as => :select,
+                                :collection => output_type_collection,
+                                :input_html => { :class => 'mdl-textfield__input form-control' },
+                                include_blank: false %>
+                  </div>
+                </div>
+            </div>
+
+
+            <!-- SERIE B -->
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.association :serie_b_kpi, label: false, collection: @current_organization.kpis, prompt: I18n.t(:choose_indicator), include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <label class="mdl-textfield__label" for="module_project"><%= "Serie B" %></label>
+                </div>
+              </div>
+
+              <div class="col-6 select-estimancy">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="output_type"><%= "Serie B : #{I18n.t('output_type')}"  %></label>
+                    <%= f.input :serie_b_output_type,
+                                :label => false,
+                                :as => :select,
+                                :collection => output_type_collection,
+                            :input_html => { :class => 'mdl-textfield__input form-control' },
+                            include_blank: true %>
+                </div>
+              </div>
+            </div>
+
+
+
+            <!-- SERIE C -->
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.association :serie_c_kpi, label: false, collection: @current_organization.kpis, prompt: I18n.t(:choose_indicator), include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <label class="mdl-textfield__label" for="module_project"><%= "Serie C" %></label>
+                </div>
+              </div>
+
+              <div class="col-6 select-estimancy">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="output_type"><%= "Serie C : #{I18n.t('output_type')}"  %></label>
+                    <%= f.input :serie_c_output_type, :label => false, :as => :select, :collection => output_type_collection,
+                            :input_html => { :class => 'mdl-textfield__input form-control' },
+                            include_blank: true %>
+                </div>
+              </div>
+            </div>
+
+
+            <!-- SERIE D -->
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.association :serie_d_kpi, label: false, collection: @current_organization.kpis,
+                                    prompt: I18n.t(:choose_indicator), include_blank: true, input_html: { class: "inline_attr mdl-textfield__input form-control" } %>
+                  <label class="mdl-textfield__label" for="module_project"><%= "Serie D" %></label>
+                </div>
+              </div>
+
+              <div class="col-6 select-estimancy">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                    <label class="mdl-textfield__label" for="output_type"><%= "Serie D : #{I18n.t('output_type')}"  %></label>
+                    <%= f.input :serie_d_output_type,
+                                :label => false,
+                            :as => :select,
+                            :collection => output_type_collection,
+                            :input_html => { :class => 'mdl-textfield__input form-control' },
+                            include_blank: true %>
+                </div>
+              </div>
+            </div>
+
+            <!-- END SERIES -->
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :x_axis_label, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                  <label class="mdl-textfield__label" for="x_axis_label"><%= I18n.t(:x_axis_label) %></label>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :y_axis_label, label: false, :input_html => { :class => 'mdl-textfield__input form-control' } %>
+                  <label class="mdl-textfield__label" for="y_axis_label"><%= I18n.t(:y_axis_label) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <label class="mdl-textfield__label" for="color"><%= I18n.t(:status_color) %></label>
+                  <% if @iwidget.new_record? %>
+                      <%= f.input :color, label: false, input_html: { value: "blanchedalmond", class: "color mdl-textfield__input form-control"} %>
+                  <% else %>
+                      <%= f.input :color, label: false, input_html: { class: "color mdl-textfield__input form-control"}  %>
+                  <% end %>
+                </div>
+              </div>
+            </div>
+
+            <br>
+
+
+            <hr>
+
+            <b>
+              <%= I18n.t(:min_less_than_max_value)%>
+            </b>
+
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :min_value, as: :integer, label: false, :input_html => { value: @min_value, placeholder: "Valeur min. autorisée", class: "mdl-textfield__input form-control"} %>
+                  </td>
+                  <label class="mdl-textfield__label" for="min_value"><%= I18n.t(:val_min) %></label>
+                </div>
+              </div>
+
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :max_value, as: :integer, label: false, :input_html => { value: @max_value, placeholder: "Valeur max. autorisée", class: "mdl-textfield__input form-control" } %>
+                  </td>
+                  <label class="mdl-textfield__label" for="max_value"><%= I18n.t(:val_max) %></label>
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="col-6">
+                <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                  <%= f.input :validation_text, as: :string, label: false, :input_html => { value: @iwidget.validation_text }, input_html:{class: "mdl-textfield__input form-control"}  %>
+                  <label class="mdl-textfield__label" for="validation_text"><%= I18n.t(:validation_text) %></label>
+                </div>
+              </div>
+
+
+              <div class="col-3"  style="margin-top: 3em;">
+                <%= f.input :signalize, as: :boolean, label: false, input_html: {class: 'mdl-checkbox__input' } %>
+                <label class="mdl-textfield__label" for="signalize" style="padding-left: 4rem; margin-top: -0.5em"><%= I18n.t(:signalize) %></label>
+              </div>
+            </div>
+          </div>
+
+          <br>
+
+          <div class="actions-tabs">
+            <%= submit_tag I18n.t('save'), :class => 'btn btn-primary' %>
+            <button class="btn btn-secondary" data-dismiss="modal" aria-hidden="true"><%= I18n.t(:close) %></button>
+          </div>
+        </div>
+      </div>
+  <% end %>
+</section>
+
+<script>
+
+    // Update the view_widget attribute according to the selected module
+    $("#iwidget_indicator_dahsboard_id").change(function() {
+        if ($(this).val() !== ""){
+            return $.ajax({
+                url: "/update_iwidget_output_type_data",
+                method: "GET",
+                data: "indicator_dahsboard_id=" + $(this).val()
+            });
+        }
+    });
+
+    // Update the view_widget attribute according to the selected module
+//    $("#views_widget_estimation_value_id").change(function() {
+//        var attibute_alias = $(this).val();
+//        //if (attibute_alias !== ""){
+//        return $.ajax({
+//            url: "/show_widget_effort_display_unit",
+//            method: "GET",
+//            data: {
+//                estimation_value_id: $(this).val(),
+//                view_widget_id: "<%#= @iwidget.id %>",
+//                module_project_id: $("#views_widget_module_project_id").val()
+//            }
+//        });
+//        //}
+//    });
+
+
+    $("#iwidget_color").spectrum({
+        showPaletteOnly: true,
+        showPalette:true,
+        hideAfterPaletteSelect:true,
+        showInitial: true,
+        preferredFormat: "hex",
+        replacerClassName: 'mycolorpicker',
+        //color: 'blanchedalmond',
+        <% if @iwidget.new_record? %>
+        color: 'blanchedalmond',
+        <% end %>
+
+        palette: [
+            ['#E9ABBE', '#AA8AB8', "#FFD8BB", '#DAD5DC', '#E5D4DA'],
+            ['#F3CFDA', '#E8B189', '#F4EBEE', '#D3CCC6', '#BDB1B5'],
+            ['#D5DEBC', '#EAE4C6', '#839B94', '#E1F7A6', '#89CCB8'],
+            ['#FFFFFF', '#B7D2FC', '#6CA5FF', '#B576AD', '#CEDEF6']
+        ]
+    });
+
+    $('.sp-preview').css('width', '21rem');
+
+</script>

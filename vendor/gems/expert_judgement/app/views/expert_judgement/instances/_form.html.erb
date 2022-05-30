@@ -1,0 +1,164 @@
+<section class="card card-content-bloc estimancy-form">
+  <div class="mb-5">
+    <div class="effort-bloc">
+
+      <div class="edition-bloc-title">
+        <ul>
+          <li> </li>
+        </ul>
+      </div>
+
+      <div id="tabs-1">
+        <div class="edition-bloc-content">
+          <div class="edition-bloc-form">
+              <%= simple_form_for(@instance) do |f| %>
+                <%= f.error_notification %>
+
+                <%= f.input :organization_id, as: :hidden, input_html: { value: @organization.id } %>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :name, :label => false, :input_html => {:class => 'mdl-textfield__input form-control', :autofocus => (controller.action_name == 'new')} %>
+                        <label class="mdl-textfield__label" for="name"><%= I18n.t(:name) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :description, label: false, :input_html => { :class => 'mdl-textfield__input form-control', :rows => 5 } %>
+                        <label class="mdl-textfield__label" for="description"><%= I18n.t(:description) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-5">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :three_points_estimation, label: false %>
+                        <label class="mdl-textfield__label" for="three_points_estimation" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:three_points_estimation) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr>
+
+                  <h3><%= I18n.t(:cost) %></h3>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :enabled_cost, label: false %>
+                        <label class="mdl-textfield__label" for="enabled_cost" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:enable_cost) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :cost_unit, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'}, disabled: !@instance.enabled_cost %>
+                        <label class="mdl-textfield__label" for="cost_unit"><%= I18n.t(:label_unit_cost_wording) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :cost_unit_coefficient, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'}, disabled: !@instance.enabled_cost %>
+                        <label class="mdl-textfield__label" for="cost_unit_coefficient"><%= I18n.t(:label_coef_conv_cost) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr>
+
+                  <h3>Effort</h3>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :enabled_effort, label: false %>
+                        <label class="mdl-textfield__label" for="enabled_effort" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:enable_effort) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :effort_unit, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'}, disabled: !@instance.enabled_effort %>
+                        <label class="mdl-textfield__label" for="effort_unit"><%= I18n.t(:Wording_of_the_module_unit_effort) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :effort_unit_coefficient, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'}, disabled: !@instance.enabled_effort %>
+                        <label class="mdl-textfield__label" for="effort_unit_coefficient"><%= I18n.t(:label_coef_effort_unit) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr>
+
+                  <h3><%= I18n.t(:Size) %></h3>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :enabled_size, label: false %>
+                        <label class="mdl-textfield__label" for="enabled_size" style="margin-top:-0.75rem;margin-left:1.5rem;"><%= I18n.t(:modification_of_the_input_value_allow) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="form-row">
+                    <div class="col-7">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :retained_size_unit, :label => false, :input_html => {:class => 'mdl-textfield__input form-control'}, disabled: !@instance.enabled_size  %>
+                        <label class="mdl-textfield__label" for="retained_size_unit"><%= I18n.t(:retained_size_unit) %></label>
+                      </div>
+                    </div>
+                  </div>
+
+                <div class="actions-tabs">
+                  <% if can? :manage_modules_instances, ModuleProject %>
+                     <%= f.button :submit, I18n.t('save'), class: "btn btn-primary" %>
+                  <% end %>
+                  <%= link_to I18n.t(:back), main_app.organization_module_estimation_path(@current_organization, partial_name: 'tabs_module_effort', item_title: I18n.t('effort')), class: "btn btn-secondary" %>
+                </div>
+
+              <% end %>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+<script>
+  //$(document).ready(function() {
+  $(document).ready(function() {
+    $("#instance_enabled_cost").on("change", function(){
+      $("#instance_cost_unit").prop('disabled', function(i, v) { return !v; });
+      $("#instance_cost_unit_coefficient").prop('disabled', function(i, v) { return !v; });
+    });
+
+    $("#instance_enabled_effort").on("change", function(){
+      $("#instance_effort_unit").prop('disabled', function(i, v) { return !v; });
+      $("#instance_effort_unit_coefficient").prop('disabled', function(i, v) { return !v; });
+    });
+
+    $("#instance_enabled_size").on("change", function(){
+      $("#instance_retained_size_unit").prop('disabled', function(i, v) { return !v; });
+    });
+  });
+</script>
