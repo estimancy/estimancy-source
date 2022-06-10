@@ -1,4 +1,4 @@
-en_smals:
+enc2:
   #standard local format
   # Text direction: Left-to-Right (ltr) or Right-to-Left (rtl)
   direction: ltr
@@ -2656,6 +2656,8 @@ en_smals:
   history: "History"
   revised_effort: "Ajusted effort"
   estimate_history: "Estimate history"
+  description_2: "Description 2"
+  description_3: "Description 3"
 
   changes_list: "List of changes"
 
@@ -2705,5 +2707,6 @@ en_smals:
   excel_head_exist: "Exist"
   excel_head_removed_from: "Removed from"
   excel_head_deleted: "Permanent deletion"
+  status_alias: "Status alias"
 
 

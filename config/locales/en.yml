@@ -2706,3 +2706,4 @@ en:
   excel_head_exist: "Exist"
   excel_head_removed_from: "Removed from"
   excel_head_deleted: "Permanent deletion"
+  status_alias: "Status alias"

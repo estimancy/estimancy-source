@@ -1,4 +1,4 @@
-fr_bnp:
+frc5:
   direction: ltr
   date:
     abbr_day_names:
@@ -472,6 +472,7 @@ fr_bnp:
   empty: "Aucun"
   are_you_sure: "Etes-vous sûr ?"
   back: "Retour"
+  alaliste: "à la liste"
   restore_title: "Restaurer les changements"
   validate_title: "Valider les changements"
   previous: "< Précédent "
@@ -2245,6 +2246,7 @@ fr_bnp:
   provider_edition: "Editer un fournisseur"
   notice_cannot_view_providers: "Vous n'avez pas les autorisations nécessaires pour voir les fournisseurs"
   request_number: "Numéro de la demande"
+  business_need: "Besoin métier"
   notice_provider_successful_created: "Le fournisseur a été créé avec succès"
   notice_provider_successful_updated: "Le fournisseur a été mis à jour avec succès"
   notice_provider_successful_deleted: "Le fournisseur a été supprimé avec succès"
@@ -2551,7 +2553,7 @@ fr_bnp:
   is_kpi_widget: "Vignette KPI?"
   use_organization_effort_unit: "Utiliser l'unité d'effort de l'organisation"
   is_project_data_widget: "Vignette données projet?"
-  import_estimation_model: "Importer un model d'estimation"
+  import_estimation_model: "importer un modèle d'estimation"
   original_model_version: "Version du modèle d'origine"
   show_coefficient_label: "Afficher le libellé du coefficient"
   show_coefficient_application_label: "Afficher le libellé de l'application"
@@ -2642,6 +2644,9 @@ fr_bnp:
   history: "Historique"
   revised_effort: "Effort ajusté"
   estimate_history: "Historique de l'estimation"
+  description_2: "Description 2"
+  description_3: "Description 3"
+
 
   changes_list: "Liste des changements"
 
@@ -2693,3 +2698,4 @@ fr_bnp:
   excel_head_exist: "Existe"
   excel_head_removed_from: "Détaché de"
   excel_head_deleted: "Suppression définitive"
+  status_alias: "Alias du statut"

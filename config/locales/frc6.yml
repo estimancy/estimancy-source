@@ -1,4 +1,4 @@
-fr_acoss:
+frc6:
   direction: ltr
   date:
     abbr_day_names:
@@ -2685,6 +2685,8 @@ fr_acoss:
   revised_effort: "Effort ajusté"
   estimate_history: "Historique de l'estimation"
   allow_correction_before_change: "Autoriser la correction avant le changement"
+  description_2: "Description 2"
+  description_3: "Description 3"
 
   changes_list: "Liste des changements"
 
@@ -2736,3 +2738,4 @@ fr_acoss:
   excel_head_exist: "Existe"
   excel_head_removed_from: "Détaché de"
   excel_head_deleted: "Suppression définitive"
+  status_alias: "Alias du statut"
