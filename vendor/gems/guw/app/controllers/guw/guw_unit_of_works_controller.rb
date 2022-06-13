@@ -3340,9 +3340,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
   def reorder(group)
-    group.guw_unit_of_works.order("display_order ASC").each_with_index do |u, i|
-      u.display_order = i
-      u.save
+    if group
+      group.guw_unit_of_works.order("display_order ASC").each_with_index do |u, i|
+        u.display_order = i
+        u.save
+      end
     end
   end
 
