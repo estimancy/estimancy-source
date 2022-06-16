@@ -1676,8 +1676,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.size = tmp_hash_res
           guw_unit_of_work.ajusted_size = tmp_hash_ares
         end
-
-        reorder guw_unit_of_work.guw_unit_of_work_group
+        #commented to test if it is still useful nowadays. edit : it is not.
+        #reorder guw_unit_of_work.guw_unit_of_work_group
 
         guw_unit_of_work.summary_results = summary_results
 
