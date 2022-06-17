@@ -2792,7 +2792,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         tab.each_with_index do |row, index|
           unless row.nil?
-            unless row[12].nil?
+            unless (row[10].blank? && row[12].blank? && row[13].blank?)
               if index > 0
 
                 if default_group.blank?
@@ -2838,7 +2838,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 # end
 
                 guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[11].nil? ? false : (row[11].value).to_i == 1)),
-                                                  name: row[12].nil? ? nil : row[12].value,
+                                                  name: row[12].nil? ? "" : row[12].value,
                                                   comments: row[14].nil? ? nil : row[14].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
                                                   organization_id: @organization.id,
