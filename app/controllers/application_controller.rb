@@ -111,9 +111,9 @@ class ApplicationController < ActionController::Base
       if current_user.super_admin?
         @organizations = Organization.all
       elsif can?(:manage, :all)
-        @organizations = Organization.all.reject{|org| org.is_image_organization}
+        @organizations = Organization.all.reject{|org| org.is_image_organization || org.disable_organization == true }
       else
-        @organizations = current_user.organizations.all.reject{|org| org.is_image_organization}
+        @organizations = current_user.organizations.all.reject{|org| org.is_image_organization || org.disable_organization == true}
       end
     end
   end
@@ -332,6 +332,10 @@ class ApplicationController < ActionController::Base
       @functional_version_number = "-"
     end
 
+    if @current_organization.blank?
+      set_current_organization
+    end
+
     if user_signed_in?
       unless current_user.super_admin == true || current_user.subscription_end_date.nil?
         if current_user.subscription_end_date < Time.now
@@ -348,6 +352,12 @@ class ApplicationController < ActionController::Base
           sign_out current_user
           reset_session
           redirect_to(sign_in_path, :flash => { :error => @offline_message}) and return false
+
+        elsif @current_organization && @current_organization.disable_organization == true
+          #@disable_access = "1"
+          reset_session
+          flash[:warning] = I18n.t(:disable_organization_message, organization_name: @current_organization.name)
+          redirect_to(all_organizations_path, :flash => { :error => I18n.t(:disable_organization_message, organization_name: @current_organization.name)}) and return false
         end
       end
     end

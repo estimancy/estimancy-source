@@ -2699,3 +2699,6 @@ frc5:
   excel_head_removed_from: "Détaché de"
   excel_head_deleted: "Suppression définitive"
   status_alias: "Alias du statut"
+  no_access_to_estimates: "Pas d'accès aux estimations"
+  disable_organization: "Désactiver l'organisation"
+  disable_organization_message: "L'organisation %{organization_name} est en cours de maintenance"

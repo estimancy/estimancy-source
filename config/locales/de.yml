@@ -1907,3 +1907,6 @@ de:
   excel_head_removed_from: "Removed from"
   excel_head_deleted: "Permanent deletion"
   status_alias: "Status alias"
+  no_access_to_estimates: "No access to estimates"
+  disable_organization: "Disable organization"
+  disable_organization_message: "The organization %{parameter} is under maintenance"
