@@ -130,7 +130,8 @@
     <% @group_unit_of_works.each_with_index do |uowg, j| %>
 
     <%# @uowg_guw_unit_of_works = uowg.guw_unit_of_works.order("created_at ASC") %>
-    <% @uowg_guw_unit_of_works = @current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: uowg.id).order("created_at ASC") %>
+    <% @uowg_guw_unit_of_works = @current_module_project_guw_unit_of_works.where(guw_unit_of_work_group_id: uowg.id)%>
+    <%#We used to order the units here but it was ambiguous fro the db and redondant with some code later on where we order by display order  %>
 
     <div class="card card-widget">
       <div class="card-body">

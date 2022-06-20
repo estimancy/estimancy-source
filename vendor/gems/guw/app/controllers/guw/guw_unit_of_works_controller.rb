@@ -1676,8 +1676,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.size = tmp_hash_res
           guw_unit_of_work.ajusted_size = tmp_hash_ares
         end
-
-        reorder guw_unit_of_work.guw_unit_of_work_group
+        #commented to test if it is still useful nowadays. edit : it is not.
+        #reorder guw_unit_of_work.guw_unit_of_work_group
 
         guw_unit_of_work.summary_results = summary_results
 
@@ -2150,7 +2150,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
     Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
 
-    @module_project.number_uncalculated_uows = (@module_project.number_uncalculated_uows.to_i - 1)
+    @module_project.number_uncalculated_uows = (@module_project.number_uncalculated_uows.to_i-1)
 
     if ( @module_project.number_uncalculated_uows.to_i - 1 ) <= 0
       #@module_project.toggle_done(true, @module_project.number_uncalculated_uows.to_i - 1)
