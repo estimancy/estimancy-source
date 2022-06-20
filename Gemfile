@@ -289,6 +289,7 @@ gem 'prometheus-client'
 
 gem 'jquery-tablesorter'
 
+gem 'minitest', '~> 5.15.0'
 # gem 'jquery_block_ui'
 gem 'blockuijs-rails',  :git => 'https://github.com/rusanu/blockuijs-rails.git'  #'git://github.com/rusanu/blockuijs-rails.git'
 
