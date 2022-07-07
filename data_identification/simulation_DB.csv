@@ -1,0 +1,8 @@
+FR,UOT
+Add an employee using three attributes (employee ID employee hire date and employee assignment),EI/Moyen/Créer - ILF/Moyen/Supprimer
+Update an employee,EI/Moyen/Créer
+The Employee task assignment attribute on the input record is validated against the logical task assignment file managed in another application,EIF/Simple/Supprimer
+User can also search and view detailed employee information,EQ/Moyen/Modifier
+An annual report is produced listing the employees with statistics,EO/Simple/Créer
+The user can delete an employee in this case a notification is sent to the administrator to validate the operation,EI/Moyen/Supprimer
+The administrator can display the different user requests and accept / validate or refuse them,EQ/Moyen/Créer - EI/Simple/Supprimer - ILF/Complexe/Supprimer

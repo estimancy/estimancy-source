@@ -65,12 +65,20 @@
                       </div>
                     </div>
 
-                    <div class="col-3">
+                    <div class="col-2">
                       <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
                         <%= f.input :is_image_organization, as: :boolean, label: false, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__input'} %>
                         <label class="mdl-textfield__label" for="is_image_organization" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:is_image_organization) %></label>
                       </div>
                     </div>
+
+                    <div class="col-2">
+                      <div class="mdl-textfield mdl-js-textfield mdl-textfield--floating-label">
+                        <%= f.input :disable_organization, as: :boolean, label: false, disabled: !current_user.super_admin?, :input_html => { :class => 'mdl-checkbox__input'} %>
+                        <label class="mdl-textfield__label" for="disable_organization" style="padding-left: 20px; margin-top: -7px;"><%= I18n.t(:disable_organization) %></label>
+                      </div>
+                    </div>
+
                   </div>
 
                   <div class="form-row">

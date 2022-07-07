@@ -75,13 +75,15 @@ class OrganizationsController < ApplicationController
 
         #start_date = @project.start_date.blank ? I18n.l(Time.now, format: :date_month_year_concise) : I18n.l(@project.start_date)
 
-        start_date = I18n.l(Time.now, format: :date_month_year_concise)
+        #start_date = I18n.l(Time.now, format: :date_month_year_concise)
         if @project.start_date.nil? or @project.start_date.blank?
           start_date = I18n.l(Time.now, format: :date_month_year_concise)
         else
           begin
-            start_date_tmp = Date.strptime(@project.start_date, I18n.t('date.formats.default'))
-            start_date = start_date_tmp
+            #Loriane fix:
+            start_date = @project.start_date.strftime(I18n.t('date.formats.default'))
+            #start_date_tmp = Date.strptime(@project.start_date, I18n.t('date.formats.default'))
+            #start_date = start_date_tmp
           rescue
             start_date = I18n.l(Time.now, format: :date_month_year_concise)
           end
@@ -105,7 +107,7 @@ class OrganizationsController < ApplicationController
                             [I18n.t(:description), @project.description],
                             [I18n.t(:start_date), start_date],
                             #[I18n.t(:start_date), I18n.l(@project.start_date)],
-                            [I18n.t(:creator), @project.creator],
+                            [I18n.t(:creator), @project.creator.name],
                             [I18n.t(:status_alias), (@project.estimation_status.status_alias rescue nil)],
                             [I18n.t(:estimation_status), (@project.estimation_status.name rescue nil)],
                             [I18n.t(:status_comment), @project.status_comment],
@@ -5864,13 +5866,13 @@ class OrganizationsController < ApplicationController
                                 password_confirmation: password,
                                 language_id: langue,
                                 time_zone: "Paris",
-                                object_per_page: 50,
+                                object_per_page: 10,
                                 auth_type: auth_method,
                                 locked_at: ((row[8].value == 0 ? nil : Time.now) rescue nil),
                                 number_precision: 2,
                                 subscription_end_date: Time.now + 1.year)
 
-                if !row[5].nil? && row[5].value.upcase == "SAML"
+                if !row[5].nil? && !row[5].value.blank? && row[5].value.upcase == "SAML"
                   user.skip_confirmation_notification!
                   user.skip_confirmation!
                 end

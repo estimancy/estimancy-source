@@ -1676,8 +1676,8 @@ class Guw::GuwUnitOfWorksController < ApplicationController
           guw_unit_of_work.size = tmp_hash_res
           guw_unit_of_work.ajusted_size = tmp_hash_ares
         end
-
-        reorder guw_unit_of_work.guw_unit_of_work_group
+        #commented to test if it is still useful nowadays. edit : it is not.
+        #reorder guw_unit_of_work.guw_unit_of_work_group
 
         guw_unit_of_work.summary_results = summary_results
 
@@ -2150,10 +2150,12 @@ class Guw::GuwUnitOfWorksController < ApplicationController
     Guw::GuwUnitOfWork.update_estimation_values(@module_project, @component)
     Guw::GuwUnitOfWork.update_view_widgets_and_project_fields(@organization, @module_project, @component)
 
-    @module_project.number_uncalculated_uows = @module_project.number_uncalculated_uows.to_i-1
+    @module_project.number_uncalculated_uows = (@module_project.number_uncalculated_uows.to_i-1)
 
-    if @module_project.number_uncalculated_uows-1 <= 0
-      @module_project.toggle_done(true, number_uncalculated_uows-1)
+    if ( @module_project.number_uncalculated_uows.to_i - 1 ) <= 0
+      #@module_project.toggle_done(true, @module_project.number_uncalculated_uows.to_i - 1)
+      @module_project.toggle_done(true)
+
     end
     #current_module_project.toggle_done
 
@@ -2790,7 +2792,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
         tab.each_with_index do |row, index|
           unless row.nil?
-            unless row[12].nil?
+            unless (row[10].blank? && row[12].blank? && row[13].blank?)
               if index > 0
 
                 if default_group.blank?
@@ -2836,7 +2838,7 @@ class Guw::GuwUnitOfWorksController < ApplicationController
                 # end
 
                 guw_uow = Guw::GuwUnitOfWork.new( selected: ((row[11].nil? ? false : (row[11].value).to_i == 1)),
-                                                  name: row[12].nil? ? nil : row[12].value,
+                                                  name: row[12].nil? ? "" : row[12].value,
                                                   comments: row[14].nil? ? nil : row[14].value,
                                                   guw_unit_of_work_group_id: guw_uow_group.id,
                                                   organization_id: @organization.id,
@@ -3338,9 +3340,11 @@ class Guw::GuwUnitOfWorksController < ApplicationController
 
 
   def reorder(group)
-    group.guw_unit_of_works.order("display_order ASC").each_with_index do |u, i|
-      u.display_order = i
-      u.save
+    if group
+      group.guw_unit_of_works.order("display_order ASC").each_with_index do |u, i|
+        u.display_order = i
+        u.save
+      end
     end
   end
 

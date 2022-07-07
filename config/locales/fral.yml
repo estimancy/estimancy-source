@@ -2192,6 +2192,7 @@ fral:
   provider_edition: "Editer un fournisseur"
   notice_cannot_view_providers: "Vous n'avez pas les autorisations nécessaires pour voir les fournisseurs"
   request_number: "Numéro de la demande"
+  business_need: "Besoin métier"
   notice_provider_successful_created: "Le fournisseur a été créé avec succès"
   notice_provider_successful_updated: "Le fournisseur a été mis à jour avec succès"
   notice_provider_successful_deleted: "Le fournisseur a été supprimé avec succès"
@@ -2495,7 +2496,7 @@ fral:
   is_kpi_widget: "Vignette KPI?"
   use_organization_effort_unit: "Utiliser l'unité d'effort de l'organisation"
   is_project_data_widget: "Vignette données projet?"
-  import_estimation_model: "Importer un model d'estimation"
+  import_estimation_model: "importer un modèle d'estimation"
   original_model_version: "Version du modèle d'origine"
   status_comment: "Commentaires sur les changements de statut"
   nb_module_projects: "Nombre de module instancié"
@@ -2588,6 +2589,8 @@ fral:
   history: "Historique"
   revised_effort: "Effort ajusté"
   estimate_history: "Historique de l'estimation"
+  description_2: "Description 2"
+  description_3: "Description 3"
 
   changes_list: "Liste des changements"
 
@@ -2639,3 +2642,7 @@ fral:
   excel_head_exist: "Existe"
   excel_head_removed_from: "Détaché de"
   excel_head_deleted: "Suppression définitive"
+  status_alias: "Alias du statut"
+  no_access_to_estimates: "Pas d'accès aux estimations"
+  disable_organization: "Désactiver l'organisation"
+  disable_organization_message: "L'organisation %{organization_name} est en cours de maintenance"

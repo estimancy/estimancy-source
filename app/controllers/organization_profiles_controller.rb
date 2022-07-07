@@ -173,7 +173,7 @@ class OrganizationProfilesController < ApplicationController
                    (gcce_guw_coefficient_element.name.include?("Paris") && mpre_wbs_activity_element_name.include?('PARIS')) ||
                    (gcce_guw_coefficient_element.name.include?("Province") && mpre_wbs_activity_element_name.include?('PROVINCE'))
 
-                  if gcce_guw_coefficient_element.name.include?("SNCF")
+                  if gcce_guw_coefficient_element.name.include?(APP_CONFIG["C1_NAME_MIX_PROFILE"])
                     unless tjm == 0.0
                       gcce.value = tjm + mpre_wbs_activity_element.description.to_i
                       gcce.save
